@@ -72,19 +72,14 @@ namespace ZoneTool
 
 		std::shared_ptr<IZone> Linker::alloc_zone(const std::string& zone)
 		{
-			// Patch main thread ID
-			// Memory(0x01C11BDC).Set(GetCurrentThreadId());
-
-			auto ptr = std::make_shared<Zone>(zone, this);
-			return ptr;
+			ZONETOOL_ERROR("AllocZone called but IW5 is not intended to compile zones!");
+			return nullptr;
 		}
 
 		std::shared_ptr<ZoneBuffer> Linker::alloc_buffer()
 		{
-			auto ptr = std::make_shared<ZoneBuffer>();
-			ptr->init_streams(9);
-
-			return ptr;
+			ZONETOOL_ERROR("AllocBuffer called but IW5 is not intended to compile zones!");
+			return nullptr;
 		}
 
 		void Linker::load_zone(const std::string& name)
@@ -103,7 +98,7 @@ namespace ZoneTool
 		{
 			ZONETOOL_INFO("Unloading zones...");
 
-			static XZoneInfo zone = {"", 0, 20};
+			static XZoneInfo zone = {0, 0, 70};
 			DB_LoadXAssets(&zone, 1, 1);
 		}
 
@@ -133,12 +128,12 @@ namespace ZoneTool
 
         bool Linker::supports_building()
         {
-            return true;
+            return false;
         }
 
 		bool Linker::supports_version(const zone_target_version version)
 		{
-			return version == zone_target_version::iw5_release;
+			return false;
 		}
 
         void Linker::dump_zone(const std::string& name)
@@ -149,9 +144,12 @@ namespace ZoneTool
 			FileSystem::SetFastFile(name);
 			AssetHandler::SetDump(true);
 			load_zone(name);
-
 			while (!is_dumping_complete)
 			{
+				if (!*reinterpret_cast<bool*>(0x1294A00))
+				{
+					AssetHandler::StopDump();
+				}
 				Sleep(1);
 			}
 		}

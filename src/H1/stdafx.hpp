@@ -6,16 +6,23 @@
 // Author: RektInator (https://github.com/RektInator)
 // License: GNU GPL v3.0
 // ========================================================
-#include "stdafx.hpp"
-#include "H1/Assets/XAnimParts.hpp"
+#pragma once
 
-namespace ZoneTool
-{
-	namespace IW3
-	{
-		void IXAnimParts::dump(XAnimParts* anim, ZoneMemory* mem)
-		{
+#define WIN32_LEAN_AND_MEAN
+#define _CRT_SECURE_NO_WARNINGS
 
-		}
-	}
-}
+#include <windows.h>
+
+#undef min
+#undef max
+
+#include <iostream>
+#include <sstream>
+#include <memory>
+#include <vector>
+
+// Namespaces
+using namespace std::literals;
+using namespace string_literals;
+
+#include "H1.hpp"

@@ -30,7 +30,6 @@ function IW4:project()
         }
 
         self:include()
+        H1:include()
         ZoneUtils:include()
-        IW5:include()
-        zlib:include()
 end

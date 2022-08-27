@@ -7,15 +7,11 @@
 // License: GNU GPL v3.0
 // ========================================================
 #include "stdafx.hpp"
-#include "H1/Assets/XAnimParts.hpp"
 
 namespace ZoneTool
 {
-	namespace IW3
+	namespace H1
 	{
-		void IXAnimParts::dump(XAnimParts* anim, ZoneMemory* mem)
-		{
-
-		}
+		
 	}
 }

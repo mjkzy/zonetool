@@ -138,10 +138,8 @@ namespace ZoneTool
 
 #include "IPatch.hpp"
 #include "CSV.hpp"
-#include "Utils/Swizzle.hpp"
 #include "Zone/ZoneMemory.hpp"
 #include "Zone/ZoneBuffer.hpp"
-#include "Utils/PakFile.hpp"
 #include "Zone/Zone.hpp"
 #include "IAsset.hpp"
 #include "Utils/FileReader.hpp"
@@ -151,6 +149,10 @@ namespace ZoneTool
 #include "Utils/BinaryDumper.hpp"
 #include "Utils/Expressions.hpp"
 #include "Linker.hpp"
+
+#define REINTERPRET_CAST_SAFE(__TO__, __FROM__) \
+	static_assert(sizeof(*__FROM__) == sizeof(*__TO__)); \
+	__TO__ = reinterpret_cast<decltype(__TO__)>(__FROM__);
 
 #define MAKE_STRING(__data__) #__data__
 

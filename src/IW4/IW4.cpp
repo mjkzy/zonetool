@@ -265,36 +265,7 @@ char**>(0x00799278)[type]);
 				}
 				else
 				{
-					DECLARE_ASSET(phys_collmap, IPhysCollmap);
-					DECLARE_ASSET(tracer, ITracerDef);
-					DECLARE_ASSET(xmodelsurfs, IXSurface);
-					DECLARE_ASSET(xmodel, IXModel);
-					DECLARE_ASSET(material, IMaterial);
-					DECLARE_ASSET(xanim, IXAnimParts);
-					DECLARE_ASSET(techset, ITechset);
-					DECLARE_ASSET(gfx_map, IGfxWorld);
-					DECLARE_ASSET(col_map_mp, IClipMap);
-					DECLARE_ASSET(map_ents, IMapEnts);
-					DECLARE_ASSET(fx_map, IFxWorld);
-					DECLARE_ASSET(com_map, IComWorld);
-					DECLARE_ASSET(sound, ISound);
-					DECLARE_ASSET(sndcurve, ISoundCurve);
-					DECLARE_ASSET(loaded_sound, ILoadedSound);
-					DECLARE_ASSET(rawfile, IRawFile);
-					DECLARE_ASSET(stringtable, IStringTable);
-					DECLARE_ASSET(stringtable, IStringTable);
-					DECLARE_ASSET(vertexdecl, IVertexDecl);
-					DECLARE_ASSET(pixelshader, IPixelShader);
-					DECLARE_ASSET(vertexshader, IVertexShader);
-					DECLARE_ASSET(techset, ITechset);
-					DECLARE_ASSET(game_map_mp, IGameWorldMp);
-					DECLARE_ASSET(image, IGfxImage);
-					DECLARE_ASSET(fx, IFxEffectDef);
-					DECLARE_ASSET(lightdef, ILightDef);
-					DECLARE_ASSET(weapon, IWeaponDef);
-					DECLARE_ASSET(addon_map_ents, IAddonMapEnts);
-					DECLARE_ASSET(font, IFontDef);
-					DECLARE_ASSET(menu, IMenuDef);
+					
 				}
 			}
 		}
@@ -783,23 +754,17 @@ char**>(0x00799278)[type]);
                 Memory(0x44DA90).jump(GetZonePath);
 			}
 		}
-		
+
 		std::shared_ptr<IZone> Linker::alloc_zone(const std::string& zone)
 		{
-			// Patch current thread
-			Memory(0x1CDE7FC).set(GetCurrentThreadId());
-
-			// allocate zone
-			auto ptr = std::make_shared<Zone>(zone, this);
-			
-			return ptr;
+			ZONETOOL_ERROR("AllocZone called but IW4 is not intended to compile zones!");
+			return nullptr;
 		}
 
 		std::shared_ptr<ZoneBuffer> Linker::alloc_buffer()
 		{
-			auto ptr = std::make_shared<ZoneBuffer>();
-			ptr->init_streams(8);
-			return ptr;
+			ZONETOOL_ERROR("AllocBuffer called but IW4 is not intended to compile zones!");
+			return nullptr;
 		}
 
 		void Linker::load_zone(const std::string& name)
@@ -842,13 +807,12 @@ char**>(0x00799278)[type]);
 
         bool Linker::supports_building()
         {
-            return true;
+            return false;
         }
 
 		bool Linker::supports_version(const zone_target_version version)
 		{
-			return version == zone_target_version::iw4_release || version == zone_target_version::iw4_release_console || 
-				version == zone_target_version::iw4_alpha_482 || version == zone_target_version::iw4_alpha_491;
+			return false;
 		}
 
         void Linker::dump_zone(const std::string& name)

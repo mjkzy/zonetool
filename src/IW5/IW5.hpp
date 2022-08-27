@@ -13,7 +13,13 @@
 #include "Structs.hpp"
 #include "Patches/FFCompression.hpp"
 #include "Patches/AssetHandler.hpp"
-#include "Zone.hpp"
+
+#include "H1/Utils/IO/filesystem.hpp"
+#include "H1/Structs.hpp"
+
+#include "Assets/XAnimParts.hpp"
+#include "Assets/XModel.hpp"
+#include "Assets/XSurface.hpp"
 
 namespace ZoneTool
 {

@@ -248,9 +248,9 @@ namespace ZoneTool
 
 		struct GfxImageLoadDef // actually a IDirect3DTexture* but this is easier
 		{
-			char mipLevels;
-			char flags;
-			short dimensions[3];
+			unsigned char levelCount;
+			unsigned char pad[3];
+			int flags;
 			int format; // usually the compression Magic
 			int dataSize; // set to zero to load from IWD
 			char* texture; // texture
@@ -266,8 +266,8 @@ namespace ZoneTool
 			int cardMemory;
 			int dataLen1;
 			int dataLen2;
-			short height;
 			short width;
+			short height;
 			short depth;
 			bool loaded;
 			char pad;
@@ -3804,11 +3804,11 @@ namespace ZoneTool
 			XModel* xModel;
 			unsigned __int16 brushModel;
 			unsigned __int16 physicsBrushModel;
-			void* destroyFx; // FxEffectDef
+			FxEffectDef* destroyFx;
 			PhysPreset* physPreset;
 			int health;
 			PhysMass mass;
-			//char *unknown;
+			int contents;
 		};
 
 		struct DynEntityPose

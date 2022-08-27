@@ -30,8 +30,11 @@ function IW5:project()
         }
 
         self:include()
+        H1:include()
         ZoneUtils:include()
-        
+
         zstd:include()
         zlib:include()
+
+        --directxtex:link()
 end

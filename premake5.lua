@@ -106,18 +106,16 @@ workspace "zonetool"
 	-- Projects
 	-- ========================
 
-	include "src/ImgPak.lua"
 	include "src/ZoneTool.lua"
 	include "src/ZoneUtils.lua"
 	include "src/IW3.lua"
 	include "src/IW4.lua"
 	include "src/IW5.lua"
-	include "src/CODO.lua"
-
-	ImgPak:project()
+	include "src/H1.lua"
+	
 	ZoneTool:project()
 	ZoneUtils:project()
 	IW3:project()
 	IW4:project()
 	IW5:project()
-	CODO:project()
+	H1:project()

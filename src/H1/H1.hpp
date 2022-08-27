@@ -6,16 +6,23 @@
 // Author: RektInator (https://github.com/RektInator)
 // License: GNU GPL v3.0
 // ========================================================
-#include "stdafx.hpp"
-#include "H1/Assets/XAnimParts.hpp"
+#pragma once
+
+#include <ZoneUtils.hpp>
+
+#include "Utils/IO/filesystem.hpp"
+#include "Utils/IO/assetmanager.hpp"
+
+#include "Structs.hpp"
+
+#include "Assets/XAnimParts.hpp"
+#include "Assets/XModel.hpp"
+#include "Assets/XSurface.hpp"
 
 namespace ZoneTool
 {
-	namespace IW3
+	namespace H1
 	{
-		void IXAnimParts::dump(XAnimParts* anim, ZoneMemory* mem)
-		{
-
-		}
+		
 	}
 }

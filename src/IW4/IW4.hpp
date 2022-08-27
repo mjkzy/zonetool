@@ -11,15 +11,13 @@
 #include <ZoneUtils.hpp>
 #include "Functions.hpp"
 #include "Structs.hpp"
-#include "../IW5/Structs.hpp"
-#include "Zone.hpp"
+
+#include "H1/Structs.hpp"
 
 namespace ZoneTool
 {
 	namespace IW4
 	{
-		using GfxImageFileHeader = IW5::GfxImageFileHeader;
-
 		class Linker : public ILinker
 		{
 		public:

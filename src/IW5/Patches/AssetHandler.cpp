@@ -21,12 +21,16 @@ namespace ZoneTool
 		bool AssetHandler::verify = false;
 		bool AssetHandler::dump = false;
 
+		std::string AssetHandler::fastfile;
+		FILE* AssetHandler::csvFile;
+
 		void** AssetHandler::DB_XAssetPool = (void**)0x7C5E38;
 		unsigned int* AssetHandler::g_poolSize = (unsigned int*)0x7C5B58;
 		AssetHandler::DB_GetXAssetSizeHandler_t* AssetHandler::DB_GetXAssetSizeHandlers = (DB_GetXAssetSizeHandler_t*)
 			0x7C6430;
 
 		std::unordered_map<std::string, XAsset> AssetHandler::StoredAssets;
+		std::vector<std::pair<XAssetType, std::string>> AssetHandler::referencedAssets;
 
 		// std::shared_ptr < ZoneMemory > mem;
 
@@ -102,16 +106,45 @@ namespace ZoneTool
 
 			return (asset_header) ? asset_header->header.data : nullptr;
 		}
+
+		XAssetHeader DB_FindXAssetHeader_(std::int32_t type, const char* name, bool createDefault)
+		{
+			auto retval = DB_FindXAssetHeader(type, name, createDefault);
+			if (createDefault || retval.data == nullptr)
+			{
+				ZONETOOL_INFO("MISSING ASSET '%s' of type '%s'", name, reinterpret_cast<char**>(
+					0x7C6208)[type]);
+			}
+
+			return retval;
+		}
+
+		void AssetHandler::StopDump()
+		{
+			ZONETOOL_INFO("Zone \"%s\" dumped.", &fastfile[0]);
+
+			referencedAssets.clear();
+			FileSystem::FileClose(csvFile);
+			csvFile = nullptr;
+
+			is_dumping_complete = true;
+		}
 		
 		void AssetHandler::DB_LogLoadedAsset(void* ptr, std::int32_t type)
 		{
-			static std::vector<std::pair<XAssetType, std::string>> referencedAssets;
-
 #ifdef USE_VMPROTECT
 			VMProtectBeginUltra("IW5::DB_LogLoadedAsset");
 #endif
 
-			auto fastfile = static_cast<std::string>(reinterpret_cast<const char*>(*reinterpret_cast<DWORD*>(0x1294A00)
+			static std::shared_ptr<ZoneMemory> memory;
+			static std::vector<std::pair<XAssetType, std::string>> referencedAssets;
+
+			if (!memory)
+			{
+				memory = std::make_shared<ZoneMemory>(1024 * 1024 * 128);		// 128mb
+			}
+
+			fastfile = static_cast<std::string>(reinterpret_cast<const char*>(*reinterpret_cast<DWORD*>(0x1294A00)
 				+ 4));
 
 			// store all common assets
@@ -123,8 +156,7 @@ namespace ZoneTool
 			if (dump)
 			{
 				FileSystem::SetFastFile(fastfile);
-
-				static FILE* csvFile = nullptr;
+				zonetool::filesystem::set_fastfile(fastfile);
 
 				// open csv file for dumping 
 				if (!csvFile)
@@ -163,13 +195,7 @@ namespace ZoneTool
 						DB_LogLoadedAsset(ref_asset, asset.first);
 					}
 
-					ZONETOOL_INFO("Zone \"%s\" dumped.", &fastfile[0]);
-
-					referencedAssets.clear();
-					FileSystem::FileClose(csvFile);
-					csvFile = nullptr;
-
-					is_dumping_complete = true;
+					StopDump();
 				}
 
 				if (GetAssetName(type, ptr)[0] == ',')
@@ -182,41 +208,18 @@ namespace ZoneTool
 				if (type == __type__) \
 				{ \
 					auto asset = reinterpret_cast<__struct__*>(ptr); \
-					__interface__::dump(asset); \
+					__interface__::dump(asset, memory.get()); \
 				}
-
-					DUMPCASE(attachment, IAttachmentDef, AttachmentDef);
-					DUMPCASE(leaderboarddef, ILeaderBoardDef, LeaderBoardDef);
-					DUMPCASE(material, IMaterial, Material);
-
-					DUMPCASE(com_map, IComWorld, ComWorld);
-					DUMPCASE(gfx_map, IGfxWorld, GfxWorld);
-					DUMPCASE(fx_map, IFxWorld, FxWorld);
-					DUMPCASE(glass_map, IGlassWorld, GlassWorld);
-					DUMPCASE(col_map_mp, IClipMap, clipMap_t);
-					DUMPCASE(map_ents, IMapEnts, MapEnts);
-					DUMPCASE(lightdef, ILightDef, GfxLightDef);
-
-					DUMPCASE(xanim, IXAnimParts, XAnimParts);
-					DUMPCASE(xmodel, IXModel, XModel);
-					DUMPCASE(xmodelsurfs, IXSurface, ModelSurface);
-					DUMPCASE(fx, IFxEffectDef, FxEffectDef);
-					DUMPCASE(sound, ISound, snd_alias_list_t);
-					DUMPCASE(stringtable, IStringTable, StringTable);
-					DUMPCASE(rawfile, IRawFile, RawFile);
-					DUMPCASE(scriptfile, IScriptFile, ScriptFile);
-					DUMPCASE(weapon, IWeaponDef, WeaponCompleteDef);
-					DUMPCASE(image, IGfxImage, GfxImage);
-					DUMPCASE(phys_collmap, IPhysCollmap, PhysCollmap);
-					DUMPCASE(loaded_sound, ILoadedSound, LoadedSound);
-					DUMPCASE(structureddatadef, IStructuredDataDef, StructuredDataDefSet);
-
-					DUMPCASE(techset, ITechset, MaterialTechniqueSet);
-					DUMPCASE(pixelshader, IPixelShader, PixelShader);
-					DUMPCASE(vertexshader, IVertexShader, VertexShader);
-					DUMPCASE(vertexdecl, IVertexDecl, VertexDecl);
-
-					DUMPCASE(font, IFontDef, Font_s);
+					try
+					{
+						DUMPCASE(xmodel, IXModel, XModel);
+						DUMPCASE(xmodelsurfs, IXSurface, ModelSurface);
+						DUMPCASE(xanim, IXAnimParts, XAnimParts);
+					}
+					catch (std::exception& ex)
+					{
+						ZONETOOL_FATAL("A fatal exception occured while dumping asset \"%s\", exception was: %s\n", GetAssetName(type, ptr), ex.what());
+					}
 				}
 			}
 			else
@@ -235,7 +238,7 @@ namespace ZoneTool
 				}*/
 			}
 
-			if (verify || FFCompression::ff_version > 1)
+			if (verify/* || FFCompression::ff_version > 1*/)
 			{
 				ZONETOOL_INFO("Loading asset \"%s\" of type %s.", GetAssetName(type, ptr), reinterpret_cast<char**>(
 0x7C6208)[type]);
@@ -424,7 +427,86 @@ namespace ZoneTool
 			}
 		}
 
-		/*__declspec(naked) void hkRestoreSoundData()
+		const unsigned int textureBufferSize = 1024 * 1024 * 32; // 32mb
+		unsigned int textureBufferIndex = 0;
+		std::unordered_map<std::string, unsigned int> textureMap;
+		std::string texturesFastfiles;
+
+		char* GetTextureBuffer()
+		{
+			static char textureBuffer[textureBufferSize];
+			return textureBuffer;
+		}
+
+		void ClearTextures()
+		{
+			// fastfile name
+			auto fastfile = static_cast<std::string>(reinterpret_cast<const char*>(*reinterpret_cast<DWORD*>(0x1294A00)
+				+ 4));
+			if (fastfile != texturesFastfiles)
+			{
+				auto* buffer = GetTextureBuffer();
+
+				std::memset(buffer, 0, textureBufferSize);
+				textureBufferIndex = 0;
+				textureMap.clear();
+
+				texturesFastfiles = fastfile;
+			}
+		}
+
+		void StoreTexture()
+		{
+			reinterpret_cast<void(*)()>(0x439970)();
+
+			GfxImageLoadDef* loadDef = *reinterpret_cast<GfxImageLoadDef**>(0x1294D6C);
+			GfxImage* image = *reinterpret_cast<GfxImage**>(0x1294DC0);
+
+			ClearTextures();
+
+			if (!loadDef->dataSize)
+				return;
+
+			auto* buffer = GetTextureBuffer();
+
+			if (textureMap.find(image->name) != textureMap.end())
+			{
+				void* data = &buffer[textureMap.at(image->name)];
+				image->texture = reinterpret_cast<GfxImageLoadDef*>(data);
+				return;
+			}
+			textureMap[image->name] = textureBufferIndex;
+
+			size_t size = 16 + loadDef->dataSize;
+			void* data = &buffer[textureBufferIndex];
+			textureBufferIndex += size;
+
+			if (textureBufferIndex >= textureBufferSize)
+			{
+				ZONETOOL_FATAL("IW5 Texture Buffer exceeded %imb/%imb",
+					(textureBufferIndex / 1024 / 1024), (textureBufferSize / 1024 / 1024));
+			}
+
+			std::memcpy(data, loadDef, size);
+
+			image->texture = reinterpret_cast<GfxImageLoadDef*>(data);
+		}
+
+		void Alloc_MssSound()
+		{
+			MssSound* sound = *reinterpret_cast<MssSound**>(0x01294E30);
+
+			// Z_MallocInternal
+			char* data_ptr = reinterpret_cast<char* (*)(int)>(0x0052B460)(
+				sound->info.data_len);
+
+			char* temp_ptr = sound->data;
+
+			sound->data = data_ptr;
+			memcpy(sound->data, temp_ptr, sound->info.data_len);
+		}
+
+		__declspec(naked) void MssSound_ReadXFile_stub()
 		{
 			static std::uintptr_t origFunc = 0x00436F20;
 			__asm
@@ -432,10 +514,14 @@ namespace ZoneTool
 				// call original function first
 				call origFunc;
 
-				// mov data into the loadedSound struct
+				pushad;
+				call Alloc_MssSound;
+				popad;
 
+				push 0x00438556;
+				retn;
 			}
-		}*/
+		}
 
 		AssetHandler::AssetHandler()
 		{
@@ -519,15 +605,20 @@ namespace ZoneTool
 			ReallocateAssetPoolM(weapon, 2);
 			ReallocateAssetPoolM(attachment, 2);
 
+			ReallocateAssetPoolM(vertexshader, 2);
+
 			// DB_AddXAssetHeader hook
 			Memory(0x44EFEF).jump(DB_AddXAsset);
+
+			// Store Texture Data
+			Memory(0x439927).call(StoreTexture);
 
 			// Do not modify loadedsound struct after loading
 			Memory(0x0043856E).nop(19);
 			Memory(0x00438556).nop(12);
 
 			// Prevent sound data from getting lost
-			// Memory(0x00438551).Jump(hkRestoreSoundData);
+			Memory(0x00438551).jump(MssSound_ReadXFile_stub);
 
 #ifdef USE_VMPROTECT
 			VMProtectEnd();

@@ -361,7 +361,7 @@ namespace ZoneTool
 
 			if (ff_version >= 2000)
 			{
-				ZONETOOL_INFO("Decrypting data at ptr 0x%08X, size is %u", data, size);
+				//ZONETOOL_INFO("Decrypting data at ptr 0x%08X, size is %u", data, size);
 				decrypt_data(data, size);
 			}
 
