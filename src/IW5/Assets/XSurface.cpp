@@ -7,23 +7,23 @@ namespace ZoneTool
 	{
 		using namespace IW5;
 
-		#define _BYTE  uint8_t
-		#define _WORD  uint16_t
-		#define _DWORD uint32_t
-		#define _QWORD uint64_t
+#define _BYTE  uint8_t
+#define _WORD  uint16_t
+#define _DWORD uint32_t
+#define _QWORD uint64_t
 
-		#define LOBYTE(x)   (*((_BYTE*)&(x)))   // low byte
-		#define LOWORD(x)   (*((_WORD*)&(x)))   // low word
-		#define LODWORD(x)  (*((_DWORD*)&(x)))  // low dword
-		#define HIBYTE(x)   (*((_BYTE*)&(x)+1))
-		#define HIWORD(x)   (*((_WORD*)&(x)+1))
-		#define HIDWORD(x)  (*((_DWORD*)&(x)+1))
-		#define BYTEn(x, n)   (*((_BYTE*)&(x)+n))
-		#define WORDn(x, n)   (*((_WORD*)&(x)+n))
-		#define BYTE1(x)   BYTEn(x,  1)         // byte 1 (counting from 0)
-		#define BYTE2(x)   BYTEn(x,  2)
+#define LOBYTE(x)   (*((_BYTE*)&(x)))   // low byte
+#define LOWORD(x)   (*((_WORD*)&(x)))   // low word
+#define LODWORD(x)  (*((_DWORD*)&(x)))  // low dword
+#define HIBYTE(x)   (*((_BYTE*)&(x)+1))
+#define HIWORD(x)   (*((_WORD*)&(x)+1))
+#define HIDWORD(x)  (*((_DWORD*)&(x)+1))
+#define BYTEn(x, n)   (*((_BYTE*)&(x)+n))
+#define WORDn(x, n)   (*((_WORD*)&(x)+n))
+#define BYTE1(x)   BYTEn(x,  1)         // byte 1 (counting from 0)
+#define BYTE2(x)   BYTEn(x,  2)
 
-		PackedTexCoords Vec2PackTexCoords(float* in) // ghosts func
+		PackedTexCoords Vec2PackTexCoords(float* in) // iw5 func
 		{
 			int v2; // eax
 			int v3; // esi
@@ -81,7 +81,7 @@ namespace ZoneTool
 			out[1] = *reinterpret_cast<float*>(&val);
 		}
 
-		PackedUnitVec __fastcall Vec3PackUnitVec(float* unitVec) // ghosts func
+		PackedUnitVec Vec3PackUnitVec(float* unitVec) // h1 func
 		{
 			unsigned int v5; // ebx
 			int v6; // ebx
@@ -97,18 +97,14 @@ namespace ZoneTool
 				+ 0.5f)));
 		}
 
-#define COERCE_FLOAT float
-
-		void Vec3UnpackUnitVec(PackedUnitVec in, float* out) // iw5 func
+		void Vec3UnpackUnitVec(const PackedUnitVec in, float* out) // t6 func
 		{
-			double v2; // st6
-			float v3; // [esp+0h] [ebp-4h]
+			float decodeScale;
 
-			v3 = ((double)HIBYTE(in.packed) - -192.0) / 32385.0;
-			v2 = 127.0;
-			*out = ((double)LOBYTE(in.packed) - 127.0) * v3;
-			out[1] = ((double)BYTE1(in.packed) - v2) * v3;
-			out[2] = v3 * ((double)BYTE2(in.packed) - v2);
+			decodeScale = (float)((float)in.array[3] - -192.0) / 32385.0;
+			*out = (float)((float)in.array[0] - 127.0) * decodeScale;
+			out[1] = (float)((float)in.array[1] - 127.0) * decodeScale;
+			out[2] = (float)((float)in.array[2] - 127.0) * decodeScale;
 		}
 	}
 
@@ -276,19 +272,11 @@ namespace ZoneTool
 				// re-calculate these...
 				float normal_unpacked[3];
 				PackedShit::Vec3UnpackUnitVec(asset->verticies[i].normal, normal_unpacked);
-				float new_normals[3];
-				new_normals[0] = normal_unpacked[2];
-				new_normals[1] = normal_unpacked[1];
-				new_normals[2] = normal_unpacked[0];
-				h1_asset->verts0.packedVerts0[i].normal.packed = PackedShit::Vec3PackUnitVec(new_normals).packed;
+				h1_asset->verts0.packedVerts0[i].normal.packed = PackedShit::Vec3PackUnitVec(normal_unpacked).packed;
 
 				float tangent_unpacked[3];
 				PackedShit::Vec3UnpackUnitVec(asset->verticies[i].normal, tangent_unpacked);
-				float new_tangent[3];
-				new_tangent[0] = tangent_unpacked[2];
-				new_tangent[1] = tangent_unpacked[1];
-				new_tangent[2] = tangent_unpacked[0];
-				h1_asset->verts0.packedVerts0[i].tangent.packed = PackedShit::Vec3PackUnitVec(new_tangent).packed;
+				h1_asset->verts0.packedVerts0[i].tangent.packed = PackedShit::Vec3PackUnitVec(normal_unpacked).packed;
 			}
 
 			// unknown
