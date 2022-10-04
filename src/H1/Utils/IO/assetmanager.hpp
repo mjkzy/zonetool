@@ -7,7 +7,14 @@ namespace zonetool
 	{
 		struct dump_entry
 		{
-			std::uintptr_t ptr;
+			std::uintptr_t start;
+			std::uintptr_t end;
+		};
+
+		struct dump_info
+		{
+			std::uint32_t index;
+			std::uint32_t array_index;
 		};
 
 		enum dump_type : std::uint8_t
@@ -35,34 +42,24 @@ namespace zonetool
 			filesystem::file file;
 			std::vector<dump_entry> dump_entries;
 
-			bool is_entry_dumped(std::uintptr_t ptr)
+			template <typename T>
+			bool get_entry_dumped(dump_entry entry, std::uint32_t* index, std::uint32_t* array_index)
 			{
 				for (std::size_t i = 0; i < dump_entries.size(); i++)
 				{
-					if (dump_entries[i].ptr == ptr)
+					if (dump_entries[i].start <= entry.start && dump_entries[i].end >= entry.end)
 					{
+						*index = static_cast<std::uint32_t>(i);
+						*array_index = static_cast<std::uint32_t>((entry.start - dump_entries[i].start) / sizeof(T));
 						return true;
 					}
 				}
+				*index = 0;
 				return false;
 			}
 
-			std::int32_t get_entry_dumped_index(std::uintptr_t ptr)
+			void add_entry_dumped(dump_entry entry)
 			{
-				for (std::size_t i = 0; i < dump_entries.size(); i++)
-				{
-					if (dump_entries[i].ptr == ptr)
-					{
-						return static_cast<std::int32_t>(i);
-					}
-				}
-				return static_cast<std::int32_t>(-1);
-			}
-
-			void add_entry_dumped(std::uintptr_t str)
-			{
-				dump_entry entry;
-				entry.ptr = str;
 				dump_entries.push_back(entry);
 			}
 
@@ -205,15 +202,20 @@ namespace zonetool
 			{
 				if (str)
 				{
-					if (is_entry_dumped(reinterpret_cast<std::uintptr_t>(str)))
+					dump_entry entry{ 0 };
+					entry.start = reinterpret_cast<std::uintptr_t>(str);
+					entry.end = entry.start;
+					dump_info info{ 0 };
+					if (get_entry_dumped<char>(entry, &info.index, &info.array_index))
 					{
 						write_type(DUMP_TYPE_OFFSET);
-						std::uint32_t index = get_entry_dumped_index(reinterpret_cast<std::uintptr_t>(str));
-						write_internal(&index);
+						write_internal(&info.index);
+						write_internal(&info.array_index);
+						assert(info.array_index == 0);
 						return;
 					}
 
-					add_entry_dumped(reinterpret_cast<std::uintptr_t>(str));
+					add_entry_dumped(entry);
 
 					write_type(DUMP_TYPE_STRING);
 					write_existing(DUMP_EXISTING);
@@ -237,15 +239,20 @@ namespace zonetool
 			{
 				if (asset && asset->name)
 				{
-					if (is_entry_dumped(reinterpret_cast<std::uintptr_t>(asset)))
+					dump_entry entry{ 0 };
+					entry.start = reinterpret_cast<std::uintptr_t>(asset);
+					entry.end = entry.start;
+					dump_info info{ 0 };
+					if (get_entry_dumped<T>(entry, &info.index, &info.array_index))
 					{
 						write_type(DUMP_TYPE_OFFSET);
-						std::uint32_t index = get_entry_dumped_index(reinterpret_cast<std::uintptr_t>(asset));
-						write_internal(&index);
+						write_internal(&info.index);
+						write_internal(&info.array_index);
+						assert(info.array_index == 0);
 						return;
 					}
 
-					add_entry_dumped(reinterpret_cast<std::uintptr_t>(asset));
+					add_entry_dumped(entry);
 
 					write_type(DUMP_TYPE_ASSET);
 					write_existing(DUMP_EXISTING);
@@ -264,15 +271,19 @@ namespace zonetool
 			{
 				if (data && array_size)
 				{
-					if (is_entry_dumped(reinterpret_cast<std::uintptr_t>(data)))
+					dump_entry entry{ 0 };
+					entry.start = reinterpret_cast<std::uintptr_t>(data);
+					entry.end = entry.start + (sizeof(T) * (array_size - 1));
+					dump_info info{ 0 };
+					if (get_entry_dumped<T>(entry, &info.index, &info.array_index))
 					{
 						write_type(DUMP_TYPE_OFFSET);
-						std::uint32_t index = get_entry_dumped_index(reinterpret_cast<std::uintptr_t>(data));
-						write_internal(&index);
+						write_internal(&info.index);
+						write_internal(&info.array_index);
 						return;
 					}
 
-					add_entry_dumped(reinterpret_cast<std::uintptr_t>(data));
+					add_entry_dumped(entry);
 
 					write_type(DUMP_TYPE_ARRAY);
 					write_existing(DUMP_EXISTING);
@@ -304,15 +315,19 @@ namespace zonetool
 			{
 				if (data && size)
 				{
-					if (is_entry_dumped(reinterpret_cast<std::uintptr_t>(data)))
+					dump_entry entry{ 0 };
+					entry.start = reinterpret_cast<std::uintptr_t>(data);
+					entry.end = entry.start;
+					dump_info info{ 0 };
+					if (get_entry_dumped<T>(entry, &info.index, &info.array_index))
 					{
 						write_type(DUMP_TYPE_OFFSET);
-						std::uint32_t index = get_entry_dumped_index(reinterpret_cast<std::uintptr_t>(data));
-						write_internal(&index);
+						write_internal(&info.index);
+						write_internal(&info.array_index);
 						return;
 					}
 
-					add_entry_dumped(reinterpret_cast<std::uintptr_t>(data));
+					add_entry_dumped(entry);
 
 					write_type(DUMP_TYPE_RAW);
 					write_existing(DUMP_EXISTING);
