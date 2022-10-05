@@ -146,6 +146,27 @@ namespace ZoneTool
 			GenerateH1ClipInfo(&h1_asset->info, asset, mem);
 			h1_asset->pInfo = &h1_asset->info;
 
+			h1_asset->numNodes = asset->numCNodes;
+			h1_asset->nodes = mem->Alloc<H1::cNode_t>(h1_asset->numNodes);
+			for (unsigned int i = 0; i < h1_asset->numNodes; i++)
+			{
+				h1_asset->nodes[i].plane = reinterpret_cast<H1::cplane_s * __ptr64>(asset->cNodes[i].plane);
+				h1_asset->nodes[i].children[0] = asset->cNodes[i].children[0];
+				h1_asset->nodes[i].children[1] = asset->cNodes[i].children[1];
+			}
+
+			h1_asset->numLeafs = asset->numCLeaf;
+			h1_asset->leafs = mem->Alloc<H1::cLeaf_t>(h1_asset->numLeafs);
+			for (unsigned int i = 0; i < h1_asset->numLeafs; i++)
+			{
+				h1_asset->leafs[i].firstCollAabbIndex = asset->cLeaf[i].firstCollAabbIndex;
+				h1_asset->leafs[i].collAabbCount = asset->cLeaf[i].collAabbCount;
+				h1_asset->leafs[i].brushContents = asset->cLeaf[i].brushContents;
+				h1_asset->leafs[i].terrainContents = asset->cLeaf[i].terrainContents;
+				memcpy(&h1_asset->leafs[i].bounds, &asset->cLeaf[i].mins, sizeof(float[3]) * 2);
+				h1_asset->leafs[i].leafBrushNode = asset->cLeaf[i].leafBrushNode;
+			}
+
 			h1_asset->numSubModels = asset->numCModels;
 			h1_asset->cmodels = mem->Alloc<H1::cmodel_t>(h1_asset->numSubModels);
 			for (unsigned int i = 0; i < h1_asset->numSubModels; i++)

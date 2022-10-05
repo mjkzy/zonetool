@@ -13,7 +13,7 @@ namespace ZoneTool
 			h1_asset->name = asset->name;
 			h1_asset->baseName = asset->baseName;
 
-			h1_asset->bspVersion = 0;
+			h1_asset->bspVersion = 111;
 
 			h1_asset->planeCount = asset->planeCount;
 			h1_asset->nodeCount = asset->nodeCount;
@@ -41,13 +41,13 @@ namespace ZoneTool
 			h1_asset->lastSunPrimaryLightIndex = asset->lastSunPrimaryLightIndex;
 			h1_asset->primaryLightCount = asset->primaryLightCount;
 			h1_asset->primaryLightEnvCount = asset->primaryLightCount;
-			h1_asset->sortKeyLitDecal = 0;
-			h1_asset->sortKeyEffectDecal = 0;
-			h1_asset->sortKeyTopDecal = 0;
-			h1_asset->sortKeyEffectAuto = 0;
-			h1_asset->sortKeyDistortion = 0;
-			h1_asset->sortKeyUnknown = 0;
-			h1_asset->sortKeyUnknown2 = 0;
+			h1_asset->sortKeyLitDecal = 7;
+			h1_asset->sortKeyEffectDecal = 43;
+			h1_asset->sortKeyTopDecal = 17;
+			h1_asset->sortKeyEffectAuto = 53;
+			h1_asset->sortKeyDistortion = 48;
+			h1_asset->sortKeyUnknown = 18;
+			h1_asset->sortKeyUnknown2 = 33;
 
 			h1_asset->dpvsPlanes.cellCount = asset->dpvsPlanes.cellCount;
 			REINTERPRET_CAST_SAFE(h1_asset->dpvsPlanes.planes, asset->dpvsPlanes.planes);
@@ -478,7 +478,7 @@ namespace ZoneTool
 			h1_asset->dpvs.sunShadowOptCount = 0;
 			h1_asset->dpvs.sunSurfVisDataCount = 0;
 			h1_asset->dpvs.surfaceCastsSunShadowOpt = nullptr;
-			h1_asset->dpvs.surfaceDeptAndSurf = nullptr;
+			h1_asset->dpvs.surfaceDeptAndSurf = mem->Alloc<H1::GfxDepthAndSurf>(h1_asset->dpvs.staticSurfaceCount); // todo?
 			h1_asset->dpvs.constantBuffersLit = mem->Alloc<char* __ptr64>(h1_asset->dpvs.smodelCount); //nullptr;
 			h1_asset->dpvs.constantBuffersAmbient = mem->Alloc<char* __ptr64>(h1_asset->dpvs.smodelCount); //nullptr;
 			h1_asset->dpvs.usageCount = asset->dpvs.usageCount;

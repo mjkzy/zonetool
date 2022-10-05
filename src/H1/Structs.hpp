@@ -4344,13 +4344,12 @@ namespace ZoneTool
 
 		struct cLeaf_t
 		{
-			unsigned short firstCollAabbIndex;
-			unsigned short collAabbCount;
+			unsigned int firstCollAabbIndex;
+			unsigned int collAabbCount;
 			int brushContents;
 			int terrainContents;
 			Bounds bounds;
 			int leafBrushNode;
-			char __pad0[4];
 		}; assert_sizeof(cLeaf_t, 44);
 
 		struct cmodel_t
