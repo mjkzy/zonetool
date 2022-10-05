@@ -15,8 +15,19 @@
 #include "Patches/AssetHandler.hpp"
 
 #include "H1/Utils/IO/filesystem.hpp"
+#include "H1/Utils/IO/assetmanager.hpp"
 #include "H1/Structs.hpp"
 
+using namespace zonetool;
+
+#include "Assets/ClipMap.hpp"
+#include "Assets/ComWorld.hpp"
+#include "Assets/FxWorld.hpp"
+#include "Assets/GfxImage.hpp"
+#include "Assets/GfxWorld.hpp"
+#include "Assets/GlassWorld.hpp"
+#include "Assets/MapEnts.hpp"
+#include "Assets/Material.hpp"
 #include "Assets/XAnimParts.hpp"
 #include "Assets/XModel.hpp"
 #include "Assets/XSurface.hpp"

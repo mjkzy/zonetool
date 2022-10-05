@@ -193,7 +193,7 @@ namespace ZoneTool
 			// generate h1 anims
 			auto h1_asset = GenerateH1XAnimParts(asset, mem);
 
-			// dump iw6 anims
+			// dump h1 anims
 			H1::IXAnimParts::dump(h1_asset, SL_ConvertToString);
 		}
 	}

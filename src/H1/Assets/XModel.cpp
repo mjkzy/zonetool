@@ -8,7 +8,7 @@ namespace ZoneTool
 		{
 			const auto path = "xmodel\\"s + asset->name + ".xmodel_export";
 
-			zonetool::assetmanager::dumper dump;
+			assetmanager::dumper dump;
 			if (!dump.open(path))
 			{
 				return;

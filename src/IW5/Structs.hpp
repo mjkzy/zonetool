@@ -926,8 +926,8 @@ namespace ZoneTool
 			unsigned int typeHash; // asset hash of type
 			char firstCharacter; // first character of image name
 			char secondLastCharacter; // second-last character of image name (maybe only in CoD4?!)
-			char sampleState;
-			char semantic;
+			unsigned char sampleState;
+			unsigned char semantic;
 			GfxImage* image; // Image* actually
 		};
 

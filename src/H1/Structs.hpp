@@ -5557,8 +5557,8 @@ namespace ZoneTool
 		{
 			GfxPackedPlacement placement;
 			XModel* __ptr64 model;
-			unsigned short lightingHandle;
-			//unsigned short cullDist;
+			//unsigned short lightingHandle;
+			unsigned short cullDist;
 			unsigned short flags;
 			unsigned short staticModelId;
 			unsigned short primaryLightEnvIndex;
@@ -5582,9 +5582,28 @@ namespace ZoneTool
 			int numLightingValues;
 		};
 
+		struct GfxStaticModelLightmapInfo
+		{
+			unsigned short smodelCacheIndex[4];
+			unsigned short unk1;
+			unsigned short unk2;
+			float unk3; // culldist?
+			int unk4;
+			int unk5;
+			/*
+			unsigned short V0[4];
+			unsigned short V1[4];
+			unsigned short V2[4];
+			*/
+		};
+
 		struct GfxStaticModelLighting
 		{
-			GfxStaticModelVertexLightingInfo info;
+			union
+			{
+				GfxStaticModelVertexLightingInfo info;
+				GfxStaticModelLightmapInfo info2;
+			};
 		}; assert_sizeof(GfxStaticModelLighting, 24);
 
 		struct GfxSubdivVertexLightingInfo

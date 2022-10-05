@@ -8,7 +8,7 @@ namespace ZoneTool
 		{
 			const auto path = "xsurface\\"s + asset->name + ".xsurface_export";
 
-			zonetool::assetmanager::dumper dump;
+			assetmanager::dumper dump;
 			if (!dump.open(path))
 			{
 				return;
