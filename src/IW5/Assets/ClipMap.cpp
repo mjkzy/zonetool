@@ -1,6 +1,8 @@
 #include "stdafx.hpp"
 #include "H1/Assets/ClipMap.hpp"
 
+#include "H1/Assets/PhysWorld.hpp"
+
 namespace ZoneTool
 {
 	namespace IW5
@@ -15,7 +17,7 @@ namespace ZoneTool
 			for (unsigned int i = 0; i < info->numMaterials; i++)
 			{
 				info->materials[i].name = asset->info.materials[i].material;
-				info->materials[i].surfaceFlags = asset->info.materials[i].surfaceFlags;
+				info->materials[i].surfaceFlags = asset->info.materials[i].surfaceFlags; // convert?
 				info->materials[i].contents = asset->info.materials[i].contentFlags;
 			}
 
@@ -59,11 +61,11 @@ namespace ZoneTool
 				// check
 				info->bCollisionData.brushSides[i].planeIndex = 
 					(reinterpret_cast<std::uintptr_t>(asset->info.cBrushSides[i].plane) - reinterpret_cast<std::uintptr_t>(asset->info.cPlanes)) / sizeof(cplane_s);
-				info->bCollisionData.brushSides[i].materialNum = asset->info.cBrushSides[i].materialNum;
 				assert(info->bCollisionData.brushSides[i].planeIndex <= info->planeCount);
 
-				//info->bCollisionData.brushSides[i].firstAdjacentSideOffset = 0;
-				//info->bCollisionData.brushSides[i].edgeCount = 0;
+				info->bCollisionData.brushSides[i].materialNum = asset->info.cBrushSides[i].materialNum;
+				info->bCollisionData.brushSides[i].firstAdjacentSideOffset = asset->info.cBrushSides[i].firstAdjacentSideOffset;
+				info->bCollisionData.brushSides[i].edgeCount = asset->info.cBrushSides[i].edgeCount;
 			}
 
 			info->bCollisionData.numBrushEdges = asset->info.numCBrushEdges;
@@ -131,7 +133,11 @@ namespace ZoneTool
 				info->sCollisionData.staticModelList[i].xmodel = reinterpret_cast<H1::XModel * __ptr64>(asset->staticModelList[i].xmodel);
 
 				// check
-				memcpy(&info->sCollisionData.staticModelList[i].origin, &asset->staticModelList[i].origin, sizeof(IW5::cStaticModel_s) - sizeof(IW5::XModel*));
+				//memcpy(&info->sCollisionData.staticModelList[i].origin, &asset->staticModelList[i].origin, sizeof(IW5::cStaticModel_s) - sizeof(IW5::XModel*));
+				memcpy(&info->sCollisionData.staticModelList[i].origin, &asset->staticModelList[i].origin, sizeof(float[3]));
+				memcpy(&info->sCollisionData.staticModelList[i].invScaledAxis, &asset->staticModelList[i].invScaledAxis, sizeof(float[3][3]));
+				memcpy(&info->sCollisionData.staticModelList[i].absBounds, &asset->staticModelList[i].absmin, sizeof(float[3]) * 2);
+				// pad
 			}
 		}
 
@@ -150,7 +156,7 @@ namespace ZoneTool
 			h1_asset->nodes = mem->Alloc<H1::cNode_t>(h1_asset->numNodes);
 			for (unsigned int i = 0; i < h1_asset->numNodes; i++)
 			{
-				h1_asset->nodes[i].plane = reinterpret_cast<H1::cplane_s * __ptr64>(asset->cNodes[i].plane);
+				REINTERPRET_CAST_SAFE(h1_asset->nodes[i].plane, asset->cNodes[i].plane);
 				h1_asset->nodes[i].children[0] = asset->cNodes[i].children[0];
 				h1_asset->nodes[i].children[1] = asset->cNodes[i].children[1];
 			}
@@ -166,18 +172,27 @@ namespace ZoneTool
 				memcpy(&h1_asset->leafs[i].bounds, &asset->cLeaf[i].mins, sizeof(float[3]) * 2);
 				h1_asset->leafs[i].leafBrushNode = asset->cLeaf[i].leafBrushNode;
 			}
-
+			
 			h1_asset->numSubModels = asset->numCModels;
 			h1_asset->cmodels = mem->Alloc<H1::cmodel_t>(h1_asset->numSubModels);
 			for (unsigned int i = 0; i < h1_asset->numSubModels; i++)
 			{
-				memcpy(&h1_asset->cmodels[i].bounds, &asset->cModels[i].bounds, sizeof(IW5::Bounds) + sizeof(float));
+				memcpy(&h1_asset->cmodels[i].bounds, &asset->cModels[i].bounds, sizeof(IW5::Bounds));
+				h1_asset->cmodels[i].radius = asset->cModels[i].radius;
+
 				//GenerateH1ClipInfo(iw6_asset->cmodels[i].info, asset->cModels[i].info, mem);
-				memcpy(&h1_asset->cmodels[i].leaf, &asset->cModels[i].leaf, sizeof(IW5::cLeaf_t)); // check
 				//if (!iw6_asset->cmodels[i].info)
 				{
 					h1_asset->cmodels[i].info = h1_asset->pInfo;
 				}
+
+				//memcpy(&h1_asset->cmodels[i].leaf, &asset->cModels[i].leaf, sizeof(IW5::cLeaf_t));
+				h1_asset->cmodels[i].leaf.firstCollAabbIndex = asset->cModels[i].leaf.firstCollAabbIndex;
+				h1_asset->cmodels[i].leaf.collAabbCount = asset->cModels[i].leaf.collAabbCount;
+				h1_asset->cmodels[i].leaf.brushContents = asset->cModels[i].leaf.brushContents;
+				h1_asset->cmodels[i].leaf.terrainContents = asset->cModels[i].leaf.terrainContents;
+				memcpy(&h1_asset->cmodels[i].leaf.bounds, &asset->cModels[i].leaf.mins, sizeof(float[3]) * 2);
+				h1_asset->cmodels[i].leaf.leafBrushNode = asset->cModels[i].leaf.leafBrushNode;
 			}
 
 			h1_asset->mapEnts = mem->Alloc<H1::MapEnts>();
@@ -244,6 +259,28 @@ namespace ZoneTool
 
 			// dump h1 clipmap
 			H1::IClipMap::dump(h1_asset, SL_ConvertToString);
+
+			// dump physmap here too i guess, since it's needed.
+			auto* physmap = mem->Alloc<H1::PhysWorld>();
+			physmap->name = asset->name;
+
+			physmap->modelsCount = h1_asset->numSubModels;
+			physmap->models = mem->Alloc<H1::PhysBrushModel>(physmap->modelsCount);
+			for (unsigned int i = 0; i < physmap->modelsCount; i++)
+			{
+				physmap->models[i].model = 0xFFFF0000FFFFFFFF;
+			}
+
+			physmap->polytopeDatasCount = 0;
+			physmap->polytopeDatas = nullptr;
+
+			physmap->meshDatasCount = 0;
+			physmap->meshDatas = nullptr;
+
+			physmap->waterVolumesCount = 0;
+			physmap->waterVolumes = nullptr;
+
+			H1::IPhysWorld::dump(physmap, SL_ConvertToString);
 		}
 	}
 }

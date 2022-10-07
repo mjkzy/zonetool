@@ -47,11 +47,11 @@ namespace ZoneTool
 			h1_asset->primaryLightEnvs = mem->Alloc<H1::ComPrimaryLightEnv>(h1_asset->primaryLightEnvCount);
 			for (unsigned int i = 1; i < h1_asset->primaryLightEnvCount; i++)
 			{
-				h1_asset->primaryLightEnvs[i].numIndices = 4;
+				h1_asset->primaryLightEnvs[i].numIndices = 1;
 				h1_asset->primaryLightEnvs[i].primaryLightIndices[0] = i;
-				h1_asset->primaryLightEnvs[i].primaryLightIndices[1] = i;
-				h1_asset->primaryLightEnvs[i].primaryLightIndices[2] = i;
-				h1_asset->primaryLightEnvs[i].primaryLightIndices[3] = i;
+				h1_asset->primaryLightEnvs[i].primaryLightIndices[1] = 0;
+				h1_asset->primaryLightEnvs[i].primaryLightIndices[2] = 0;
+				h1_asset->primaryLightEnvs[i].primaryLightIndices[3] = 0;
 			}
 
 			return h1_asset;

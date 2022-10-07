@@ -220,7 +220,11 @@ namespace ZoneTool
 
 		struct PhysBrushModel
 		{
-			char __pad0[8];
+			union
+			{
+				std::uint64_t model;
+				char __pad0[8];
+			};
 		};
 
 		struct PhysWorld
@@ -248,9 +252,26 @@ namespace ZoneTool
 			std::uint64_t p1;
 		};
 
+		struct GfxDrawSurfFields
+		{
+			unsigned __int64 objectId : 16;
+			unsigned __int64 reflectionProbeIndex : 8;
+			unsigned __int64 hasGfxEntIndex : 1;
+			unsigned __int64 customIndex : 5;
+			unsigned __int64 materialSortedIndex : 13;
+			unsigned __int64 tessellation : 3;
+			unsigned __int64 prepass : 2;
+			unsigned __int64 useHeroLighting : 1;
+			unsigned __int64 sceneLightEnvIndex : 16;
+			unsigned __int64 viewModelRender : 1;
+			unsigned __int64 surfType : 4;
+			unsigned __int64 primarySortKey : 6;
+			unsigned __int64 unused : 30;
+		};
+
 		union GfxDrawSurf
 		{
-			//GfxDrawSurfFields fields;
+			GfxDrawSurfFields fields;
 			Packed128 packed;
 		};
 
@@ -5110,7 +5131,7 @@ namespace ZoneTool
 			int* __ptr64 skyStartSurfs;
 			GfxImage* __ptr64 skyImage;
 			unsigned char skySamplerState;
-			char __pad0[24];
+			Bounds bounds;
 		}; assert_sizeof(GfxSky, 56);
 
 		struct GfxWorldDpvsPlanes
@@ -5129,15 +5150,20 @@ namespace ZoneTool
 		struct GfxAabbTree
 		{
 			Bounds bounds;
+			int childrenOffset;
 			unsigned short childCount;
-			unsigned short surfaceCount;
-			unsigned short startSurfIndex; //unsigned int startSurfIndex;
 			unsigned short smodelIndexCount;
 			unsigned short* __ptr64 smodelIndexes;
-			int childrenOffset;
+			int startSurfIndex;
+			unsigned short surfaceCount;
+			unsigned short pad;
 		}; assert_sizeof(GfxAabbTree, 48);
+		assert_offsetof(GfxAabbTree, childrenOffset, 24);
+		assert_offsetof(GfxAabbTree, childCount, 28);
 		assert_offsetof(GfxAabbTree, smodelIndexCount, 30);
 		assert_offsetof(GfxAabbTree, smodelIndexes, 32);
+		assert_offsetof(GfxAabbTree, startSurfIndex, 40);
+		assert_offsetof(GfxAabbTree, surfaceCount, 44);
 
 		struct GfxCellTree
 		{
@@ -5511,6 +5537,7 @@ namespace ZoneTool
 			unsigned int vertexLayerData;
 			unsigned int firstVertex;
 			float maxEdgeLength;
+			int unk;
 			unsigned short vertexCount;
 			unsigned short triCount;
 			unsigned int baseIndex;
@@ -5556,8 +5583,8 @@ namespace ZoneTool
 		{
 			GfxPackedPlacement placement;
 			XModel* __ptr64 model;
-			//unsigned short lightingHandle;
 			unsigned short cullDist;
+			unsigned short lightingHandle;
 			unsigned short flags;
 			unsigned short staticModelId;
 			unsigned short primaryLightEnvIndex;
@@ -5566,6 +5593,9 @@ namespace ZoneTool
 			unsigned char sunShadowFlags;
 		}; assert_sizeof(GfxStaticModelDrawInst, 80);
 		assert_offsetof(GfxStaticModelDrawInst, model, 56);
+		assert_offsetof(GfxStaticModelDrawInst, lightingHandle, 66);
+		assert_offsetof(GfxStaticModelDrawInst, flags, 68);
+		assert_offsetof(GfxStaticModelDrawInst, primaryLightEnvIndex, 72);
 
 		struct GfxStaticModelVertexLighting
 		{
@@ -5765,7 +5795,7 @@ namespace ZoneTool
 			unsigned int mapVtxChecksum;
 			unsigned int heroOnlyLightCount; // 2748
 			GfxHeroOnlyLight* __ptr64 heroOnlyLights; // 2752
-			int umbraTomeEnabled; // 2760
+			unsigned char fogTypesAllowed; // 2760
 			unsigned int umbraTomeSize; // 2764
 			char* __ptr64 umbraTomeData; // 2768
 			umbraTomePtr_t umbraTomePtr; // 2776
