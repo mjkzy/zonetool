@@ -4901,11 +4901,11 @@ namespace ZoneTool
 
 		struct ComPrimaryLight
 		{
-			unsigned char type; // 0
-			unsigned char canUseShadowMap; // 1
-			unsigned char exponent; // 2
-			unsigned char unused; // 3 (used)
-			char __pad0[4]; // 4
+			GfxLightType type; // 0
+			unsigned char unk0; // 1
+			unsigned char canUseShadowMap; // 2
+			unsigned char exponent; // 3
+			int unk1; // 4
 			float color[3]; // 8 12 16
 			float dir[3]; // 20 24 28
 			float up[3]; // 32 36 40
@@ -5392,7 +5392,8 @@ namespace ZoneTool
 			GfxLightGridEntry* __ptr64 entries;
 			unsigned int colorCount;
 			GfxLightGridColors* __ptr64 colors;
-			char __pad0[24];
+			char __pad0[20];
+			unsigned int missingGridColorIndex;
 			int tableVersion;
 			int paletteVersion;
 			char rangeExponent8BitsEncoding;
@@ -5584,18 +5585,23 @@ namespace ZoneTool
 			GfxPackedPlacement placement;
 			XModel* __ptr64 model;
 			unsigned short cullDist;
-			unsigned short lightingHandle;
 			unsigned short flags;
+			unsigned short lightingHandle;
 			unsigned short staticModelId;
 			unsigned short primaryLightEnvIndex;
+			short pad;
+			char unk;
 			unsigned char reflectionProbeIndex;
 			unsigned char firstMtlSkinIndex;
 			unsigned char sunShadowFlags;
 		}; assert_sizeof(GfxStaticModelDrawInst, 80);
 		assert_offsetof(GfxStaticModelDrawInst, model, 56);
-		assert_offsetof(GfxStaticModelDrawInst, lightingHandle, 66);
-		assert_offsetof(GfxStaticModelDrawInst, flags, 68);
+		assert_offsetof(GfxStaticModelDrawInst, cullDist, 64);
+		assert_offsetof(GfxStaticModelDrawInst, flags, 66);
+		assert_offsetof(GfxStaticModelDrawInst, lightingHandle, 68);
 		assert_offsetof(GfxStaticModelDrawInst, primaryLightEnvIndex, 72);
+		assert_offsetof(GfxStaticModelDrawInst, reflectionProbeIndex, 77); // maybe wrong
+		assert_offsetof(GfxStaticModelDrawInst, firstMtlSkinIndex, 78);
 
 		struct GfxStaticModelVertexLighting
 		{

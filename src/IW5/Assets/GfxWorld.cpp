@@ -25,7 +25,7 @@ namespace ZoneTool
 			{
 				h1_asset->skies[i].skySurfCount = asset->skies[i].skySurfCount;
 				REINTERPRET_CAST_SAFE(h1_asset->skies[i].skyStartSurfs, asset->skies[i].skyStartSurfs);
-				if (h1_asset->skies[i].skyImage)
+				if (asset->skies[i].skyImage)
 				{
 					h1_asset->skies[i].skyImage = mem->Alloc<H1::GfxImage>();
 					h1_asset->skies[i].skyImage->name = asset->skies->skyImage->name;
@@ -180,9 +180,9 @@ namespace ZoneTool
 				h1_asset->draw.lightmapOverrideSecondary = nullptr;
 			}
 
-			//h1_asset->draw.u1[0] = 512; h1_asset->draw.u1[1] = 512; // u1
-			//h1_asset->draw.u2[0] = 1024; h1_asset->draw.u2[1] = 1024; // u2
-			//h1_asset->draw.u3 = 0; // u3
+			h1_asset->draw.u1[0] = 1024; h1_asset->draw.u1[1] = 1024; // u1
+			h1_asset->draw.u2[0] = 512; h1_asset->draw.u2[1] = 512; // u2
+			h1_asset->draw.u3 = 8; // u3
 
 			h1_asset->draw.trisType = 0; // dunno
 
@@ -477,8 +477,8 @@ namespace ZoneTool
 			h1_asset->dpvs.smodelLighting = mem->Alloc<H1::GfxStaticModelLighting>(h1_asset->dpvs.smodelCount);
 			for (unsigned int i = 0; i < h1_asset->dpvs.smodelCount; i++)
 			{
-				memcpy(h1_asset->dpvs.smodelLighting[i].info2.smodelCacheIndex, asset->dpvs.smodelDrawInsts[i].smodelCacheIndex, 
-					sizeof(unsigned short[4])); // not sure
+				//memcpy(h1_asset->dpvs.smodelLighting[i].info2.smodelCacheIndex, asset->dpvs.smodelDrawInsts[i].smodelCacheIndex,
+				//	sizeof(unsigned short[4])); // not sure
 
 				// todo?
 			}

@@ -16,14 +16,16 @@ namespace ZoneTool
 			h1_asset->primaryLights = mem->Alloc<H1::ComPrimaryLight>(h1_asset->primaryLightCount);
 			for (unsigned int i = 0; i < h1_asset->primaryLightCount; i++)
 			{
-				h1_asset->primaryLights[i].type = asset->primaryLights[i].type;
+				h1_asset->primaryLights[i].type = static_cast<H1::GfxLightType>(asset->primaryLights[i].type); // don't think there is a need for converting
+				h1_asset->primaryLights[i].unk0 = 0;
 				h1_asset->primaryLights[i].canUseShadowMap = asset->primaryLights[i].canUseShadowMap;
 				h1_asset->primaryLights[i].exponent = asset->primaryLights[i].exponent;
-				h1_asset->primaryLights[i].unused = asset->primaryLights[i].unused;
+				// unk1
 				memcpy(&h1_asset->primaryLights[i].color, &asset->primaryLights[i].color, sizeof(float[3]));
 				memcpy(&h1_asset->primaryLights[i].dir, &asset->primaryLights[i].dir, sizeof(float[3]));
 				memcpy(&h1_asset->primaryLights[i].up, &asset->primaryLights[i].up, sizeof(float[3]));
 				memcpy(&h1_asset->primaryLights[i].origin, &asset->primaryLights[i].origin, sizeof(float[3]));
+				// pad
 				h1_asset->primaryLights[i].radius = asset->primaryLights[i].radius;
 				h1_asset->primaryLights[i].cosHalfFovOuter = asset->primaryLights[i].cosHalfFovOuter;
 				h1_asset->primaryLights[i].cosHalfFovInner = asset->primaryLights[i].cosHalfFovInner;
