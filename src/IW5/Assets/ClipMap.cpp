@@ -46,7 +46,7 @@ namespace ZoneTool
 			info->pCollisionTree.aabbTreeCount = asset->numCollisionAABBTrees;
 			REINTERPRET_CAST_SAFE(info->pCollisionTree.aabbTrees, asset->collisionAABBTrees); // origin -> midPoint
 
-			info->sCollisionTree.unknown = 0;
+			info->sCollisionTree.numStaticModels = asset->numStaticModels;
 			info->sCollisionTree.smodelNodeCount = asset->smodelNodeCount;
 			REINTERPRET_CAST_SAFE(info->sCollisionTree.smodelNodes, asset->smodelNodes);
 
@@ -83,26 +83,9 @@ namespace ZoneTool
 
 				REINTERPRET_CAST_SAFE(info->bCollisionData.brushes[i].baseAdjacentSide, asset->info.brushes[i].edge);
 
-				info->bCollisionData.brushes[i].axialMaterialNum[0][0] = asset->info.brushes[i].axialMaterialNum[0][0];
-				info->bCollisionData.brushes[i].axialMaterialNum[0][1] = asset->info.brushes[i].axialMaterialNum[0][1];
-				info->bCollisionData.brushes[i].axialMaterialNum[0][2] = asset->info.brushes[i].axialMaterialNum[0][2];
-				info->bCollisionData.brushes[i].axialMaterialNum[1][0] = asset->info.brushes[i].axialMaterialNum[1][0];
-				info->bCollisionData.brushes[i].axialMaterialNum[1][1] = asset->info.brushes[i].axialMaterialNum[1][1];
-				info->bCollisionData.brushes[i].axialMaterialNum[1][2] = asset->info.brushes[i].axialMaterialNum[1][2];
-
-				info->bCollisionData.brushes[i].firstAdjacentSideOffsets[0][0] = asset->info.brushes[i].firstAdjacentSideOffsets[0][0];
-				info->bCollisionData.brushes[i].firstAdjacentSideOffsets[0][1] = asset->info.brushes[i].firstAdjacentSideOffsets[0][1];
-				info->bCollisionData.brushes[i].firstAdjacentSideOffsets[0][2] = asset->info.brushes[i].firstAdjacentSideOffsets[0][2];
-				info->bCollisionData.brushes[i].firstAdjacentSideOffsets[1][0] = asset->info.brushes[i].firstAdjacentSideOffsets[1][0];
-				info->bCollisionData.brushes[i].firstAdjacentSideOffsets[1][1] = asset->info.brushes[i].firstAdjacentSideOffsets[1][1];
-				info->bCollisionData.brushes[i].firstAdjacentSideOffsets[1][2] = asset->info.brushes[i].firstAdjacentSideOffsets[1][2];
-
-				info->bCollisionData.brushes[i].edgeCount[0][0] = asset->info.brushes[i].edgeCount[0][0];
-				info->bCollisionData.brushes[i].edgeCount[0][1] = asset->info.brushes[i].edgeCount[0][1];
-				info->bCollisionData.brushes[i].edgeCount[0][2] = asset->info.brushes[i].edgeCount[0][2];
-				info->bCollisionData.brushes[i].edgeCount[1][0] = asset->info.brushes[i].edgeCount[1][0];
-				info->bCollisionData.brushes[i].edgeCount[1][1] = asset->info.brushes[i].edgeCount[1][1];
-				info->bCollisionData.brushes[i].edgeCount[1][2] = asset->info.brushes[i].edgeCount[1][2];
+				memcpy(&info->bCollisionData.brushes[i].axialMaterialNum, &asset->info.brushes[i].axialMaterialNum, sizeof(short[2][3]));
+				memcpy(&info->bCollisionData.brushes[i].firstAdjacentSideOffsets, &asset->info.brushes[i].firstAdjacentSideOffsets, sizeof(char[2][3]));
+				memcpy(&info->bCollisionData.brushes[i].edgeCount, &asset->info.brushes[i].edgeCount, sizeof(char[2][3]));
 			}
 
 			REINTERPRET_CAST_SAFE(info->bCollisionData.brushBounds, asset->info.brushBounds);
@@ -132,12 +115,10 @@ namespace ZoneTool
 			{
 				info->sCollisionData.staticModelList[i].xmodel = reinterpret_cast<H1::XModel * __ptr64>(asset->staticModelList[i].xmodel);
 
-				// check
-				//memcpy(&info->sCollisionData.staticModelList[i].origin, &asset->staticModelList[i].origin, sizeof(IW5::cStaticModel_s) - sizeof(IW5::XModel*));
 				memcpy(&info->sCollisionData.staticModelList[i].origin, &asset->staticModelList[i].origin, sizeof(float[3]));
 				memcpy(&info->sCollisionData.staticModelList[i].invScaledAxis, &asset->staticModelList[i].invScaledAxis, sizeof(float[3][3]));
-				memcpy(&info->sCollisionData.staticModelList[i].absBounds, &asset->staticModelList[i].absmin, sizeof(float[3]) * 2);
-				// pad
+				memcpy(&info->sCollisionData.staticModelList[i].absBounds, &asset->staticModelList[i].absmin, sizeof(float[2][3]));
+				//info->sCollisionData.staticModelList[i].contents = asset->staticModelList[i].xmodel->contents;
 			}
 		}
 
@@ -203,7 +184,9 @@ namespace ZoneTool
 			for (unsigned int i = 0; i < h1_asset->stageCount; i++)
 			{
 				h1_asset->stages[i].name = reinterpret_cast<const char* __ptr64>(asset->stages[i].name);
-				memcpy(&h1_asset->stages[i].origin, &asset->stages[i].origin, sizeof(IW5::Stage) - sizeof(const char*)); // check
+				memcpy(&h1_asset->stages[i].origin, &asset->stages[i].origin, sizeof(float[3]));
+				h1_asset->stages[i].sunPrimaryLightIndex = asset->stages[i].sunPrimaryLightIndex;
+				h1_asset->stages[i].unk = 0x3A83126F;
 			}
 			h1_asset->stageTrigger; // NEED TO DO THIS LATER
 
@@ -274,6 +257,7 @@ namespace ZoneTool
 			physmap->polytopeDatasCount = 0;
 			physmap->polytopeDatas = nullptr;
 
+			// todo: mesh data
 			physmap->meshDatasCount = 0;
 			physmap->meshDatas = nullptr;
 

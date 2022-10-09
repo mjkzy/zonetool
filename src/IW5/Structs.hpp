@@ -2765,16 +2765,23 @@ namespace ZoneTool
 
 		struct GfxAabbTree
 		{
-			float mins[3]; // 12
-			float maxs[3]; // 12
-			int unkn;
-			unsigned __int16 childCount; // 2
-			unsigned __int16 surfaceCount; // 2
-			unsigned __int16 startSurfIndex; // 2
-			unsigned __int16 smodelIndexCount; // 2
-			unsigned __int16* smodelIndexes; // 4
-			int childrenOffset; // 4
-		}; // Size: 0x2C
+			float mins[3];
+			float maxs[3];
+			unsigned __int16 childCount;
+			unsigned __int16 surfaceCount;
+			unsigned __int16 startSurfIndex;
+			unsigned __int16 surfaceCountNoDecal;
+			unsigned __int16 startSurfIndexNoDecal;
+			unsigned __int16 smodelIndexCount;
+			unsigned __int16* smodelIndexes;
+			int childrenOffset;
+		};
+		// Size: 0x2C
+		static_assert(sizeof(GfxAabbTree) == 0x2C);
+		static_assert(offsetof(GfxAabbTree, childCount) == 24);
+		static_assert(offsetof(GfxAabbTree, smodelIndexCount) == 34);
+		static_assert(offsetof(GfxAabbTree, smodelIndexes) == 36);
+		static_assert(offsetof(GfxAabbTree, childrenOffset) == 40);
 
 		struct GfxCellTree
 		{

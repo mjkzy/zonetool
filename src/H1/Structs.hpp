@@ -4251,7 +4251,7 @@ namespace ZoneTool
 
 		struct SModelsCollisionTree
 		{
-			unsigned short unknown;
+			unsigned short numStaticModels;
 			unsigned short smodelNodeCount;
 			SModelAabbNode* __ptr64 smodelNodes;
 		}; assert_sizeof(SModelsCollisionTree, 16);
@@ -4327,7 +4327,7 @@ namespace ZoneTool
 			float origin[3];
 			float invScaledAxis[3][3];
 			Bounds absBounds;
-			char __pad0[8];
+			int contents;
 		}; assert_sizeof(cStaticModel_s, 88);
 
 		struct SModelsCollisionData
@@ -4387,7 +4387,7 @@ namespace ZoneTool
 			float origin[3];
 			unsigned short triggerIndex;
 			unsigned char sunPrimaryLightIndex;
-			char __pad0[8];
+			unsigned int unk;
 		}; assert_sizeof(Stage, 32);
 
 		enum DynEntityType : std::int32_t
@@ -5580,6 +5580,18 @@ namespace ZoneTool
 			float scale;
 		};
 
+		enum StaticModelFlag : std::int16_t
+		{
+			STATIC_MODEL_FLAG_NO_CAST_SHADOW = 0x10,
+			STATIC_MODEL_FLAG_GROUND_LIGHTING = 0x20,
+			STATIC_MODEL_FLAG_LIGHTGRID_LIGHTING = 0x40,
+			STATIC_MODEL_FLAG_VERTEXLIT_LIGHTING = 0x80,
+			STATIC_MODEL_FLAG_LIGHTMAP_LIGHTING = 0x100,
+			STATIC_MODEL_FLAG_ALLOW_FXMARK = 0x200,
+			STATIC_MODEL_FLAG_REACTIVEMOTION = 0x400,
+			STATIC_MODEL_FLAG_ANIMATED_VERTS = 0x800,
+		};
+
 		struct GfxStaticModelDrawInst
 		{
 			GfxPackedPlacement placement;
@@ -5589,8 +5601,8 @@ namespace ZoneTool
 			unsigned short lightingHandle;
 			unsigned short staticModelId;
 			unsigned short primaryLightEnvIndex;
-			short pad;
-			char unk;
+			short unk0;
+			char unk1;
 			unsigned char reflectionProbeIndex;
 			unsigned char firstMtlSkinIndex;
 			unsigned char sunShadowFlags;

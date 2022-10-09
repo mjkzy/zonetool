@@ -76,14 +76,21 @@ namespace ZoneTool
 				h1_asset->aabbTrees[i].aabbTree = mem->Alloc<H1::GfxAabbTree>(h1_asset->aabbTreeCounts[i].aabbTreeCount);
 				for (int j = 0; j < h1_asset->aabbTreeCounts[i].aabbTreeCount; j++)
 				{
-					//h1_asset->aabbTrees[i].aabbTree[j].bounds.compute(asset->aabbTree[i].aabbtree[j].mins, asset->aabbTree[i].aabbtree[j].maxs);
 					memcpy(&h1_asset->aabbTrees[i].aabbTree[j].bounds, &asset->aabbTree[i].aabbtree[j].mins, sizeof(float[2][3]));
-					h1_asset->aabbTrees[i].aabbTree[j].childrenOffset = asset->aabbTree[i].aabbtree[j].childrenOffset;
-					h1_asset->aabbTrees[i].aabbTree[j].childCount = asset->aabbTree[i].aabbtree[j].childCount;
-					h1_asset->aabbTrees[i].aabbTree[j].smodelIndexCount = asset->aabbTree[i].aabbtree[j].smodelIndexCount;
-					REINTERPRET_CAST_SAFE(h1_asset->aabbTrees[i].aabbTree[j].smodelIndexes, asset->aabbTree[i].aabbtree[j].smodelIndexes);
+					
 					h1_asset->aabbTrees[i].aabbTree[j].startSurfIndex = asset->aabbTree[i].aabbtree[j].startSurfIndex;
 					h1_asset->aabbTrees[i].aabbTree[j].surfaceCount = asset->aabbTree[i].aabbtree[j].surfaceCount;
+
+					h1_asset->aabbTrees[i].aabbTree[j].smodelIndexCount = asset->aabbTree[i].aabbtree[j].smodelIndexCount;
+					REINTERPRET_CAST_SAFE(h1_asset->aabbTrees[i].aabbTree[j].smodelIndexes, asset->aabbTree[i].aabbtree[j].smodelIndexes);
+
+					// FIXME
+					/*h1_asset->aabbTrees[i].aabbTree[j].childCount = asset->aabbTree[i].aabbtree[j].childCount;
+					// re-calculate childrenOffset
+					auto offset = asset->aabbTree[i].aabbtree[j].childrenOffset;
+					int childrenIndex = offset / sizeof(IW5::GfxAabbTree);
+					int childrenOffset = childrenIndex * sizeof(H1::GfxAabbTree);
+					h1_asset->aabbTrees[i].aabbTree[j].childrenOffset = childrenOffset;*/
 				}
 			}
 
@@ -363,7 +370,7 @@ namespace ZoneTool
 			h1_asset->dpvs.subdivVertexLightingInfoCount = 0;
 			h1_asset->dpvs.staticSurfaceCount = asset->dpvs.staticSurfaceCount + asset->dpvs.staticSurfaceCountNoDecal;
 			h1_asset->dpvs.litOpaqueSurfsBegin = asset->dpvs.litOpaqueSurfsBegin;
-			h1_asset->dpvs.litOpaqueSurfsEnd = asset->dpvs.litOpaqueSurfsEnd; // + asset->dpvs.staticSurfaceCountNoDecal;
+			h1_asset->dpvs.litOpaqueSurfsEnd = asset->dpvs.litOpaqueSurfsEnd;
 			h1_asset->dpvs.unkSurfsBegin = 0;
 			h1_asset->dpvs.unkSurfsEnd = 0;
 			h1_asset->dpvs.litDecalSurfsBegin = asset->dpvs.litOpaqueSurfsEnd; // skip ( doesn't exists )
@@ -383,10 +390,10 @@ namespace ZoneTool
 			h1_asset->dpvs.smodelVisData[3] = mem->Alloc<unsigned int>(h1_asset->dpvs.smodelVisDataCount);
 			for (unsigned int i = 0; i < h1_asset->dpvs.smodelVisDataCount; i++)
 			{
-				h1_asset->dpvs.smodelVisData[0][i] = asset->dpvs.smodelVisData[0][i];
-				h1_asset->dpvs.smodelVisData[1][i] = asset->dpvs.smodelVisData[1][i];
-				h1_asset->dpvs.smodelVisData[2][i] = asset->dpvs.smodelVisData[2][i];
-				h1_asset->dpvs.smodelVisData[3][i] = 0;
+				//h1_asset->dpvs.smodelVisData[0][i] = asset->dpvs.smodelVisData[0][i];
+				//h1_asset->dpvs.smodelVisData[1][i] = asset->dpvs.smodelVisData[1][i];
+				//h1_asset->dpvs.smodelVisData[2][i] = asset->dpvs.smodelVisData[2][i];
+				//h1_asset->dpvs.smodelVisData[3][i] = 0;
 			}
 
 			h1_asset->dpvs.surfaceVisData[0] = mem->Alloc<unsigned int>(h1_asset->dpvs.surfaceVisDataCount);
@@ -395,10 +402,10 @@ namespace ZoneTool
 			h1_asset->dpvs.surfaceVisData[3] = mem->Alloc<unsigned int>(h1_asset->dpvs.surfaceVisDataCount);
 			for (unsigned int i = 0; i < h1_asset->dpvs.surfaceVisDataCount; i++)
 			{
-				h1_asset->dpvs.surfaceVisData[0][i] = asset->dpvs.surfaceVisData[0][i];
-				h1_asset->dpvs.surfaceVisData[1][i] = asset->dpvs.surfaceVisData[1][i];
-				h1_asset->dpvs.surfaceVisData[2][i] = asset->dpvs.surfaceVisData[2][i];
-				h1_asset->dpvs.surfaceVisData[3][i] = 0;
+				//h1_asset->dpvs.surfaceVisData[0][i] = asset->dpvs.surfaceVisData[0][i];
+				//h1_asset->dpvs.surfaceVisData[1][i] = asset->dpvs.surfaceVisData[1][i];
+				//h1_asset->dpvs.surfaceVisData[2][i] = asset->dpvs.surfaceVisData[2][i];
+				//h1_asset->dpvs.surfaceVisData[3][i] = 0;
 			}
 
 			for (auto i = 0; i < 27; i++)
@@ -440,7 +447,7 @@ namespace ZoneTool
 			{
 				h1_asset->dpvs.surfaces[i].tris.vertexLayerData = asset->dpvs.surfaces[i].tris.vertexLayerData;
 				h1_asset->dpvs.surfaces[i].tris.firstVertex = asset->dpvs.surfaces[i].tris.firstVertex;
-				h1_asset->dpvs.surfaces[i].tris.maxEdgeLength = 0;
+				h1_asset->dpvs.surfaces[i].tris.maxEdgeLength = 9999.9f;
 				h1_asset->dpvs.surfaces[i].tris.unk = -1;
 				h1_asset->dpvs.surfaces[i].tris.vertexCount = asset->dpvs.surfaces[i].tris.vertexCount;
 				h1_asset->dpvs.surfaces[i].tris.triCount = asset->dpvs.surfaces[i].tris.triCount;
@@ -466,12 +473,14 @@ namespace ZoneTool
 				h1_asset->dpvs.smodelDrawInsts[i].model = reinterpret_cast<H1::XModel * __ptr64>(asset->dpvs.smodelDrawInsts[i].model);
 				h1_asset->dpvs.smodelDrawInsts[i].cullDist = static_cast<unsigned short>(asset->dpvs.smodelDrawInsts[i].cullDist);
 				h1_asset->dpvs.smodelDrawInsts[i].lightingHandle = asset->dpvs.smodelDrawInsts[i].lightingHandle;
-				h1_asset->dpvs.smodelDrawInsts[i].flags = asset->dpvs.smodelDrawInsts[i].flags;
+				h1_asset->dpvs.smodelDrawInsts[i].flags = asset->dpvs.smodelDrawInsts[i].flags | H1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTGRID_LIGHTING;
 				h1_asset->dpvs.smodelDrawInsts[i].staticModelId = 0;
 				h1_asset->dpvs.smodelDrawInsts[i].primaryLightEnvIndex = asset->dpvs.smodelDrawInsts[i].primaryLightIndex;
 				h1_asset->dpvs.smodelDrawInsts[i].reflectionProbeIndex = asset->dpvs.smodelDrawInsts[i].reflectionProbeIndex;
 				h1_asset->dpvs.smodelDrawInsts[i].firstMtlSkinIndex = 0;
 				h1_asset->dpvs.smodelDrawInsts[i].sunShadowFlags = 0;
+
+				h1_asset->dpvs.smodelDrawInsts[i].unk0 = h1_asset->dpvs.smodelDrawInsts[i].cullDist;
 			}
 
 			h1_asset->dpvs.smodelLighting = mem->Alloc<H1::GfxStaticModelLighting>(h1_asset->dpvs.smodelCount);
@@ -518,7 +527,7 @@ namespace ZoneTool
 			h1_asset->dpvsDyn.dynEntVisData[0][0] = reinterpret_cast<unsigned char* __ptr64>(asset->dpvsDyn.dynEntVisData[0][0]);
 			h1_asset->dpvsDyn.dynEntVisData[0][1] = reinterpret_cast<unsigned char* __ptr64>(asset->dpvsDyn.dynEntVisData[0][1]);
 			h1_asset->dpvsDyn.dynEntVisData[0][2] = reinterpret_cast<unsigned char* __ptr64>(asset->dpvsDyn.dynEntVisData[0][2]);
-			h1_asset->dpvsDyn.dynEntVisData[0][3] = mem->Alloc<unsigned char>(h1_asset->dpvsDyn.dynEntClientWordCount[1] * 32);
+			h1_asset->dpvsDyn.dynEntVisData[0][3] = mem->Alloc<unsigned char>(h1_asset->dpvsDyn.dynEntClientWordCount[0] * 32);
 			h1_asset->dpvsDyn.dynEntVisData[1][0] = reinterpret_cast<unsigned char* __ptr64>(asset->dpvsDyn.dynEntVisData[1][0]);
 			h1_asset->dpvsDyn.dynEntVisData[1][1] = reinterpret_cast<unsigned char* __ptr64>(asset->dpvsDyn.dynEntVisData[1][1]);
 			h1_asset->dpvsDyn.dynEntVisData[1][2] = reinterpret_cast<unsigned char* __ptr64>(asset->dpvsDyn.dynEntVisData[1][2]);

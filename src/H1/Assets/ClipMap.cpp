@@ -116,9 +116,12 @@ namespace ZoneTool
 					continue;
 				}
 
+				write.dump_array(asset->dynEntDefList[i], asset->dynEntCount[i]);
+				write.dump_array(asset->dynEntPoseList[i], asset->dynEntCount[i]);
+				write.dump_array(asset->dynEntClientList[i], asset->dynEntCount[i]);
+				write.dump_array(asset->dynEntCollList[i], asset->dynEntCount[i]);
 				for (int j = 0; j < asset->dynEntCount[i]; j++)
 				{
-					write.dump_single(&asset->dynEntDefList[i][j]);
 					write.dump_asset(asset->dynEntDefList[i][j].baseModel);
 					write.dump_asset(asset->dynEntDefList[i][j].destroyFx);
 					write.dump_asset(asset->dynEntDefList[i][j].sound);
@@ -126,13 +129,8 @@ namespace ZoneTool
 					write.dump_single(asset->dynEntDefList[i][j].hinge);
 					write.dump_single(asset->dynEntDefList[i][j].linkTo);
 
-					write.dump_single(&asset->dynEntPoseList[i][j]);
-
-					write.dump_single(&asset->dynEntClientList[i][j]);
 					//write.dump_single(asset->dynEntClientList[i][j].hinge);
 					//write.dump_asset(asset->dynEntClientList[i][j].activeModel);
-
-					write.dump_single(&asset->dynEntCollList[i][j]);
 				}
 			}
 

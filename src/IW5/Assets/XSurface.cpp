@@ -245,8 +245,6 @@ namespace ZoneTool
 			h1_asset->triCount = asset->triCount;
 			h1_asset->rigidVertListCount = asset->vertListCount;
 
-			//iw6_asset->unknown = 0;
-
 			// blend verts
 			memcpy(&h1_asset->blendVertCounts, &asset->vertexInfo.vertCount, sizeof(asset->vertexInfo.vertCount));
 			h1_asset->blendVerts = reinterpret_cast<unsigned short* __ptr64>(asset->vertexInfo.vertsBlend);
@@ -256,6 +254,7 @@ namespace ZoneTool
 
 			// triIndices
 			h1_asset->triIndices = reinterpret_cast<H1::Face * __ptr64>(asset->triIndices);
+			h1_asset->triIndices2 = h1_asset->triIndices;
 
 			// verts
 			//h1_asset->verts0.packedVerts0 = reinterpret_cast<IW6::GfxPackedVertex* __ptr64>(asset->verticies);

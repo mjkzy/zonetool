@@ -44,8 +44,8 @@ namespace
 			{"wc_unlit_replace_lin",					"wc_unlit_replace_lin_nfwpf"},
 			{"wc_sky",									"wc_sky_cso_nfwpf"},
 			{"wc_shadowcaster",							"wc_shadowcaster"},
-			{"wc_water",								"2d"}, // couldn't find
-			{"wc_tools",								"2d"}, // couldn't find
+			//{"wc_water",								"2d"}, // couldn't find
+			//{"wc_tools",								"2d"}, // couldn't find
 
 			{"mc_l_sm_r0c0",							"mc_l_sm_r0c0_nfwpf"},
 			{"mc_l_sm_r0c0_sat",						"mc_l_sm_r0c0_nfwpf"}, // no sat
@@ -88,19 +88,19 @@ namespace
 			{"mc_unlit_add_lin",						"mc_unlit_add_lin_ct_ndw_cltrans_objective2"},
 			{"mc_unlit_add_lin_ua",						"mc_unlit_add_lin_ct_ndw_cltrans_objective2"}, // no ua
 			{"mc_unlit_blend_lin",						"mc_unlit_blend_lin_ct_ndw_nfwpf"},
-			{"mc_unlit_replace_lin",					"mc_unlit_replace_lin_ct_nfwpf"},
-			{"mc_unlit_replace_lin_ua",					"mc_unlit_replace_lin_ct_nfwpf"}, // no ua
-			{"mc_unlit_replace_lin_nocast",				"mc_unlit_replace_lin_ct_nfwpf"}, // no nocast
+			{"mc_unlit_replace_lin",					"mc_unlit_replace_lin_nfwpf"},
+			{"mc_unlit_replace_lin_ua",					"mc_unlit_replace_lin_nfwpf"}, // no ua
+			{"mc_unlit_replace_lin_nocast",				"mc_unlit_replace_lin_nfwpf_nocast"},
 			{"mc_ambient_t0c0",							"mc_ambient_t0c0_nfwpf"},
 			{"mc_ambient_t0c0_nocast",					"mc_ambient_t0c0_nfwpf_nocast"},
 			{"mc_shadowcaster_atest",					"mc_shadowcaster_atest"},
 			{"mc_reflexsight",							"mc_reflexsight"},
 			{"mc_effect_blend_nofog",					"mc_effect_blend_nofog_ndw"},
-			{"mc_effect_falloff_add_nofog",				"2d"}, // coudln't find
-			{"mc_effect_falloff_add_lin_nofog",			"2d"}, // coudln't find
-			{"mc_effect_zfeather_falloff_add_lin_nofog", "2d"}, // coudln't find
-			{"mc_effect_zfeather_falloff_add_lin_nofog_eyeoffset", "2d"}, // coudln't find
-			{"mc_effect_zfeather_falloff_screen_nofog_eyeoffset", "2d"}, // coudln't find
+			//{"mc_effect_falloff_add_nofog",				"2d"}, // coudln't find
+			//{"mc_effect_falloff_add_lin_nofog",			"2d"}, // coudln't find
+			//{"mc_effect_zfeather_falloff_add_lin_nofog", "2d"}, // coudln't find
+			//{"mc_effect_zfeather_falloff_add_lin_nofog_eyeoffset", "2d"}, // coudln't find
+			//{"mc_effect_zfeather_falloff_screen_nofog_eyeoffset", "2d"}, // coudln't find
 
 			{"2d",										"2d"},
 
@@ -109,24 +109,24 @@ namespace
 			{"effect_add_nofog",						"effect_add_nofog_ndw"},
 			{"effect_blend",							"effect_blend_ndw"},
 			{"effect_blend_nofog",						"effect_blend_nofog_ndw"},
-			{"effect_replace_lin",						"2d"}, // m_effect_replace_ndw
-			{"effect_zfeather_add",						"effect_add_ndw"}, // no zfeather
-			{"effect_zfeather_add_nofog",				"effect_add_nofog_ndw"}, // no zfeather
-			{"effect_zfeather_blend",					"effect_blend_ndw"}, // no zfeather
-			{"effect_zfeather_blend_nofog",				"effect_blend_nofog_ndw"}, // no zfeather
-			{"effect_zfeather_falloff_add_nofog_eyeoffset", "effect_falloff_add_nofog_eo_ndw"}, // no zfeather
-			{"effect_zfeather_falloff_blend",			"effect_falloff_blend_ndw"}, // no zfeather
-			{"effect_zfeather_add_nofog_eyeoffset",		"effect_add_nofog_ndw"}, // no zfeather // no eo
+			//{"effect_replace_lin",						"2d"}, // m_effect_replace_ndw
+			{"effect_zfeather_add",						"effect_zf_add_ndw"},
+			{"effect_zfeather_add_nofog",				"effect_zf_add_nofog_ndw"},
+			{"effect_zfeather_blend",					"effect_zf_blend_ndw"},
+			{"effect_zfeather_blend_nofog",				"effect_zf_falloff_blend_nofog_ndw"},
+			{"effect_zfeather_falloff_add_nofog_eyeoffset", "effect_zf_falloff_add_nofog_eo_ndw"},
+			{"effect_zfeather_falloff_blend",			"effect_zf_falloff_blend_ndw"},
+			{"effect_zfeather_add_nofog_eyeoffset",		"effect_zf_add_nofog_eo_ndw"},
 
 			{"particle_cloud",							"particle_cloud_atlas_replace_ga"}, // could be wrong
 			{"particle_cloud_add",						"particle_cloud_add_ga"},
-			{"particle_cloud_outdoor_add",				"particle_cloud_atlas_outdoor_add_ga_fl"}, // could be wrong
+			{"particle_cloud_outdoor_add",				"particle_cloud_outdoor_add_ga"},
 			{"particle_cloud_sparkf_add",				"particle_cloud_sparkf_add_ga"},
 			{"particle_cloud_spark_add",				"particle_cloud_spark_add_ga"},
 
-			{"grain_overlay",							"grain_overlay_uvscale"},
+			{"grain_overlay",							"grain_overlay"},
 
-			{"tools_b0c0",								"tools_cso_hss_b0c0ct0"}, // could be wrong
+			{"tools_b0c0",								"tools_b0c0ct0"}, // could be wrong
 	};
 
 	std::string get_h1_techset(std::string name, std::string matname)
@@ -297,7 +297,8 @@ namespace ZoneTool
 					ordered_json image;
 					if (asset->maps[i].semantic == 11)
 					{
-						image["waterinfo"] = nullptr;
+						image["image"] = "";
+						//image["waterinfo"] = nullptr;
 					}
 					else
 					{
