@@ -35,10 +35,10 @@ namespace
 			{"wc_l_sm_b0c0s0",							"wc_l_sm_lmpb_ndw_b0c0sd0_nfwpf_frt_aat"},
 			{"wc_l_sm_b0c0s0p0",						"wc_l_sm_lmpb_ndw_b0c0sd0_nfwpf_frt_aat"}, // couldn't find
 			{"wc_l_sm_b0c0s0p0_sat",					"wc_l_sm_lmpb_ndw_b0c0sd0_nfwpf_frt_aat"}, // no sat
-			{"wc_l_sm_b0c0q0n0s0",						"wc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"},
+			{"wc_l_sm_b0c0q0n0s0",						"wc_l_sm_lmpb_ndw_b0c0q0n0sd0_nfwpf_frt_aat"},
 			{"wc_l_sm_ua_b0c0n0s0p0_nocast",			"wc_l_sm_ndw_ua_b0c0n0sd0p0_cltrans_nocast_frt_aat"},
-			{"wc_l_sm_b0c0n0s0_custom_growing_ice_cracks", "wc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // coudln't find
-			{"wc_l_sm_b0c0n0s0_custom_growing_ice_cracks_sat", "wc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
+			//{"wc_l_sm_b0c0n0s0_custom_growing_ice_cracks", "wc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // coudln't find
+			//{"wc_l_sm_b0c0n0s0_custom_growing_ice_cracks_sat", "wc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
 
 			{"wc_unlit_multiply_lin",					"wc_unlit_multiply_lin_ndw_nfwpf"},
 			{"wc_unlit_replace_lin",					"wc_unlit_replace_lin_nfwpf"},
@@ -189,66 +189,8 @@ namespace
 
 namespace ZoneTool
 {
-	namespace H1
-	{
-		void dump_material_constant_buffer_def_array(const std::string& name, int count, MaterialConstantBufferDef* def)
-		{
-			const auto path = "materials\\cbt\\"s + name;
-			zonetool::assetmanager::dumper dump;
-			if (!dump.open(path))
-			{
-				return;
-			}
-
-			dump.dump_array(def, count);
-			for (int i = 0; i < count; i++)
-			{
-				if (def[i].vsData)
-				{
-					dump.dump_array(def[i].vsData, def[i].vsDataSize);
-				}
-				if (def[i].hsData)
-				{
-					dump.dump_array(def[i].hsData, def[i].hsDataSize);
-				}
-				if (def[i].dsData)
-				{
-					dump.dump_array(def[i].dsData, def[i].dsDataSize);
-				}
-				if (def[i].psData)
-				{
-					dump.dump_array(def[i].psData, def[i].psDataSize);
-				}
-				if (def[i].vsOffsetData)
-				{
-					dump.dump_array(def[i].vsOffsetData, def[i].vsOffsetDataSize);
-				}
-				if (def[i].hsOffsetData)
-				{
-					dump.dump_array(def[i].hsOffsetData, def[i].hsOffsetDataSize);
-				}
-				if (def[i].dsOffsetData)
-				{
-					dump.dump_array(def[i].dsOffsetData, def[i].dsOffsetDataSize);
-				}
-				if (def[i].psOffsetData)
-				{
-					dump.dump_array(def[i].psOffsetData, def[i].psOffsetDataSize);
-				}
-			}
-
-			dump.close();
-		}
-	}
-
 	namespace IW5
 	{
-		bool generate_default_cbt = false;
-		H1::MaterialConstantBufferDef* GenerateH1DefaultCbt()
-		{
-			return nullptr;
-		}
-
 		void IMaterial::dump(Material* asset, ZoneMemory* mem)
 		{
 			if (asset)
@@ -268,15 +210,17 @@ namespace ZoneTool
 
 				MATERIAL_DUMP_STRING(name);
 
+				std::string h1_techset;
 				if (asset->techniqueSet)
 				{
 					bool result = false;
-					matdata["techniqueSet->name"] = get_h1_techset(asset->techniqueSet->name, asset->name, &result);
+					h1_techset = get_h1_techset(asset->techniqueSet->name, asset->name, &result);
 					if (!result)
 					{
 						ZONETOOL_ERROR("Not dumping material \"%s\"", asset->name);
 						return;
 					}
+					matdata["techniqueSet->name"] = h1_techset;
 				}
 
 				matdata["gameFlags"] = asset->gameFlags; // convert
@@ -328,19 +272,21 @@ namespace ZoneTool
 					// add image data to material
 					material_images.push_back(image);
 				}
-				matdata["textureTable"] = material_images;
 
-				if (generate_default_cbt)
+				// fix for certain techniques
+				if (h1_techset.find("_lmpb_") != std::string::npos)
 				{
-					const auto cbt_name = c_name + ".cbt";
-					H1::MaterialConstantBufferDef* generated_default_cbt = GenerateH1DefaultCbt();
-					if (generated_default_cbt)
-					{
-						H1::dump_material_constant_buffer_def_array(cbt_name, 1, generated_default_cbt);
-						matdata["constantBufferTable"] = cbt_name;
-						matdata["constantBufferCount"] = 1;
-					}
+					ordered_json image;
+					image["image"] = "~envbrdflut_ggx_16-rg";
+					image["semantic"] = 15;
+					image["samplerState"] = 226;
+					image["lastCharacter"] = 116;
+					image["firstCharacter"] = 101;
+					image["typeHash"] = 3447584578;
+					material_images.push_back(image);
 				}
+
+				matdata["textureTable"] = material_images;
 
 				auto str = matdata.dump(4);
 
