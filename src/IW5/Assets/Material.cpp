@@ -42,7 +42,7 @@ namespace
 
 			{"wc_unlit_multiply_lin",					"wc_unlit_multiply_lin_ndw_nfwpf"},
 			{"wc_unlit_replace_lin",					"wc_unlit_replace_lin_nfwpf"},
-			{"wc_sky",									"wc_sky_cso_nfwpf"},
+			{"wc_sky",									"wc_sky_nfwpf"},
 			{"wc_shadowcaster",							"wc_shadowcaster"},
 			//{"wc_water",								"2d"}, // couldn't find
 			//{"wc_tools",								"2d"}, // couldn't find
@@ -129,13 +129,15 @@ namespace
 			{"tools_b0c0",								"tools_b0c0ct0"}, // could be wrong
 	};
 
-	std::string get_h1_techset(std::string name, std::string matname)
+	std::string get_h1_techset(std::string name, std::string matname, bool* result)
 	{
 		if (mapped_techsets.find(name) == mapped_techsets.end())
 		{
 			ZONETOOL_ERROR("Could not find mapped H1 techset for IW5 techset \"%s\" (material: %s)", name.data(), matname.data());
+			*result = false;
 			return "2d";
 		}
+		*result = true;
 		return mapped_techsets[name];
 	}
 
@@ -255,7 +257,6 @@ namespace ZoneTool
 
 				const auto path = "materials\\"s + c_name + ".json"s;
 				auto file = zonetool::filesystem::file(path);
-				file.open("wb");
 
 				if (asset && asset->techniqueSet)
 				{
@@ -269,7 +270,13 @@ namespace ZoneTool
 
 				if (asset->techniqueSet)
 				{
-					matdata["techniqueSet->name"] = get_h1_techset(asset->techniqueSet->name, asset->name);
+					bool result = false;
+					matdata["techniqueSet->name"] = get_h1_techset(asset->techniqueSet->name, asset->name, &result);
+					if (!result)
+					{
+						ZONETOOL_ERROR("Not dumping material \"%s\"", asset->name);
+						return;
+					}
 				}
 
 				matdata["gameFlags"] = asset->gameFlags; // convert
@@ -284,7 +291,7 @@ namespace ZoneTool
 				matdata["surfaceTypeBits"] = asset->surfaceTypeBits; // convert
 				// hashIndex;
 
-				matdata["stateFlags"] = asset->stateFlags; // convert
+				//matdata["stateFlags"] = asset->stateFlags; // convert
 				matdata["cameraRegion"] = asset->cameraRegion; // convert
 				matdata["materialType"] = 0; // idk
 				matdata["assetFlags"] = 0; // idk
@@ -339,8 +346,8 @@ namespace ZoneTool
 
 				matdata.clear();
 
+				file.open("wb");
 				file.write(str);
-
 				file.close();
 			}
 		}

@@ -28,6 +28,7 @@ using namespace zonetool;
 #include "Assets/GlassWorld.hpp"
 #include "Assets/MapEnts.hpp"
 #include "Assets/Material.hpp"
+#include "Assets/RawFile.hpp"
 #include "Assets/XAnimParts.hpp"
 #include "Assets/XModel.hpp"
 #include "Assets/XSurface.hpp"

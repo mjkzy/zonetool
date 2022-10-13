@@ -108,19 +108,6 @@ namespace ZoneTool
 		}
 	}
 
-	namespace H1
-	{
-		enum $E122F424420CBEB20BF38CA7F7D4559A : std::int32_t
-		{
-			SURF_FLAG_VERTCOL_GREY = 0x1,
-			SURF_FLAG_VERTCOL_NONE = 0x2,
-			SURF_FLAG_SKINNED = 0x4,
-			SURF_FLAG_REACTIVE_MOTION = 0x8,
-			SURF_FLAG_LIGHTMAP_COORDS = 0x10,
-			SURF_FLAG_TENSION = 0x20,
-		};
-	}
-
 	namespace IW5
 	{
 		void GenerateH1BlendVertsShit(H1::XSurface* surf)

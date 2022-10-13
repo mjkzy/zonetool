@@ -31,4 +31,7 @@ function H1:project()
 
         self:include()
         ZoneUtils:include()
+
+        zstd:include()
+        zlib:include()
 end

@@ -17,7 +17,7 @@ namespace ZoneTool
 			for (unsigned int i = 0; i < h1_asset->primaryLightCount; i++)
 			{
 				h1_asset->primaryLights[i].type = static_cast<H1::GfxLightType>(asset->primaryLights[i].type); // don't think there is a need for converting
-				h1_asset->primaryLights[i].unk0 = 0;
+				//h1_asset->primaryLights[i].unk0 = 0;
 				h1_asset->primaryLights[i].canUseShadowMap = asset->primaryLights[i].canUseShadowMap;
 				h1_asset->primaryLights[i].exponent = asset->primaryLights[i].exponent;
 				// unk1

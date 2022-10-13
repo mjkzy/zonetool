@@ -65,7 +65,7 @@ namespace ZoneTool
 			h1_asset->dpvsPlanes.sceneEntCellBits = mem->Alloc<unsigned int>(asset->dpvsPlanes.cellCount << 9);
 			for (int i = 0; i < asset->dpvsPlanes.cellCount << 9; i++)
 			{
-				h1_asset->dpvsPlanes.sceneEntCellBits[i] = asset->dpvsPlanes.sceneEntCellBits[i]; // convert?
+				h1_asset->dpvsPlanes.sceneEntCellBits[i] = asset->dpvsPlanes.sceneEntCellBits[i];
 			}
 
 			h1_asset->aabbTreeCounts = mem->Alloc<H1::GfxCellTreeCount>(h1_asset->dpvsPlanes.cellCount); //reinterpret_cast<IW6::GfxCellTreeCount* __ptr64>(asset->aabbTreeCounts);
@@ -254,6 +254,40 @@ namespace ZoneTool
 			//h1_asset->lightGrid.defaultLightGridColors;
 			//h1_asset->lightGrid.tree;								// }
 
+			
+			// --experimental--
+
+			h1_asset->lightGrid.paletteVersion = 1;
+			h1_asset->lightGrid.paletteEntryCount = asset->lightGrid.entryCount;
+			h1_asset->lightGrid.paletteEntryAddress = mem->Alloc<int>(h1_asset->lightGrid.paletteEntryCount);
+			for (unsigned int i = 0; i < h1_asset->lightGrid.paletteEntryCount; i++)
+			{
+				h1_asset->lightGrid.paletteEntryAddress[i] = 30; // 0, 30, 86, 116 //asset->lightGrid.entries[i].colorsIndex;
+			}
+
+			// mp_character_room palettebitstream
+			std::uint8_t paletteBitStream[] =
+			{
+			8, 33, 195, 128, 128, 124, 128, 128, 128, 129, 128, 199, 128, 128, 124, 128, 128, 128, 129, 128, 216, 128, 128, 124, 128, 128, 128, 129, 128, 0, 8, 33, 187, 128, 128, 130, 128, 128, 128, 128, 128, 191, 128, 128, 130, 128, 128, 128, 128, 128, 209, 128, 128, 130, 128, 128, 128, 128, 128, 0, 0, 0, 82, 80, 18, 64, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 214, 106, 18, 64, 1, 0, 0, 0, 8, 33, 195, 128, 128, 124, 128, 128, 128, 129, 128, 199, 128, 128, 124, 128, 128, 128, 129, 128, 216, 128, 128, 124, 128, 128, 128, 129, 128, 0, 198, 24, 241, 248, 8, 128, 128, 128, 128, 90, 128, 241, 8, 128, 248, 128, 128, 128, 147, 184, 241, 128, 248, 8, 128, 128, 128, 147, 72, 0,
+			};
+
+			h1_asset->lightGrid.paletteBitstreamSize = sizeof(paletteBitStream);
+			h1_asset->lightGrid.paletteBitstream = mem->Alloc<unsigned char>(h1_asset->lightGrid.paletteBitstreamSize);
+			memcpy(h1_asset->lightGrid.paletteBitstream, paletteBitStream, sizeof(paletteBitStream));
+
+			h1_asset->lightGrid.missingGridColorIndex = h1_asset->lightGrid.paletteEntryCount - 1;
+
+			h1_asset->lightGrid.rangeExponent8BitsEncoding = 0;
+			h1_asset->lightGrid.rangeExponent12BitsEncoding = 4;
+			h1_asset->lightGrid.rangeExponent16BitsEncoding = 23;
+
+			h1_asset->lightGrid.stageCount = 1;
+			h1_asset->lightGrid.stageLightingContrastGain = mem->Alloc<float>();
+			h1_asset->lightGrid.stageLightingContrastGain[0] = 1.0f;
+
+			// ----
+			
+
 			h1_asset->modelCount = asset->modelCount;
 			h1_asset->models = mem->Alloc<H1::GfxBrushModel>(h1_asset->modelCount);
 			for (int i = 0; i < h1_asset->modelCount; i++)
@@ -294,7 +328,7 @@ namespace ZoneTool
 			h1_asset->cellCasterBits = mem->Alloc<unsigned int>(h1_asset->dpvsPlanes.cellCount * ((h1_asset->dpvsPlanes.cellCount + 31) >> 5));
 			for (int i = 0; i < asset->dpvsPlanes.cellCount * ((asset->dpvsPlanes.cellCount + 31) >> 5); i++)
 			{
-				h1_asset->cellCasterBits[i] = asset->cellCasterBits[0][i]; // convert?
+				h1_asset->cellCasterBits[i] = asset->cellCasterBits[0][i];
 			}
 			h1_asset->cellHasSunLitSurfsBits = mem->Alloc<unsigned int>((h1_asset->dpvsPlanes.cellCount + 31) >> 5); // todo?
 
