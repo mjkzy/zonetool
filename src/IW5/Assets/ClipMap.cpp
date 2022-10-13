@@ -139,7 +139,7 @@ namespace ZoneTool
 				mapped_brush_sides[&asset->info.cBrushSides[i]] = &info->bCollisionData.brushSides[i];
 
 				// check
-				info->bCollisionData.brushSides[i].planeIndex = 
+				info->bCollisionData.brushSides[i].planeIndex =
 					(reinterpret_cast<std::uintptr_t>(asset->info.cBrushSides[i].plane) - reinterpret_cast<std::uintptr_t>(asset->info.cPlanes)) / sizeof(cplane_s);
 				assert(info->bCollisionData.brushSides[i].planeIndex <= info->planeCount);
 
@@ -233,7 +233,7 @@ namespace ZoneTool
 				memcpy(&h1_asset->leafs[i].bounds, &asset->cLeaf[i].mins, sizeof(float[3]) * 2);
 				h1_asset->leafs[i].leafBrushNode = asset->cLeaf[i].leafBrushNode;
 			}
-			
+
 			h1_asset->numSubModels = asset->numCModels;
 			h1_asset->cmodels = mem->Alloc<H1::cmodel_t>(h1_asset->numSubModels);
 			for (unsigned int i = 0; i < h1_asset->numSubModels; i++)

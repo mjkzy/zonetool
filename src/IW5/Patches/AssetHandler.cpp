@@ -436,7 +436,7 @@ namespace ZoneTool
 			}
 		}
 
-		const unsigned int textureBufferSize = 1024 * 1024 * 32; // 32mb
+		const unsigned int textureBufferSize = 1024 * 1024 * 64; // 64mb
 		unsigned int textureBufferIndex = 0;
 		std::unordered_map<std::string, unsigned int> textureMap;
 		std::string texturesFastfiles;

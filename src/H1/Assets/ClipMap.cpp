@@ -83,7 +83,7 @@ namespace ZoneTool
 			dump_info(&asset->info, write, SL_ConvertToString);
 
 			write.dump_single(asset->pInfo);
-			dump_info(asset->pInfo, write, SL_ConvertToString);
+			//dump_info(asset->pInfo, write, SL_ConvertToString);
 
 			write.dump_array(asset->nodes, asset->numNodes);
 			for (unsigned int i = 0; i < asset->numNodes; i++)
@@ -101,7 +101,7 @@ namespace ZoneTool
 				if (asset->cmodels[i].info)
 				{
 					write.dump_single(asset->cmodels[i].info);
-					dump_info(asset->cmodels[i].info, write, SL_ConvertToString);
+					//dump_info(asset->cmodels[i].info, write, SL_ConvertToString);
 				}
 			}
 

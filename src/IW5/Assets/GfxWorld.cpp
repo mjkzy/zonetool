@@ -37,12 +37,15 @@ namespace ZoneTool
 				h1_asset->skies[i].skySamplerState = asset->skies[i].skySamplerState;
 
 				// add bounds
-				assert(asset->skies[i].skySurfCount == 1);
+				//assert(asset->skies[i].skySurfCount == 1);
 				for (auto j = 0; j < asset->skies[i].skySurfCount; j++)
 				{
 					auto index = asset->dpvs.sortedSurfIndex[asset->skies[i].skyStartSurfs[j]];
 					auto* surface_bounds = &asset->dpvs.surfacesBounds[index];
 					memcpy(&h1_asset->skies[i].bounds, &surface_bounds->bounds, sizeof(surface_bounds->bounds));
+
+					//
+					break;
 				}
 			}
 
@@ -77,7 +80,7 @@ namespace ZoneTool
 				for (int j = 0; j < h1_asset->aabbTreeCounts[i].aabbTreeCount; j++)
 				{
 					memcpy(&h1_asset->aabbTrees[i].aabbTree[j].bounds, &asset->aabbTree[i].aabbtree[j].mins, sizeof(float[2][3]));
-					
+
 					h1_asset->aabbTrees[i].aabbTree[j].startSurfIndex = asset->aabbTree[i].aabbtree[j].startSurfIndex;
 					h1_asset->aabbTrees[i].aabbTree[j].surfaceCount = asset->aabbTree[i].aabbtree[j].surfaceCount;
 
@@ -85,12 +88,12 @@ namespace ZoneTool
 					REINTERPRET_CAST_SAFE(h1_asset->aabbTrees[i].aabbTree[j].smodelIndexes, asset->aabbTree[i].aabbtree[j].smodelIndexes);
 
 					// FIXME
-					/*h1_asset->aabbTrees[i].aabbTree[j].childCount = asset->aabbTree[i].aabbtree[j].childCount;
+					h1_asset->aabbTrees[i].aabbTree[j].childCount = asset->aabbTree[i].aabbtree[j].childCount;
 					// re-calculate childrenOffset
 					auto offset = asset->aabbTree[i].aabbtree[j].childrenOffset;
 					int childrenIndex = offset / sizeof(IW5::GfxAabbTree);
 					int childrenOffset = childrenIndex * sizeof(H1::GfxAabbTree);
-					h1_asset->aabbTrees[i].aabbTree[j].childrenOffset = childrenOffset;*/
+					h1_asset->aabbTrees[i].aabbTree[j].childrenOffset = childrenOffset;
 				}
 			}
 
@@ -187,9 +190,9 @@ namespace ZoneTool
 				h1_asset->draw.lightmapOverrideSecondary = nullptr;
 			}
 
-			h1_asset->draw.u1[0] = 1024; h1_asset->draw.u1[1] = 1024; // u1
-			h1_asset->draw.u2[0] = 512; h1_asset->draw.u2[1] = 512; // u2
-			h1_asset->draw.u3 = 8; // u3
+			//h1_asset->draw.u1[0] = 1024; h1_asset->draw.u1[1] = 1024; // u1
+			//h1_asset->draw.u2[0] = 512; h1_asset->draw.u2[1] = 512; // u2
+			//h1_asset->draw.u3 = 8; // u3
 
 			h1_asset->draw.trisType = 0; // dunno
 
@@ -257,6 +260,7 @@ namespace ZoneTool
 			
 			// --experimental--
 
+			h1_asset->lightGrid.tableVersion = 1;
 			h1_asset->lightGrid.paletteVersion = 1;
 			h1_asset->lightGrid.paletteEntryCount = asset->lightGrid.entryCount;
 			h1_asset->lightGrid.paletteEntryAddress = mem->Alloc<int>(h1_asset->lightGrid.paletteEntryCount);
@@ -285,6 +289,11 @@ namespace ZoneTool
 			h1_asset->lightGrid.stageLightingContrastGain = mem->Alloc<float>();
 			h1_asset->lightGrid.stageLightingContrastGain[0] = 1.0f;
 
+			for (auto i = 0; i < 3; i++)
+			{
+				h1_asset->lightGrid.tree[i].maxDepth = i;
+			}
+
 			// ----
 			
 
@@ -300,9 +309,9 @@ namespace ZoneTool
 				h1_asset->models[i].mdaoVolumeIndex = -1;
 			}
 
-			memcpy(h1_asset->mins1, asset->mins, sizeof(float[3]));
-			memcpy(h1_asset->maxs1, asset->maxs, sizeof(float[3]));
-			memcpy(h1_asset->mins2, asset->mins, sizeof(float[3])); //h1_asset->mins2; // ?
+			memcpy(h1_asset->mins1, asset->mins, sizeof(float[3])); // then what is this?
+			memcpy(h1_asset->maxs1, asset->maxs, sizeof(float[3])); // ^^
+			memcpy(h1_asset->mins2, asset->mins, sizeof(float[3])); //h1_asset->mins2; // ? (i think this is the correct one)
 			memcpy(h1_asset->maxs2, asset->maxs, sizeof(float[3])); //h1_asset->maxs2; // ?
 
 			h1_asset->checksum = asset->checksum;

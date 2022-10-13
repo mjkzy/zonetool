@@ -228,6 +228,8 @@ namespace ZoneTool
 			//h1_asset->flags |= ((asset->deformed & IW5::SURF_FLAG_QUANTIZED) != 0) ? H1::SURF_FLAG_QUANTIZED : 0;
 			h1_asset->flags |= ((asset->deformed & IW5::SURF_FLAG_SKINNED) != 0) ? H1::SURF_FLAG_SKINNED : 0;
 
+			h1_asset->flags |= ((h1_asset->flags & H1::SURF_FLAG_VERTCOL_GREY) == 0) ? H1::SURF_FLAG_VERTCOL_NONE : 0;
+
 			h1_asset->vertCount = asset->vertCount;
 			h1_asset->triCount = asset->triCount;
 			h1_asset->rigidVertListCount = asset->vertListCount;
@@ -241,7 +243,7 @@ namespace ZoneTool
 
 			// triIndices
 			h1_asset->triIndices = reinterpret_cast<H1::Face * __ptr64>(asset->triIndices);
-			h1_asset->triIndices2 = h1_asset->triIndices;
+			h1_asset->triIndices2 = mem->Alloc<H1::Face>(asset->triCount); // todo? what is this even
 
 			// verts
 			//h1_asset->verts0.packedVerts0 = reinterpret_cast<IW6::GfxPackedVertex* __ptr64>(asset->verticies);
