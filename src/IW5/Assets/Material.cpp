@@ -242,9 +242,16 @@ namespace ZoneTool
 
 				MATERIAL_DUMP_CONST_ARRAY(constantTable, asset->constantCount);
 
+				int i_3447584578 = -1;
+
 				ordered_json material_images;
 				for (auto i = 0; i < asset->numMaps; i++)
 				{
+					if (asset->maps[i].typeHash > 3447584578 && i_3447584578 == -1)
+					{
+						i_3447584578 = i;
+					}
+
 					ordered_json image;
 					if (asset->maps[i].semantic == 11)
 					{
@@ -276,6 +283,11 @@ namespace ZoneTool
 				// fix for certain techniques
 				if (h1_techset.find("_lmpb_") != std::string::npos)
 				{
+					if (i_3447584578 == -1)
+					{
+						i_3447584578 = asset->numMaps;
+					}
+
 					ordered_json image;
 					image["image"] = "~envbrdflut_ggx_16-rg";
 					image["semantic"] = 15;
@@ -283,7 +295,7 @@ namespace ZoneTool
 					image["lastCharacter"] = 116;
 					image["firstCharacter"] = 101;
 					image["typeHash"] = 3447584578;
-					material_images.push_back(image);
+					material_images.insert(material_images.begin() + i_3447584578, image);
 				}
 
 				matdata["textureTable"] = material_images;
