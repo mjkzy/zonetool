@@ -3222,12 +3222,14 @@ namespace ZoneTool
 		{
 			GfxPackedPlacement placement;
 			XModel* model;
-			unsigned __int16 smodelCacheIndex[4];
-			float cullDist;
+			unsigned __int16 cullDist;
+			unsigned __int16 lightingHandle;
 			char reflectionProbeIndex;
 			char primaryLightIndex;
-			unsigned __int16 lightingHandle;
 			char flags;
+			char firstMtlSkinIndex;
+			GfxColor groundLighting;
+			unsigned __int16 cacheId[4];
 		};
 
 		struct GfxWorldDpvsDynamic

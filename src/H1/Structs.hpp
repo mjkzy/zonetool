@@ -5734,10 +5734,10 @@ namespace ZoneTool
 
 		struct GfxStaticModelLightmapInfo
 		{
-			unsigned short smodelCacheIndex[4];
+			unsigned short cacheId[4];
 			unsigned short unk1;
 			unsigned short unk2;
-			float unk3; // culldist?
+			float unk3;
 			int unk4;
 			int unk5;
 			/*
