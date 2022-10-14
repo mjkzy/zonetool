@@ -515,7 +515,7 @@ namespace ZoneTool
 				memcpy(&h1_asset->dpvs.smodelDrawInsts[i].placement, &asset->dpvs.smodelDrawInsts[i].placement, sizeof(IW5::GfxPackedPlacement));
 				h1_asset->dpvs.smodelDrawInsts[i].model = reinterpret_cast<H1::XModel * __ptr64>(asset->dpvs.smodelDrawInsts[i].model);
 				h1_asset->dpvs.smodelDrawInsts[i].cullDist = static_cast<unsigned short>(asset->dpvs.smodelDrawInsts[i].cullDist);
-				h1_asset->dpvs.smodelDrawInsts[i].lightingHandle = asset->dpvs.smodelDrawInsts[i].lightingHandle;
+				h1_asset->dpvs.smodelDrawInsts[i].lightingHandle = 0; //asset->dpvs.smodelDrawInsts[i].lightingHandle;
 				h1_asset->dpvs.smodelDrawInsts[i].flags = asset->dpvs.smodelDrawInsts[i].flags | H1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTGRID_LIGHTING;
 				h1_asset->dpvs.smodelDrawInsts[i].staticModelId = 0;
 				h1_asset->dpvs.smodelDrawInsts[i].primaryLightEnvIndex = asset->dpvs.smodelDrawInsts[i].primaryLightIndex;

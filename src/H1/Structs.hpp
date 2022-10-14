@@ -222,7 +222,7 @@ namespace ZoneTool
 		{
 			union
 			{
-				std::uint64_t model;
+				std::uint64_t id;
 				char __pad0[8];
 			};
 		};
@@ -4430,7 +4430,7 @@ namespace ZoneTool
 			float origin[3];
 			float invScaledAxis[3][3];
 			Bounds absBounds;
-			int contents;
+			int lightingHandle;
 		}; assert_sizeof(cStaticModel_s, 88);
 
 		struct SModelsCollisionData

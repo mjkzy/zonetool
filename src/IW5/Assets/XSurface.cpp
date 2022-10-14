@@ -242,8 +242,12 @@ namespace ZoneTool
 			GenerateH1BlendVertsShit(h1_asset);
 
 			// triIndices
-			h1_asset->triIndices = reinterpret_cast<H1::Face * __ptr64>(asset->triIndices);
-			h1_asset->triIndices2 = mem->Alloc<H1::Face>(asset->triCount); // todo? what is this even
+			h1_asset->triIndices = reinterpret_cast<H1::Face * __ptr64>(asset->triIndices); // this is draw indices?
+			h1_asset->triIndices2 = mem->Alloc<H1::Face>(asset->triCount); // this is collision indices?
+			for (unsigned short i = 0; i < asset->triCount; i++)
+			{
+				memcpy(&h1_asset->triIndices2[i], &h1_asset->triIndices[i], sizeof(H1::Face));
+			}
 
 			// verts
 			//h1_asset->verts0.packedVerts0 = reinterpret_cast<IW6::GfxPackedVertex* __ptr64>(asset->verticies);
@@ -268,7 +272,7 @@ namespace ZoneTool
 			}
 
 			// unknown
-			h1_asset->unknown0 = mem->Alloc<H1::UnknownXSurface0>(asset->vertCount);
+			h1_asset->unknown0 = mem->Alloc<H1::UnknownXSurface0>(asset->vertCount); // related to indices2?
 			for (unsigned short i = 0; i < asset->vertCount; i++)
 			{
 				h1_asset->unknown0[i].xyz[0] = h1_asset->verts0.packedVerts0[i].xyz[0];

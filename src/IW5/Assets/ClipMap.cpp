@@ -7,84 +7,87 @@ namespace ZoneTool
 {
 	namespace IW5
 	{
-		H1::CSurfaceFlags surf_flags_conversion_table[31]
+		namespace
 		{
-			H1::SURF_FLAG_DEFAULT,
-			H1::SURF_FLAG_BARK,
-			H1::SURF_FLAG_BRICK,
-			H1::SURF_FLAG_CARPET,
-			H1::SURF_FLAG_CLOTH,
-			H1::SURF_FLAG_CONCRETE,
-			H1::SURF_FLAG_DIRT,
-			H1::SURF_FLAG_FLESH,
-			H1::SURF_FLAG_FOLIAGE_DEBRIS,
-			H1::SURF_FLAG_GLASS,
-			H1::SURF_FLAG_GRASS,
-			H1::SURF_FLAG_GRAVEL,
-			H1::SURF_FLAG_ICE,
-			H1::SURF_FLAG_METAL_SOLID,
-			H1::SURF_FLAG_MUD,
-			H1::SURF_FLAG_PAPER,
-			H1::SURF_FLAG_PLASTER,
-			H1::SURF_FLAG_ROCK,
-			H1::SURF_FLAG_SAND,
-			H1::SURF_FLAG_SNOW,
-			H1::SURF_FLAG_WATER_WAIST,
-			H1::SURF_FLAG_WOOD_SOLID,
-			H1::SURF_FLAG_ASPHALT,
-			H1::SURF_FLAG_CERAMIC,
-			H1::SURF_FLAG_PLASTIC_SOLID,
-			H1::SURF_FLAG_RUBBER,
-			H1::SURF_FLAG_CUSHION,
-			H1::SURF_FLAG_FRUIT,
-			H1::SURF_FLAG_PAINTEDMETAL,
-			H1::SURF_FLAG_RIOTSHIELD,
-			H1::SURF_FLAG_SLUSH,
-		}; IW5::CSurfaceFlags;
-
-		int convert_surf_flags(int flags)
-		{
-			int h1_flags = surf_flags_conversion_table[flags >> 20];
-			auto convert = [&](IW5::CSurfaceFlags a, H1::CSurfaceFlags b)
+			H1::CSurfaceFlags surf_flags_conversion_table[31]
 			{
-				h1_flags |= ((flags & a) != 0) ? b : 0;
-			};
-			convert(IW5::CSurfaceFlags::SURF_FLAG_OPAQUEGLASS, H1::CSurfaceFlags::SURF_FLAG_DEFAULT);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_CLIPMISSILE, H1::CSurfaceFlags::SURF_FLAG_CLIPMISSILE);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_AI_NOSIGHT, H1::CSurfaceFlags::SURF_FLAG_AI_NOSIGHT);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_CLIPSHOT, H1::CSurfaceFlags::SURF_FLAG_CLIPSHOT);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_PLAYERCLIP, H1::CSurfaceFlags::SURF_FLAG_PLAYERCLIP);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_MONSTERCLIP, H1::CSurfaceFlags::SURF_FLAG_MONSTERCLIP);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_AICLIPALLOWDEATH, H1::CSurfaceFlags::SURF_FLAG_AICLIPALLOWDEATH);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_VEHICLECLIP, H1::CSurfaceFlags::SURF_FLAG_VEHICLECLIP);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_ITEMCLIP, H1::CSurfaceFlags::SURF_FLAG_ITEMCLIP);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_NODROP, H1::CSurfaceFlags::SURF_FLAG_NODROP);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_NONSOLID, H1::CSurfaceFlags::SURF_FLAG_NONSOLID);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_DETAIL, H1::CSurfaceFlags::SURF_FLAG_DETAIL);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_STRUCTURAL, H1::CSurfaceFlags::SURF_FLAG_STRUCTURAL);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_PORTAL, H1::CSurfaceFlags::SURF_FLAG_PORTAL);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_CANSHOOTCLIP, H1::CSurfaceFlags::SURF_FLAG_CANSHOOTCLIP);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_ORIGIN, H1::CSurfaceFlags::SURF_FLAG_ORIGIN);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_SKY, H1::CSurfaceFlags::SURF_FLAG_SKY);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_NOCASTSHADOW, H1::CSurfaceFlags::SURF_FLAG_NOCASTSHADOW);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_PHYSICSGEOM, H1::CSurfaceFlags::SURF_FLAG_PHYSICSGEOM);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_LIGHTPORTAL, H1::CSurfaceFlags::SURF_FLAG_LIGHTPORTAL);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_OUTDOORBOUNDS, H1::CSurfaceFlags::SURF_FLAG_OUTDOORBOUNDS);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_SLICK, H1::CSurfaceFlags::SURF_FLAG_SLICK);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_NOIMPACT, H1::CSurfaceFlags::SURF_FLAG_NOIMPACT);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_NOMARKS, H1::CSurfaceFlags::SURF_FLAG_NOMARKS);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_NOPENETRATE, H1::CSurfaceFlags::SURF_FLAG_NOPENETRATE);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_LADDER, H1::CSurfaceFlags::SURF_FLAG_LADDER);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_NODAMAGE, H1::CSurfaceFlags::SURF_FLAG_NODAMAGE);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_MANTLEON, H1::CSurfaceFlags::SURF_FLAG_MANTLEON);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_MANTLEOVER, H1::CSurfaceFlags::SURF_FLAG_MANTLEOVER);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_STAIRS, H1::CSurfaceFlags::SURF_FLAG_STAIRS);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_SOFT, H1::CSurfaceFlags::SURF_FLAG_SOFT);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_NOSTEPS, H1::CSurfaceFlags::SURF_FLAG_NOSTEPS);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_NODRAW, H1::CSurfaceFlags::SURF_FLAG_NODRAW);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_NOLIGHTMAP, H1::CSurfaceFlags::SURF_FLAG_NOLIGHTMAP);
-			convert(IW5::CSurfaceFlags::SURF_FLAG_NODLIGHT, H1::CSurfaceFlags::SURF_FLAG_NODLIGHT);
-			return h1_flags;
+				H1::SURF_FLAG_DEFAULT,
+				H1::SURF_FLAG_BARK,
+				H1::SURF_FLAG_BRICK,
+				H1::SURF_FLAG_CARPET,
+				H1::SURF_FLAG_CLOTH,
+				H1::SURF_FLAG_CONCRETE,
+				H1::SURF_FLAG_DIRT,
+				H1::SURF_FLAG_FLESH,
+				H1::SURF_FLAG_FOLIAGE_DEBRIS,
+				H1::SURF_FLAG_GLASS,
+				H1::SURF_FLAG_GRASS,
+				H1::SURF_FLAG_GRAVEL,
+				H1::SURF_FLAG_ICE,
+				H1::SURF_FLAG_METAL_SOLID,
+				H1::SURF_FLAG_MUD,
+				H1::SURF_FLAG_PAPER,
+				H1::SURF_FLAG_PLASTER,
+				H1::SURF_FLAG_ROCK,
+				H1::SURF_FLAG_SAND,
+				H1::SURF_FLAG_SNOW,
+				H1::SURF_FLAG_WATER_WAIST,
+				H1::SURF_FLAG_WOOD_SOLID,
+				H1::SURF_FLAG_ASPHALT,
+				H1::SURF_FLAG_CERAMIC,
+				H1::SURF_FLAG_PLASTIC_SOLID,
+				H1::SURF_FLAG_RUBBER,
+				H1::SURF_FLAG_CUSHION,
+				H1::SURF_FLAG_FRUIT,
+				H1::SURF_FLAG_PAINTEDMETAL,
+				H1::SURF_FLAG_RIOTSHIELD,
+				H1::SURF_FLAG_SLUSH,
+			}; IW5::CSurfaceFlags;
+
+			int convert_surf_flags(int flags)
+			{
+				int h1_flags = surf_flags_conversion_table[flags >> 20];
+				auto convert = [&](IW5::CSurfaceFlags a, H1::CSurfaceFlags b)
+				{
+					h1_flags |= ((flags & a) != 0) ? b : 0;
+				};
+				convert(IW5::CSurfaceFlags::SURF_FLAG_OPAQUEGLASS, H1::CSurfaceFlags::SURF_FLAG_DEFAULT);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_CLIPMISSILE, H1::CSurfaceFlags::SURF_FLAG_CLIPMISSILE);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_AI_NOSIGHT, H1::CSurfaceFlags::SURF_FLAG_AI_NOSIGHT);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_CLIPSHOT, H1::CSurfaceFlags::SURF_FLAG_CLIPSHOT);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_PLAYERCLIP, H1::CSurfaceFlags::SURF_FLAG_PLAYERCLIP);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_MONSTERCLIP, H1::CSurfaceFlags::SURF_FLAG_MONSTERCLIP);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_AICLIPALLOWDEATH, H1::CSurfaceFlags::SURF_FLAG_AICLIPALLOWDEATH);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_VEHICLECLIP, H1::CSurfaceFlags::SURF_FLAG_VEHICLECLIP);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_ITEMCLIP, H1::CSurfaceFlags::SURF_FLAG_ITEMCLIP);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_NODROP, H1::CSurfaceFlags::SURF_FLAG_NODROP);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_NONSOLID, H1::CSurfaceFlags::SURF_FLAG_NONSOLID);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_DETAIL, H1::CSurfaceFlags::SURF_FLAG_DETAIL);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_STRUCTURAL, H1::CSurfaceFlags::SURF_FLAG_STRUCTURAL);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_PORTAL, H1::CSurfaceFlags::SURF_FLAG_PORTAL);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_CANSHOOTCLIP, H1::CSurfaceFlags::SURF_FLAG_CANSHOOTCLIP);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_ORIGIN, H1::CSurfaceFlags::SURF_FLAG_ORIGIN);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_SKY, H1::CSurfaceFlags::SURF_FLAG_SKY);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_NOCASTSHADOW, H1::CSurfaceFlags::SURF_FLAG_NOCASTSHADOW);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_PHYSICSGEOM, H1::CSurfaceFlags::SURF_FLAG_PHYSICSGEOM);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_LIGHTPORTAL, H1::CSurfaceFlags::SURF_FLAG_LIGHTPORTAL);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_OUTDOORBOUNDS, H1::CSurfaceFlags::SURF_FLAG_OUTDOORBOUNDS);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_SLICK, H1::CSurfaceFlags::SURF_FLAG_SLICK);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_NOIMPACT, H1::CSurfaceFlags::SURF_FLAG_NOIMPACT);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_NOMARKS, H1::CSurfaceFlags::SURF_FLAG_NOMARKS);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_NOPENETRATE, H1::CSurfaceFlags::SURF_FLAG_NOPENETRATE);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_LADDER, H1::CSurfaceFlags::SURF_FLAG_LADDER);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_NODAMAGE, H1::CSurfaceFlags::SURF_FLAG_NODAMAGE);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_MANTLEON, H1::CSurfaceFlags::SURF_FLAG_MANTLEON);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_MANTLEOVER, H1::CSurfaceFlags::SURF_FLAG_MANTLEOVER);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_STAIRS, H1::CSurfaceFlags::SURF_FLAG_STAIRS);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_SOFT, H1::CSurfaceFlags::SURF_FLAG_SOFT);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_NOSTEPS, H1::CSurfaceFlags::SURF_FLAG_NOSTEPS);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_NODRAW, H1::CSurfaceFlags::SURF_FLAG_NODRAW);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_NOLIGHTMAP, H1::CSurfaceFlags::SURF_FLAG_NOLIGHTMAP);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_NODLIGHT, H1::CSurfaceFlags::SURF_FLAG_NODLIGHT);
+				return h1_flags;
+			}
 		}
 
 		void GenerateH1ClipInfo(H1::ClipInfo* info, clipMap_t* asset, ZoneMemory* mem)
@@ -198,7 +201,7 @@ namespace ZoneTool
 				memcpy(&info->sCollisionData.staticModelList[i].origin, &asset->staticModelList[i].origin, sizeof(float[3]));
 				memcpy(&info->sCollisionData.staticModelList[i].invScaledAxis, &asset->staticModelList[i].invScaledAxis, sizeof(float[3][3]));
 				memcpy(&info->sCollisionData.staticModelList[i].absBounds, &asset->staticModelList[i].absmin, sizeof(float[2][3]));
-				//info->sCollisionData.staticModelList[i].contents = asset->staticModelList[i].xmodel->contents;
+				info->sCollisionData.staticModelList[i].lightingHandle = 0;
 			}
 		}
 
@@ -315,6 +318,9 @@ namespace ZoneTool
 			return h1_asset;
 		}
 
+		std::uint64_t dm_nullBodyId = 0xFFFF0000FFFFFFFF;
+		std::uint64_t dm_nullFixtureId = 0xFFFF0000FFFFFFFF;
+
 		void IClipMap::dump(clipMap_t* asset, ZoneMemory* mem)
 		{
 			// generate h1 clipmap
@@ -331,7 +337,7 @@ namespace ZoneTool
 			physmap->models = mem->Alloc<H1::PhysBrushModel>(physmap->modelsCount);
 			for (unsigned int i = 0; i < physmap->modelsCount; i++)
 			{
-				physmap->models[i].model = 0xFFFF0000FFFFFFFF;
+				physmap->models[i].id = dm_nullFixtureId;
 			}
 
 			physmap->polytopeDatasCount = 0;
