@@ -549,8 +549,8 @@ namespace ZoneTool
 
 #ifdef REALLOC_XASSETS
 			// Empty the arrays
-			memset(AssetHandler::XAssetEntries, 0,	sizeof AssetHandler::XAssetEntries);
-			memset(AssetHandler::db_hashmap, 0,		sizeof AssetHandler::db_hashmap);
+			memset(AssetHandler::XAssetEntries, 0,	sizeof(AssetHandler::XAssetEntries));
+			memset(AssetHandler::db_hashmap, 0,		sizeof(AssetHandler::db_hashmap));
 
 			// Hashmap entry checking
 			Memory(0x44F021).Jump(TestHashMap);

@@ -18,16 +18,16 @@ namespace ZoneTool
 		ExpressionParser(const char* buffer)
 		{
 			dataPtr = buffer;
-			memset(com_token, 0, sizeof com_token);
-			memset(com_parseName, 0, sizeof com_parseName);
+			memset(com_token, 0, sizeof(com_token));
+			memset(com_parseName, 0, sizeof(com_parseName));
 			com_lines = 0;
 		}
 
 		ExpressionParser(const ExpressionParser& other)
 		{
 			this->dataPtr = other.dataPtr;
-			memcpy(this->com_token, other.com_token, sizeof this->com_token);
-			memcpy(this->com_parseName, other.com_parseName, sizeof this->com_parseName);
+			memcpy(this->com_token, other.com_token, sizeof(this->com_token));
+			memcpy(this->com_parseName, other.com_parseName, sizeof(this->com_parseName));
 			this->com_lines = other.com_lines;
 		}
 

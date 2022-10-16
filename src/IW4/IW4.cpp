@@ -41,7 +41,7 @@ namespace ZoneTool
 			};
 
 			static XZoneInfo zones[16];
-			memset(zones, 0, sizeof XZoneInfo * 16);
+			memset(zones, 0, sizeof(XZoneInfo) * 16);
 
 			// Load our custom zones
 			for (std::size_t i = 0; i < defaultzones.size(); i++)
@@ -442,7 +442,7 @@ char**>(0x00799278)[type]);
 			
 			va_list va;
 			va_start(va, fmt);
-			_vsnprintf(error_message, sizeof error_message, fmt, va);
+			_vsnprintf(error_message, sizeof(error_message), fmt, va);
 
 			ZONETOOL_ERROR("script compile error: %s", error_message);
 		}

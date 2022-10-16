@@ -20,8 +20,8 @@ namespace ZoneTool
 			VMProtectBeginUltra("IW5::FFCompression::z_inflateInit");
 #endif
 			// Allocate zstd context
-			strm->state = reinterpret_cast<db_zstd_context_s*>(malloc(sizeof db_zstd_context_s));
-			memset(strm->state, 0, sizeof db_zstd_context_s);
+			strm->state = reinterpret_cast<db_zstd_context_s*>(malloc(sizeof(db_zstd_context_s)));
+			memset(strm->state, 0, sizeof(db_zstd_context_s));
 
 			// Create pointers needed for decompression
 			strm->state->DCtx = ZSTD_createDCtx();

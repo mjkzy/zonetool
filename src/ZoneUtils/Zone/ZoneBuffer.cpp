@@ -347,7 +347,7 @@ namespace ZoneTool
 
 		auto buffer = reinterpret_cast<std::uint8_t*>(key);
 
-		for (auto idx = 0u; idx < sizeof XZoneKey; idx++)
+		for (auto idx = 0u; idx < sizeof(XZoneKey); idx++)
 		{
 			buffer[idx] = (rand() % 0xFF);
 		}
@@ -373,7 +373,7 @@ namespace ZoneTool
 #ifdef USE_PRIVATEKEY
 				512 +
 #else
-				sizeof XZoneKey +
+				sizeof(XZoneKey) +
 #endif
 				this->m_buf.size();
 			std::vector<std::uint8_t> temp = this->m_buf;
@@ -388,7 +388,7 @@ namespace ZoneTool
 		// import rsa key...
 		rsa_key key;
 		rsa_import(&PrivateKey[0], PrivateKey.size(), &key);
-		rsa_encrypt_key(reinterpret_cast<unsigned char*>(&zonekey), sizeof XZoneKey, enc_key, &keylen, 0, 0, 0, 0, h_sha512, &key);
+		rsa_encrypt_key(reinterpret_cast<unsigned char*>(&zonekey), sizeof(XZoneKey), enc_key, &keylen, 0, 0, 0, 0, h_sha512, &key);
 		rsa_free(&key);
 
 		// move ff data
@@ -398,7 +398,7 @@ namespace ZoneTool
 		memcpy(&this->m_buf[0], enc_key, 512);
 #else
 		// move ff data
-		memcpy(&this->m_buf[sizeof XZoneKey], &this->m_buf[0], this->m_buf.size() - sizeof XZoneKey);
+		memcpy(&this->m_buf[sizeof(XZoneKey)], &this->m_buf[0], this->m_buf.size() - sizeof(XZoneKey));
 #endif
 
 		// encrypt fastfile data
@@ -407,7 +407,7 @@ namespace ZoneTool
 #ifdef USE_PRIVATEKEY
 		cbc_encrypt(&this->m_buf[512], &this->m_buf[512], this->m_buf.size() - 512, &cbc);
 #else
-		cbc_encrypt(&this->m_buf[sizeof XZoneKey], &this->m_buf[sizeof XZoneKey], this->m_buf.size() - sizeof XZoneKey,
+		cbc_encrypt(&this->m_buf[sizeof(XZoneKey)], &this->m_buf[sizeof(XZoneKey)], this->m_buf.size() - sizeof(XZoneKey),
 		            &cbc);
 #endif
 		cbc_done(&cbc);

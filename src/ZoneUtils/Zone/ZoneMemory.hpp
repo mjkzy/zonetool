@@ -33,7 +33,7 @@ namespace ZoneTool
 			if (!memory_pool_)
 			{
 				char buffer[256];
-				_snprintf(buffer, sizeof buffer,
+				_snprintf(buffer, sizeof(buffer),
 				          "ZoneTool just went out of memory, and has to be closed. Error code is %u (0x%08X).",
 				          GetLastError(), GetLastError());
 
@@ -83,7 +83,7 @@ namespace ZoneTool
 		T* Alloc(std::size_t count)
 		{
 			std::lock_guard<std::recursive_mutex> g(this->mutex_);
-			return this->ManualAlloc<T>(sizeof T, count);
+			return this->ManualAlloc<T>(sizeof(T), count);
 		}
 
 		template <typename T>
@@ -106,7 +106,7 @@ namespace ZoneTool
 			if (mem_pos_ + (size * count) > memory_size_)
 			{
 				char buffer[256];
-				_snprintf_s(buffer, sizeof buffer,
+				_snprintf_s(buffer, sizeof(buffer),
 					"ZoneTool just went out of memory, and has to be closed (%llu/%llu).",
 					mem_pos_ + (size * count), memory_size_);
 
