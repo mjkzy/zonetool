@@ -2079,11 +2079,22 @@ namespace ZoneTool
 			float boostFactor;
 		};
 
+		struct FxSpotLightDef
+		{
+			float fovInnerFraction;
+			float startRadius;
+			float endRadius;
+			float brightness;
+			float maxLength;
+			int exponent;
+		};
+
 		union FxElemExtendedDefPtr
 		{
 			char* unknownDef;
 			FxSparkFountainDef* sparkFountain;
 			FxTrailDef* trailDef;
+			FxSpotLightDef* spotLightDef;
 		};
 
 		struct FxElemAtlas
@@ -2217,7 +2228,7 @@ namespace ZoneTool
 			FxFloatRange gravity;
 			FxFloatRange reflectionFactor;
 			FxElemAtlas atlas;
-			char elemType;
+			FxElemType elemType;
 			char visualCount;
 			char velIntervalCount;
 			char visStateIntervalCount;
@@ -2229,9 +2240,9 @@ namespace ZoneTool
 			//If elemType is not 0xB and visualCount != 1, then use visualsArray
 			float collMins[3];
 			float collMaxs[3];
-			FxEffectDefRef* effectOnImpact;
-			FxEffectDefRef* effectOnDeath;
-			FxEffectDefRef* effectEmitted;
+			FxEffectDefRef effectOnImpact;
+			FxEffectDefRef effectOnDeath;
+			FxEffectDefRef effectEmitted;
 			FxFloatRange emitDist;
 			FxFloatRange emitDistVariance;
 			FxElemExtendedDefPtr extended;
@@ -2254,7 +2265,10 @@ namespace ZoneTool
 			int elemDefCountLooping;
 			int elemDefCountOneShot;
 			int elemDefCountEmission;
-			char pad[20];
+			float occlusionQueryDepthBias;
+			int occlusionQueryFadeIn;
+			int occlusionQueryFadeOut;
+			FxFloatRange occlusionQueryScaleRange;
 			FxElemDef* elemDefs; //Count = elemDefCountOneShot + elemDefCountEmission + elemDefCountLooping
 		};
 
@@ -3181,7 +3195,7 @@ namespace ZoneTool
 			char lightmapIndex;
 			char reflectionProbeIndex;
 			char primaryLightIndex;
-			bool castsSunShadow;
+			char flags;
 		};
 
 		struct GfxSurfaceBounds
@@ -4283,9 +4297,8 @@ namespace ZoneTool
 			unsigned int supportMask;
 			unsigned __int16 initIndex;
 			unsigned __int16 geoDataStart;
-			unsigned __int16 lightingIndex;
 			char defIndex;
-			char pad[3];
+			char pad[5];
 			char vertCount;
 			char holeDataCount;
 			char crackDataCount;
@@ -4332,18 +4345,17 @@ namespace ZoneTool
 			__int16 anonymous[2];
 		};
 
-		struct FxGlassInitPieceState //Note, on MW3 this is missing 4 bytes, just not sure whats missing yet
+		struct FxGlassInitPieceState
 		{
 			FxSpatialFrame frame;
 			float radius;
 			float texCoordOrigin[2];
 			unsigned int supportMask;
 			float areaX2;
-			unsigned __int16 lightingIndex;
 			char defIndex;
 			char vertCount;
-			//char fanDataCount;// Commented out a random thing so the size fits. Most probably wrong since it was random.
-			//char pad[1];
+			char fanDataCount;
+			char pad[1];
 		};
 
 		struct FxGlassSystem

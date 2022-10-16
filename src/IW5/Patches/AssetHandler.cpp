@@ -214,8 +214,10 @@ namespace ZoneTool
 					{
 						DUMPCASE(col_map_mp, IClipMap, clipMap_t);
 						DUMPCASE(com_map, IComWorld, ComWorld);
+						DUMPCASE(fx, IFxEffectDef, FxEffectDef);
 						DUMPCASE(fx_map, IFxWorld, FxWorld);
 						DUMPCASE(image, IGfxImage, GfxImage);
+						DUMPCASE(lightdef, IGfxLightDef, GfxLightDef);
 						DUMPCASE(gfx_map, IGfxWorld, GfxWorld);
 						DUMPCASE(glass_map, IGlassWorld, GlassWorld);
 						DUMPCASE(map_ents, IMapEnts, MapEnts);

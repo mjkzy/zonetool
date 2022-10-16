@@ -35,13 +35,28 @@ namespace ZoneTool
 				h1_asset->glassSys.defs[i].materialShattered = reinterpret_cast<H1::Material*>(asset->glassSys.defs[i].materialShattered);
 				h1_asset->glassSys.defs[i].physPreset = reinterpret_cast<H1::PhysPreset*>(asset->glassSys.defs[i].physPreset);
 
-				h1_asset->glassSys.defs[i].pieceBreakEffect = nullptr;
-				h1_asset->glassSys.defs[i].shatterEffect = nullptr;
-				h1_asset->glassSys.defs[i].shatterSmallEffect = nullptr;
+				h1_asset->glassSys.defs[i].pieceBreakEffect = mem->Alloc<H1::FxEffectDef>();
+				h1_asset->glassSys.defs[i].pieceBreakEffect->name = mem->StrDup("vfx/code/glass_shatter_piece");
+
+				h1_asset->glassSys.defs[i].shatterEffect = mem->Alloc<H1::FxEffectDef>();
+				h1_asset->glassSys.defs[i].shatterEffect->name = mem->StrDup("vfx/code/glass_shatter_64x64");
+
+				h1_asset->glassSys.defs[i].shatterSmallEffect = mem->Alloc<H1::FxEffectDef>();
+				h1_asset->glassSys.defs[i].shatterSmallEffect->name = mem->StrDup("vfx/code/glass_shatter_32x32");
+
 				h1_asset->glassSys.defs[i].crackDecalEffect = nullptr;
-				h1_asset->glassSys.defs[i].damagedSound = nullptr;
-				h1_asset->glassSys.defs[i].destroyedSound = nullptr;
-				h1_asset->glassSys.defs[i].destroyedQuietSound = nullptr;
+
+				h1_asset->glassSys.defs[i].damagedSound = mem->Alloc<H1::snd_alias_list_t>();
+				h1_asset->glassSys.defs[i].damagedSound->name = mem->StrDup("glass_pane_shatter");
+
+				h1_asset->glassSys.defs[i].destroyedSound = mem->Alloc<H1::snd_alias_list_t>();
+				h1_asset->glassSys.defs[i].destroyedSound->name = mem->StrDup("glass_pane_blowout");
+
+				h1_asset->glassSys.defs[i].destroyedQuietSound = mem->Alloc<H1::snd_alias_list_t>();
+				h1_asset->glassSys.defs[i].destroyedQuietSound->name = mem->StrDup("glass_pane_breakout");
+
+				// check
+				// pad
 				h1_asset->glassSys.defs[i].numCrackRings = 0;
 				h1_asset->glassSys.defs[i].isOpaque = 0;
 			}
@@ -55,7 +70,18 @@ namespace ZoneTool
 			h1_asset->glassSys.pieceStates = mem->Alloc<H1::FxGlassPieceState>(h1_asset->glassSys.pieceLimit);
 			for (unsigned int i = 0; i < h1_asset->glassSys.pieceLimit; i++)
 			{
-				memcpy(&h1_asset->glassSys.pieceStates[i], &asset->glassSys.pieceStates[i], sizeof(IW5::FxGlassPieceState));
+				memcpy(&h1_asset->glassSys.pieceStates[i].texCoordOrigin, &asset->glassSys.pieceStates[i].texCoordOrigin, sizeof(float[2]));
+				h1_asset->glassSys.pieceStates[i].supportMask = asset->glassSys.pieceStates[i].supportMask;
+				h1_asset->glassSys.pieceStates[i].initIndex = asset->glassSys.pieceStates[i].initIndex;
+				h1_asset->glassSys.pieceStates[i].geoDataStart = asset->glassSys.pieceStates[i].geoDataStart;
+				h1_asset->glassSys.pieceStates[i].lightingIndex = asset->glassSys.pieceStates[i].initIndex;
+				h1_asset->glassSys.pieceStates[i].defIndex = asset->glassSys.pieceStates[i].defIndex;
+				h1_asset->glassSys.pieceStates[i].vertCount = asset->glassSys.pieceStates[i].vertCount;
+				h1_asset->glassSys.pieceStates[i].holeDataCount = asset->glassSys.pieceStates[i].holeDataCount;
+				h1_asset->glassSys.pieceStates[i].crackDataCount = asset->glassSys.pieceStates[i].crackDataCount;
+				h1_asset->glassSys.pieceStates[i].fanDataCount = asset->glassSys.pieceStates[i].fanDataCount;
+				h1_asset->glassSys.pieceStates[i].flags = asset->glassSys.pieceStates[i].flags;
+				h1_asset->glassSys.pieceStates[i].areaX2 = asset->glassSys.pieceStates[i].areaX2;
 			}
 
 			h1_asset->glassSys.pieceDynamics = mem->Alloc<H1::FxGlassPieceDynamics>(h1_asset->glassSys.pieceLimit);
@@ -109,17 +135,15 @@ namespace ZoneTool
 			h1_asset->glassSys.initPieceStates = mem->Alloc<H1::FxGlassInitPieceState>(h1_asset->glassSys.initPieceCount);
 			for (unsigned int i = 0; i < h1_asset->glassSys.initPieceCount; i++)
 			{
-				// iw5 struct maybe wrong
 				memcpy(&h1_asset->glassSys.initPieceStates[i].frame, &asset->glassSys.initPieceStates[i].frame, sizeof(IW5::FxSpatialFrame));
 				h1_asset->glassSys.initPieceStates[i].radius = asset->glassSys.initPieceStates[i].radius;
-				h1_asset->glassSys.initPieceStates[i].texCoordOrigin[0] = asset->glassSys.initPieceStates[i].texCoordOrigin[0];
-				h1_asset->glassSys.initPieceStates[i].texCoordOrigin[1] = asset->glassSys.initPieceStates[i].texCoordOrigin[1];
+				memcpy(&h1_asset->glassSys.initPieceStates[i].texCoordOrigin, &asset->glassSys.initPieceStates[i].texCoordOrigin, sizeof(float[2]));
 				h1_asset->glassSys.initPieceStates[i].supportMask = asset->glassSys.initPieceStates[i].supportMask;
 				h1_asset->glassSys.initPieceStates[i].areaX2 = asset->glassSys.initPieceStates[i].areaX2;
-				h1_asset->glassSys.initPieceStates[i].lightingIndex = asset->glassSys.initPieceStates[i].lightingIndex;
+				h1_asset->glassSys.initPieceStates[i].lightingIndex = 0;
 				h1_asset->glassSys.initPieceStates[i].defIndex = asset->glassSys.initPieceStates[i].defIndex;
 				h1_asset->glassSys.initPieceStates[i].vertCount = asset->glassSys.initPieceStates[i].vertCount;
-				h1_asset->glassSys.initPieceStates[i].fanDataCount = 0;
+				h1_asset->glassSys.initPieceStates[i].fanDataCount = asset->glassSys.initPieceStates[i].fanDataCount;
 			}
 
 			h1_asset->glassSys.initGeoData = mem->Alloc<H1::FxGlassGeometryData>(h1_asset->glassSys.initGeoDataCount);

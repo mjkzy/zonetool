@@ -5005,16 +5005,19 @@ namespace ZoneTool
 		struct ComPrimaryLight
 		{
 			GfxLightType type; // 0
-			unsigned char unk0; // 1
-			unsigned char canUseShadowMap; // 2
+			unsigned char canUseShadowMap; // 1
+			unsigned char needsDynamicShadows; // 2
 			unsigned char exponent; // 3
-			int unk1; // 4
+			unsigned char isVolumetric; // 4
+			char __pad0[3];
 			float color[3]; // 8 12 16
 			float dir[3]; // 20 24 28
 			float up[3]; // 32 36 40
 			float origin[3]; // 44 48 52
-			char __pad1[24];
-			float radius; // 80
+			float fadeOffsetRt[2];
+			float radius;
+			float bulbRadius;
+			float bulbLength[3];
 			float cosHalfFovOuter; // 84
 			float cosHalfFovInner; // 88
 			float cosHalfFovExpanded; // 92

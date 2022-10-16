@@ -489,7 +489,7 @@ namespace ZoneTool
 				h1_asset->dpvs.surfaces[i].laf.fields.lightmapIndex = asset->dpvs.surfaces[i].lightmapIndex;
 				h1_asset->dpvs.surfaces[i].laf.fields.reflectionProbeIndex = asset->dpvs.surfaces[i].reflectionProbeIndex;
 				h1_asset->dpvs.surfaces[i].laf.fields.primaryLightEnvIndex = asset->dpvs.surfaces[i].primaryLightIndex;
-				h1_asset->dpvs.surfaces[i].laf.fields.flags = asset->dpvs.surfaces[i].castsSunShadow; // not sure if correct
+				h1_asset->dpvs.surfaces[i].laf.fields.flags = asset->dpvs.surfaces[i].flags;
 			}
 
 			h1_asset->dpvs.surfacesBounds = mem->Alloc<H1::GfxSurfaceBounds>(h1_asset->surfaceCount);
