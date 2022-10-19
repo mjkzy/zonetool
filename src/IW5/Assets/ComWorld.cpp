@@ -47,15 +47,15 @@ namespace ZoneTool
 					//h1_asset->primaryLights[i].bulbLength[1] = 0.0f;
 					//h1_asset->primaryLights[i].bulbLength[2] = 500.0f;
 
-					//h1_asset->primaryLights[i].cucScaleVector[0] = 1.0f;
-					//h1_asset->primaryLights[i].cucScaleVector[1] = 1.0f;
+					h1_asset->primaryLights[i].cucScaleVector[0] = 1.0f;
+					h1_asset->primaryLights[i].cucScaleVector[1] = 1.0f;
 				}
 				else if (h1_asset->primaryLights[i].type == H1::GFX_LIGHT_TYPE_OMNI)
 				{
 					//h1_asset->primaryLights[i].needsDynamicShadows = 1;
 
-					//h1_asset->primaryLights[i].cucScaleVector[0] = 1.0f;
-					//h1_asset->primaryLights[i].cucScaleVector[1] = 1.0f;
+					h1_asset->primaryLights[i].cucScaleVector[0] = 1.0f;
+					h1_asset->primaryLights[i].cucScaleVector[1] = 1.0f;
 
 					//h1_asset->primaryLights[i].bulbLength[2] = 500.0f;
 				}
@@ -69,8 +69,8 @@ namespace ZoneTool
 				// idk how this works
 				if (h1_asset->primaryLights[i].type == H1::GFX_LIGHT_TYPE_SPOT || h1_asset->primaryLights[i].type == H1::GFX_LIGHT_TYPE_OMNI)
 				{
-					h1_asset->primaryLightEnvs[i].numIndices = 2;
-					h1_asset->primaryLightEnvs[i].primaryLightIndices[0] = i;
+					h1_asset->primaryLightEnvs[i].numIndices = 1;
+					h1_asset->primaryLightEnvs[i].primaryLightIndices[0] = 1;
 					h1_asset->primaryLightEnvs[i].primaryLightIndices[1] = 0;
 					h1_asset->primaryLightEnvs[i].primaryLightIndices[2] = 0;
 					h1_asset->primaryLightEnvs[i].primaryLightIndices[3] = 0;

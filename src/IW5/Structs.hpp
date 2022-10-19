@@ -893,14 +893,14 @@ namespace ZoneTool
 		};
 
 		// Material stuff
-		struct GfxImageLoadDef // actually a IDirect3DTexture* but this is easier
+		struct __declspec(align(4)) GfxImageLoadDef
 		{
-			unsigned char levelCount;
-			unsigned char pad[3];
+			char levelCount;
+			char pad[3];
 			int flags;
-			int format; // usually the compression Magic
-			int dataSize; // set to zero to load from IWD
-			char* texture; // texture
+			int format;
+			int resourceSize;
+			char data[1];
 		};
 
 		struct GfxImage
@@ -3122,7 +3122,8 @@ namespace ZoneTool
 
 		struct XModelDrawInfo
 		{
-			unsigned __int16 lod;
+			char hasGfxEntIndex;
+			char lod;
 			unsigned __int16 surfId;
 		};
 

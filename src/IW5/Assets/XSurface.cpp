@@ -3,9 +3,11 @@
 
 namespace ZoneTool
 {
-	namespace PackedShit
+	namespace
 	{
-		using namespace IW5;
+		namespace PackedShit
+		{
+			using namespace IW5;
 
 #define _BYTE  uint8_t
 #define _WORD  uint16_t
@@ -23,88 +25,92 @@ namespace ZoneTool
 #define BYTE1(x)   BYTEn(x,  1)         // byte 1 (counting from 0)
 #define BYTE2(x)   BYTEn(x,  2)
 
-		PackedTexCoords Vec2PackTexCoords(float* in) // iw5 func
-		{
-			int v2; // eax
-			int v3; // esi
-			int v4; // eax
-			int v5; // ecx
-			PackedTexCoords result; // eax
-			int v7; // [esp+8h] [ebp+8h]
-			int v8; // [esp+8h] [ebp+8h]
-
-			v7 = LODWORD(in[0]);
-			v2 = (int)((2 * v7) ^ 0x80003FFF) >> 14;
-			if (v2 < 0x3FFF)
+			PackedTexCoords Vec2PackTexCoords(float* in) // iw5 func
 			{
-				if (v2 <= -16384)
-					LOWORD(v2) = -16384;
+				int v2; // eax
+				int v3; // esi
+				int v4; // eax
+				int v5; // ecx
+				PackedTexCoords result; // eax
+				int v7; // [esp+8h] [ebp+8h]
+				int v8; // [esp+8h] [ebp+8h]
+
+				v7 = LODWORD(in[0]);
+				v2 = (int)((2 * v7) ^ 0x80003FFF) >> 14;
+				if (v2 < 0x3FFF)
+				{
+					if (v2 <= -16384)
+						LOWORD(v2) = -16384;
+				}
+				else
+				{
+					LOWORD(v2) = 0x3FFF;
+				}
+				v3 = (v7 >> 16) & 0xC000 | v2 & 0x3FFF;
+				v8 = LODWORD(in[1]);
+				v4 = (int)((2 * v8) ^ 0x80003FFF) >> 14;
+				v5 = (v8 >> 16) & 0xC000;
+				if (v4 < 0x3FFF)
+				{
+					if (v4 <= -16384)
+						LOWORD(v4) = -16384;
+					result.packed = v3 + ((v5 | v4 & 0x3FFF) << 16);
+				}
+				else
+				{
+					result.packed = v3 + ((v5 | 0x3FFF) << 16);
+				}
+				return result;
 			}
-			else
+
+			void Vec2UnpackTexCoords(const PackedTexCoords in, float* out) // iw5 func
 			{
-				LOWORD(v2) = 0x3FFF;
+				unsigned int val;
+
+				if (LOWORD(in.packed))
+					val = ((LOWORD(in.packed) & 0x8000) << 16) | (((((in.packed & 0x3FFF) << 14) - (~(LOWORD(in.packed) << 14) & 0x10000000)) ^ 0x80000001) >> 1);
+				else
+					val = 0;
+
+				out[0] = *reinterpret_cast<float*>(&val);
+
+				if (HIWORD(in.packed))
+					val = ((HIWORD(in.packed) & 0x8000) << 16) | (((((HIWORD(in.packed) & 0x3FFF) << 14)
+						- (~(HIWORD(in.packed) << 14) & 0x10000000)) ^ 0x80000001) >> 1);
+				else
+					val = 0;
+
+				out[1] = *reinterpret_cast<float*>(&val);
 			}
-			v3 = (v7 >> 16) & 0xC000 | v2 & 0x3FFF;
-			v8 = LODWORD(in[1]);
-			v4 = (int)((2 * v8) ^ 0x80003FFF) >> 14;
-			v5 = (v8 >> 16) & 0xC000;
-			if (v4 < 0x3FFF)
+
+			PackedUnitVec Vec3PackUnitVec(float* in) // h2 func
 			{
-				if (v4 <= -16384)
-					LOWORD(v4) = -16384;
-				result.packed = v3 + ((v5 | v4 & 0x3FFF) << 16);
+				float v2; // xmm0_8
+				unsigned int v3; // ebx
+				float v4; // xmm0_8
+				int v5; // ebx
+				float v6; // xmm0_8
+
+				v2 = ((((fmaxf(-1.0f, fminf(1.0f, in[2])) + 1.0f) * 0.5f) * 1023.0f) + 0.5f);
+				v2 = floorf(v2);
+				v3 = ((int)v2 | 0xFFFFFC00) << 10;
+				v4 = ((((fmaxf(-1.0f, fminf(1.0f, in[1])) + 1.0f) * 0.5f) * 1023.0f) + 0.5f);
+				v4 = floorf(v4);
+				v5 = ((int)v4 | v3) << 10;
+				v6 = ((((fmaxf(-1.0f, fminf(1.0f, in[0])) + 1.0f) * 0.5f) * 1023.0f) + 0.5f);
+				v6 = floorf(v6);
+				return (PackedUnitVec)(v5 | (int)v6);
 			}
-			else
+
+			void Vec3UnpackUnitVec(const PackedUnitVec in, float* out) // t6 func
 			{
-				result.packed = v3 + ((v5 | 0x3FFF) << 16);
+				float decodeScale;
+
+				decodeScale = (in.array[3] - -192.0f) / 32385.0f;
+				out[0] = (in.array[0] - 127.0f) * decodeScale;
+				out[1] = (in.array[1] - 127.0f) * decodeScale;
+				out[2] = (in.array[2] - 127.0f) * decodeScale;
 			}
-			return result;
-		}
-
-		void Vec2UnpackTexCoords(const PackedTexCoords in, float* out) // iw5 func
-		{
-			unsigned int val;
-
-			if (LOWORD(in.packed))
-				val = ((LOWORD(in.packed) & 0x8000) << 16) | (((((in.packed & 0x3FFF) << 14) - (~(LOWORD(in.packed) << 14) & 0x10000000)) ^ 0x80000001) >> 1);
-			else
-				val = 0;
-
-			out[0] = *reinterpret_cast<float*>(&val);
-
-			if (HIWORD(in.packed))
-				val = ((HIWORD(in.packed) & 0x8000) << 16) | (((((HIWORD(in.packed) & 0x3FFF) << 14)
-					- (~(HIWORD(in.packed) << 14) & 0x10000000)) ^ 0x80000001) >> 1);
-			else
-				val = 0;
-
-			out[1] = *reinterpret_cast<float*>(&val);
-		}
-
-		PackedUnitVec Vec3PackUnitVec(float* unitVec) // h1 func
-		{
-			unsigned int v5; // ebx
-			int v6; // ebx
-
-			v5 = ((int)floor((float)((float)((float)((float)(fmaxf(1023.0f, fminf(1.0f, unitVec[2])) + 1.0f)
-				* 0.5f)
-				* 1023.0f)
-				+ 0.5f)) | 0xFFFFFC00) << 10;
-			v6 = ((int)floor((float)((float)((float)((float)(fmaxf(-1.0f, fminf(1.0f, unitVec[1])) + 1.0f) * 0.5f) * 1023.0f)
-				+ 0.5f)) | v5) << 10;
-			return (PackedUnitVec)(v6 | (unsigned int)(int)floor((float)((float)((float)((float)(fmaxf(-1.0f, fminf(1.0f, unitVec[0])) + 1.0f) * 0.5f)
-				* 1023.0f)
-				+ 0.5f)));
-		}
-
-		void Vec3UnpackUnitVec(const PackedUnitVec in, float* out) // t6 func
-		{
-			float decodeScale;
-
-			decodeScale = (float)((float)in.array[3] - -192.0) / 32385.0;
-			*out = (float)((float)in.array[0] - 127.0) * decodeScale;
-			out[1] = (float)((float)in.array[1] - 127.0) * decodeScale;
-			out[2] = (float)((float)in.array[2] - 127.0) * decodeScale;
 		}
 	}
 
@@ -256,18 +262,19 @@ namespace ZoneTool
 			{
 				memcpy(&h1_asset->verts0.packedVerts0[i], &asset->verticies[i], sizeof(IW5::GfxPackedVertex));
 
-				float texCoord_unpacked[2];
+				float texCoord_unpacked[2]{ 0 };
 				PackedShit::Vec2UnpackTexCoords(asset->verticies[i].texCoord, texCoord_unpacked);
 				std::swap(texCoord_unpacked[0], texCoord_unpacked[1]); // these are inverted...
 				h1_asset->verts0.packedVerts0[i].texCoord.packed = PackedShit::Vec2PackTexCoords(texCoord_unpacked).packed;
 
 				// re-calculate these...
-				float normal_unpacked[3];
+				float normal_unpacked[3]{ 0 };
 				PackedShit::Vec3UnpackUnitVec(asset->verticies[i].normal, normal_unpacked);
 				h1_asset->verts0.packedVerts0[i].normal.packed = PackedShit::Vec3PackUnitVec(normal_unpacked).packed;
 
-				float tangent_unpacked[3];
-				PackedShit::Vec3UnpackUnitVec(asset->verticies[i].normal, tangent_unpacked);
+				// i don't understand why normal unpacked seems to be correct instead
+				//float tangent_unpacked[3]{ 0 };
+				//PackedShit::Vec3UnpackUnitVec(asset->verticies[i].tangent, tangent_unpacked);
 				h1_asset->verts0.packedVerts0[i].tangent.packed = PackedShit::Vec3PackUnitVec(normal_unpacked).packed;
 			}
 

@@ -117,6 +117,17 @@ namespace ZoneTool
 			return offset;
 		}
 
+		unsigned int image_count_mipmaps(unsigned int width, unsigned int height, unsigned int depth)
+		{
+			unsigned int mipRes;
+			unsigned int mipCount;
+
+			mipCount = 1;
+			for (mipRes = 1; mipRes < width || mipRes < height || mipRes < depth; mipRes *= 2)
+				++mipCount;
+			return mipCount;
+		}
+
 		H1::GfxImage* GenerateH1GfxImage(GfxImage* asset, ZoneMemory* mem)
 		{
 			// allocate H1 GfxImage structure
@@ -128,15 +139,15 @@ namespace ZoneTool
 			h1_asset->sematic = asset->semantic;
 			h1_asset->category = asset->category;
 			h1_asset->flags = asset->flags;
-			h1_asset->dataLen1 = asset->texture->dataSize;
-			h1_asset->dataLen2 = asset->texture->dataSize;
+			h1_asset->dataLen1 = asset->texture->resourceSize;
+			h1_asset->dataLen2 = asset->texture->resourceSize;
 			h1_asset->width = asset->width;
 			h1_asset->height = asset->height;
 			h1_asset->depth = asset->depth;
-			h1_asset->numElements = asset->texture->levelCount;
-			h1_asset->levelCount = asset->mapType == 5 ? 7 : 1;
+			h1_asset->numElements = 1;
+			h1_asset->levelCount = image_count_mipmaps(asset->width, asset->height, asset->depth);
 			h1_asset->streamed = false;
-			h1_asset->pixelData = reinterpret_cast<unsigned char*>(&asset->texture->texture);
+			h1_asset->pixelData = reinterpret_cast<unsigned char*>(&asset->texture->data);
 
 			if (h1_asset->imageFormat == DXGI_FORMAT_UNKNOWN)
 			{
@@ -146,8 +157,8 @@ namespace ZoneTool
 
 			if (asset->texture->format == D3DFMT_A8R8G8B8 && h1_asset->imageFormat == DXGI_FORMAT_R8G8B8A8_UNORM)
 			{
-				auto* new_pixels = mem->Alloc<unsigned char>(asset->texture->dataSize);
-				argb_to_rgba(h1_asset->pixelData, asset->texture->dataSize, new_pixels);
+				auto* new_pixels = mem->Alloc<unsigned char>(asset->texture->resourceSize);
+				argb_to_rgba(h1_asset->pixelData, asset->texture->resourceSize, new_pixels);
 				h1_asset->pixelData = new_pixels;
 			}
 			else
@@ -171,7 +182,7 @@ namespace ZoneTool
 
 			if (!isMapImage) return;
 
-			if (!asset->texture->dataSize)
+			if (!asset->texture->resourceSize)
 			{
 				ZONETOOL_INFO("Not dumping image %s", asset->name);
 				return;

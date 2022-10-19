@@ -3,6 +3,117 @@
 
 namespace ZoneTool
 {
+	namespace
+	{
+		namespace PackedShit
+		{
+			using namespace IW5;
+
+#define _BYTE  uint8_t
+#define _WORD  uint16_t
+#define _DWORD uint32_t
+#define _QWORD uint64_t
+
+#define LOBYTE(x)   (*((_BYTE*)&(x)))   // low byte
+#define LOWORD(x)   (*((_WORD*)&(x)))   // low word
+#define LODWORD(x)  (*((_DWORD*)&(x)))  // low dword
+#define HIBYTE(x)   (*((_BYTE*)&(x)+1))
+#define HIWORD(x)   (*((_WORD*)&(x)+1))
+#define HIDWORD(x)  (*((_DWORD*)&(x)+1))
+#define BYTEn(x, n)   (*((_BYTE*)&(x)+n))
+#define WORDn(x, n)   (*((_WORD*)&(x)+n))
+#define BYTE1(x)   BYTEn(x,  1)         // byte 1 (counting from 0)
+#define BYTE2(x)   BYTEn(x,  2)
+
+			PackedTexCoords Vec2PackTexCoords(float* in) // iw5 func
+			{
+				int v2; // eax
+				int v3; // esi
+				int v4; // eax
+				int v5; // ecx
+				PackedTexCoords result; // eax
+				int v7; // [esp+8h] [ebp+8h]
+				int v8; // [esp+8h] [ebp+8h]
+
+				v7 = LODWORD(in[0]);
+				v2 = (int)((2 * v7) ^ 0x80003FFF) >> 14;
+				if (v2 < 0x3FFF)
+				{
+					if (v2 <= -16384)
+						LOWORD(v2) = -16384;
+				}
+				else
+				{
+					LOWORD(v2) = 0x3FFF;
+				}
+				v3 = (v7 >> 16) & 0xC000 | v2 & 0x3FFF;
+				v8 = LODWORD(in[1]);
+				v4 = (int)((2 * v8) ^ 0x80003FFF) >> 14;
+				v5 = (v8 >> 16) & 0xC000;
+				if (v4 < 0x3FFF)
+				{
+					if (v4 <= -16384)
+						LOWORD(v4) = -16384;
+					result.packed = v3 + ((v5 | v4 & 0x3FFF) << 16);
+				}
+				else
+				{
+					result.packed = v3 + ((v5 | 0x3FFF) << 16);
+				}
+				return result;
+			}
+
+			void Vec2UnpackTexCoords(const PackedTexCoords in, float* out) // iw5 func
+			{
+				unsigned int val;
+
+				if (LOWORD(in.packed))
+					val = ((LOWORD(in.packed) & 0x8000) << 16) | (((((in.packed & 0x3FFF) << 14) - (~(LOWORD(in.packed) << 14) & 0x10000000)) ^ 0x80000001) >> 1);
+				else
+					val = 0;
+
+				out[0] = *reinterpret_cast<float*>(&val);
+
+				if (HIWORD(in.packed))
+					val = ((HIWORD(in.packed) & 0x8000) << 16) | (((((HIWORD(in.packed) & 0x3FFF) << 14)
+						- (~(HIWORD(in.packed) << 14) & 0x10000000)) ^ 0x80000001) >> 1);
+				else
+					val = 0;
+
+				out[1] = *reinterpret_cast<float*>(&val);
+			}
+
+			PackedUnitVec Vec3PackUnitVec(float* in) // h2 func
+			{
+				float v2; // xmm0_8
+				unsigned int v3; // ebx
+				float v4; // xmm0_8
+				int v5; // ebx
+				float v6; // xmm0_8
+
+				v2 = ((((fmaxf(-1.0f, fminf(1.0f, in[2])) + 1.0f) * 0.5f) * 1023.0f) + 0.5f);
+				v2 = floorf(v2);
+				v3 = ((int)v2 | 0xFFFFFC00) << 10;
+				v4 = ((((fmaxf(-1.0f, fminf(1.0f, in[1])) + 1.0f) * 0.5f) * 1023.0f) + 0.5f);
+				v4 = floorf(v4);
+				v5 = ((int)v4 | v3) << 10;
+				v6 = ((((fmaxf(-1.0f, fminf(1.0f, in[0])) + 1.0f) * 0.5f) * 1023.0f) + 0.5f);
+				v6 = floorf(v6);
+				return (PackedUnitVec)(v5 | (int)v6);
+			}
+
+			void Vec3UnpackUnitVec(const PackedUnitVec in, float* out) // t6 func
+			{
+				float decodeScale;
+
+				decodeScale = (in.array[3] - -192.0f) / 32385.0f;
+				out[0] = (in.array[0] - 127.0f) * decodeScale;
+				out[1] = (in.array[1] - 127.0f) * decodeScale;
+				out[2] = (in.array[2] - 127.0f) * decodeScale;
+			}
+		}
+	}
+
 	namespace IW5
 	{
 		H1::GfxWorld* GenerateH1GfxWorld(GfxWorld* asset, ZoneMemory* mem)
@@ -201,8 +312,16 @@ namespace ZoneTool
 			for (unsigned int i = 0; i < h1_asset->draw.vertexCount; i++)
 			{
 				memcpy(&h1_asset->draw.vd.vertices[i], &asset->worldDraw.vd.vertices[i], sizeof(IW5::GfxWorldVertex));
-				//h1_asset->draw.vd.vertices[i].normal.packed = 0; // need to recalculate?
-				//h1_asset->draw.vd.vertices[i].tangent.packed = 0; // need to recalculate?
+
+				// re-calculate these...
+				float normal_unpacked[3]{ 0 };
+				PackedShit::Vec3UnpackUnitVec(asset->worldDraw.vd.vertices[i].normal, normal_unpacked);
+				h1_asset->draw.vd.vertices[i].normal.packed = PackedShit::Vec3PackUnitVec(normal_unpacked).packed;
+
+				// i don't understand why normal unpacked seems to be correct instead
+				//float tangent_unpacked[3]{ 0 };
+				//PackedShit::Vec3UnpackUnitVec(asset->worldDraw.vd.vertices[i].tangent, tangent_unpacked);
+				h1_asset->draw.vd.vertices[i].tangent.packed = PackedShit::Vec3PackUnitVec(normal_unpacked).packed;
 			}
 
 			h1_asset->draw.vertexLayerDataSize = asset->worldDraw.vertexLayerDataSize;
@@ -344,7 +463,7 @@ namespace ZoneTool
 			h1_asset->sceneDynModel = mem->Alloc<H1::GfxSceneDynModel>(asset->dpvsDyn.dynEntClientCount[0]);
 			for (unsigned int i = 0; i < asset->dpvsDyn.dynEntClientCount[0]; i++)
 			{
-				h1_asset->sceneDynModel[i].info.hasGfxEntIndex = 0;
+				h1_asset->sceneDynModel[i].info.hasGfxEntIndex = asset->sceneDynModel[i].info.hasGfxEntIndex;
 				h1_asset->sceneDynModel[i].info.lod = asset->sceneDynModel[i].info.lod;
 				h1_asset->sceneDynModel[i].info.surfId = asset->sceneDynModel[i].info.surfId;
 				h1_asset->sceneDynModel[i].dynEntId = asset->sceneDynModel[i].dynEntId;

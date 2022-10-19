@@ -475,7 +475,7 @@ namespace ZoneTool
 
 			ClearTextures();
 
-			if (!loadDef->dataSize)
+			if (!loadDef->resourceSize)
 				return;
 
 			auto* buffer = GetTextureBuffer();
@@ -488,7 +488,7 @@ namespace ZoneTool
 			}
 			textureMap[image->name] = textureBufferIndex;
 
-			size_t size = 16 + loadDef->dataSize;
+			size_t size = 16 + loadDef->resourceSize;
 			void* data = &buffer[textureBufferIndex];
 			textureBufferIndex += size;
 
