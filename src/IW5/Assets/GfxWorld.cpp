@@ -398,7 +398,7 @@ namespace ZoneTool
 			h1_asset->lightGrid.paletteBitstream = mem->Alloc<unsigned char>(h1_asset->lightGrid.paletteBitstreamSize);
 			memcpy(h1_asset->lightGrid.paletteBitstream, paletteBitStream, sizeof(paletteBitStream));
 
-			h1_asset->lightGrid.missingGridColorIndex = h1_asset->lightGrid.paletteEntryCount - 1;
+			//h1_asset->lightGrid.missingGridColorIndex = h1_asset->lightGrid.paletteEntryCount - 1;
 
 			h1_asset->lightGrid.rangeExponent8BitsEncoding = 0;
 			h1_asset->lightGrid.rangeExponent12BitsEncoding = 4;

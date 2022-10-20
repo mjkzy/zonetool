@@ -127,19 +127,23 @@ namespace
 			{"distortion_scale_zfeather",				"distortion_scale_legacydst_zf_dat"}, // could be wrong
 
 			{"effect_add",								"effect_add_ndw"},
+			{"effect_add_eyeoffset",					"effect_add_eo"},
 			{"effect_add_nofog",						"effect_add_nofog_ndw"},
 			{"effect_add_nofog_eyeoffset",				"effect_add_nofog_eo_ndw"},
 			{"effect_blend",							"effect_blend_ndw"},
 			{"effect_blend_nofog",						"effect_blend_nofog_ndw"},
-			//{"effect_replace_lin",						"2d"}, // m_effect_replace_ndw
+			//{"effect_replace_lin",					"2d"}, // m_effect_replace_ndw
 			{"effect_zfeather_add",						"effect_zf_add_ndw"},
 			{"effect_zfeather_add_nofog",				"effect_zf_add_nofog_ndw"},
 			{"effect_zfeather_blend",					"effect_zf_blend_ndw"},
 			{"effect_zfeather_blend_nofog",				"effect_zf_blend_nofog_ndw"},
-			{"effect_zfeather_blend_spot_sm",				"effect_zf_blend_ndw"}, // couldn't find
+			{"effect_zfeather_blend_spot_sm",			"effect_zf_blend_ndw"}, // couldn't find
+			{"effect_zfeather_falloff_add_eyeoffset",	"effect_zf_falloff_add_eo_ndw"},
 			{"effect_zfeather_falloff_add_nofog_eyeoffset", "effect_zf_falloff_add_nofog_eo_ndw"},
 			{"effect_zfeather_falloff_blend",			"effect_zf_falloff_blend_ndw"},
+			{"effect_zfeather_falloff_screen",			"effect_zf_falloff_screen_nofog_ndw"}, // closest i could find
 			{"effect_zfeather_add_nofog_eyeoffset",		"effect_zf_add_nofog_eo_ndw"},
+			{"effect_zfeather_outdoor_blend",			"effect_zf_outdoor_blend_ndw"},
 
 			{"particle_cloud",							"particle_cloud_atlas_replace_ga"}, // could be wrong
 			{"particle_cloud_add",						"particle_cloud_add_ga"},

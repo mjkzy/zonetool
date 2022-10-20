@@ -132,6 +132,7 @@ namespace ZoneTool
 			const char* __ptr64 sndAliasPrefix;
 			char __pad1[48];
 		}; assert_sizeof(PhysPreset, 0x60);
+		assert_offsetof(PhysPreset, sndAliasPrefix, 40);
 
 		struct dmMeshNode_array_t
 		{
@@ -151,7 +152,7 @@ namespace ZoneTool
 			char __pad0[36];
 			unsigned int count0;
 			unsigned int count1;
-			unsigned int count2;
+			unsigned int count2; // m_triangleCount
 			char __pad1[8];
 		}; assert_sizeof(dmMeshData, 0x50);
 
@@ -227,17 +228,17 @@ namespace ZoneTool
 			};
 		};
 
-		struct PhysWorld
+		struct PhysWorld // PhysicsWorld
 		{
 			const char* __ptr64 name;
 			PhysBrushModel* __ptr64 models;
 			dmPolytopeData* __ptr64 polytopeDatas;
 			dmMeshData* __ptr64 meshDatas;
 			PhysWaterVolumeDef* __ptr64 waterVolumes;
-			unsigned int modelsCount;
-			unsigned int polytopeDatasCount;
-			unsigned int meshDatasCount;
-			unsigned int waterVolumesCount;
+			unsigned int modelsCount; // brushModelCount
+			unsigned int polytopeDatasCount; // polytopeCount
+			unsigned int meshDatasCount; // meshDataCount
+			unsigned int waterVolumesCount; // waterVolumeDefCount
 		}; assert_sizeof(PhysWorld, 0x38);
 
 		struct PhysConstraint
@@ -663,7 +664,7 @@ namespace ZoneTool
 			ID3D11ShaderResourceView* __ptr64 shaderViewAlternate;
 		};
 
-		struct Picmip
+		struct CardMemory
 		{
 			unsigned char platform[2];
 		};
@@ -687,23 +688,56 @@ namespace ZoneTool
 			MAPTYPE_COUNT = 0x7,
 		};
 
+		enum IMG_TS : std::uint8_t
+		{
+			TS_2D = 0x0,
+			TS_FUNCTION = 0x1,
+			TS_COLOR_MAP = 0x2,
+			TS_DETAIL_MAP = 0x3,
+			TS_UNUSED_2 = 0x4,
+			TS_NORMAL_MAP = 0x5,
+			TS_UNUSED_3 = 0x6,
+			TS_UNUSED_4 = 0x7,
+			TS_SPECULAR_MAP = 0x8,
+			TS_UNUSED_5 = 0x9,
+			TS_OCEANFLOW_DISPLACEMENT_MAP = 0xA,
+			TS_WATER_MAP = 0xB,
+			TS_OCEAN_DISPLACEMENT_MAP = 0xC,
+			TS_DISPLACEMENT_MAP = 0xD,
+			TS_PARALLAX_MAP = 0xE,
+			TS_COUNT = 0xF,
+		};
+
+		enum IMG_CATEGORY : std::uint8_t
+		{
+			IMG_CATEGORY_UNKNOWN = 0x0,
+			IMG_CATEGORY_AUTO_GENERATED = 0x1,
+			IMG_CATEGORY_LIGHTMAP = 0x2,
+			IMG_CATEGORY_LOAD_FROM_FILE = 0x3,
+			IMG_CATEGORY_RAW = 0x4,
+			IMG_CATEGORY_FIRST_UNMANAGED = 0x5,
+			IMG_CATEGORY_WATER = 0x5,
+			IMG_CATEGORY_RENDERTARGET = 0x6,
+			IMG_CATEGORY_TEMP = 0x7,
+		};
+
 		struct GfxImage
 		{
 			GfxTexture texture;
 			DXGI_FORMAT imageFormat;
 			MapType mapType;
-			unsigned char sematic;
+			unsigned char semantic;
 			unsigned char category;
 			unsigned char flags;
-			Picmip picmip;
+			CardMemory cardMemory;
 			char __pad0[2];
 			unsigned int dataLen1;
 			unsigned int dataLen2;
 			unsigned short width;
 			unsigned short height;
 			unsigned short depth;
-			unsigned short numElements;
-			unsigned char levelCount;
+			unsigned short numElements; // arraySize
+			unsigned char levelCount; // mipLevels
 			unsigned char streamed;
 			char __pad1[2];
 			unsigned char* __ptr64 pixelData;
@@ -750,6 +784,12 @@ namespace ZoneTool
 		{
 			StreamFileName filename;
 			unsigned int totalMsec;
+		};
+
+		enum LoadedSoundFormat : std::int16_t
+		{
+			SND_FORMAT_PCM = 0x0,
+			SND_FORMAT_FLAC = 0x6,
 		};
 
 		struct LoadedSoundInfo
@@ -854,6 +894,7 @@ namespace ZoneTool
 				unsigned int noWetLevel : 1;
 				unsigned int is3d : 1;
 				unsigned int type : 2;
+				unsigned int unk : 24;
 			};
 			unsigned int intValue;
 		};
@@ -955,7 +996,7 @@ namespace ZoneTool
 			int contents;
 			unsigned short hullCount;
 			unsigned short firstHull;
-		};
+		}; assert_sizeof(TriggerModel, 8);
 
 		struct TriggerHull
 		{
@@ -963,14 +1004,14 @@ namespace ZoneTool
 			int contents;
 			unsigned short slabCount;
 			unsigned short firstSlab;
-		};
+		}; assert_sizeof(TriggerHull, 32);
 
 		struct TriggerSlab
 		{
 			float dir[3];
 			float midPoint;
 			float halfSize;
-		};
+		}; assert_sizeof(TriggerSlab, 20);
 
 		struct MapTriggers
 		{
@@ -980,14 +1021,14 @@ namespace ZoneTool
 			TriggerHull* __ptr64 hulls;
 			unsigned int slabCount;
 			TriggerSlab* __ptr64 slabs;
-		};
+		}; assert_sizeof(MapTriggers, 0x30);
 
 		struct ClientTriggerAabbNode
 		{
 			Bounds bounds;
 			unsigned short firstChild;
 			unsigned short childCount;
-		};
+		}; assert_sizeof(ClientTriggerAabbNode, 28);
 
 		struct ClientTriggers
 		{
@@ -1007,7 +1048,7 @@ namespace ZoneTool
 			short* __ptr64 unk5;
 			short* __ptr64 unk6;
 			short* __ptr64 unk7;
-			short* __ptr64 unk8;
+			void* __ptr64 unk8;
 		}; assert_sizeof(ClientTriggers, 0xB0);
 
 		struct ClientTriggerBlendNode
@@ -1016,13 +1057,13 @@ namespace ZoneTool
 			float pointB[3];
 			unsigned short triggerA;
 			unsigned short triggerB;
-		};
+		}; assert_sizeof(ClientTriggerBlendNode, 28);
 
 		struct ClientTriggerBlend
 		{
 			unsigned short numClientTriggerBlendNodes;
 			ClientTriggerBlendNode* __ptr64 blendNodes;
-		};
+		}; assert_sizeof(ClientTriggerBlend, 0x10);
 
 		struct SpawnPointEntityRecord
 		{
@@ -1228,7 +1269,7 @@ namespace ZoneTool
 			NetConstStringType stringType;
 			NetConstStringSource sourceType;
 			unsigned int entryCount;
-			const char* __ptr64 * __ptr64 stringList;
+			const char* __ptr64* __ptr64 stringList;
 		}; assert_sizeof(NetConstStrings, 0x20);
 
 		struct LuaFile
@@ -1324,6 +1365,66 @@ namespace ZoneTool
 			FX_ELEM_TYPE_VECTORFIELD = 17,
 		};
 
+		enum FxElemLitType : std::uint8_t
+		{
+			FX_ELEM_LIT_TYPE_NONE = 0x0,
+			FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE = 0x1,
+			FX_ELEM_LIT_TYPE_LIGHTGRID_FRAME_SINGLE = 0x2,
+			FX_ELEM_LIT_TYPE_LIGHTGRID_FRAME_SPRITE = 0x3,
+			FX_ELEM_LIT_TYPE_LIGHTGRID_FRAME_VERTEX = 0x4,
+			FX_ELEM_LIT_TYPE_COUNT = 0x5,
+		};
+
+		enum FxElemDefFlags : std::uint32_t
+		{
+			FX_ELEM_SPAWN_RELATIVE_TO_EFFECT = 0x2,
+			FX_ELEM_SPAWN_FRUSTUM_CULL = 0x4,
+			FX_ELEM_RUNNER_USES_RAND_ROT = 0x8,
+			FX_ELEM_SPAWN_OFFSET_NONE = 0x0,
+			FX_ELEM_SPAWN_OFFSET_SPHERE = 0x10,
+			FX_ELEM_SPAWN_OFFSET_CYLINDER = 0x20,
+			FX_ELEM_SPAWN_OFFSET_MASK = 0x30,
+			FX_ELEM_RUN_RELATIVE_TO_WORLD = 0x0,
+			FX_ELEM_RUN_RELATIVE_TO_SPAWN = 0x40,
+			FX_ELEM_RUN_RELATIVE_TO_EFFECT = 0x80,
+			FX_ELEM_RUN_RELATIVE_TO_OFFSET = 0xC0,
+			FX_ELEM_RUN_RELATIVE_TO_CAMERA = 0x100,
+			FX_ELEM_RUN_MASK = 0x1C0,
+			FX_ELEM_DIE_ON_TOUCH = 0x200,
+			FX_ELEM_DRAW_PAST_FOG = 0x400,
+			FX_ELEM_DRAW_WITH_VIEWMODEL = 0x800,
+			FX_ELEM_BLOCK_SIGHT = 0x1000,
+			FX_ELEM_DRAW_IN_THERMAL_VIEW_ONLY = 0x2000,
+			FX_ELEM_TRAIL_ORIENT_BY_VELOCITY = 0x4000,
+			FX_ELEM_EMIT_BOLT = 0x80000000,
+			FX_ELEM_EMIT_ORIENT_BY_ELEM = 0x8000,
+			FX_ELEM_USE_OCCLUSION_QUERY = 0x10000,
+			FX_ELEM_NODRAW_IN_THERMAL_VIEW = 0x20000,
+			FX_ELEM_THERMAL_MASK = 0x22000,
+			FX_ELEM_SPAWN_IMPACT_FX_WITH_SURFACE_NAME = 0x40000,
+			FX_ELEM_RECEIVE_DYNAMIC_LIGHT = 0x80000,
+			FX_ELEM_VOLUMETRIC_TRAIL = 0x100000,
+			FX_ELEM_USE_COLLISION = 0x200000,
+			FX_ELEM_USE_VECTORFIELDS = 0x400000,
+			FX_ELEM_NO_SURFACE_HDR_SCALAR = 0x800000,
+			FX_ELEM_HAS_VELOCITY_GRAPH_LOCAL = 0x1000000,
+			FX_ELEM_HAS_VELOCITY_GRAPH_WORLD = 0x2000000,
+			FX_ELEM_HAS_GRAVITY = 0x4000000,
+			FX_ELEM_USE_MODEL_PHYSICS = 0x8000000,
+			FX_ELEM_NONUNIFORM_SCALE = 0x10000000,
+			FX_ELEM_CLOUD_SHAPE_CUBE = 0x0,
+			FX_ELEM_CLOUD_SHAPE_SPHERE_LARGE = 0x20000000,
+			FX_ELEM_CLOUD_SHAPE_SPHERE_MEDIUM = 0x40000000,
+			FX_ELEM_CLOUD_SHAPE_SPHERE_SMALL = 0x60000000,
+			FX_ELEM_CLOUD_SHAPE_MASK = 0x60000000,
+			FX_ELEM_FOUNTAIN_DISABLE_COLLISION = 0x80000000,
+		};
+
+		enum FxElemDefExtraFlags : std::uint32_t
+		{
+			
+		};
+
 		struct FxFloatRange
 		{
 			float base;
@@ -1391,12 +1492,13 @@ namespace ZoneTool
 		struct FxElemVisualState
 		{
 			float color[4];
-			float unlitHDRScale;
-			float rotationDelta;
-			float rotationTotal;
+			float rotationA;
+			float rotationB;
+			float rotationC;
+			float pad1[2];
 			float size[2];
 			float scale;
-			char __pad0[16];
+			float pad2[2];
 		};
 
 		struct FxElemVisStateSample
@@ -1537,7 +1639,7 @@ namespace ZoneTool
 			FxFloatRange reflectionFactor;
 			FxElemAtlas atlas;
 			FxElemType elemType;
-			unsigned char elemLitType;
+			FxElemLitType elemLitType;
 			unsigned char visualCount;
 			unsigned char velIntervalCount;
 			unsigned char visStateIntervalCount;
@@ -1556,8 +1658,21 @@ namespace ZoneTool
 			unsigned char useItemClip;
 			unsigned char fadeInfo;
 			int randomSeed;
-			char __pad0[24];
+			float __pad0[6];
+			//char __pad0[24];
 		}; assert_sizeof(FxElemDef, 0x140);
+
+		enum FxSystemFlags : std::uint32_t
+		{
+			FX_FLAG_DISABLE = 0x1,
+			FX_FLAG_NODRAW = 0x2,
+			FX_FLAG_NOSPOTLIGHT = 0x4,
+			FX_FLAG_GC = 0x8,
+			FX_FLAG_INIT = 0x10,
+			FX_FLAG_ARCHIVING = 0x20,
+			FX_FLAG_DEFER_ELEM = 0x40,
+			FX_FLAG_NOOMNILIGHT = 0x80,
+		};
 
 		struct FxEffectDef
 		{
@@ -1603,8 +1718,8 @@ namespace ZoneTool
 
 		union XAnimDynamicFrames
 		{
-			unsigned char(*_1)[3];
-			unsigned short(*_2)[3];
+			unsigned char(*__ptr64 _1)[3];
+			unsigned short(*__ptr64 _2)[3];
 		};
 
 		union XAnimDynamicIndices
@@ -1636,7 +1751,7 @@ namespace ZoneTool
 
 		struct XAnimDeltaPartQuatDataFrames2
 		{
-			short(*frames)[2];
+			short(*__ptr64 frames)[2];
 			XAnimDynamicIndices indices;
 		};
 
@@ -1654,7 +1769,7 @@ namespace ZoneTool
 
 		struct XAnimDeltaPartQuatDataFrames
 		{
-			short(*frames)[4];
+			short(*__ptr64 frames)[4];
 			XAnimDynamicIndices indices;
 		};
 
@@ -1737,7 +1852,7 @@ namespace ZoneTool
 			unsigned short blendShapeWeightCount; // 146
 			short u4; // unused? padding?
 			scr_string_t* __ptr64 blendShapeWeightNames; // 152
-			char(*blendShapeWeightUnknown1)[3]; // 160
+			char(*__ptr64 blendShapeWeightUnknown1)[3]; // 160
 			unsigned short* __ptr64 blendShapeWeightUnknown2; // 168
 			unsigned short* __ptr64 blendShapeWeightUnknown3; // 176
 			unsigned short* __ptr64 blendShapeWeightUnknown4; // 184
@@ -2100,7 +2215,7 @@ namespace ZoneTool
 			DObjAnimMat* __ptr64 baseMat; // 96
 			ReactiveMotionModelPart* __ptr64 reactiveMotionParts; // 104
 			ReactiveMotionModelTweaks* __ptr64 reactiveMotionTweaks; // 112
-			Material* __ptr64 * __ptr64 materialHandles; // 120
+			Material* __ptr64* __ptr64 materialHandles; // 120
 			XModelLodInfo lodInfo[6]; // 128
 			char numLods; // 512
 			char collLod; // 513
@@ -2132,7 +2247,7 @@ namespace ZoneTool
 			int u4; // 648
 			int u5; // 652
 			SkeletonScript* __ptr64 skeletonScript; // 656
-			XModel* __ptr64 * __ptr64 compositeModels; // 664
+			XModel* __ptr64* __ptr64 compositeModels; // 664
 			XPhysBoneInfo* __ptr64 bonePhysics; // 672
 		}; assert_sizeof(XModel, 0x2A8);
 
@@ -2387,11 +2502,11 @@ namespace ZoneTool
 			AttachmentType type; // 16
 			weapType_t weaponType; // 20
 			weapClass_t weapClass; // 24
-			XModel* __ptr64 * __ptr64 worldModels; // 32 (2 xmodels)
-			XModel* __ptr64 * __ptr64 viewModels; // 40 (2 xmodels)
-			XModel* __ptr64 * __ptr64 reticleViewModels; // 48 (64 xmodels)
-			snd_alias_list_t* __ptr64 * __ptr64 bounceSounds; // 56 (53 sounds)
-			snd_alias_list_t* __ptr64 * __ptr64 rollingSounds; // 64 (53 sounds)
+			XModel* __ptr64* __ptr64 worldModels; // 32 (2 xmodels)
+			XModel* __ptr64* __ptr64 viewModels; // 40 (2 xmodels)
+			XModel* __ptr64* __ptr64 reticleViewModels; // 48 (64 xmodels)
+			snd_alias_list_t* __ptr64* __ptr64 bounceSounds; // 56 (53 sounds)
+			snd_alias_list_t* __ptr64* __ptr64 rollingSounds; // 64 (53 sounds)
 			AttChargeInfo* __ptr64 chargeInfo; // 72
 			AttHybridSettings* __ptr64 hybridSettings; // 80
 			scr_string_t* __ptr64 stringArray1; // 88 (4 strings) (hideTags?)
@@ -2828,16 +2943,16 @@ namespace ZoneTool
 			};
 			const char* __ptr64 szDisplayName; // 8
 			const char* __ptr64 szOverlayName; // 16
-			XModel* __ptr64 * __ptr64 gunModel; // 24 (2 xmodels)
+			XModel* __ptr64* __ptr64 gunModel; // 24 (2 xmodels)
 			XModel* __ptr64 handModel; // 32
 			XModel* __ptr64 unknownModel; // 40
-			XModel* __ptr64 * __ptr64 reticleViewModels; // 48 (64 xmodels)
+			XModel* __ptr64* __ptr64 reticleViewModels; // 48 (64 xmodels)
 			const char* __ptr64 szModeName; // 56
-			XAnimParts* __ptr64 * __ptr64 szXAnimsRightHanded; // 64 (190 xanims)
-			XAnimParts* __ptr64 * __ptr64 szXAnimsLeftHanded; // 72 (190 xanims)
+			XAnimParts* __ptr64* __ptr64 szXAnimsRightHanded; // 64 (190 xanims)
+			XAnimParts* __ptr64* __ptr64 szXAnimsLeftHanded; // 72 (190 xanims)
 			scr_string_t* __ptr64 hideTags; // 80 (32 xstrings)
-			WeaponAttachment* __ptr64 * __ptr64 attachments; // 88 (weaponDef + 1332 attachments)
-			XAnimParts* __ptr64 * __ptr64 szXAnims; // 96 (190 xanims)
+			WeaponAttachment* __ptr64* __ptr64 attachments; // 88 (weaponDef + 1332 attachments)
+			XAnimParts* __ptr64* __ptr64 szXAnims; // 96 (190 xanims)
 			AnimOverrideEntry* __ptr64 animOverrides; // 104 (weaponDef + 1333 overrides)
 			SoundOverrideEntry* __ptr64 soundOverrides; // 112 (weaponDef + 1334 overrides)
 			FXOverrideEntry* __ptr64 fxOverrides; // 120 (weaponDef + 1335 overrides)
@@ -2848,7 +2963,7 @@ namespace ZoneTool
 			scr_string_t* __ptr64 notetrackRumbleMapKeys; // 160 (16 xstrings)
 			scr_string_t* __ptr64 notetrackRumbleMapValues; // 168 (16 xstrings)
 			scr_string_t* __ptr64 notetrackFXMapKeys; // 176 (16 xstrings)
-			FxEffectDef* __ptr64 * __ptr64 notetrackFXMapValues; // 184 (16 effects)
+			FxEffectDef* __ptr64* __ptr64 notetrackFXMapValues; // 184 (16 effects)
 			scr_string_t* __ptr64 notetrackFXMapTagValues; // 192 (16 xstrings)
 			scr_string_t* __ptr64 notetrackUnknownKeys; // 200 (16 xstrings)
 			char* __ptr64 notetrackUnknown; // 208 (16 chars)
@@ -2940,8 +3055,8 @@ namespace ZoneTool
 			snd_alias_list_t* __ptr64 adsEnterSoundPlayer; // 896
 			snd_alias_list_t* __ptr64 adsLeaveSoundPlayer; // 904
 			snd_alias_list_t* __ptr64 adsCrosshairEnemySound; // 912
-			snd_alias_list_t* __ptr64 * __ptr64 bounceSound; // 920 (53 sounds)
-			snd_alias_list_t* __ptr64 * __ptr64 rollingSound; // 928 (53 sounds)
+			snd_alias_list_t* __ptr64* __ptr64 bounceSound; // 920 (53 sounds)
+			snd_alias_list_t* __ptr64* __ptr64 rollingSound; // 928 (53 sounds)
 			FxEffectDef* __ptr64 viewShellEjectEffect; // 936
 			FxEffectDef* __ptr64 worldShellEjectEffect; // 944
 			FxEffectDef* __ptr64 viewLastShotEjectEffect; // 952
@@ -2949,7 +3064,7 @@ namespace ZoneTool
 			FxEffectDef* __ptr64 viewMagEjectEffect; // 968
 			Material* __ptr64 reticleCenter; // 976
 			Material* __ptr64 reticleSide; // 984
-			XModel* __ptr64 * __ptr64 worldModel; // 992 (2 xmodels)
+			XModel* __ptr64* __ptr64 worldModel; // 992 (2 xmodels)
 			XModel* __ptr64 worldClipModel; // 1000
 			XModel* __ptr64 rocketModel; // 1008
 			XModel* __ptr64 knifeModel; // 1016
@@ -3838,7 +3953,7 @@ namespace ZoneTool
 		struct UIFunctionList
 		{
 			int totalFunctions;
-			Statement_s* __ptr64 * __ptr64 functions;
+			Statement_s* __ptr64* __ptr64 functions;
 		};
 
 		struct StaticDvar
@@ -3850,13 +3965,13 @@ namespace ZoneTool
 		struct StaticDvarList
 		{
 			int numStaticDvars;
-			StaticDvar* __ptr64 * __ptr64 staticDvars;
+			StaticDvar* __ptr64* __ptr64 staticDvars;
 		};
 
 		struct StringList
 		{
 			int totalStrings;
-			const char* __ptr64 * __ptr64 strings;
+			const char* __ptr64* __ptr64 strings;
 		};
 
 		struct ExpressionSupportingData
@@ -3923,7 +4038,7 @@ namespace ZoneTool
 		struct MenuEventHandlerSet
 		{
 			int eventHandlerCount;
-			MenuEventHandler* __ptr64 * __ptr64 eventHandlers;
+			MenuEventHandler* __ptr64* __ptr64 eventHandlers;
 		};
 
 		struct ItemKeyHandler
@@ -4170,14 +4285,14 @@ namespace ZoneTool
 			menuData_t* __ptr64 data;
 			windowDef_t window;
 			int itemCount;
-			itemDef_t* __ptr64 * __ptr64 items;
+			itemDef_t* __ptr64* __ptr64 items;
 		};
 
 		struct MenuList
 		{
 			const char* __ptr64 name;
 			int menuCount;
-			menuDef_t* __ptr64 * __ptr64 menus;
+			menuDef_t* __ptr64* __ptr64 menus;
 		};
 
 		struct cplane_s
@@ -5014,10 +5129,10 @@ namespace ZoneTool
 			float dir[3]; // 20 24 28
 			float up[3]; // 32 36 40
 			float origin[3]; // 44 48 52
-			float fadeOffsetRt[2];
-			float radius;
+			float fadeOffset[2];
 			float bulbRadius;
 			float bulbLength[3];
+			float radius; // 80
 			float cosHalfFovOuter; // 84
 			float cosHalfFovInner; // 88
 			float cosHalfFovExpanded; // 92
@@ -5030,8 +5145,17 @@ namespace ZoneTool
 			float cucTransVector[2]; // 128 132
 			const char* __ptr64 defName; // 136
 		}; assert_sizeof(ComPrimaryLight, 144);
-		assert_offsetof(ComPrimaryLight, defName, 136);
+		assert_offsetof(ComPrimaryLight, color, 8);
+		assert_offsetof(ComPrimaryLight, dir, 20);
+		assert_offsetof(ComPrimaryLight, up, 32);
+		assert_offsetof(ComPrimaryLight, origin, 44);
+		assert_offsetof(ComPrimaryLight, radius, 80);
+		assert_offsetof(ComPrimaryLight, cosHalfFovOuter, 84);
+		assert_offsetof(ComPrimaryLight, cosHalfFovInner, 88);
 		assert_offsetof(ComPrimaryLight, cosHalfFovExpanded, 92);
+		assert_offsetof(ComPrimaryLight, rotationLimit, 96);
+		assert_offsetof(ComPrimaryLight, translationLimit, 100);
+		assert_offsetof(ComPrimaryLight, defName, 136);
 
 		struct ComPrimaryLightEnv
 		{
@@ -5212,7 +5336,7 @@ namespace ZoneTool
 			unsigned int* __ptr64 isInUse;
 			unsigned int* __ptr64 cellBits;
 			unsigned char* __ptr64 visData;
-			float(*linkOrg)[3];
+			float(*__ptr64 linkOrg)[3];
 			float* __ptr64 halfThickness;
 			unsigned short* __ptr64 lightingHandles;
 			FxGlassGeometryData* __ptr64 initGeoData;
@@ -5283,7 +5407,7 @@ namespace ZoneTool
 			bool isAncestor;
 			unsigned char recursionDepth;
 			unsigned char hullPointCount;
-			float(* __ptr64 hullPoints)[2];
+			float(*__ptr64 hullPoints)[2];
 			GfxPortal* __ptr64 queuedParent;
 		};
 
@@ -5296,7 +5420,7 @@ namespace ZoneTool
 		{
 			GfxPortalWritable writable;
 			DpvsPlane plane;
-			float(* __ptr64 vertices)[3];
+			float(*__ptr64 vertices)[3];
 			unsigned short cellIndex;
 			unsigned short closeDistance;
 			unsigned char vertexCount;
@@ -5409,7 +5533,7 @@ namespace ZoneTool
 		struct GfxWorldDraw
 		{
 			unsigned int reflectionProbeCount;
-			GfxImage* _ptr64 * __ptr64 reflectionProbes;
+			GfxImage* __ptr64* __ptr64 reflectionProbes;
 			GfxReflectionProbe* __ptr64 reflectionProbeOrigins;
 			GfxRawTexture* __ptr64 reflectionProbeTextures;
 			unsigned int reflectionProbeReferenceCount;
@@ -5498,8 +5622,7 @@ namespace ZoneTool
 			GfxLightGridEntry* __ptr64 entries;
 			unsigned int colorCount;
 			GfxLightGridColors* __ptr64 colors;
-			char __pad0[20];
-			unsigned int missingGridColorIndex;
+			char __pad0[24];
 			int tableVersion;
 			int paletteVersion;
 			char rangeExponent8BitsEncoding;
@@ -5676,7 +5799,8 @@ namespace ZoneTool
 		struct GfxSurfaceBounds
 		{
 			Bounds bounds;
-			char __pad0[12];
+			char __pad0[11];
+			char flags;
 		}; assert_sizeof(GfxSurfaceBounds, 36);
 
 		struct GfxPackedPlacement
@@ -6067,7 +6191,7 @@ namespace ZoneTool
 		struct ScriptStringList
 		{
 			int count;
-			const char* __ptr64 * __ptr64 strings;
+			const char* __ptr64* __ptr64 strings;
 		};
 
 		union GfxZoneTableEntry

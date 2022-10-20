@@ -2009,6 +2009,11 @@ namespace ZoneTool
 			FxSpawnDefOneShot oneShot;
 		};
 
+		struct FxElemMarkVisuals
+		{
+			Material* materials[2];
+		};
+
 		struct FxEffectDef;
 
 		union FxEffectDefRef
@@ -2028,18 +2033,11 @@ namespace ZoneTool
 			const char* soundName;
 		};
 
-		typedef Material* FxElemMarkVisuals[2];
-
 		union FxElemDefVisuals
 		{
+			FxElemMarkVisuals* markArray;
+			FxElemVisuals* array;
 			FxElemVisuals instance;
-			//If parent FxElemDef::elemType == 0x7, use xmodel
-			//If parent FxElemDef::elemType == 0xC, use effectDef
-			//If parent FxElemDef::elemType == 0xA, use soundName
-			//If parent FxElemDef::elemType != 0x9 || 0x8, use material
-
-			FxElemVisuals* array; //Total count = parent FxElemDef::visualCount
-			FxElemMarkVisuals* markArray; //Total count = parent FxElemDef::visualCount
 		};
 
 		struct FxTrailVertex
@@ -2122,7 +2120,7 @@ namespace ZoneTool
 
 		struct FxElemVisualState
 		{
-			char color[4];
+			unsigned char color[4];
 			float rotationDelta;
 			float rotationTotal;
 			float size[2];

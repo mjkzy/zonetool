@@ -136,7 +136,7 @@ namespace ZoneTool
 			h1_asset->name = asset->name;
 			h1_asset->imageFormat = get_d3d_to_dxgi(asset->texture->format); //h1_asset->imageFormat = MFMapDX9FormatToDXGIFormat(asset->texture->format);
 			h1_asset->mapType = static_cast<H1::MapType>(asset->mapType);
-			h1_asset->sematic = asset->semantic;
+			h1_asset->semantic = asset->semantic;
 			h1_asset->category = asset->category;
 			h1_asset->flags = asset->flags;
 			h1_asset->dataLen1 = asset->texture->resourceSize;

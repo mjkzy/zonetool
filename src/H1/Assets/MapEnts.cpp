@@ -99,7 +99,6 @@ namespace ZoneTool
 				dumper.dump_array(clientTrigger->unk5, clientTrigger->trigger.count);
 				dumper.dump_array(clientTrigger->unk6, clientTrigger->trigger.count);
 				dumper.dump_array(clientTrigger->unk7, clientTrigger->trigger.count);
-				dumper.dump_array(clientTrigger->unk8, clientTrigger->trigger.count);
 
 				dumper.close();
 			}

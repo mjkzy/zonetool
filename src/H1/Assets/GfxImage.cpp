@@ -43,7 +43,7 @@ namespace ZoneTool
 				return;
 			}
 
-			if (asset->sematic == 11)
+			if (asset->semantic == 11)
 			{
 				ZONETOOL_WARNING("GfxImage (%s) was not dumped succesfully!", asset->name);
 				write.close();
