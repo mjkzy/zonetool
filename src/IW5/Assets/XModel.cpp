@@ -126,6 +126,11 @@ namespace ZoneTool
 				}
 			}
 
+			for (auto i = 0; i < 6; i++)
+			{
+				h1_asset->lodInfo[i].dist = 1000000;
+			}
+
 			// level of detail data
 			for (auto i = 0; i < asset->numLods; i++)
 			{

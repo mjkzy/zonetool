@@ -1030,6 +1030,18 @@ namespace ZoneTool
 			unsigned short childCount;
 		}; assert_sizeof(ClientTriggerAabbNode, 28);
 
+		enum clientTriggerType_t : std::uint32_t
+		{
+			CLIENT_TRIGGER_NONE = 0x0,
+			CLIENT_TRIGGER_VISIONSET = 0x1,
+			CLIENT_TRIGGER_REVERB = 0x2,
+			CLIENT_TRIGGER_AUDIO = 0x4,
+			CLIENT_TRIGGER_BLEND_VISION = 0x8,
+			CLIENT_TRIGGER_BLEND_AUDIO = 0x10,
+			CLIENT_TRIGGER_BLEND_ALL = 0x12,
+			CLIENT_TRIGGER_NPC = 0x20,
+		};
+
 		struct ClientTriggers
 		{
 			MapTriggers trigger;
@@ -1037,18 +1049,18 @@ namespace ZoneTool
 			ClientTriggerAabbNode* __ptr64 clientTriggerAabbTree;
 			unsigned int triggerStringLength;
 			char* __ptr64 triggerString;
-			short* __ptr64 unk0;
+			short* __ptr64 visionSetTriggers;
+			short* __ptr64 blendLookup;
 			short* __ptr64 unk1;
-			short* __ptr64 unk2;
 			short* __ptr64 triggerType;
 			vec3_t* __ptr64 origins;
 			float* __ptr64 scriptDelay;
+			short* __ptr64 audioTriggers;
+			short* __ptr64 unk2;
 			short* __ptr64 unk3;
 			short* __ptr64 unk4;
 			short* __ptr64 unk5;
-			short* __ptr64 unk6;
-			short* __ptr64 unk7;
-			void* __ptr64 unk8;
+			char __pad0[8];
 		}; assert_sizeof(ClientTriggers, 0xB0);
 
 		struct ClientTriggerBlendNode

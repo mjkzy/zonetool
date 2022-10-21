@@ -227,19 +227,20 @@ namespace ZoneTool
 				const auto path = "materials\\"s + c_name + ".json"s;
 				auto file = zonetool::filesystem::file(path);
 
-				if (asset && asset->techniqueSet)
-				{
-					//	ITechset::dump_statebits(asset->techniqueSet->name, asset->stateBitsEntry);
-					//	ITechset::dump_statebits_map(asset->techniqueSet->name, asset->stateBitsTable, asset->stateBitsCount);
-				}
-
 				ordered_json matdata;
 
 				MATERIAL_DUMP_STRING(name);
 
+				std::string iw5_techset;
 				std::string h1_techset;
 				if (asset->techniqueSet)
 				{
+					iw5_techset = asset->techniqueSet->name;
+					if (iw5_techset.starts_with("iw3/"))
+					{
+						iw5_techset.erase(0, 4);
+					}
+
 					bool result = false;
 					h1_techset = get_h1_techset(asset->techniqueSet->name, asset->name, &result);
 					if (!result)
