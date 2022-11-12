@@ -47,7 +47,7 @@ namespace ZoneTool
 				int h1_flags = surf_flags_conversion_table[flags >> 20];
 				auto convert = [&](IW5::CSurfaceFlags a, H1::CSurfaceFlags b)
 				{
-					h1_flags |= ((flags & a) != 0) ? b : 0;
+					h1_flags |= ((flags & a) == a) ? b : 0;
 				};
 				convert(IW5::CSurfaceFlags::SURF_FLAG_OPAQUEGLASS, H1::CSurfaceFlags::SURF_FLAG_DEFAULT);
 				convert(IW5::CSurfaceFlags::SURF_FLAG_CLIPMISSILE, H1::CSurfaceFlags::SURF_FLAG_CLIPMISSILE);
@@ -99,7 +99,7 @@ namespace ZoneTool
 			h1_asset->numsurfs = asset->numSurfaces;
 			h1_asset->numReactiveMotionParts = 0;
 			h1_asset->lodRampType = asset->lodRampType;
-			h1_asset->scale = 1.0f;
+			h1_asset->scale = asset->scale;
 			memcpy(&h1_asset->noScalePartBits, &asset->noScalePartBits, sizeof(asset->noScalePartBits));
 
 			h1_asset->boneNames = mem->Alloc<H1::scr_string_t>(asset->numBones);
@@ -134,7 +134,7 @@ namespace ZoneTool
 			// level of detail data
 			for (auto i = 0; i < asset->numLods; i++)
 			{
-				h1_asset->lodInfo[i].dist = asset->lods[i].dist;
+				h1_asset->lodInfo[i].dist = asset->lods[i].dist/* * 100*/;
 				h1_asset->lodInfo[i].numsurfs = asset->lods[i].numSurfacesInLod;
 				h1_asset->lodInfo[i].surfIndex = asset->lods[i].surfIndex;
 				h1_asset->lodInfo[i].modelSurfs = mem->Alloc<H1::XModelSurfs>(asset->lods[i].numSurfacesInLod);

@@ -79,7 +79,7 @@ namespace ZoneTool
 				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_FRAME_SPRITE;
 				break;
 			case IW5::FX_ELEM_TYPE_MODEL:
-				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
+				return H1::FX_ELEM_LIT_TYPE_NONE;
 				break;
 			case IW5::FX_ELEM_TYPE_OMNI_LIGHT:
 				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
@@ -101,9 +101,61 @@ namespace ZoneTool
 			return H1::FX_ELEM_LIT_TYPE_NONE;
 		}
 
+		unsigned int convert_elem_flags(unsigned int flags)
+		{
+			unsigned int h1_flags = 0;
+			auto convert = [&](unsigned int a, unsigned int b)
+			{
+				h1_flags |= ((flags & a) == a) ? b : 0;
+			};
+			convert(IW5::FxElemDefFlags::FX_ELEM_SPAWN_RELATIVE_TO_EFFECT, H1::FxElemDefFlags::FX_ELEM_SPAWN_RELATIVE_TO_EFFECT);
+			convert(IW5::FxElemDefFlags::FX_ELEM_SPAWN_FRUSTUM_CULL, H1::FxElemDefFlags::FX_ELEM_SPAWN_FRUSTUM_CULL);
+			convert(IW5::FxElemDefFlags::FX_ELEM_RUNNER_USES_RAND_ROT, H1::FxElemDefFlags::FX_ELEM_RUNNER_USES_RAND_ROT);
+			convert(IW5::FxElemDefFlags::FX_ELEM_SPAWN_OFFSET_NONE, H1::FxElemDefFlags::FX_ELEM_SPAWN_OFFSET_NONE);
+			convert(IW5::FxElemDefFlags::FX_ELEM_SPAWN_OFFSET_SPHERE, H1::FxElemDefFlags::FX_ELEM_SPAWN_OFFSET_SPHERE);
+			convert(IW5::FxElemDefFlags::FX_ELEM_SPAWN_OFFSET_CYLINDER, H1::FxElemDefFlags::FX_ELEM_SPAWN_OFFSET_CYLINDER);
+			convert(IW5::FxElemDefFlags::FX_ELEM_SPAWN_OFFSET_MASK, H1::FxElemDefFlags::FX_ELEM_SPAWN_OFFSET_MASK);
+			convert(IW5::FxElemDefFlags::FX_ELEM_RUN_RELATIVE_TO_WORLD, H1::FxElemDefFlags::FX_ELEM_RUN_RELATIVE_TO_WORLD);
+			convert(IW5::FxElemDefFlags::FX_ELEM_RUN_RELATIVE_TO_SPAWN, H1::FxElemDefFlags::FX_ELEM_RUN_RELATIVE_TO_SPAWN);
+			convert(IW5::FxElemDefFlags::FX_ELEM_RUN_RELATIVE_TO_EFFECT, H1::FxElemDefFlags::FX_ELEM_RUN_RELATIVE_TO_EFFECT);
+			convert(IW5::FxElemDefFlags::FX_ELEM_RUN_RELATIVE_TO_OFFSET, H1::FxElemDefFlags::FX_ELEM_RUN_RELATIVE_TO_OFFSET);
+			//convert(IW5::FxElemDefFlags::FX_ELEM_RUN_RELATIVE_TO_CAMERA, H1::FxElemDefFlags::FX_ELEM_RUN_RELATIVE_TO_CAMERA);
+			convert(IW5::FxElemDefFlags::FX_ELEM_RUN_MASK, H1::FxElemDefFlags::FX_ELEM_RUN_MASK);
+			convert(IW5::FxElemDefFlags::FX_ELEM_DIE_ON_TOUCH, H1::FxElemDefFlags::FX_ELEM_DIE_ON_TOUCH);
+			convert(IW5::FxElemDefFlags::FX_ELEM_DRAW_PAST_FOG, H1::FxElemDefFlags::FX_ELEM_DRAW_PAST_FOG);
+			convert(IW5::FxElemDefFlags::FX_ELEM_DRAW_WITH_VIEWMODEL, H1::FxElemDefFlags::FX_ELEM_DRAW_WITH_VIEWMODEL);
+			convert(IW5::FxElemDefFlags::FX_ELEM_BLOCK_SIGHT, H1::FxElemDefFlags::FX_ELEM_BLOCK_SIGHT);
+			convert(IW5::FxElemDefFlags::FX_ELEM_DRAW_IN_THERMAL_VIEW_ONLY, H1::FxElemDefFlags::FX_ELEM_DRAW_IN_THERMAL_VIEW_ONLY);
+			convert(IW5::FxElemDefFlags::FX_ELEM_TRAIL_ORIENT_BY_VELOCITY, H1::FxElemDefFlags::FX_ELEM_TRAIL_ORIENT_BY_VELOCITY);
+			//convert(IW5::FxElemDefFlags::FX_ELEM_EMIT_BOLT, H1::FxElemDefFlags::FX_ELEM_EMIT_BOLT);
+			convert(IW5::FxElemDefFlags::FX_ELEM_EMIT_ORIENT_BY_ELEM, H1::FxElemDefFlags::FX_ELEM_EMIT_ORIENT_BY_ELEM);
+			convert(IW5::FxElemDefFlags::FX_ELEM_USE_OCCLUSION_QUERY, H1::FxElemDefFlags::FX_ELEM_USE_OCCLUSION_QUERY);
+			//convert(IW5::FxElemDefFlags::FX_ELEM_NODRAW_IN_THERMAL_VIEW, H1::FxElemDefFlags::FX_ELEM_NODRAW_IN_THERMAL_VIEW);
+			//convert(IW5::FxElemDefFlags::FX_ELEM_THERMAL_MASK, H1::FxElemDefFlags::FX_ELEM_THERMAL_MASK);
+			//convert(IW5::FxElemDefFlags::FX_ELEM_SPAWN_IMPACT_FX_WITH_SURFACE_NAME, H1::FxElemDefFlags::FX_ELEM_SPAWN_IMPACT_FX_WITH_SURFACE_NAME);
+			//convert(IW5::FxElemDefFlags::FX_ELEM_RECEIVE_DYNAMIC_LIGHT, H1::FxElemDefFlags::FX_ELEM_RECEIVE_DYNAMIC_LIGHT);
+			//convert(IW5::FxElemDefFlags::FX_ELEM_VOLUMETRIC_TRAIL, H1::FxElemDefFlags::FX_ELEM_VOLUMETRIC_TRAIL);
+			convert(IW5::FxElemDefFlags::FX_ELEM_USE_COLLISION, H1::FxElemDefFlags::FX_ELEM_USE_COLLISION);
+			//convert(IW5::FxElemDefFlags::FX_ELEM_USE_VECTORFIELDS, H1::FxElemDefFlags::FX_ELEM_USE_VECTORFIELDS);
+		//	convert(IW5::FxElemDefFlags::FX_ELEM_NO_SURFACE_HDR_SCALAR, H1::FxElemDefFlags::FX_ELEM_NO_SURFACE_HDR_SCALAR);
+			convert(IW5::FxElemDefFlags::FX_ELEM_HAS_VELOCITY_GRAPH_LOCAL, H1::FxElemDefFlags::FX_ELEM_HAS_VELOCITY_GRAPH_LOCAL);
+			convert(IW5::FxElemDefFlags::FX_ELEM_HAS_VELOCITY_GRAPH_WORLD, H1::FxElemDefFlags::FX_ELEM_HAS_VELOCITY_GRAPH_WORLD);
+			convert(IW5::FxElemDefFlags::FX_ELEM_HAS_GRAVITY, H1::FxElemDefFlags::FX_ELEM_HAS_GRAVITY);
+			convert(IW5::FxElemDefFlags::FX_ELEM_USE_MODEL_PHYSICS, H1::FxElemDefFlags::FX_ELEM_USE_MODEL_PHYSICS);
+			convert(IW5::FxElemDefFlags::FX_ELEM_NONUNIFORM_SCALE, H1::FxElemDefFlags::FX_ELEM_NONUNIFORM_SCALE);
+			convert(IW5::FxElemDefFlags::FX_ELEM_CLOUD_SHAPE_CUBE, H1::FxElemDefFlags::FX_ELEM_CLOUD_SHAPE_CUBE);
+			convert(IW5::FxElemDefFlags::FX_ELEM_CLOUD_SHAPE_SPHERE_LARGE, H1::FxElemDefFlags::FX_ELEM_CLOUD_SHAPE_SPHERE_LARGE);
+			convert(IW5::FxElemDefFlags::FX_ELEM_CLOUD_SHAPE_SPHERE_MEDIUM, H1::FxElemDefFlags::FX_ELEM_CLOUD_SHAPE_SPHERE_MEDIUM);
+			convert(IW5::FxElemDefFlags::FX_ELEM_CLOUD_SHAPE_SPHERE_SMALL, H1::FxElemDefFlags::FX_ELEM_CLOUD_SHAPE_SPHERE_SMALL);
+			convert(IW5::FxElemDefFlags::FX_ELEM_CLOUD_SHAPE_MASK, H1::FxElemDefFlags::FX_ELEM_CLOUD_SHAPE_MASK);
+			convert(IW5::FxElemDefFlags::FX_ELEM_FOUNTAIN_DISABLE_COLLISION, H1::FxElemDefFlags::FX_ELEM_FOUNTAIN_DISABLE_COLLISION);
+
+			return h1_flags;
+		}
+
 		void GenerateH1FxElemDef(H1::FxElemDef* h1_elem, FxElemDef* elem, ZoneMemory* mem)
 		{
-			h1_elem->flags = elem->flags; // convert? should be the same...
+			h1_elem->flags = convert_elem_flags(elem->flags);
 			h1_elem->flags2 = 0;
 			memcpy(&h1_elem->spawn, &elem->spawn, sizeof(FxSpawnDef));
 			memcpy(&h1_elem->spawnRange, &elem->spawnRange, sizeof(FxFloatRange));
@@ -136,36 +188,37 @@ namespace ZoneTool
 				{
 					// check
 
+					// base
 					h1_elem->visSamples[i].base.color[0] = static_cast<int>(elem->visSamples[i].base.color[0]) / 255.0f;
 					h1_elem->visSamples[i].base.color[1] = static_cast<int>(elem->visSamples[i].base.color[1]) / 255.0f;
 					h1_elem->visSamples[i].base.color[2] = static_cast<int>(elem->visSamples[i].base.color[2]) / 255.0f;
 					h1_elem->visSamples[i].base.color[3] = static_cast<int>(elem->visSamples[i].base.color[3]) / 255.0f;
-					h1_elem->visSamples[i].base.rotationA = elem->visSamples[i].base.rotationTotal;
-					h1_elem->visSamples[i].base.rotationB = elem->visSamples[i].base.rotationTotal;
-					h1_elem->visSamples[i].base.rotationC = elem->visSamples[i].base.rotationTotal;
-					// pad
+					h1_elem->visSamples[i].base.pad1[0] = 1.0f;
+					h1_elem->visSamples[i].base.pad1[1] = 1.0f;
+					h1_elem->visSamples[i].base.pad1[2] = 1.0f;
+					h1_elem->visSamples[i].base.rotationDelta = elem->visSamples[i].base.rotationDelta;
+					h1_elem->visSamples[i].base.rotationTotal = elem->visSamples[i].base.rotationTotal;
 					memcpy(&h1_elem->visSamples[i].base.size, &elem->visSamples[i].base.size, sizeof(float[2]));
 					h1_elem->visSamples[i].base.scale = elem->visSamples[i].base.scale;
 					// pad2
-					h1_elem->visSamples[i].base.pad2[1] = -0.0f;
+					h1_elem->visSamples[i].base.pad2[1] = 0.0f;
+					h1_elem->visSamples[i].base.pad2[1] = 0.0f;
 
+					// amplitude
 					h1_elem->visSamples[i].amplitude.color[0] = static_cast<int>(elem->visSamples[i].amplitude.color[0]) / 255.0f;
 					h1_elem->visSamples[i].amplitude.color[1] = static_cast<int>(elem->visSamples[i].amplitude.color[1]) / 255.0f;
 					h1_elem->visSamples[i].amplitude.color[2] = static_cast<int>(elem->visSamples[i].amplitude.color[2]) / 255.0f;
 					h1_elem->visSamples[i].amplitude.color[3] = static_cast<int>(elem->visSamples[i].amplitude.color[3]) / 255.0f;
-					h1_elem->visSamples[i].amplitude.rotationA = elem->visSamples[i].base.rotationTotal;
-					h1_elem->visSamples[i].amplitude.rotationB = elem->visSamples[i].base.rotationTotal;
-					h1_elem->visSamples[i].amplitude.rotationC = elem->visSamples[i].base.rotationTotal;
-					// pad
+					h1_elem->visSamples[i].amplitude.pad1[0] = 1.0f;
+					h1_elem->visSamples[i].amplitude.pad1[1] = 1.0f;
+					h1_elem->visSamples[i].amplitude.pad1[2] = 1.0f;
+					h1_elem->visSamples[i].amplitude.rotationDelta = elem->visSamples[i].amplitude.rotationDelta;
+					h1_elem->visSamples[i].amplitude.rotationTotal = elem->visSamples[i].amplitude.rotationTotal;
 					memcpy(&h1_elem->visSamples[i].amplitude.size, &elem->visSamples[i].amplitude.size, sizeof(float[2]));
 					h1_elem->visSamples[i].amplitude.scale = elem->visSamples[i].amplitude.scale;
 					// pad2
-					h1_elem->visSamples[i].amplitude.pad2[1] = -0.0f;
-
-					if (elem->visSamples[i].base.rotationTotal)
-					{
-						auto x = 0;
-					}
+					h1_elem->visSamples[i].amplitude.pad2[1] = 0.0f;
+					h1_elem->visSamples[i].amplitude.pad2[1] = 0.0f;
 				}
 			}
 
@@ -174,9 +227,9 @@ namespace ZoneTool
 				h1_elem->visuals.markArray = mem->Alloc<H1::FxElemMarkVisuals>(elem->visualCount);
 				for (int i = 0; i < elem->visualCount; i++)
 				{
-					h1_elem->visuals.markArray[i].materials[0] = reinterpret_cast<H1::Material*>(elem->visuals.markArray[i].materials[0]);
-					h1_elem->visuals.markArray[i].materials[1] = reinterpret_cast<H1::Material*>(elem->visuals.markArray[i].materials[1]);
-					h1_elem->visuals.markArray[i].materials[2] = nullptr;
+					h1_elem->visuals.markArray[i].materials[0] = reinterpret_cast<H1::Material*>(elem->visuals.markArray[i].materials[0]); // mc
+					h1_elem->visuals.markArray[i].materials[1] = reinterpret_cast<H1::Material*>(elem->visuals.markArray[i].materials[1]); // wc
+					h1_elem->visuals.markArray[i].materials[2] = reinterpret_cast<H1::Material*>(elem->visuals.markArray[i].materials[1]); // wc displacement
 				}
 			}
 			else if (elem->visualCount > 1)
@@ -260,11 +313,11 @@ namespace ZoneTool
 			h1_elem->fadeInfo = elem->fadeInfo;
 			h1_elem->randomSeed = elem->pad; // check
 
-			// pad
-			h1_elem->__pad0; // bounds?
-
-			h1_elem->__pad0[2] = 1.0f;
+			h1_elem->__pad0[0] = 0.0f;
+			h1_elem->__pad0[1] = 1.0f;
+			h1_elem->__pad0[2] = 0.0f;
 			h1_elem->__pad0[3] = 1.0f;
+			h1_elem->__pad0[4] = 0.0f;
 			h1_elem->__pad0[5] = -1.0f;
 		}
 

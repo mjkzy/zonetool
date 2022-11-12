@@ -12,17 +12,17 @@ namespace
 	{
 		//	IW5,										H1
 			{"wc_l_sm_a0c0",							"wc_l_sm_a0c0_nfwpf_frt_aat"},
-			{"wc_l_sm_r0c0",							"wc_l_sm_r0c0_nfwpf"},
-			{"mc_l_sm_r0c0d0n0s0",						"wc_l_sm_r0c0d0n0sd0_nfwpf"},
+			{"wc_l_sm_r0c0",							"wc_l_sm_lmpb_r0c0_nfwpf"},
+			{"mc_l_sm_r0c0d0n0s0",						"wc_l_sm__lmpbr0c0d0n0sd0_nfwpf"},
 			{"wc_l_sm_r0c0d0n0s0p0",					"wc_l_sm_r0c0d0n0sd0_nfwpf"}, // couldn't find
 			{"wc_l_sm_r0c0n0",							"wc_l_sm_r0c0n0_nfwpf"},
 			{"wc_l_sm_r0c0n0s0",						"wc_l_sm_r0c0n0sd0_nfwpf"},
+			{"wc_l_sm_r0c0n0s0_nocast",					"wc_l_sm_r0c0n0sd0_nfwpf"}, // no nocast
 			{"wc_l_sm_r0c0n0s0p0",						"wc_l_sm_r0c0n0sd0p0_nfwpf"},
 			{"wc_l_sm_r0c0q0n0s0",						"wc_l_sm_r0c0q0n0sd0_nfwpf"},
 			{"wc_l_sm_r0c0q0n0s0p0",					"wc_l_sm_r0c0q0n0sd0p0_nfwpf"},
 			{"wc_l_sm_r0c0s0",							"wc_l_sm_r0c0sd0_nfwpf"},
-			{"mc_l_sm_r0c0s0_custom_grenade",			"wc_l_sm_r0c0sd0_nfwpf"}, // couldn't find
-			{"mc_l_sm_r0c0s0p0",						"mc_l_sm_r0c0sd0p0_nfwpf"},
+			{"wc_l_sm_r0c0s0p0",						"wc_l_sm_r0c0sd0p0_nfwpf"},
 			{"wc_l_sm_t0c0",							"wc_l_sm_t0c0_nfwpf"},
 			{"wc_l_sm_t0c0n0",							"wc_l_sm_t0c0n0_nfwpf"},
 			{"wc_l_sm_t0c0n0s0",						"wc_l_sm_t0c0n0sd0_nfwpf"},
@@ -41,7 +41,10 @@ namespace
 			//{"wc_l_sm_b0c0n0s0_custom_growing_ice_cracks", "wc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // coudln't find
 			//{"wc_l_sm_b0c0n0s0_custom_growing_ice_cracks_sat", "wc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
 
-			{"wc_unlit_multiply_lin",					"wc_unlit_multiply_lin_ndw_nfwpf"},
+			{"wc_unlit_add_lin",						"wc_unlit_add_lin_ndw_nfwpf"},
+			{"wc_unlit_blend_lin_ua",					"wc_unlit_blend_lin_ndw_ua_cltrans"},
+			{"wc_unlit_distfalloff_replace",			"wc_unlit_distfalloff_replace_ndw_cltrans"},
+			{"wc_unlit_multiply_lin",					"wc_unlit_multiply_lin_ndw_nfwpf_im"},
 			{"wc_unlit_replace_lin",					"wc_unlit_replace_lin_nfwpf"},
 			{"wc_sky",									"wc_sky_nfwpf"},
 			{"wc_shadowcaster",							"wc_shadowcaster"},
@@ -60,6 +63,7 @@ namespace
 			{"mc_l_sm_r0c0d0n0s0p0",					"mc_l_sm_r0c0d0n0sd0p0_nfwpf"},
 			{"mc_l_sm_r0c0d0n0s0p0_sat",				"mc_l_sm_r0c0d0n0sd0p0_nfwpf"}, // no sat
 			{"mc_l_sm_r0c0s0",							"mc_l_sm_r0c0sd0_nfwpf"},
+			{"mc_l_sm_r0c0s0p0",						"mc_l_sm_r0c0sd0p0_nfwpf"},
 			{"mc_l_sm_r0c0n0",							"mc_l_sm_r0c0n0_nfwpf"},
 			{"mc_l_sm_r0c0n0s0",						"mc_l_sm_r0c0n0sd0_nfwpf"},
 			{"mc_l_sm_r0c0n0s0_nocast",					"mc_l_sm_r0c0n0sd0_nfwpf"}, // no nocast
@@ -81,6 +85,7 @@ namespace
 			{"mc_l_sm_b0c0_sat",						"mc_l_sm_lmpb_ndw_b0c0_nfwpf_frt_im_aat"}, // no sat
 			{"mc_l_sm_b0c0_nocast",						"mc_l_sm_lmpb_ndw_b0c0_nfwpf_frt_im_aat"}, // couldn't find
 			{"mc_l_sm_b0c0d0p0",						"mc_l_sm_ndw_b0c0d0p0_cltrans"},
+			{"mc_l_sm_b0c0d0p0_sat",					"mc_l_sm_ndw_b0c0d0p0_cltrans"}, // no sat
 			{"mc_l_sm_b0c0s0",							"mc_l_sm_lmpb_ndw_b0c0sd0_nfwpf_frt_aat"},
 			{"mc_l_sm_b0c0n0",							"mc_l_sm_lmpb_ndw_b0c0n0_nfwpf_frt_im_aat"},
 			{"mc_l_sm_b0c0n0_sat",						"mc_l_sm_lmpb_ndw_b0c0n0_nfwpf_frt_im_aat"}, // no sat
@@ -108,6 +113,7 @@ namespace
 			{"mc_unlit_replace_lin_nocast",				"mc_unlit_replace_lin_nfwpf_nocast"},
 			{"mc_ambient_t0c0",							"mc_ambient_t0c0_nfwpf"},
 			{"mc_ambient_t0c0_nocast",					"mc_ambient_t0c0_nfwpf_nocast"},
+			{"mc_ambient_t0c0_z",						"mc_ambient_t0c0_nfwpf"}, // ?
 			{"mc_shadowcaster_atest",					"mc_shadowcaster_atest"},
 			{"mc_reflexsight",							"mc_reflexsight"},
 			{"mc_effect_add_nofog",						"mc_effect_blend_nofog_ndw"}, // couldn't find
@@ -126,6 +132,7 @@ namespace
 			{"distortion_scale",						"distortion_scale_legacydst_dat"}, // could be wrong
 			{"distortion_scale_zfeather",				"distortion_scale_legacydst_zf_dat"}, // could be wrong
 
+			{"effect",									"effect_add_ndw" }, // couldn't find
 			{"effect_add",								"effect_add_ndw"},
 			{"effect_add_eyeoffset",					"effect_add_eo"},
 			{"effect_add_nofog",						"effect_add_nofog_ndw"},
@@ -133,6 +140,7 @@ namespace
 			{"effect_blend",							"effect_blend_ndw"},
 			{"effect_blend_nofog",						"effect_blend_nofog_ndw"},
 			//{"effect_replace_lin",					"2d"}, // m_effect_replace_ndw
+			{"effect_zfeather",							"effect_zf_add_ndw"}, // couldn't find
 			{"effect_zfeather_add",						"effect_zf_add_ndw"},
 			{"effect_zfeather_add_nofog",				"effect_zf_add_nofog_ndw"},
 			{"effect_zfeather_blend",					"effect_zf_blend_ndw"},
@@ -152,6 +160,8 @@ namespace
 			{"particle_cloud_spark_add",				"particle_cloud_spark_add_ga"},
 
 			{"grain_overlay",							"grain_overlay"},
+
+			{"splatter_alt",							"splatter_alt"},
 
 			{"tools_b0c0",								"tools_b0c0ct0"}, // could be wrong
 	};

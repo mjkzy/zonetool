@@ -165,16 +165,20 @@ namespace ZoneTool
 		{
 			vec4_t* __ptr64 vec4_array0;
 			vec4_t* __ptr64 vec4_array1;
-			unsigned short* __ptr64 uint16_array0;
-			unsigned short* __ptr64 uint16_array1;
+			unsigned short* __ptr64 uint16_array0; // surfaceType?
+			unsigned short* __ptr64 uint16_array1; // m_vertexMaterials
 			dmSubEdge* __ptr64 edges;
 			unsigned char* __ptr64 uint8_array0;
 			char __pad0[12];
-			unsigned int count0;
-			unsigned int count1;
-			unsigned int count2;
+			unsigned int count0; // m_vertexCount
+			unsigned int count1; // m_faceCount
+			unsigned int count2; // m_subEdgeCount
 			char __pad1[40];
 		}; assert_sizeof(dmPolytopeData, 0x70);
+		assert_offsetof(dmPolytopeData, uint16_array1, 24);
+		assert_offsetof(dmPolytopeData, count0, 60);
+		assert_offsetof(dmPolytopeData, count1, 64);
+		assert_offsetof(dmPolytopeData, count2, 68);
 
 		struct PhysGeomInfo
 		{
@@ -219,13 +223,22 @@ namespace ZoneTool
 		}; assert_sizeof(PhysWaterVolumeDef, 0x20);
 		assert_offsetof(PhysWaterVolumeDef, string, 20);
 
-		struct PhysBrushModel
+		struct PhysBrushModelPacked
 		{
-			union
-			{
-				std::uint64_t id;
-				char __pad0[8];
-			};
+			std::uint64_t p;
+		};
+
+		struct PhysBrushModelFields
+		{
+			int polytopeIndex;
+			short worldIndex;
+			short meshIndex;
+		};
+
+		union PhysBrushModel
+		{
+			PhysBrushModelPacked packed;
+			PhysBrushModelFields fields;
 		};
 
 		struct PhysWorld // PhysicsWorld
@@ -1504,10 +1517,9 @@ namespace ZoneTool
 		struct FxElemVisualState
 		{
 			float color[4];
-			float rotationA;
-			float rotationB;
-			float rotationC;
-			float pad1[2];
+			float pad1[3];
+			float rotationDelta;
+			float rotationTotal;
 			float size[2];
 			float scale;
 			float pad2[2];
@@ -1632,7 +1644,7 @@ namespace ZoneTool
 
 		struct FxElemDef
 		{
-			int flags;
+			unsigned int flags;
 			int flags2;
 			FxSpawnDef spawn;
 			FxFloatRange spawnRange;
@@ -4673,7 +4685,7 @@ namespace ZoneTool
 			DynEntityLinkToDef* __ptr64 linkTo;
 			PhysMass mass;
 			int contents;
-			char __pad0[8];
+			float unk[2];
 		}; assert_sizeof(DynEntityDef, 136);
 
 		struct DynEntityPose
@@ -5468,7 +5480,7 @@ namespace ZoneTool
 			const char* __ptr64 group;
 			GfxPortalGroupInfo* __ptr64 info;
 			char __pad0[4];
-			int infoCount;
+			unsigned short infoCount;
 		}; assert_sizeof(GfxPortalGroup, 24);
 		assert_offsetof(GfxPortalGroup, infoCount, 20);
 
@@ -5904,7 +5916,9 @@ namespace ZoneTool
 
 		struct GfxDepthAndSurf
 		{
-			char __pad0[8];
+			short depthSort;
+			short pad;
+			int surfIndex;
 		}; assert_sizeof(GfxDepthAndSurf, 8);
 
 		typedef char* __ptr64 GfxWorldDpvsVoid;

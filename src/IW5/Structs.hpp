@@ -2172,7 +2172,7 @@ namespace ZoneTool
 			FX_ED_FLAG_DISABLED = 0x80000000,
 		};
 
-		enum FxElemDefFlags
+		enum FxElemDefFlags : std::uint32_t
 		{
 			FX_ELEM_SPAWN_RELATIVE_TO_EFFECT = 0x2,
 			FX_ELEM_SPAWN_FRUSTUM_CULL = 0x4,
@@ -2194,6 +2194,7 @@ namespace ZoneTool
 			FX_ELEM_DRAW_IN_THERMAL_VIEW_ONLY = 0x2000,
 			FX_ELEM_TRAIL_ORIENT_BY_VELOCITY = 0x4000,
 			FX_ELEM_EMIT_ORIENT_BY_ELEM = 0x8000,
+			FX_ELEM_USE_OCCLUSION_QUERY = 0x10000,
 			FX_ELEM_HAS_VELOCITY_GRAPH_LOCAL = 0x1000000,
 			FX_ELEM_HAS_VELOCITY_GRAPH_WORLD = 0x2000000,
 			FX_ELEM_HAS_GRAVITY = 0x4000000,
@@ -2209,7 +2210,7 @@ namespace ZoneTool
 
 		struct FxElemDef // 0xFC
 		{
-			int flags;
+			unsigned int flags;
 			FxSpawnDef spawn;
 			FxFloatRange spawnRange;
 			FxFloatRange fadeInRange;

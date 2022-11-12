@@ -49,7 +49,7 @@ namespace ZoneTool
 				int h1_flags = surf_flags_conversion_table[flags >> 20];
 				auto convert = [&](IW5::CSurfaceFlags a, H1::CSurfaceFlags b)
 				{
-					h1_flags |= ((flags & a) != 0) ? b : 0;
+					h1_flags |= ((flags & a) == a) ? b : 0;
 				};
 				convert(IW5::CSurfaceFlags::SURF_FLAG_OPAQUEGLASS, H1::CSurfaceFlags::SURF_FLAG_DEFAULT);
 				convert(IW5::CSurfaceFlags::SURF_FLAG_CLIPMISSILE, H1::CSurfaceFlags::SURF_FLAG_CLIPMISSILE);
@@ -250,7 +250,6 @@ namespace ZoneTool
 					h1_asset->cmodels[i].info = h1_asset->pInfo;
 				}
 
-				//memcpy(&h1_asset->cmodels[i].leaf, &asset->cModels[i].leaf, sizeof(IW5::cLeaf_t));
 				h1_asset->cmodels[i].leaf.firstCollAabbIndex = asset->cModels[i].leaf.firstCollAabbIndex;
 				h1_asset->cmodels[i].leaf.collAabbCount = asset->cModels[i].leaf.collAabbCount;
 				h1_asset->cmodels[i].leaf.brushContents = asset->cModels[i].leaf.brushContents;
@@ -294,7 +293,12 @@ namespace ZoneTool
 					h1_asset->dynEntDefList[i][j].hinge = reinterpret_cast<H1::DynEntityHingeDef * __ptr64>(asset->dynEntDefList[i][j].hinge);
 					h1_asset->dynEntDefList[i][j].linkTo = nullptr;
 					memcpy(&h1_asset->dynEntDefList[i][j].mass, &asset->dynEntDefList[i][j].mass, sizeof(IW5::PhysMass));
-					h1_asset->dynEntDefList[i][j].contents = asset->dynEntDefList[i][j].contents; // check
+					h1_asset->dynEntDefList[i][j].contents = asset->dynEntDefList[i][j].contents;
+					if (1) // check
+					{
+						h1_asset->dynEntDefList[i][j].unk[0] = 2500.00000f;
+						h1_asset->dynEntDefList[i][j].unk[0] = 0.0199999996f;
+					}
 
 					h1_asset->dynEntClientList[i][j].physObjId = asset->dynEntClientList[i]->physObjId;
 					h1_asset->dynEntClientList[i][j].flags = asset->dynEntClientList[i]->flags;
@@ -337,7 +341,9 @@ namespace ZoneTool
 			physmap->models = mem->Alloc<H1::PhysBrushModel>(physmap->modelsCount);
 			for (unsigned int i = 0; i < physmap->modelsCount; i++)
 			{
-				physmap->models[i].id = dm_nullFixtureId;
+				physmap->models[i].fields.polytopeIndex = -1;
+				physmap->models[i].fields.worldIndex = 0;
+				physmap->models[i].fields.meshIndex = -1;
 			}
 
 			physmap->polytopeDatasCount = 0;
