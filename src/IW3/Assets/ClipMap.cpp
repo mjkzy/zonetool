@@ -222,14 +222,14 @@ namespace ZoneTool
 				memcpy(&info->bCollisionData.brushes[i].edgeCount, &asset->brushes[i].edgeCount, sizeof(char[2][3]));
 			}
 
-			info->bCollisionData.brushBounds = mem->Alloc<H1::Bounds>(info->bCollisionData.numBrushEdges);
-			for (unsigned short i = 0; i < info->bCollisionData.numBrushEdges; ++i)
+			info->bCollisionData.brushBounds = mem->Alloc<H1::Bounds>(info->bCollisionData.numBrushes);
+			for (unsigned short i = 0; i < info->bCollisionData.numBrushes; ++i)
 			{
 				memcpy(&info->bCollisionData.brushBounds[i], bounds::compute(asset->brushes[i].mins, asset->brushes[i].maxs), sizeof(float[2][3]));
 			}
 
-			info->bCollisionData.brushContents = mem->Alloc<int>(info->bCollisionData.numBrushEdges);
-			for (unsigned short i = 0; i < info->bCollisionData.numBrushEdges; ++i)
+			info->bCollisionData.brushContents = mem->Alloc<int>(info->bCollisionData.numBrushes);
+			for (unsigned short i = 0; i < info->bCollisionData.numBrushes; ++i)
 			{
 				info->bCollisionData.brushContents[i] = asset->brushes[i].contents;
 			}
