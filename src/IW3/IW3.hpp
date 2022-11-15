@@ -12,8 +12,36 @@
 #include "Functions.hpp"
 #include "Structs.hpp"
 
+#include "H1/Utils/IO/filesystem.hpp"
+#include "H1/Utils/IO/assetmanager.hpp"
 #include "H1/Structs.hpp"
 
+using namespace zonetool;
+
+namespace bounds
+{
+	static auto compute(float* mins, float* maxs)
+	{
+		float bounds[2][3]{ 0 };
+		for (int i = 0; i < 3; ++i)
+		{
+			bounds[1][i] = (maxs[i] - mins[i]) / 2;
+			bounds[0][i] = bounds[1][i] + mins[i];
+		}
+		return bounds;
+	}
+}
+
+#include "Assets/ClipMap.hpp"
+#include "Assets/ComWorld.hpp"
+#include "Assets/FxEffectDef.hpp"
+#include "Assets/GameWorldMp.hpp"
+#include "Assets/GfxImage.hpp"
+#include "Assets/GfxLightDef.hpp"
+#include "Assets/GfxWorld.hpp"
+#include "Assets/MapEnts.hpp"
+#include "Assets/Material.hpp"
+#include "Assets/RawFile.hpp"
 #include "Assets/XAnimParts.hpp"
 #include "Assets/XModel.hpp"
 

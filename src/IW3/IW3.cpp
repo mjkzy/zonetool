@@ -158,6 +158,7 @@ namespace ZoneTool
 			if (isDumping)
 			{
 				FileSystem::SetFastFile(fastfile);
+				zonetool::filesystem::set_fastfile(fastfile);
 
 				// check if the asset is a reference asset
 				if (GetAssetName(asset)[0] == ',')
@@ -166,6 +167,16 @@ namespace ZoneTool
 				}
 				else
 				{
+					DECLARE_ASSET(col_map_mp, IClipMap);
+					DECLARE_ASSET(com_map, IComWorld);
+					DECLARE_ASSET(fx, IFxEffectDef);
+					DECLARE_ASSET(game_map_mp, IGameWorldMp);
+					DECLARE_ASSET(image, IGfxImage);
+					DECLARE_ASSET(lightdef, IGfxLightDef);
+					DECLARE_ASSET(gfx_map, IGfxWorld);
+					DECLARE_ASSET(map_ents, IMapEnts);
+					DECLARE_ASSET(material, IMaterial);
+					DECLARE_ASSET(rawfile, IRawFile);
 					DECLARE_ASSET(xanim, IXAnimParts);
 					DECLARE_ASSET(xmodel, IXModel);
 				}

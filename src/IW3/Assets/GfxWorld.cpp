@@ -7,7 +7,7 @@ namespace ZoneTool
 	{
 		namespace PackedShit
 		{
-			using namespace IW5;
+			using namespace IW3;
 
 #define _BYTE  uint8_t
 #define _WORD  uint16_t
@@ -114,7 +114,7 @@ namespace ZoneTool
 		}
 	}
 
-	namespace IW5
+	namespace IW3
 	{
 		H1::GfxWorld* GenerateH1GfxWorld(GfxWorld* asset, ZoneMemory* mem)
 		{
@@ -128,40 +128,35 @@ namespace ZoneTool
 
 			h1_asset->planeCount = asset->planeCount;
 			h1_asset->nodeCount = asset->nodeCount;
-			h1_asset->surfaceCount = asset->indexCount;
-			h1_asset->skyCount = asset->skyCount;
+			h1_asset->surfaceCount = asset->surfaceCount;
+			h1_asset->skyCount = 1;
 
-			h1_asset->skies = mem->Alloc<H1::GfxSky>(h1_asset->skyCount);
-			for (int i = 0; i < h1_asset->skyCount; i++)
+			h1_asset->skies = mem->Alloc<H1::GfxSky>(1);
+			h1_asset->skies[0].skySurfCount = asset->skySurfCount;
+			REINTERPRET_CAST_SAFE(h1_asset->skies[0].skyStartSurfs, asset->skyStartSurfs);
+			if (asset->skyImage)
 			{
-				h1_asset->skies[i].skySurfCount = asset->skies[i].skySurfCount;
-				REINTERPRET_CAST_SAFE(h1_asset->skies[i].skyStartSurfs, asset->skies[i].skyStartSurfs);
-				if (asset->skies[i].skyImage)
-				{
-					h1_asset->skies[i].skyImage = mem->Alloc<H1::GfxImage>();
-					h1_asset->skies[i].skyImage->name = asset->skies[i].skyImage->name;
-				}
-				else
-				{
-					h1_asset->skies[i].skyImage = nullptr;
-				}
-				h1_asset->skies[i].skySamplerState = asset->skies[i].skySamplerState;
+				h1_asset->skies[0].skyImage = mem->Alloc<H1::GfxImage>();
+				h1_asset->skies[0].skyImage->name = asset->skyImage->name;
+			}
+			else
+			{
+				h1_asset->skies[0].skyImage = nullptr;
+			}
+			h1_asset->skies[0].skySamplerState = asset->skySamplerState;
 
-				// add bounds
-				//assert(asset->skies[i].skySurfCount == 1);
-				for (auto j = 0; j < asset->skies[i].skySurfCount; j++)
-				{
-					auto index = asset->dpvs.sortedSurfIndex[asset->skies[i].skyStartSurfs[j]];
-					auto* surface_bounds = &asset->dpvs.surfacesBounds[index];
-					memcpy(&h1_asset->skies[i].bounds, &surface_bounds->bounds, sizeof(surface_bounds->bounds));
+			// add bounds
+			for (auto j = 0; j < asset->skySurfCount; j++)
+			{
+				auto index = asset->dpvs.sortedSurfIndex[asset->skyStartSurfs[j]];
+				auto surface_bounds = asset->dpvs.surfaces[index].bounds;
+				memcpy(&h1_asset->skies[0].bounds, bounds::compute(surface_bounds[0], surface_bounds[1]), sizeof(float[2][3]));
 
-					//
-					break;
-				}
+				break;
 			}
 
 			h1_asset->portalGroupCount = 0;
-			h1_asset->lastSunPrimaryLightIndex = asset->lastSunPrimaryLightIndex;
+			h1_asset->lastSunPrimaryLightIndex = asset->sunPrimaryLightIndex;
 			h1_asset->primaryLightCount = asset->primaryLightCount;
 			h1_asset->primaryLightEnvCount = asset->primaryLightCount + 1;
 			h1_asset->sortKeyLitDecal = 7; // h1_asset->sortKeyLitDecal = asset->sortKeyLitDecal;
@@ -182,26 +177,26 @@ namespace ZoneTool
 				h1_asset->dpvsPlanes.sceneEntCellBits[i] = asset->dpvsPlanes.sceneEntCellBits[i];
 			}
 
-			h1_asset->aabbTreeCounts = mem->Alloc<H1::GfxCellTreeCount>(h1_asset->dpvsPlanes.cellCount); //reinterpret_cast<IW6::GfxCellTreeCount* __ptr64>(asset->aabbTreeCounts);
+			h1_asset->aabbTreeCounts = mem->Alloc<H1::GfxCellTreeCount>(h1_asset->dpvsPlanes.cellCount);
 			h1_asset->aabbTrees = mem->Alloc<H1::GfxCellTree>(h1_asset->dpvsPlanes.cellCount);
 			for (int i = 0; i < h1_asset->dpvsPlanes.cellCount; i++)
 			{
-				h1_asset->aabbTreeCounts[i].aabbTreeCount = asset->aabbTreeCounts[i].aabbTreeCount;
+				h1_asset->aabbTreeCounts[i].aabbTreeCount = asset->cells[i].aabbTreeCount;
 				h1_asset->aabbTrees[i].aabbTree = mem->Alloc<H1::GfxAabbTree>(h1_asset->aabbTreeCounts[i].aabbTreeCount);
 				for (int j = 0; j < h1_asset->aabbTreeCounts[i].aabbTreeCount; j++)
 				{
-					memcpy(&h1_asset->aabbTrees[i].aabbTree[j].bounds, &asset->aabbTree[i].aabbtree[j].mins, sizeof(float[2][3]));
+					memcpy(&h1_asset->aabbTrees[i].aabbTree[j].bounds, bounds::compute(asset->cells[i].aabbTree[j].mins, asset->cells[i].aabbTree[j].maxs), sizeof(float[2][3]));
 
-					h1_asset->aabbTrees[i].aabbTree[j].startSurfIndex = asset->aabbTree[i].aabbtree[j].startSurfIndex;
-					h1_asset->aabbTrees[i].aabbTree[j].surfaceCount = asset->aabbTree[i].aabbtree[j].surfaceCount;
+					h1_asset->aabbTrees[i].aabbTree[j].startSurfIndex = asset->cells[i].aabbTree[j].startSurfIndex;
+					h1_asset->aabbTrees[i].aabbTree[j].surfaceCount = asset->cells[i].aabbTree[j].surfaceCount;
 
-					h1_asset->aabbTrees[i].aabbTree[j].smodelIndexCount = asset->aabbTree[i].aabbtree[j].smodelIndexCount;
-					REINTERPRET_CAST_SAFE(h1_asset->aabbTrees[i].aabbTree[j].smodelIndexes, asset->aabbTree[i].aabbtree[j].smodelIndexes);
+					h1_asset->aabbTrees[i].aabbTree[j].smodelIndexCount = asset->cells[i].aabbTree[j].smodelIndexCount;
+					REINTERPRET_CAST_SAFE(h1_asset->aabbTrees[i].aabbTree[j].smodelIndexes, asset->cells[i].aabbTree[j].smodelIndexes);
 
-					h1_asset->aabbTrees[i].aabbTree[j].childCount = asset->aabbTree[i].aabbtree[j].childCount;
+					h1_asset->aabbTrees[i].aabbTree[j].childCount = asset->cells[i].aabbTree[j].childCount;
 					// re-calculate childrenOffset
-					auto offset = asset->aabbTree[i].aabbtree[j].childrenOffset;
-					int childrenIndex = offset / sizeof(IW5::GfxAabbTree);
+					auto offset = asset->cells[i].aabbTree[j].childrenOffset;
+					int childrenIndex = offset / sizeof(IW3::GfxAabbTree);
 					int childrenOffset = childrenIndex * sizeof(H1::GfxAabbTree);
 					h1_asset->aabbTrees[i].aabbTree[j].childrenOffset = childrenOffset;
 				}
@@ -210,24 +205,27 @@ namespace ZoneTool
 			h1_asset->cells = mem->Alloc<H1::GfxCell>(h1_asset->dpvsPlanes.cellCount);
 			for (int i = 0; i < h1_asset->dpvsPlanes.cellCount; i++)
 			{
-				memcpy(&h1_asset->cells[i].bounds, &asset->cells[i].mins, sizeof(float[2][3]));
+				memcpy(&h1_asset->cells[i].bounds, bounds::compute(asset->cells[i].mins, asset->cells[i].maxs), sizeof(float[2][3]));
 				h1_asset->cells[i].portalCount = asset->cells[i].portalCount;
 
-				auto add_portal = [](H1::GfxPortal* h1_portal, IW5::GfxPortal* iw5_portal)
+				auto add_portal = [&](H1::GfxPortal* h1_portal, IW3::GfxPortal* iw3_portal)
 				{
-					h1_portal->writable.isQueued = iw5_portal->writable.isQueued;
-					h1_portal->writable.isAncestor = iw5_portal->writable.isAncestor;
-					h1_portal->writable.recursionDepth = iw5_portal->writable.recursionDepth;
-					h1_portal->writable.hullPointCount = iw5_portal->writable.hullPointCount;
-					h1_portal->writable.hullPoints = reinterpret_cast<float(*__ptr64)[2]>(iw5_portal->writable.hullPoints);
+					h1_portal->writable.isQueued = iw3_portal->writable.isQueued;
+					h1_portal->writable.isAncestor = iw3_portal->writable.isAncestor;
+					h1_portal->writable.recursionDepth = iw3_portal->writable.recursionDepth;
+					h1_portal->writable.hullPointCount = iw3_portal->writable.hullPointCount;
+					h1_portal->writable.hullPoints = reinterpret_cast<float(*__ptr64)[2]>(iw3_portal->writable.hullPoints);
 					//h1_portal->writable.queuedParent = add_portal(iw5_portal->writable.queuedParent); // mapped at runtime
 
-					memcpy(&h1_portal->plane, &iw5_portal->plane, sizeof(float[4]));
-					h1_portal->vertices = reinterpret_cast<float(*__ptr64)[3]>(iw5_portal->vertices);
-					h1_portal->cellIndex = iw5_portal->cellIndex;
+					memcpy(h1_portal->plane.coeffs, iw3_portal->plane.coeffs, sizeof(float[4]));
+					h1_portal->vertices = reinterpret_cast<float(*__ptr64)[3]>(iw3_portal->vertices);
+
+					h1_portal->cellIndex = static_cast<unsigned short>(&iw3_portal->cell - &asset->cells);
+					assert(h1_portal->cellIndex >= static_cast<unsigned short>(h1_asset->dpvsPlanes.cellCount));
+
 					h1_portal->closeDistance = 0;
-					h1_portal->vertexCount = iw5_portal->vertexCount;
-					memcpy(&h1_portal->hullAxis, &iw5_portal->hullAxis, sizeof(float[2][3]));
+					h1_portal->vertexCount = iw3_portal->vertexCount;
+					memcpy(h1_portal->hullAxis, iw3_portal->hullAxis, sizeof(float[2][3]));
 				};
 				h1_asset->cells[i].portals = mem->Alloc<H1::GfxPortal>(h1_asset->cells[i].portalCount);
 				for (int j = 0; j < h1_asset->cells[i].portalCount; j++)
@@ -236,9 +234,9 @@ namespace ZoneTool
 				}
 
 				h1_asset->cells[i].reflectionProbeCount = asset->cells[i].reflectionProbeCount;
-				h1_asset->cells[i].reflectionProbes = reinterpret_cast<unsigned __int8* __ptr64>(asset->cells[i].reflectionProbes);
-				h1_asset->cells[i].reflectionProbeReferenceCount = asset->cells[i].reflectionProbeReferenceCount;
-				h1_asset->cells[i].reflectionProbeReferences = reinterpret_cast<unsigned __int8* __ptr64>(asset->cells[i].reflectionProbeReferences);
+				h1_asset->cells[i].reflectionProbes = reinterpret_cast<unsigned char* __ptr64>(asset->cells[i].reflectionProbes);
+				h1_asset->cells[i].reflectionProbeReferenceCount = 0;
+				h1_asset->cells[i].reflectionProbeReferences = nullptr;
 			}
 
 			h1_asset->portalGroup = nullptr;
@@ -246,53 +244,54 @@ namespace ZoneTool
 			h1_asset->unk_vec4_count_0 = 0;
 			h1_asset->unk_vec4_0 = nullptr;
 
-			h1_asset->draw.reflectionProbeCount = asset->worldDraw.reflectionProbeCount;
+			h1_asset->draw.reflectionProbeCount = asset->reflectionProbeCount;
 			h1_asset->draw.reflectionProbes = mem->Alloc<H1::GfxImage* __ptr64>(h1_asset->draw.reflectionProbeCount);
 			h1_asset->draw.reflectionProbeOrigins = mem->Alloc<H1::GfxReflectionProbe>(h1_asset->draw.reflectionProbeCount);
 			h1_asset->draw.reflectionProbeTextures = mem->Alloc<H1::GfxRawTexture>(h1_asset->draw.reflectionProbeCount);
 			for (unsigned int i = 0; i < h1_asset->draw.reflectionProbeCount; i++)
 			{
 				h1_asset->draw.reflectionProbes[i] = mem->Alloc<H1::GfxImage>();
-				h1_asset->draw.reflectionProbes[i]->name = asset->worldDraw.reflectionImages[i]->name;
-				memcpy(&h1_asset->draw.reflectionProbeOrigins[i].origin, &asset->worldDraw.reflectionProbes[i].offset, sizeof(float[3]));
+				if (asset->reflectionProbes[i].reflectionImage)
+				{
+					h1_asset->draw.reflectionProbes[i]->name = asset->reflectionProbes[i].reflectionImage->name;
+				}
+				memcpy(&h1_asset->draw.reflectionProbeOrigins[i].origin, &asset->reflectionProbes[i].origin, sizeof(float[3]));
 				h1_asset->draw.reflectionProbeOrigins[i].probeVolumeCount = 0;
 				h1_asset->draw.reflectionProbeOrigins[i].probeVolumes = nullptr;
-				//memcpy(&h1_asset->draw.reflectionProbeTextures[i], &asset->worldDraw.reflectionProbeTextures[i].loadDef, 20);
+				//memcpy(&h1_asset->draw.reflectionProbeTextures[i], &asset->reflectionProbeTextures[i].loadDef, 20);
 			}
-			h1_asset->draw.reflectionProbeReferenceCount = asset->worldDraw.reflectionProbeReferenceCount;
-			h1_asset->draw.reflectionProbeReferenceOrigins = reinterpret_cast<H1::GfxReflectionProbeReferenceOrigin * __ptr64>(
-				asset->worldDraw.reflectionProbeReferenceOrigins);
-			h1_asset->draw.reflectionProbeReferences = reinterpret_cast<H1::GfxReflectionProbeReference * __ptr64>(
-				asset->worldDraw.reflectionProbeReferences);
+			h1_asset->draw.reflectionProbeReferenceCount = 0;
+			h1_asset->draw.reflectionProbeReferenceOrigins = nullptr;
+			h1_asset->draw.reflectionProbeReferences = nullptr;
 
-			h1_asset->draw.lightmapCount = asset->worldDraw.lightmapCount;
+			h1_asset->draw.lightmapCount = asset->lightmapCount;
 			h1_asset->draw.lightmaps = mem->Alloc<H1::GfxLightmapArray>(h1_asset->draw.lightmapCount);
 			h1_asset->draw.lightmapPrimaryTextures = mem->Alloc<H1::GfxRawTexture>(h1_asset->draw.lightmapCount);
 			h1_asset->draw.lightmapSecondaryTextures = mem->Alloc<H1::GfxRawTexture>(h1_asset->draw.lightmapCount);
 			for (int i = 0; i < h1_asset->draw.lightmapCount; i++)
 			{
 				h1_asset->draw.lightmaps[i].primary = mem->Alloc<H1::GfxImage>();
-				h1_asset->draw.lightmaps[i].primary->name = asset->worldDraw.lightmaps[i].primary->name;
+				h1_asset->draw.lightmaps[i].primary->name = asset->lightmaps[i].primary->name;
 				h1_asset->draw.lightmaps[i].secondary = mem->Alloc<H1::GfxImage>();
-				h1_asset->draw.lightmaps[i].secondary->name = asset->worldDraw.lightmaps[i].secondary->name;
+				h1_asset->draw.lightmaps[i].secondary->name = asset->lightmaps[i].secondary->name;
 
-				//memcpy(&h1_asset->draw.lightmapPrimaryTextures[i], &asset->worldDraw.lightmapPrimaryTextures[i].loadDef, 20);
-				//memcpy(&h1_asset->draw.lightmapSecondaryTextures[i], &asset->worldDraw.lightmapSecondaryTextures[i].loadDef, 20);
+				//memcpy(&h1_asset->draw.lightmapPrimaryTextures[i], &asset->lightmapPrimaryTextures[i].loadDef, 20);
+				//memcpy(&h1_asset->draw.lightmapSecondaryTextures[i], &asset->lightmapSecondaryTextures[i].loadDef, 20);
 			}
-			if (asset->worldDraw.skyImage)
+			if (asset->skyImage)
 			{
 				h1_asset->draw.lightmapOverridePrimary = mem->Alloc<H1::GfxImage>();
-				h1_asset->draw.lightmapOverridePrimary->name = asset->worldDraw.skyImage->name;
+				h1_asset->draw.lightmapOverridePrimary->name = asset->skyImage->name;
 			}
 			else
 			{
 				h1_asset->draw.lightmapOverridePrimary = nullptr;
 			}
 
-			if (asset->worldDraw.outdoorImage)
+			if (asset->outdoorImage)
 			{
 				h1_asset->draw.lightmapOverrideSecondary = mem->Alloc<H1::GfxImage>();
-				h1_asset->draw.lightmapOverrideSecondary->name = asset->worldDraw.outdoorImage->name;
+				h1_asset->draw.lightmapOverrideSecondary->name = asset->outdoorImage->name;
 			}
 			else
 			{
@@ -305,28 +304,28 @@ namespace ZoneTool
 
 			h1_asset->draw.trisType = 0; // dunno
 
-			h1_asset->draw.vertexCount = asset->worldDraw.vertexCount;
+			h1_asset->draw.vertexCount = asset->vertexCount;
 			h1_asset->draw.vd.vertices = mem->Alloc<H1::GfxWorldVertex>(h1_asset->draw.vertexCount);
 			for (unsigned int i = 0; i < h1_asset->draw.vertexCount; i++)
 			{
-				memcpy(&h1_asset->draw.vd.vertices[i], &asset->worldDraw.vd.vertices[i], sizeof(IW5::GfxWorldVertex));
+				memcpy(&h1_asset->draw.vd.vertices[i], &asset->vd.vertices[i], sizeof(IW3::GfxWorldVertex));
 
 				// re-calculate these...
-				float normal_unpacked[3]{ 0 };
-				PackedShit::Vec3UnpackUnitVec(asset->worldDraw.vd.vertices[i].normal, normal_unpacked);
+				float normal_unpacked[3]{0};
+				PackedShit::Vec3UnpackUnitVec(asset->vd.vertices[i].normal, normal_unpacked);
 				h1_asset->draw.vd.vertices[i].normal.packed = PackedShit::Vec3PackUnitVec(normal_unpacked).packed;
 
 				// i don't understand why normal unpacked seems to be correct instead
-				//float tangent_unpacked[3]{ 0 };
-				//PackedShit::Vec3UnpackUnitVec(asset->worldDraw.vd.vertices[i].tangent, tangent_unpacked);
+				float tangent_unpacked[3]{0};
+				PackedShit::Vec3UnpackUnitVec(asset->vd.vertices[i].tangent, tangent_unpacked);
 				h1_asset->draw.vd.vertices[i].tangent.packed = PackedShit::Vec3PackUnitVec(normal_unpacked).packed;
 			}
 
-			h1_asset->draw.vertexLayerDataSize = asset->worldDraw.vertexLayerDataSize;
-			REINTERPRET_CAST_SAFE(h1_asset->draw.vld.data, asset->worldDraw.vld.data);
+			h1_asset->draw.vertexLayerDataSize = asset->vertexLayerDataSize;
+			REINTERPRET_CAST_SAFE(h1_asset->draw.vld.data, asset->vld.data);
 
-			h1_asset->draw.indexCount = asset->worldDraw.indexCount;
-			REINTERPRET_CAST_SAFE(h1_asset->draw.indices, asset->worldDraw.indices);
+			h1_asset->draw.indexCount = asset->indexCount;
+			REINTERPRET_CAST_SAFE(h1_asset->draw.indices, asset->indices);
 
 			h1_asset->draw.displacementParmsCount = 0;
 			h1_asset->draw.displacementParms = nullptr;
@@ -356,7 +355,7 @@ namespace ZoneTool
 			{
 				// colorVec3 -> colorVec6
 
-				memcpy(&h1_asset->lightGrid.colors[i].colorVec6[0], &asset->lightGrid.colors[i].rgb, sizeof(asset->lightGrid.colors[i]));
+				memcpy(&h1_asset->lightGrid.colors[i].colorVec6, &asset->lightGrid.colors[i].rgb, sizeof(asset->lightGrid.colors[i]));
 			}
 
 			//h1_asset->lightGrid.__pad0; // unknown data in pad
@@ -422,18 +421,19 @@ namespace ZoneTool
 			{
 				int decals = asset->models[i].surfaceCountNoDecal - asset->models[i].surfaceCount;
 
-				memcpy(&h1_asset->models[i].writable.bounds, &asset->models[i].writable.bounds, sizeof(float[2][3]));
-				memcpy(&h1_asset->models[i].bounds, &asset->models[i].bounds, sizeof(float[2][3]));
-				h1_asset->models[i].radius = asset->models[i].radius;
+				memcpy(&h1_asset->models[i].writable.bounds, bounds::compute(asset->models[i].writable.mins, asset->models[i].writable.maxs), sizeof(float[2][3]));
+				memcpy(&h1_asset->models[i].bounds, bounds::compute(asset->models[i].bounds[0], asset->models[i].bounds[1]), sizeof(float[2][3]));
+
+				float* halfSize = h1_asset->models[i].bounds.halfSize;
+				h1_asset->models[i].radius = static_cast<float>(std::sqrt(std::pow(halfSize[0], 2) + std::pow(halfSize[1], 2) + std::pow(halfSize[2], 2)));
+
 				h1_asset->models[i].startSurfIndex = asset->models[i].startSurfIndex;
 				h1_asset->models[i].surfaceCount = asset->models[i].surfaceCount + decals;
 				h1_asset->models[i].mdaoVolumeIndex = -1;
 			}
 
-			//memcpy(h1_asset->mins1, asset->mins, sizeof(float[3])); // then what is this?
-			//memcpy(h1_asset->maxs1, asset->maxs, sizeof(float[3])); // ^^
-			memcpy(h1_asset->mins2, asset->mins, sizeof(float[3])); //h1_asset->mins2; // ? (i think this is the correct one)
-			memcpy(h1_asset->maxs2, asset->maxs, sizeof(float[3])); //h1_asset->maxs2; // ?
+			//memcpy(&h1_asset->mins1, bounds::compute(asset->mins, asset->maxs), sizeof(float[2][3])); // then what is this?
+			memcpy(&h1_asset->mins2, bounds::compute(asset->mins, asset->maxs), sizeof(float[2][3])); // (i think this is the correct one)
 
 			h1_asset->checksum = asset->checksum;
 
@@ -447,32 +447,34 @@ namespace ZoneTool
 
 			h1_asset->sun.hasValidData = asset->sun.hasValidData;
 			h1_asset->sun.spriteMaterial = reinterpret_cast<H1::Material * __ptr64>(asset->sun.spriteMaterial);
-			h1_asset->sun.flareMaterial = reinterpret_cast<H1::Material * __ptr64>(asset->sun.flareMaterial);
+			h1_asset->sun.flareMaterial = reinterpret_cast<H1::Material * __ptr64>(asset->sun.flareMaterial); 
 			memcpy(&h1_asset->sun.spriteSize, &asset->sun.spriteSize, Difference(&asset->sun.sunFxPosition, &asset->sun.spriteSize) + sizeof(float[3]));
 
 			memcpy(&h1_asset->outdoorLookupMatrix, &asset->outdoorLookupMatrix, sizeof(float[4][4]));
 
-			h1_asset->outdoorImage = mem->Alloc<H1::GfxImage>();
-			h1_asset->outdoorImage->name = asset->outdoorImage->name;
+			if (asset->outdoorImage)
+			{
+				h1_asset->outdoorImage = mem->Alloc<H1::GfxImage>();
+				h1_asset->outdoorImage->name = asset->outdoorImage->name;
+			}
 
 			h1_asset->cellCasterBits = mem->Alloc<unsigned int>(h1_asset->dpvsPlanes.cellCount * ((h1_asset->dpvsPlanes.cellCount + 31) >> 5));
 			for (int i = 0; i < asset->dpvsPlanes.cellCount * ((asset->dpvsPlanes.cellCount + 31) >> 5); i++)
 			{
-				h1_asset->cellCasterBits[i] = asset->cellCasterBits[0][i];
+				h1_asset->cellCasterBits[i] = asset->cellCasterBits[i];
 			}
 			h1_asset->cellHasSunLitSurfsBits = mem->Alloc<unsigned int>((h1_asset->dpvsPlanes.cellCount + 31) >> 5); // todo?
 
 			h1_asset->sceneDynModel = mem->Alloc<H1::GfxSceneDynModel>(asset->dpvsDyn.dynEntClientCount[0]);
 			for (unsigned int i = 0; i < asset->dpvsDyn.dynEntClientCount[0]; i++)
 			{
-				h1_asset->sceneDynModel[i].info.hasGfxEntIndex = asset->sceneDynModel[i].info.hasGfxEntIndex;
+				h1_asset->sceneDynModel[i].info.hasGfxEntIndex = asset->sceneDynModel[i].dynEntId ? 1 : 0;
 				h1_asset->sceneDynModel[i].info.lod = asset->sceneDynModel[i].info.lod;
 				h1_asset->sceneDynModel[i].info.surfId = asset->sceneDynModel[i].info.surfId;
 				h1_asset->sceneDynModel[i].dynEntId = asset->sceneDynModel[i].dynEntId;
 			}
 			REINTERPRET_CAST_SAFE(h1_asset->sceneDynBrush, asset->sceneDynBrush);
 
-			//h1_asset->primaryLightEntityShadowVis = reinterpret_cast<unsigned int* __ptr64>(asset->primaryLightEntityShadowVis);
 			int count = ((h1_asset->primaryLightCount - h1_asset->lastSunPrimaryLightIndex) << 13) - 0x2000;
 			h1_asset->primaryLightEntityShadowVis = mem->Alloc<unsigned int>(count);
 			for (unsigned int i = 0; i < count; i++)
@@ -487,7 +489,7 @@ namespace ZoneTool
 			h1_asset->nonSunPrimaryLightForModelDynEnt = mem->Alloc<unsigned short>(asset->dpvsDyn.dynEntClientCount[0]);
 			for (unsigned int i = 0; i < asset->dpvsDyn.dynEntClientCount[0]; i++)
 			{
-				h1_asset->nonSunPrimaryLightForModelDynEnt[i] = asset->primaryLightForModelDynEnt[i];
+				h1_asset->nonSunPrimaryLightForModelDynEnt[i] = asset->nonSunPrimaryLightForModelDynEnt[i];
 			}
 
 			if (asset->shadowGeom)
@@ -526,16 +528,16 @@ namespace ZoneTool
 			h1_asset->dpvs.smodelCount = asset->dpvs.smodelCount;
 			h1_asset->dpvs.subdivVertexLightingInfoCount = 0;
 			h1_asset->dpvs.staticSurfaceCount = asset->dpvs.staticSurfaceCount + lit_decal_count;
-			h1_asset->dpvs.litOpaqueSurfsBegin = asset->dpvs.litOpaqueSurfsBegin;
-			h1_asset->dpvs.litOpaqueSurfsEnd = asset->dpvs.litOpaqueSurfsEnd;
+			h1_asset->dpvs.litOpaqueSurfsBegin = asset->dpvs.litSurfsBegin;
+			h1_asset->dpvs.litOpaqueSurfsEnd = asset->dpvs.litSurfsEnd;
 			h1_asset->dpvs.unkSurfsBegin = 0;
 			h1_asset->dpvs.unkSurfsEnd = 0;
-			h1_asset->dpvs.litDecalSurfsBegin = asset->dpvs.staticSurfaceCount;
-			h1_asset->dpvs.litDecalSurfsEnd = asset->dpvs.staticSurfaceCount + lit_decal_count;
-			h1_asset->dpvs.litTransSurfsBegin = asset->dpvs.litTransSurfsBegin;
-			h1_asset->dpvs.litTransSurfsEnd = asset->dpvs.litTransSurfsEnd;
-			h1_asset->dpvs.shadowCasterSurfsBegin = asset->dpvs.shadowCasterSurfsBegin;
-			h1_asset->dpvs.shadowCasterSurfsEnd = asset->dpvs.shadowCasterSurfsEnd;
+			h1_asset->dpvs.litDecalSurfsBegin = asset->dpvs.decalSurfsBegin;
+			h1_asset->dpvs.litDecalSurfsEnd = asset->dpvs.decalSurfsEnd;
+			h1_asset->dpvs.litTransSurfsBegin = asset->dpvs.decalSurfsEnd; // skip
+			h1_asset->dpvs.litTransSurfsEnd = asset->dpvs.decalSurfsEnd; // skip
+			h1_asset->dpvs.shadowCasterSurfsBegin = asset->dpvs.decalSurfsEnd; // skip
+			h1_asset->dpvs.shadowCasterSurfsEnd = asset->dpvs.decalSurfsEnd; // skip
 			h1_asset->dpvs.emissiveSurfsBegin = asset->dpvs.emissiveSurfsBegin;
 			h1_asset->dpvs.emissiveSurfsEnd = asset->dpvs.emissiveSurfsEnd;
 			h1_asset->dpvs.smodelVisDataCount = asset->dpvs.smodelVisDataCount;
@@ -583,7 +585,16 @@ namespace ZoneTool
 				h1_asset->dpvs.sortedSurfIndex[i] = asset->dpvs.sortedSurfIndex[i];
 			}
 
-			REINTERPRET_CAST_SAFE(h1_asset->dpvs.smodelInsts, asset->dpvs.smodelInsts);
+			h1_asset->dpvs.smodelInsts = mem->Alloc<H1::GfxStaticModelInst>(h1_asset->dpvs.smodelCount);
+			for (unsigned int i = 0; i < h1_asset->dpvs.smodelCount; i++)
+			{
+				memcpy(&h1_asset->dpvs.smodelInsts[i].mins, bounds::compute(asset->dpvs.smodelInsts[i].mins, asset->dpvs.smodelInsts[i].maxs), sizeof(float[2][3]));
+
+				// I guess the sun is always a good lighting source ;)
+				h1_asset->dpvs.smodelInsts[i].lightingOrigin[0] = asset->sun.sunFxPosition[0];
+				h1_asset->dpvs.smodelInsts[i].lightingOrigin[1] = asset->sun.sunFxPosition[1];
+				h1_asset->dpvs.smodelInsts[i].lightingOrigin[2] = asset->sun.sunFxPosition[2];
+			}
 
 			h1_asset->dpvs.surfaces = mem->Alloc<H1::GfxSurface>(h1_asset->surfaceCount);
 			for (unsigned int i = 0; i < h1_asset->surfaceCount; i++)
@@ -605,26 +616,27 @@ namespace ZoneTool
 			h1_asset->dpvs.surfacesBounds = mem->Alloc<H1::GfxSurfaceBounds>(h1_asset->surfaceCount);
 			for (unsigned int i = 0; i < h1_asset->surfaceCount; i++)
 			{
-				memcpy(&h1_asset->dpvs.surfacesBounds[i].bounds, &asset->dpvs.surfacesBounds[i].bounds, sizeof(IW5::Bounds));
+				memcpy(&h1_asset->dpvs.surfacesBounds[i].bounds, bounds::compute(asset->dpvs.surfaces[i].bounds[0], asset->dpvs.surfaces[i].bounds[1]), sizeof(float[2][3]));
 				h1_asset->dpvs.surfacesBounds[i].__pad0; // idk
 			}
 
 			h1_asset->dpvs.smodelDrawInsts = mem->Alloc<H1::GfxStaticModelDrawInst>(h1_asset->dpvs.smodelCount);
 			for (unsigned int i = 0; i < h1_asset->dpvs.smodelCount; i++)
 			{
-				bool has_ground_lighting = (asset->dpvs.smodelDrawInsts[i].flags & 0x20) != 0;
-
-				memcpy(&h1_asset->dpvs.smodelDrawInsts[i].placement, &asset->dpvs.smodelDrawInsts[i].placement, sizeof(IW5::GfxPackedPlacement));
+				memcpy(&h1_asset->dpvs.smodelDrawInsts[i].placement, &asset->dpvs.smodelDrawInsts[i].placement, sizeof(IW3::GfxPackedPlacement));
 				h1_asset->dpvs.smodelDrawInsts[i].model = reinterpret_cast<H1::XModel * __ptr64>(asset->dpvs.smodelDrawInsts[i].model);
 				h1_asset->dpvs.smodelDrawInsts[i].cullDist = asset->dpvs.smodelDrawInsts[i].cullDist;
 				h1_asset->dpvs.smodelDrawInsts[i].lightingHandle = asset->dpvs.smodelDrawInsts[i].lightingHandle;
-				h1_asset->dpvs.smodelDrawInsts[i].flags = asset->dpvs.smodelDrawInsts[i].flags;
-				h1_asset->dpvs.smodelDrawInsts[i].flags |= has_ground_lighting ?
-					H1::StaticModelFlag::STATIC_MODEL_FLAG_ALLOW_FXMARK : H1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTGRID_LIGHTING;
+				
+				auto no_shadows = (asset->dpvs.smodelDrawInsts[i].flags & 0x1) != 0;
+				h1_asset->dpvs.smodelDrawInsts[i].flags |= no_shadows ?
+					H1::StaticModelFlag::STATIC_MODEL_FLAG_NO_CAST_SHADOW : 0;
+				h1_asset->dpvs.smodelDrawInsts[i].flags |= H1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTGRID_LIGHTING;
+
 				h1_asset->dpvs.smodelDrawInsts[i].staticModelId = 0;
 				h1_asset->dpvs.smodelDrawInsts[i].primaryLightEnvIndex = asset->dpvs.smodelDrawInsts[i].primaryLightIndex;
 				h1_asset->dpvs.smodelDrawInsts[i].reflectionProbeIndex = asset->dpvs.smodelDrawInsts[i].reflectionProbeIndex;
-				h1_asset->dpvs.smodelDrawInsts[i].firstMtlSkinIndex = asset->dpvs.smodelDrawInsts[i].firstMtlSkinIndex;
+				h1_asset->dpvs.smodelDrawInsts[i].firstMtlSkinIndex = 0;
 				h1_asset->dpvs.smodelDrawInsts[i].sunShadowFlags = 0;
 
 				h1_asset->dpvs.smodelDrawInsts[i].unk0 = h1_asset->dpvs.smodelDrawInsts[i].cullDist;
@@ -633,7 +645,7 @@ namespace ZoneTool
 			h1_asset->dpvs.smodelLighting = mem->Alloc<H1::GfxStaticModelLighting>(h1_asset->dpvs.smodelCount);
 			for (unsigned int i = 0; i < h1_asset->dpvs.smodelCount; i++)
 			{
-				memcpy(h1_asset->dpvs.smodelLighting[i].info2.cacheId, asset->dpvs.smodelDrawInsts[i].cacheId,
+				memcpy(h1_asset->dpvs.smodelLighting[i].info2.cacheId, asset->dpvs.smodelDrawInsts[i].smodelCacheIndex,
 					sizeof(unsigned short[4])); // not sure
 
 				// todo?
@@ -646,14 +658,14 @@ namespace ZoneTool
 			{
 				h1_asset->dpvs.surfaceMaterials[i].fields.objectId = asset->dpvs.surfaceMaterials[i].fields.objectId;
 				h1_asset->dpvs.surfaceMaterials[i].fields.reflectionProbeIndex = asset->dpvs.surfaceMaterials[i].fields.reflectionProbeIndex;
-				h1_asset->dpvs.surfaceMaterials[i].fields.hasGfxEntIndex = asset->dpvs.surfaceMaterials[i].fields.hasGfxEntIndex;
+				h1_asset->dpvs.surfaceMaterials[i].fields.hasGfxEntIndex = 0;
 				h1_asset->dpvs.surfaceMaterials[i].fields.customIndex = asset->dpvs.surfaceMaterials[i].fields.customIndex;
 				h1_asset->dpvs.surfaceMaterials[i].fields.materialSortedIndex = asset->dpvs.surfaceMaterials[i].fields.materialSortedIndex;
 				h1_asset->dpvs.surfaceMaterials[i].fields.tessellation = 0;
 				h1_asset->dpvs.surfaceMaterials[i].fields.prepass = asset->dpvs.surfaceMaterials[i].fields.prepass;
-				h1_asset->dpvs.surfaceMaterials[i].fields.useHeroLighting = asset->dpvs.surfaceMaterials[i].fields.useHeroLighting;
-				h1_asset->dpvs.surfaceMaterials[i].fields.sceneLightEnvIndex = asset->dpvs.surfaceMaterials[i].fields.sceneLightIndex;
-				h1_asset->dpvs.surfaceMaterials[i].fields.viewModelRender = asset->dpvs.surfaceMaterials[i].fields.viewModelRender;
+				h1_asset->dpvs.surfaceMaterials[i].fields.useHeroLighting = 0;
+				h1_asset->dpvs.surfaceMaterials[i].fields.sceneLightEnvIndex = asset->dpvs.surfaceMaterials[i].fields.primaryLightIndex;
+				h1_asset->dpvs.surfaceMaterials[i].fields.viewModelRender = 0;
 				h1_asset->dpvs.surfaceMaterials[i].fields.surfType = asset->dpvs.surfaceMaterials[i].fields.surfType;
 				h1_asset->dpvs.surfaceMaterials[i].fields.primarySortKey = asset->dpvs.surfaceMaterials[i].fields.primarySortKey;
 				h1_asset->dpvs.surfaceMaterials[i].fields.unused = asset->dpvs.surfaceMaterials[i].fields.unused;
@@ -680,12 +692,12 @@ namespace ZoneTool
 			h1_asset->dpvsDyn.dynEntVisData[1][2] = reinterpret_cast<unsigned char* __ptr64>(asset->dpvsDyn.dynEntVisData[1][2]);
 			h1_asset->dpvsDyn.dynEntVisData[1][3] = mem->Alloc<unsigned char>(h1_asset->dpvsDyn.dynEntClientWordCount[1] * 32);
 
-			h1_asset->mapVtxChecksum = asset->mapVtxChecksum;
+			h1_asset->mapVtxChecksum = 0xDEADB33F;
 
-			h1_asset->heroOnlyLightCount = asset->heroLightCount;
-			REINTERPRET_CAST_SAFE(h1_asset->heroOnlyLights, asset->heroLights);
+			h1_asset->heroOnlyLightCount = 0;
+			h1_asset->heroOnlyLights = nullptr;
 
-			h1_asset->fogTypesAllowed = asset->fogTypesAllowed;
+			h1_asset->fogTypesAllowed = 0x1;
 
 			h1_asset->umbraTomeSize = 0;
 			h1_asset->umbraTomeData = nullptr;
@@ -700,6 +712,20 @@ namespace ZoneTool
 			h1_asset->buildInfo.args1 = nullptr;
 			h1_asset->buildInfo.buildStartTime = nullptr;
 			h1_asset->buildInfo.buildEndTime = nullptr;
+
+			// sort triangles & vertices
+			int tri_index = 0;
+			h1_asset->draw.indices = mem->Alloc<unsigned short>(h1_asset->draw.indexCount);
+			for (auto i = 0; i < h1_asset->surfaceCount; i++)
+			{
+				auto* surface = &h1_asset->dpvs.surfaces[i];
+
+				// triangles
+				std::memcpy(&h1_asset->draw.indices[tri_index], &asset->indices[surface->tris.baseIndex], surface->tris.triCount * 6);
+				surface->tris.baseIndex = tri_index;
+				tri_index += surface->tris.triCount * 3;
+			}
+			assert(tri_index == h1_asset->draw.indexCount);
 
 			return h1_asset;
 		}

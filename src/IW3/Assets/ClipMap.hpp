@@ -4,10 +4,10 @@ namespace ZoneTool
 {
 	namespace IW3
 	{
-		class IXModel
+		class IClipMap
 		{
 		public:
-			static void dump(XModel* asset, ZoneMemory* mem);
+			static void dump(clipMap_t* asset, ZoneMemory* mem);
 		};
 	}
 }

@@ -129,7 +129,16 @@ namespace ZoneTool
 			REINTERPRET_CAST_SAFE(info->bCollisionTree.leafbrushes, asset->info.leafBrushes);
 
 			info->pCollisionTree.aabbTreeCount = asset->numCollisionAABBTrees;
-			REINTERPRET_CAST_SAFE(info->pCollisionTree.aabbTrees, asset->collisionAABBTrees);
+			info->pCollisionTree.aabbTrees = mem->Alloc<H1::CollisionAabbTree>(info->pCollisionTree.aabbTreeCount);
+			for (int i = 0; i < info->pCollisionTree.aabbTreeCount; i++)
+			{
+				std::memcpy(info->pCollisionTree.aabbTrees[i].midPoint, asset->collisionAABBTrees[i].midPoint, sizeof(float[3]));
+				std::memcpy(info->pCollisionTree.aabbTrees[i].halfSize, asset->collisionAABBTrees[i].halfSize, sizeof(float[3]));
+				info->pCollisionTree.aabbTrees[i].materialIndex = asset->collisionAABBTrees[i].materialIndex;
+				info->pCollisionTree.aabbTrees[i].childCount = asset->collisionAABBTrees[i].childCount;
+				info->pCollisionTree.aabbTrees[i].u.firstChildIndex = asset->collisionAABBTrees[i].u.firstChildIndex;
+				//info->pCollisionTree.aabbTrees[i].u.partitionIndex = asset->collisionAABBTrees[i].u.partitionIndex;
+			}
 
 			info->sCollisionTree.numStaticModels = asset->numStaticModels;
 			info->sCollisionTree.smodelNodeCount = asset->smodelNodeCount;
@@ -265,10 +274,16 @@ namespace ZoneTool
 			{
 				h1_asset->stages[i].name = reinterpret_cast<const char* __ptr64>(asset->stages[i].name);
 				memcpy(&h1_asset->stages[i].origin, &asset->stages[i].origin, sizeof(float[3]));
+				h1_asset->stages[i].triggerIndex = asset->stages[i].triggerIndex;
 				h1_asset->stages[i].sunPrimaryLightIndex = asset->stages[i].sunPrimaryLightIndex;
 				h1_asset->stages[i].unk = 0x3A83126F;
 			}
-			h1_asset->stageTrigger; // NEED TO DO THIS LATER
+			h1_asset->stageTrigger.count = 0;
+			h1_asset->stageTrigger.models = nullptr;
+			h1_asset->stageTrigger.hullCount = 0;
+			h1_asset->stageTrigger.hulls = nullptr;
+			h1_asset->stageTrigger.slabCount = 0;
+			h1_asset->stageTrigger.slabs = nullptr;
 
 			for (unsigned char i = 0; i < 2; i++)
 			{

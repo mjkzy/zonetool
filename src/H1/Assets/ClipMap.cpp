@@ -82,7 +82,7 @@ namespace ZoneTool
 
 			dump_info(&asset->info, write, SL_ConvertToString);
 
-			write.dump_single(asset->pInfo);
+			//write.dump_single(asset->pInfo);
 			//dump_info(asset->pInfo, write, SL_ConvertToString);
 
 			write.dump_array(asset->nodes, asset->numNodes);
@@ -96,16 +96,25 @@ namespace ZoneTool
 
 			write.dump_array(asset->leafs, asset->numLeafs);
 			write.dump_array(asset->cmodels, asset->numSubModels);
-			for (unsigned int i = 0; i < asset->numSubModels; i++)
-			{
-				if (asset->cmodels[i].info)
-				{
-					write.dump_single(asset->cmodels[i].info);
-					//dump_info(asset->cmodels[i].info, write, SL_ConvertToString);
-				}
-			}
+			//for (unsigned int i = 0; i < asset->numSubModels; i++)
+			//{
+			//	if (asset->cmodels[i].info)
+			//	{
+			//		write.dump_single(asset->cmodels[i].info);
+			//		dump_info(asset->cmodels[i].info, write, SL_ConvertToString);
+			//	}
+			//}
 
 			write.dump_asset(asset->mapEnts);
+
+			write.dump_array(asset->stages, asset->stageCount);
+			for (unsigned char i = 0; i < asset->stageCount; i++)
+			{
+				write.dump_string(asset->stages[i].name);
+			}
+			//write.dump_array(asset->stageTrigger.models, asset->stageTrigger.count);
+			//write.dump_array(asset->stageTrigger.hulls, asset->stageTrigger.hullCount);
+			//write.dump_array(asset->stageTrigger.slabs, asset->stageTrigger.slabCount);
 
 			for (int i = 0; i < 2; i++)
 			{
@@ -203,28 +212,6 @@ namespace ZoneTool
 			write.dump_array(asset->grappleData.magnet, asset->grappleData.magnetCount);
 
 			write.close();
-
-			// dump stages
-			if (asset->stages)
-			{
-				assetmanager::dumper stageDumper;
-
-				if (stageDumper.open(asset->name + ".ents.stages"s))
-				{
-					stageDumper.dump_int(asset->stageCount);
-					if (asset->stageCount)
-					{
-						stageDumper.dump_array(asset->stages, asset->stageCount);
-
-						for (int i = 0; i < asset->stageCount; i++)
-						{
-							stageDumper.dump_string(asset->stages[i].name);
-						}
-					}
-				}
-
-				stageDumper.close();
-			}
 		}
 	}
 }

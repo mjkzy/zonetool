@@ -306,7 +306,7 @@ namespace
 
 namespace ZoneTool
 {
-	namespace IW5
+	namespace IW3
 	{
 		H1::MapEnts* GenerateH1MapEnts(MapEnts* asset, ZoneMemory* mem)
 		{
@@ -318,33 +318,29 @@ namespace ZoneTool
 			h1_asset->entityString = asset->entityString;
 			h1_asset->numEntityChars = asset->numEntityChars;
 
-			h1_asset->trigger.count = asset->trigger.modelCount;
+			h1_asset->trigger.count = asset->trigger.count;
 			h1_asset->trigger.models = reinterpret_cast<H1::TriggerModel*>(asset->trigger.models);
 			h1_asset->trigger.hullCount = asset->trigger.hullCount;
 			h1_asset->trigger.hulls = reinterpret_cast<H1::TriggerHull*>(asset->trigger.hulls);
 			h1_asset->trigger.slabCount = asset->trigger.slabCount;
 			h1_asset->trigger.slabs = reinterpret_cast<H1::TriggerSlab*>(asset->trigger.slabs);
 
-			h1_asset->clientTrigger.trigger.count = asset->clientTrigger.trigger.modelCount;
-			h1_asset->clientTrigger.trigger.models = reinterpret_cast<H1::TriggerModel*>(asset->clientTrigger.trigger.models);
-			h1_asset->clientTrigger.trigger.hullCount = asset->clientTrigger.trigger.hullCount;
-			h1_asset->clientTrigger.trigger.hulls = reinterpret_cast<H1::TriggerHull*>(asset->clientTrigger.trigger.hulls);
-			h1_asset->clientTrigger.trigger.slabCount = asset->clientTrigger.trigger.slabCount;
-			h1_asset->clientTrigger.trigger.slabs = reinterpret_cast<H1::TriggerSlab*>(asset->clientTrigger.trigger.slabs);
-			h1_asset->clientTrigger.numClientTriggerNodes = asset->clientTrigger.numClientTriggerNodes;
-			h1_asset->clientTrigger.clientTriggerAabbTree = reinterpret_cast<H1::ClientTriggerAabbNode*>(asset->clientTrigger.clientTriggerAabbTree);
-			h1_asset->clientTrigger.triggerStringLength = asset->clientTrigger.triggerStringLength;
-			h1_asset->clientTrigger.triggerString = asset->clientTrigger.triggerString;
-			h1_asset->clientTrigger.visionSetTriggers = asset->clientTrigger.visionSetTriggers;
+			h1_asset->clientTrigger.trigger.count = 0;
+			h1_asset->clientTrigger.trigger.models = nullptr;
+			h1_asset->clientTrigger.trigger.hullCount = 0;
+			h1_asset->clientTrigger.trigger.hulls = nullptr;
+			h1_asset->clientTrigger.trigger.slabCount = 0;
+			h1_asset->clientTrigger.trigger.slabs = nullptr;
+			h1_asset->clientTrigger.numClientTriggerNodes = 0;
+			h1_asset->clientTrigger.clientTriggerAabbTree = nullptr;
+			h1_asset->clientTrigger.triggerStringLength = 0;
+			h1_asset->clientTrigger.triggerString = nullptr;
+			h1_asset->clientTrigger.visionSetTriggers = nullptr;
 			h1_asset->clientTrigger.blendLookup = nullptr;
 			h1_asset->clientTrigger.unk1 = nullptr;
-			h1_asset->clientTrigger.triggerType = mem->Alloc<short>(asset->clientTrigger.numClientTriggerNodes);
-			for (auto i = 0; i < asset->clientTrigger.numClientTriggerNodes; i++)
-			{
-				h1_asset->clientTrigger.triggerType[i] = asset->clientTrigger.triggerType[i]; // convert?
-			}
-			h1_asset->clientTrigger.origins = reinterpret_cast<float(*__ptr64)[3]>(asset->clientTrigger.origins);
-			h1_asset->clientTrigger.scriptDelay = asset->clientTrigger.scriptDelay;
+			h1_asset->clientTrigger.triggerType = nullptr;
+			h1_asset->clientTrigger.origins = nullptr;
+			h1_asset->clientTrigger.scriptDelay = nullptr;
 			h1_asset->clientTrigger.audioTriggers = nullptr;
 			h1_asset->clientTrigger.unk2 = nullptr;
 			h1_asset->clientTrigger.unk3 = nullptr;

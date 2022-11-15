@@ -440,8 +440,7 @@ namespace ZoneTool
 			GfxDrawSurf drawSurf;
 			unsigned int surfaceTypeBits;
 			unsigned __int16 hashIndex;
-			unsigned char animationX;
-			unsigned char animationY;
+			char pad[2];
 			// MaterialInfo info;
 			char stateBitsEntry[34];
 			char numMaps;
@@ -501,7 +500,7 @@ namespace ZoneTool
 		union PackedUnitVec
 		{
 			unsigned int packed;
-			char array[4];
+			unsigned char array[4];
 		};
 
 		struct GfxPackedVertex
@@ -670,6 +669,76 @@ namespace ZoneTool
 			char tempDefaultToCylinder;
 		};
 #pragma pack(pop)
+
+		enum CSurfaceFlags : std::uint32_t
+		{
+			SURF_FLAG_DEFAULT = 0x00000000,
+			SURF_FLAG_BARK = 0x00100000,
+			SURF_FLAG_BRICK = 0x00200000,
+			SURF_FLAG_CARPET = 0x00300000,
+			SURF_FLAG_CLOTH = 0x00400000,
+			SURF_FLAG_CONCRETE = 0x00500000,
+			SURF_FLAG_DIRT = 0x00600000,
+			SURF_FLAG_FLESH = 0x00700000,
+			SURF_FLAG_FOLIAGE = 0x00800000,
+			SURF_FLAG_GLASS = 0x00900000,
+			SURF_FLAG_GRASS = 0x00A00000,
+			SURF_FLAG_GRAVEL = 0x00B00000,
+			SURF_FLAG_ICE = 0x00C00000,
+			SURF_FLAG_METAL = 0x00D00000,
+			SURF_FLAG_MUD = 0x00E00000,
+			SURF_FLAG_PAPER = 0x00F00000,
+			SURF_FLAG_PLASTER = 0x01000000,
+			SURF_FLAG_ROCK = 0x01100000,
+			SURF_FLAG_SAND = 0x01200000,
+			SURF_FLAG_SNOW = 0x01300000,
+			SURF_FLAG_WATER = 0x01400000,
+			SURF_FLAG_WOOD = 0x01500000,
+			SURF_FLAG_ASPHALT = 0x01600000,
+			SURF_FLAG_CERAMIC = 0x01700000,
+			SURF_FLAG_PLASTIC = 0x01800000,
+			SURF_FLAG_RUBBER = 0x01900000,
+			SURF_FLAG_CUSHION = 0x01A00000,
+			SURF_FLAG_FRUIT = 0x01B00000,
+			SURF_FLAG_PAINTEDMETAL = 0x01C00000,
+			SURF_FLAG_RIOTSHIELD = 0x01D00000,
+			SURF_FLAG_SLUSH = 0x01E00000,
+			SURF_FLAG_OPAQUEGLASS = 0x00900000,
+			SURF_FLAG_CLIPMISSILE = 0x00000000,
+			SURF_FLAG_AI_NOSIGHT = 0x00000000,
+			SURF_FLAG_CLIPSHOT = 0x00000000,
+			SURF_FLAG_PLAYERCLIP = 0x00000000,
+			SURF_FLAG_MONSTERCLIP = 0x00000000,
+			SURF_FLAG_AICLIPALLOWDEATH = 0x00000000,
+			SURF_FLAG_VEHICLECLIP = 0x00000000,
+			SURF_FLAG_ITEMCLIP = 0x00000000,
+			SURF_FLAG_NODROP = 0x00000000,
+			SURF_FLAG_NONSOLID = 0x00004000,
+			SURF_FLAG_DETAIL = 0x00000000,
+			SURF_FLAG_STRUCTURAL = 0x00000000,
+			SURF_FLAG_PORTAL = 0x80000000,
+			SURF_FLAG_CANSHOOTCLIP = 0x00000000,
+			SURF_FLAG_ORIGIN = 0x00000000,
+			SURF_FLAG_SKY = 0x00000004,
+			SURF_FLAG_NOCASTSHADOW = 0x00040000,
+			SURF_FLAG_PHYSICSGEOM = 0x00000000,
+			SURF_FLAG_LIGHTPORTAL = 0x00000000,
+			SURF_FLAG_OUTDOORBOUNDS = 0x00000000,
+			SURF_FLAG_SLICK = 0x00000002,
+			SURF_FLAG_NOIMPACT = 0x00000010,
+			SURF_FLAG_NOMARKS = 0x00000020,
+			SURF_FLAG_NOPENETRATE = 0x00000100,
+			SURF_FLAG_LADDER = 0x00000008,
+			SURF_FLAG_NODAMAGE = 0x00000001,
+			SURF_FLAG_MANTLEON = 0x02000000,
+			SURF_FLAG_MANTLEOVER = 0x04000000,
+			SURF_FLAG_STAIRS = 0x00000200,
+			SURF_FLAG_SOFT = 0x00001000,
+			SURF_FLAG_NOSTEPS = 0x00002000,
+			SURF_FLAG_NODRAW = 0x00000080,
+			SURF_FLAG_NOLIGHTMAP = 0x00000400,
+			SURF_FLAG_NODLIGHT = 0x00020000,
+		};
 
 		struct XModel
 		{
@@ -1465,6 +1534,28 @@ namespace ZoneTool
 			int contents;
 		};
 
+		struct DynEntityPose
+		{
+			GfxPlacement pose;
+			float radius;
+		};
+
+		struct DynEntityClient
+		{
+			int physObjId;
+			unsigned __int16 flags;
+			unsigned __int16 lightingHandle;
+			int health;
+		};
+
+		struct DynEntityColl
+		{
+			unsigned __int16 sector;
+			unsigned __int16 nextEntInSector;
+			float linkMins[2];
+			float linkMaxs[2];
+		};
+
 		struct clipMap_t
 		{
 			const char* name;
@@ -1513,12 +1604,9 @@ namespace ZoneTool
 			cmodel_t box_model;
 			unsigned __int16 dynEntCount[2];
 			DynEntityDef* dynEntDefList[2];
-			/*DynEntityPose*/
-			void* dynEntPoseList[2];
-			/*DynEntityClient*/
-			void* dynEntClientList[2];
-			/*DynEntityColl*/
-			void* dynEntCollList[2];
+			DynEntityPose* dynEntPoseList[2];
+			DynEntityClient* dynEntClientList[2];
+			DynEntityColl* dynEntCollList[2];
 			unsigned int checksum;
 		};
 
@@ -1675,9 +1763,63 @@ namespace ZoneTool
 			unsigned __int16* inds;
 		};
 
+		enum FxElemType : char
+		{
+			FX_ELEM_TYPE_SPRITE_BILLBOARD = 0x0,
+			FX_ELEM_TYPE_SPRITE_ORIENTED = 0x1,
+			FX_ELEM_TYPE_TAIL = 0x2,
+			FX_ELEM_TYPE_TRAIL = 0x3,
+			FX_ELEM_TYPE_CLOUD = 0x4,
+			FX_ELEM_TYPE_MODEL = 0x5,
+			FX_ELEM_TYPE_OMNI_LIGHT = 0x6,
+			FX_ELEM_TYPE_SPOT_LIGHT = 0x7,
+			FX_ELEM_TYPE_SOUND = 0x8,
+			FX_ELEM_TYPE_DECAL = 0x9,
+			FX_ELEM_TYPE_RUNNER = 0xA,
+			FX_ELEM_TYPE_COUNT = 0xB,
+			FX_ELEM_TYPE_LAST_SPRITE = 0x3,
+			FX_ELEM_TYPE_LAST_DRAWN = 0x7,
+		};
+
+		enum FxElemDefFlags : std::uint32_t
+		{
+			FX_ELEM_SPAWN_RELATIVE_TO_EFFECT = 0x2,
+			FX_ELEM_SPAWN_FRUSTUM_CULL = 0x4,
+			FX_ELEM_RUNNER_USES_RAND_ROT = 0x8,
+			FX_ELEM_SPAWN_OFFSET_NONE = 0x0,
+			FX_ELEM_SPAWN_OFFSET_SPHERE = 0x10,
+			FX_ELEM_SPAWN_OFFSET_CYLINDER = 0x20,
+			FX_ELEM_SPAWN_OFFSET_MASK = 0x30,
+			FX_ELEM_RUN_RELATIVE_TO_WORLD = 0x0,
+			FX_ELEM_RUN_RELATIVE_TO_SPAWN = 0x40,
+			FX_ELEM_RUN_RELATIVE_TO_EFFECT = 0x80,
+			FX_ELEM_RUN_RELATIVE_TO_OFFSET = 0xC0,
+			FX_ELEM_RUN_MASK = 0xC0,
+			FX_ELEM_USE_COLLISION = 0x100,
+			FX_ELEM_DIE_ON_TOUCH = 0x200,
+			FX_ELEM_DRAW_PAST_FOG = 0x400,
+			FX_ELEM_DRAW_WITH_VIEWMODEL = 0x800,
+			FX_ELEM_BLOCK_SIGHT = 0x1000,
+			FX_ELEM_DRAW_IN_THERMAL_VIEW_ONLY = 0x2000,
+			FX_ELEM_TRAIL_ORIENT_BY_VELOCITY = 0x4000,
+			FX_ELEM_EMIT_ORIENT_BY_ELEM = 0x8000,
+			FX_ELEM_USE_OCCLUSION_QUERY = 0x10000,
+			FX_ELEM_HAS_VELOCITY_GRAPH_LOCAL = 0x1000000,
+			FX_ELEM_HAS_VELOCITY_GRAPH_WORLD = 0x2000000,
+			FX_ELEM_HAS_GRAVITY = 0x4000000,
+			FX_ELEM_USE_MODEL_PHYSICS = 0x8000000,
+			FX_ELEM_NONUNIFORM_SCALE = 0x10000000,
+			FX_ELEM_CLOUD_SHAPE_CUBE = 0x0,
+			FX_ELEM_CLOUD_SHAPE_SPHERE_LARGE = 0x20000000,
+			FX_ELEM_CLOUD_SHAPE_SPHERE_MEDIUM = 0x40000000,
+			FX_ELEM_CLOUD_SHAPE_SPHERE_SMALL = 0x60000000,
+			FX_ELEM_CLOUD_SHAPE_MASK = 0x60000000,
+			FX_ELEM_FOUNTAIN_DISABLE_COLLISION = 0x80000000,
+		};
+
 		const struct FxElemDef
 		{
-			int flags;
+			FxElemDefFlags flags;
 			FxSpawnDef spawn;
 			FxFloatRange spawnRange;
 			FxFloatRange fadeInRange;
@@ -1694,7 +1836,7 @@ namespace ZoneTool
 			FxFloatRange gravity;
 			FxFloatRange reflectionFactor;
 			FxElemAtlas atlas;
-			char elemType;
+			FxElemType elemType;
 			char visualCount;
 			char velIntervalCount;
 			char visStateIntervalCount;
@@ -1724,24 +1866,6 @@ namespace ZoneTool
 			int elemDefCountOneShot;
 			int elemDefCountEmission;
 			FxElemDef* elemDefs;
-		};
-
-		enum FxElemType : char
-		{
-			FX_ELEM_TYPE_SPRITE_BILLBOARD = 0x0,
-			FX_ELEM_TYPE_SPRITE_ORIENTED = 0x1,
-			FX_ELEM_TYPE_TAIL = 0x2,
-			FX_ELEM_TYPE_TRAIL = 0x3,
-			FX_ELEM_TYPE_CLOUD = 0x4,
-			FX_ELEM_TYPE_MODEL = 0x5,
-			FX_ELEM_TYPE_OMNI_LIGHT = 0x6,
-			FX_ELEM_TYPE_SPOT_LIGHT = 0x7,
-			FX_ELEM_TYPE_SOUND = 0x8,
-			FX_ELEM_TYPE_DECAL = 0x9,
-			FX_ELEM_TYPE_RUNNER = 0xA,
-			FX_ELEM_TYPE_COUNT = 0xB,
-			FX_ELEM_TYPE_LAST_SPRITE = 0x3,
-			FX_ELEM_TYPE_LAST_DRAWN = 0x7,
 		};
 
 		struct GameWorldMp
@@ -1911,11 +2035,13 @@ namespace ZoneTool
 			ComWorld* com_map;
 			// 			GameWorldSp *gameWorldSp;
 			GameWorldMp* gameWorldMp;
+			GameWorldMp* game_map_mp;
 			MapEnts* mapEnts;
 			MapEnts* map_ents;
 			GfxWorld* gfxWorld;
 			GfxWorld* gfx_map;
 			GfxLightDef* lightDef;
+			GfxLightDef* lightdef;
 			LoadedSound* loaded_sound;
 			// 			Font_s *font;
 			// 			MenuList *menuList;

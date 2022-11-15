@@ -4,10 +4,10 @@ namespace ZoneTool
 {
 	namespace IW3
 	{
-		class IXModel
+		class IComWorld
 		{
 		public:
-			static void dump(XModel* asset, ZoneMemory* mem);
+			static void dump(ComWorld* asset, ZoneMemory* mem);
 		};
 	}
 }
