@@ -198,7 +198,6 @@ namespace ZoneTool
 					h1_asset->aabbTrees[i].aabbTree[j].smodelIndexCount = asset->aabbTree[i].aabbtree[j].smodelIndexCount;
 					REINTERPRET_CAST_SAFE(h1_asset->aabbTrees[i].aabbTree[j].smodelIndexes, asset->aabbTree[i].aabbtree[j].smodelIndexes);
 
-					// FIXME
 					h1_asset->aabbTrees[i].aabbTree[j].childCount = asset->aabbTree[i].aabbtree[j].childCount;
 					// re-calculate childrenOffset
 					auto offset = asset->aabbTree[i].aabbtree[j].childrenOffset;

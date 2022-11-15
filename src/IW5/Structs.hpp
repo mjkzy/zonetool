@@ -1224,16 +1224,15 @@ namespace ZoneTool
 			float bounds[2][3];
 			float radiusSquared;
 		};
-#pragma pack(push, 4)
+
 		struct cplane_s
 		{
 			float normal[3];
 			float dist;
 			char type;
-			char signbits;
-			// char pad[2];
+			char pad[3];
 		};
-#pragma pack(pop)
+
 		struct cplane_t
 		{
 			char pad[20];
@@ -2367,13 +2366,12 @@ namespace ZoneTool
 
 		struct cLeaf_t
 		{
-			unsigned __int16 firstCollAabbIndex; // + 0
-			unsigned __int16 collAabbCount; // + 2
-			int brushContents; // + 6
-			int terrainContents; // + 10
-			float mins[3]; // + 22
-			float maxs[3]; // + 34
-			int leafBrushNode; // + 38
+			unsigned __int16 firstCollAabbIndex;
+			unsigned __int16 collAabbCount;
+			int brushContents;
+			int terrainContents;
+			Bounds bounds;
+			int leafBrushNode;
 		};
 
 		struct CollisionBorder
@@ -2392,7 +2390,9 @@ namespace ZoneTool
 
 		struct cLeafBrushNodeChildren_t
 		{
-			unsigned __int16 childOffset[6];
+			float dist;
+			float range;
+			unsigned __int16 childOffset[2];
 		};
 
 		union cLeafBrushNodeData_t
@@ -2404,7 +2404,7 @@ namespace ZoneTool
 		struct cLeafBrushNode_s
 		{
 			char axis;
-			short leafBrushCount;
+			__int16 leafBrushCount;
 			int contents;
 			cLeafBrushNodeData_t data;
 		};
@@ -2413,6 +2413,7 @@ namespace ZoneTool
 		{
 			char triCount;
 			char borderCount;
+			char firstVertSegment;
 			int firstTri;
 			CollisionBorder* borders;
 		};
@@ -2425,7 +2426,7 @@ namespace ZoneTool
 
 		struct CollisionAabbTree
 		{
-			float origin[3];
+			float midPoint[3];
 			unsigned __int16 materialIndex;
 			unsigned __int16 childCount;
 			float halfSize[3];

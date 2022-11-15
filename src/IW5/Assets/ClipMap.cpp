@@ -117,9 +117,11 @@ namespace ZoneTool
 				}
 				else
 				{
-					// could be wrong
-					memcpy(&info->bCollisionTree.leafbrushNodes[i].data.children, &asset->info.cLeafBrushNodes[i].data.children,
-						sizeof(asset->info.cLeafBrushNodes[i].data.children));
+					info->bCollisionTree.leafbrushNodes[i].data.children.dist = asset->info.cLeafBrushNodes[i].data.children.dist;
+					info->bCollisionTree.leafbrushNodes[i].data.children.range = asset->info.cLeafBrushNodes[i].data.children.range;
+					
+					info->bCollisionTree.leafbrushNodes[i].data.children.childOffset[0] = asset->info.cLeafBrushNodes[i].data.children.childOffset[0];
+					info->bCollisionTree.leafbrushNodes[i].data.children.childOffset[1] = asset->info.cLeafBrushNodes[i].data.children.childOffset[1];
 				}
 			}
 
@@ -127,7 +129,7 @@ namespace ZoneTool
 			REINTERPRET_CAST_SAFE(info->bCollisionTree.leafbrushes, asset->info.leafBrushes);
 
 			info->pCollisionTree.aabbTreeCount = asset->numCollisionAABBTrees;
-			REINTERPRET_CAST_SAFE(info->pCollisionTree.aabbTrees, asset->collisionAABBTrees); // origin -> midPoint
+			REINTERPRET_CAST_SAFE(info->pCollisionTree.aabbTrees, asset->collisionAABBTrees);
 
 			info->sCollisionTree.numStaticModels = asset->numStaticModels;
 			info->sCollisionTree.smodelNodeCount = asset->smodelNodeCount;
@@ -187,7 +189,7 @@ namespace ZoneTool
 			{
 				info->pCollisionData.partitions[i].triCount = asset->collisionPartitions[i].triCount;
 				info->pCollisionData.partitions[i].borderCount = asset->collisionPartitions[i].borderCount;
-				info->pCollisionData.partitions[i].firstVertSegment = 0;
+				info->pCollisionData.partitions[i].firstVertSegment = asset->collisionPartitions[i].firstVertSegment;
 				info->pCollisionData.partitions[i].firstTri = asset->collisionPartitions[i].firstTri;
 				REINTERPRET_CAST_SAFE(info->pCollisionData.partitions[i].borders, asset->collisionPartitions[i].borders);
 			}
@@ -233,7 +235,7 @@ namespace ZoneTool
 				h1_asset->leafs[i].collAabbCount = asset->cLeaf[i].collAabbCount;
 				h1_asset->leafs[i].brushContents = asset->cLeaf[i].brushContents;
 				h1_asset->leafs[i].terrainContents = asset->cLeaf[i].terrainContents;
-				memcpy(&h1_asset->leafs[i].bounds, &asset->cLeaf[i].mins, sizeof(float[3]) * 2);
+				memcpy(&h1_asset->leafs[i].bounds, &asset->cLeaf[i].bounds, sizeof(IW5::Bounds));
 				h1_asset->leafs[i].leafBrushNode = asset->cLeaf[i].leafBrushNode;
 			}
 
@@ -244,22 +246,18 @@ namespace ZoneTool
 				memcpy(&h1_asset->cmodels[i].bounds, &asset->cModels[i].bounds, sizeof(IW5::Bounds));
 				h1_asset->cmodels[i].radius = asset->cModels[i].radius;
 
-				//GenerateH1ClipInfo(iw6_asset->cmodels[i].info, asset->cModels[i].info, mem);
-				//if (!iw6_asset->cmodels[i].info)
-				{
-					h1_asset->cmodels[i].info = h1_asset->pInfo;
-				}
+				h1_asset->cmodels[i].info = nullptr; // mapped in h1
 
 				h1_asset->cmodels[i].leaf.firstCollAabbIndex = asset->cModels[i].leaf.firstCollAabbIndex;
 				h1_asset->cmodels[i].leaf.collAabbCount = asset->cModels[i].leaf.collAabbCount;
 				h1_asset->cmodels[i].leaf.brushContents = asset->cModels[i].leaf.brushContents;
 				h1_asset->cmodels[i].leaf.terrainContents = asset->cModels[i].leaf.terrainContents;
-				memcpy(&h1_asset->cmodels[i].leaf.bounds, &asset->cModels[i].leaf.mins, sizeof(float[3]) * 2);
+				memcpy(&h1_asset->cmodels[i].leaf.bounds, &asset->cModels[i].leaf.bounds, sizeof(IW5::Bounds));
 				h1_asset->cmodels[i].leaf.leafBrushNode = asset->cModels[i].leaf.leafBrushNode;
 			}
 
 			h1_asset->mapEnts = mem->Alloc<H1::MapEnts>();
-			h1_asset->mapEnts->name = asset->mapEnts->name; // NEED TO DO MAPENTs LATER
+			h1_asset->mapEnts->name = asset->mapEnts->name;
 
 			h1_asset->stageCount = asset->stageCount;
 			h1_asset->stages = mem->Alloc<H1::Stage>(h1_asset->stageCount);
@@ -297,7 +295,7 @@ namespace ZoneTool
 					if (1) // check
 					{
 						h1_asset->dynEntDefList[i][j].unk[0] = 2500.00000f;
-						h1_asset->dynEntDefList[i][j].unk[0] = 0.0199999996f;
+						h1_asset->dynEntDefList[i][j].unk[1] = 0.0199999996f;
 					}
 
 					h1_asset->dynEntClientList[i][j].physObjId = asset->dynEntClientList[i]->physObjId;
@@ -342,6 +340,7 @@ namespace ZoneTool
 			for (unsigned int i = 0; i < physmap->modelsCount; i++)
 			{
 				physmap->models[i].fields.polytopeIndex = -1;
+				physmap->models[i].fields.unk = -1;
 				physmap->models[i].fields.worldIndex = 0;
 				physmap->models[i].fields.meshIndex = -1;
 			}

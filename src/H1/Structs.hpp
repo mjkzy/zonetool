@@ -230,7 +230,8 @@ namespace ZoneTool
 
 		struct PhysBrushModelFields
 		{
-			int polytopeIndex;
+			short polytopeIndex;
+			short unk;
 			short worldIndex;
 			short meshIndex;
 		};
@@ -4324,7 +4325,7 @@ namespace ZoneTool
 			float normal[3];
 			float dist;
 			unsigned char type;
-			//unsigned char pad[3];
+			unsigned char pad[3];
 		}; assert_sizeof(cplane_s, 20);
 
 		enum CSurfaceFlags : std::uint32_t

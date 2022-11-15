@@ -12,8 +12,8 @@ namespace
 	{
 		//	IW5,										H1
 			{"wc_l_sm_a0c0",							"wc_l_sm_a0c0_nfwpf_frt_aat"},
-			{"wc_l_sm_r0c0",							"wc_l_sm_lmpb_r0c0_nfwpf"},
-			{"mc_l_sm_r0c0d0n0s0",						"wc_l_sm__lmpbr0c0d0n0sd0_nfwpf"},
+			{"wc_l_sm_r0c0",							"wc_l_sm_r0c0_nfwpf"},
+			{"mc_l_sm_r0c0d0n0s0",						"wc_l_sm_r0c0d0n0sd0_nfwpf"},
 			{"wc_l_sm_r0c0d0n0s0p0",					"wc_l_sm_r0c0d0n0sd0_nfwpf"}, // couldn't find
 			{"wc_l_sm_r0c0n0",							"wc_l_sm_r0c0n0_nfwpf"},
 			{"wc_l_sm_r0c0n0s0",						"wc_l_sm_r0c0n0sd0_nfwpf"},
