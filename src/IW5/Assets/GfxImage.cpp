@@ -144,8 +144,8 @@ namespace ZoneTool
 			h1_asset->width = asset->width;
 			h1_asset->height = asset->height;
 			h1_asset->depth = asset->depth;
-			h1_asset->numElements = 1;
-			h1_asset->levelCount = image_count_mipmaps(asset->width, asset->height, asset->depth);
+			h1_asset->numElements = asset->mapType == 5 ? 6 : 1;
+			h1_asset->levelCount = 1;
 			h1_asset->streamed = false;
 			h1_asset->pixelData = reinterpret_cast<unsigned char*>(&asset->texture->data);
 

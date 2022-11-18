@@ -3,7 +3,7 @@
 
 namespace ZoneTool
 {
-	namespace IW3
+	namespace directx
 	{
 		typedef enum _D3DFORMAT : std::int32_t
 		{
@@ -89,14 +89,17 @@ namespace ZoneTool
 			}
 			return DXGI_FORMAT_UNKNOWN;
 		}
+	}
 
+	namespace
+	{
 		inline std::uint32_t from_argb(std::uint32_t argb)
 		{
 			return
 				// Source is in format: 0xAARRGGBB
 				((argb & 0x00FF0000) >> 16) | //______RR
 				((argb & 0x0000FF00)) | //____GG__
-				((argb & 0x000000FF) << 16)  | //___BB____
+				((argb & 0x000000FF) << 16) | //___BB____
 				((argb & 0xFF000000));         //AA______
 				// Return value is in format:  0xAABBGGRR 
 		}
@@ -116,25 +119,17 @@ namespace ZoneTool
 			}
 			return offset;
 		}
+	}
 
-		unsigned int image_count_mipmaps(unsigned int width, unsigned int height, unsigned int depth)
-		{
-			unsigned int mipRes;
-			unsigned int mipCount;
-
-			mipCount = 1;
-			for (mipRes = 1; mipRes < width || mipRes < height || mipRes < depth; mipRes *= 2)
-				++mipCount;
-			return mipCount;
-		}
-
+	namespace IW3
+	{
 		H1::GfxImage* GenerateH1GfxImage(GfxImage* asset, ZoneMemory* mem)
 		{
 			// allocate H1 GfxImage structure
 			const auto h1_asset = mem->Alloc<H1::GfxImage>();
 
 			h1_asset->name = asset->name;
-			h1_asset->imageFormat = get_d3d_to_dxgi(asset->texture.loadDef->format); //h1_asset->imageFormat = MFMapDX9FormatToDXGIFormat(asset->texture->format);
+			h1_asset->imageFormat = directx::get_d3d_to_dxgi(asset->texture.loadDef->format);
 			h1_asset->mapType = static_cast<H1::MapType>(asset->mapType);
 			h1_asset->semantic = asset->semantic;
 			h1_asset->category = asset->category;
@@ -145,7 +140,7 @@ namespace ZoneTool
 			h1_asset->height = asset->height;
 			h1_asset->depth = asset->depth;
 			h1_asset->numElements = 1;
-			h1_asset->levelCount = image_count_mipmaps(asset->width, asset->height, asset->depth);
+			h1_asset->levelCount = asset->mapType == 5 ? 6 : 1;
 			h1_asset->streamed = false;
 			h1_asset->pixelData = reinterpret_cast<unsigned char*>(&asset->texture.loadDef->data);
 
@@ -155,7 +150,7 @@ namespace ZoneTool
 				ZONETOOL_FATAL("Unknown DXGIFORMAT for image \"%s\" (%d)", asset->name, asset->texture.loadDef->format);
 			}
 
-			if (asset->texture.loadDef->format == D3DFMT_A8R8G8B8 && h1_asset->imageFormat == DXGI_FORMAT_R8G8B8A8_UNORM)
+			if (asset->texture.loadDef->format == directx::D3DFMT_A8R8G8B8 && h1_asset->imageFormat == DXGI_FORMAT_R8G8B8A8_UNORM)
 			{
 				auto* new_pixels = mem->Alloc<unsigned char>(asset->texture.loadDef->resourceSize);
 				argb_to_rgba(h1_asset->pixelData, asset->texture.loadDef->resourceSize, new_pixels);

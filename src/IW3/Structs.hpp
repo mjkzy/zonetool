@@ -53,7 +53,7 @@ namespace ZoneTool
 			// not used
 			rawfile,
 			stringtable,
-			max,
+			max_type,
 		};
 
 		typedef float vec4_t[4];
@@ -216,7 +216,7 @@ namespace ZoneTool
 			unsigned int typeHash;
 			char firstCharacter;
 			char secondLastCharacter;
-			char sampleState;
+			unsigned char sampleState;
 			char semantic;
 			GfxImage* image;
 		};

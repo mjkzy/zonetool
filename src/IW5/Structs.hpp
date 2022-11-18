@@ -3302,7 +3302,7 @@ namespace ZoneTool
 			const char* baseName; // 4
 			std::uint32_t planeCount; // 4
 			std::uint32_t nodeCount; // 4 // = 16
-			std::uint32_t indexCount; // 4
+			std::uint32_t surfaceCount; // 4
 			std::uint32_t skyCount; // 4
 			GfxSky* skies; // 4
 			std::uint32_t lastSunPrimaryLightIndex;

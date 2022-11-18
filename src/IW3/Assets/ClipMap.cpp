@@ -165,13 +165,13 @@ namespace ZoneTool
 
 				for (unsigned int i = 1; i < asset->numStaticModels; i++)
 				{
-					maxs[0] = max(maxs[0], asset->staticModelList[i].absmax[0]);
-					maxs[1] = max(maxs[1], asset->staticModelList[i].absmax[1]);
-					maxs[2] = max(maxs[2], asset->staticModelList[i].absmax[2]);
+					maxs[0] = std::max(maxs[0], asset->staticModelList[i].absmax[0]);
+					maxs[1] = std::max(maxs[1], asset->staticModelList[i].absmax[1]);
+					maxs[2] = std::max(maxs[2], asset->staticModelList[i].absmax[2]);
 
-					mins[0] = min(mins[0], asset->staticModelList[i].absmin[0]);
-					mins[1] = min(mins[1], asset->staticModelList[i].absmin[1]);
-					mins[2] = min(mins[2], asset->staticModelList[i].absmin[2]);
+					mins[0] = std::min(mins[0], asset->staticModelList[i].absmin[0]);
+					mins[1] = std::min(mins[1], asset->staticModelList[i].absmin[1]);
+					mins[2] = std::min(mins[2], asset->staticModelList[i].absmin[2]);
 				}
 
 				memcpy(&info->sCollisionTree.smodelNodes[0].bounds, bounds::compute(mins, maxs), sizeof(float[2][3]));
@@ -212,24 +212,25 @@ namespace ZoneTool
 
 				REINTERPRET_CAST_SAFE(info->bCollisionData.brushes[i].baseAdjacentSide, asset->brushes[i].baseAdjacentSide);
 
-				memcpy(&info->bCollisionData.brushes[i].axialMaterialNum, &asset->brushes[i].axialMaterialNum, sizeof(short[2][3]));
-				info->bCollisionData.brushes[i].firstAdjacentSideOffsets[0][0] = asset->brushes[i].firstAdjacentSideOffsets[0][0];
-				info->bCollisionData.brushes[i].firstAdjacentSideOffsets[0][1] = asset->brushes[i].firstAdjacentSideOffsets[0][1];
-				info->bCollisionData.brushes[i].firstAdjacentSideOffsets[0][2] = asset->brushes[i].firstAdjacentSideOffsets[0][2];
-				info->bCollisionData.brushes[i].firstAdjacentSideOffsets[1][0] = asset->brushes[i].firstAdjacentSideOffsets[1][0];
-				info->bCollisionData.brushes[i].firstAdjacentSideOffsets[1][1] = asset->brushes[i].firstAdjacentSideOffsets[1][1];
-				info->bCollisionData.brushes[i].firstAdjacentSideOffsets[1][2] = asset->brushes[i].firstAdjacentSideOffsets[1][2];
-				memcpy(&info->bCollisionData.brushes[i].edgeCount, &asset->brushes[i].edgeCount, sizeof(char[2][3]));
+				memcpy(&info->bCollisionData.brushes[i].axialMaterialNum, &asset->brushes[i].axialMaterialNum, sizeof(info->bCollisionData.brushes[i].axialMaterialNum));
+				memcpy(&info->bCollisionData.brushes[i].firstAdjacentSideOffsets, &asset->brushes[i].firstAdjacentSideOffsets, sizeof(info->bCollisionData.brushes[i].firstAdjacentSideOffsets));
+				//info->bCollisionData.brushes[i].firstAdjacentSideOffsets[0][0] = asset->brushes[i].firstAdjacentSideOffsets[0][0];
+				//info->bCollisionData.brushes[i].firstAdjacentSideOffsets[0][1] = asset->brushes[i].firstAdjacentSideOffsets[0][1];
+				//info->bCollisionData.brushes[i].firstAdjacentSideOffsets[0][2] = asset->brushes[i].firstAdjacentSideOffsets[0][2];
+				//info->bCollisionData.brushes[i].firstAdjacentSideOffsets[1][0] = asset->brushes[i].firstAdjacentSideOffsets[1][0];
+				//info->bCollisionData.brushes[i].firstAdjacentSideOffsets[1][1] = asset->brushes[i].firstAdjacentSideOffsets[1][1];
+				//info->bCollisionData.brushes[i].firstAdjacentSideOffsets[1][2] = asset->brushes[i].firstAdjacentSideOffsets[1][2];
+				memcpy(&info->bCollisionData.brushes[i].edgeCount, &asset->brushes[i].edgeCount, sizeof(info->bCollisionData.brushes[i].edgeCount));
 			}
 
 			info->bCollisionData.brushBounds = mem->Alloc<H1::Bounds>(info->bCollisionData.numBrushes);
-			for (unsigned short i = 0; i < info->bCollisionData.numBrushes; ++i)
+			for (unsigned int i = 0; i < info->bCollisionData.numBrushes; i++)
 			{
 				memcpy(&info->bCollisionData.brushBounds[i], bounds::compute(asset->brushes[i].mins, asset->brushes[i].maxs), sizeof(float[2][3]));
 			}
 
 			info->bCollisionData.brushContents = mem->Alloc<int>(info->bCollisionData.numBrushes);
-			for (unsigned short i = 0; i < info->bCollisionData.numBrushes; ++i)
+			for (unsigned int i = 0; i < info->bCollisionData.numBrushes; i++)
 			{
 				info->bCollisionData.brushContents[i] = asset->brushes[i].contents;
 			}

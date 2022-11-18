@@ -220,7 +220,7 @@ namespace ZoneTool
 					memcpy(h1_portal->plane.coeffs, iw3_portal->plane.coeffs, sizeof(float[4]));
 					h1_portal->vertices = reinterpret_cast<float(*__ptr64)[3]>(iw3_portal->vertices);
 
-					h1_portal->cellIndex = static_cast<unsigned short>(&iw3_portal->cell - &asset->cells);
+					h1_portal->cellIndex = static_cast<unsigned short>(iw3_portal->cell - asset->cells) / sizeof(IW3::GfxCell);
 					assert(h1_portal->cellIndex >= static_cast<unsigned short>(h1_asset->dpvsPlanes.cellCount));
 
 					h1_portal->closeDistance = 0;
@@ -590,10 +590,9 @@ namespace ZoneTool
 			{
 				memcpy(&h1_asset->dpvs.smodelInsts[i].mins, bounds::compute(asset->dpvs.smodelInsts[i].mins, asset->dpvs.smodelInsts[i].maxs), sizeof(float[2][3]));
 
-				// I guess the sun is always a good lighting source ;)
-				h1_asset->dpvs.smodelInsts[i].lightingOrigin[0] = asset->sun.sunFxPosition[0];
-				h1_asset->dpvs.smodelInsts[i].lightingOrigin[1] = asset->sun.sunFxPosition[1];
-				h1_asset->dpvs.smodelInsts[i].lightingOrigin[2] = asset->sun.sunFxPosition[2];
+				h1_asset->dpvs.smodelInsts[i].lightingOrigin[0] = h1_asset->dpvs.smodelInsts[i].mins[0];
+				h1_asset->dpvs.smodelInsts[i].lightingOrigin[1] = h1_asset->dpvs.smodelInsts[i].mins[1];
+				h1_asset->dpvs.smodelInsts[i].lightingOrigin[2] = h1_asset->dpvs.smodelInsts[i].mins[2];
 			}
 
 			h1_asset->dpvs.surfaces = mem->Alloc<H1::GfxSurface>(h1_asset->surfaceCount);
@@ -625,7 +624,6 @@ namespace ZoneTool
 			{
 				memcpy(&h1_asset->dpvs.smodelDrawInsts[i].placement, &asset->dpvs.smodelDrawInsts[i].placement, sizeof(IW3::GfxPackedPlacement));
 				h1_asset->dpvs.smodelDrawInsts[i].model = reinterpret_cast<H1::XModel * __ptr64>(asset->dpvs.smodelDrawInsts[i].model);
-				h1_asset->dpvs.smodelDrawInsts[i].cullDist = asset->dpvs.smodelDrawInsts[i].cullDist;
 				h1_asset->dpvs.smodelDrawInsts[i].lightingHandle = asset->dpvs.smodelDrawInsts[i].lightingHandle;
 				
 				auto no_shadows = (asset->dpvs.smodelDrawInsts[i].flags & 0x1) != 0;
@@ -633,12 +631,35 @@ namespace ZoneTool
 					H1::StaticModelFlag::STATIC_MODEL_FLAG_NO_CAST_SHADOW : 0;
 				h1_asset->dpvs.smodelDrawInsts[i].flags |= H1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTGRID_LIGHTING;
 
+				if (asset->dpvs.smodelInsts[i].groundLighting.packed > 0)
+				{
+					h1_asset->dpvs.smodelDrawInsts[i].flags |= H1::StaticModelFlag::STATIC_MODEL_FLAG_GROUND_LIGHTING;
+				}
+
 				h1_asset->dpvs.smodelDrawInsts[i].staticModelId = 0;
 				h1_asset->dpvs.smodelDrawInsts[i].primaryLightEnvIndex = asset->dpvs.smodelDrawInsts[i].primaryLightIndex;
 				h1_asset->dpvs.smodelDrawInsts[i].reflectionProbeIndex = asset->dpvs.smodelDrawInsts[i].reflectionProbeIndex;
 				h1_asset->dpvs.smodelDrawInsts[i].firstMtlSkinIndex = 0;
 				h1_asset->dpvs.smodelDrawInsts[i].sunShadowFlags = 0;
 
+				float iw3_cull_dist = asset->dpvs.smodelDrawInsts[i].cullDist;
+
+				// Double cull distance so it looks nicer
+				iw3_cull_dist *= 2;
+
+				unsigned short new_cull_dist = 0;
+				int imin = std::numeric_limits<int>::min();
+
+				if (iw3_cull_dist > std::numeric_limits<unsigned short>::max())
+				{
+					new_cull_dist = std::numeric_limits<unsigned short>::max();
+				}
+				else
+				{
+					new_cull_dist = static_cast<unsigned short>(iw3_cull_dist);
+				}
+
+				h1_asset->dpvs.smodelDrawInsts[i].cullDist = new_cull_dist;
 				h1_asset->dpvs.smodelDrawInsts[i].unk0 = h1_asset->dpvs.smodelDrawInsts[i].cullDist;
 			}
 
@@ -697,7 +718,7 @@ namespace ZoneTool
 			h1_asset->heroOnlyLightCount = 0;
 			h1_asset->heroOnlyLights = nullptr;
 
-			h1_asset->fogTypesAllowed = 0x1;
+			h1_asset->fogTypesAllowed = H1::FogTypes::FOG_NORMAL;
 
 			h1_asset->umbraTomeSize = 0;
 			h1_asset->umbraTomeData = nullptr;
@@ -714,7 +735,7 @@ namespace ZoneTool
 			h1_asset->buildInfo.buildEndTime = nullptr;
 
 			// sort triangles & vertices
-			int tri_index = 0;
+			/*int tri_index = 0;
 			h1_asset->draw.indices = mem->Alloc<unsigned short>(h1_asset->draw.indexCount);
 			for (auto i = 0; i < h1_asset->surfaceCount; i++)
 			{
@@ -725,7 +746,7 @@ namespace ZoneTool
 				surface->tris.baseIndex = tri_index;
 				tri_index += surface->tris.triCount * 3;
 			}
-			assert(tri_index == h1_asset->draw.indexCount);
+			assert(tri_index == h1_asset->draw.indexCount);*/
 
 			return h1_asset;
 		}

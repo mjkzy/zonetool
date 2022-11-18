@@ -128,7 +128,7 @@ namespace ZoneTool
 
 			h1_asset->planeCount = asset->planeCount;
 			h1_asset->nodeCount = asset->nodeCount;
-			h1_asset->surfaceCount = asset->indexCount;
+			h1_asset->surfaceCount = asset->surfaceCount;
 			h1_asset->skyCount = asset->skyCount;
 
 			h1_asset->skies = mem->Alloc<H1::GfxSky>(h1_asset->skyCount);

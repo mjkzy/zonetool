@@ -4527,7 +4527,7 @@ namespace ZoneTool
 			cbrushside_t* __ptr64 brushSides;
 			unsigned int numBrushEdges;
 			cbrushedge_t* __ptr64 brushEdges;
-			unsigned int numBrushes;
+			unsigned short numBrushes;
 			cbrush_t* __ptr64 brushes;
 			Bounds* __ptr64 brushBounds;
 			int* __ptr64 brushContents;
@@ -6010,6 +6010,12 @@ namespace ZoneTool
 			const char* __ptr64 buildStartTime;
 			const char* __ptr64 buildEndTime;
 		}; assert_sizeof(GfxBuildInfo, 32);
+
+		enum FogTypes : std::int8_t
+		{
+			FOG_NORMAL = 0x1,
+			FOG_DFOG = 0x2,
+		};
 
 		struct GfxWorld
 		{

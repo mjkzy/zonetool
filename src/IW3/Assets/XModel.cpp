@@ -340,14 +340,15 @@ namespace ZoneTool
 			// allocate H1 XModelSurfs structure
 			const auto h1_asset = mem->Alloc<H1::XModelSurfs>();
 
-			h1_asset->name = mem->StrDup(va("%s_lod%d", model->name, index & 0xFF));
+			h1_asset->name = mem->StrDup(va("%s_lod%d", model->name, index));
 			h1_asset->numsurfs = model->lodInfo[index].numsurfs;
 			memcpy(&h1_asset->partBits, &model->lodInfo[index].partBits, sizeof(model->lodInfo[index].partBits));
 
 			h1_asset->surfs = mem->Alloc<H1::XSurface>(h1_asset->numsurfs);
+
 			for (unsigned short i = 0; i < h1_asset->numsurfs; i++)
 			{
-				GenerateH1XSurface(&h1_asset->surfs[i], &model->surfs[i], mem);
+				GenerateH1XSurface(&h1_asset->surfs[i], &model->surfs[model->lodInfo[index].surfIndex + i], mem);
 			}
 
 			return h1_asset;
