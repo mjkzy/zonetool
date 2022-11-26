@@ -90,6 +90,7 @@ namespace ZoneTool
 		{
 			static std::shared_ptr<ZoneMemory> memory;
 			static std::vector<std::pair<XAssetType, std::string>> referencedAssets;
+			static FILE* csvFile;;
 
 			if (!memory)
 			{
@@ -152,6 +153,9 @@ namespace ZoneTool
 				FileSystem::SetFastFile("");
 				isDumping = false;
 				isVerifying = false;
+
+				FileSystem::FileClose(csvFile);
+				csvFile = nullptr;
 			}
 
 			// dump shit
@@ -160,8 +164,22 @@ namespace ZoneTool
 				FileSystem::SetFastFile(fastfile);
 				zonetool::filesystem::set_fastfile(fastfile);
 
+				// open csv file for dumping 
+				if (!csvFile)
+				{
+					csvFile = FileSystem::FileOpen(fastfile + ".csv", "wb");
+				}
+
+				// dump assets to disk
+				bool is_referenced = GetAssetName(asset)[0] == ',';
+				if (csvFile/* && !is_referenced*/)
+				{
+					auto xassettypes = reinterpret_cast<char**>(0x00726840);
+					fprintf(csvFile, "%s,%s\n", xassettypes[asset->type], GetAssetName(asset));
+				}
+
 				// check if the asset is a reference asset
-				if (GetAssetName(asset)[0] == ',')
+				if (is_referenced)
 				{
 					referencedAssets.push_back({asset->type, GetAssetName(asset)});
 				}
@@ -174,9 +192,11 @@ namespace ZoneTool
 					DECLARE_ASSET(image, IGfxImage);
 					DECLARE_ASSET(lightdef, IGfxLightDef);
 					DECLARE_ASSET(gfx_map, IGfxWorld);
+					DECLARE_ASSET(loaded_sound, ILoadedSound);
 					DECLARE_ASSET(map_ents, IMapEnts);
 					DECLARE_ASSET(material, IMaterial);
 					DECLARE_ASSET(rawfile, IRawFile);
+					DECLARE_ASSET(sound, ISound);
 					DECLARE_ASSET(xanim, IXAnimParts);
 					DECLARE_ASSET(xmodel, IXModel);
 				}

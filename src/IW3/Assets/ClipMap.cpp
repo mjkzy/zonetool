@@ -9,7 +9,7 @@ namespace ZoneTool
 	{
 		namespace
 		{
-			H1::CSurfaceFlags surf_flags_conversion_table[31]
+			H1::CSurfaceFlags surf_flags_conversion_table[29]
 			{
 				H1::SURF_FLAG_DEFAULT,
 				H1::SURF_FLAG_BARK,
@@ -40,8 +40,6 @@ namespace ZoneTool
 				H1::SURF_FLAG_CUSHION,
 				H1::SURF_FLAG_FRUIT,
 				H1::SURF_FLAG_PAINTEDMETAL,
-				H1::SURF_FLAG_RIOTSHIELD,
-				H1::SURF_FLAG_SLUSH,
 			}; IW3::CSurfaceFlags;
 
 			int convert_surf_flags(int flags)
@@ -57,7 +55,6 @@ namespace ZoneTool
 				convert(IW3::CSurfaceFlags::SURF_FLAG_CLIPSHOT, H1::CSurfaceFlags::SURF_FLAG_CLIPSHOT);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_PLAYERCLIP, H1::CSurfaceFlags::SURF_FLAG_PLAYERCLIP);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_MONSTERCLIP, H1::CSurfaceFlags::SURF_FLAG_MONSTERCLIP);
-				convert(IW3::CSurfaceFlags::SURF_FLAG_AICLIPALLOWDEATH, H1::CSurfaceFlags::SURF_FLAG_AICLIPALLOWDEATH);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_VEHICLECLIP, H1::CSurfaceFlags::SURF_FLAG_VEHICLECLIP);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_ITEMCLIP, H1::CSurfaceFlags::SURF_FLAG_ITEMCLIP);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_NODROP, H1::CSurfaceFlags::SURF_FLAG_NODROP);
@@ -71,7 +68,6 @@ namespace ZoneTool
 				convert(IW3::CSurfaceFlags::SURF_FLAG_NOCASTSHADOW, H1::CSurfaceFlags::SURF_FLAG_NOCASTSHADOW);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_PHYSICSGEOM, H1::CSurfaceFlags::SURF_FLAG_PHYSICSGEOM);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_LIGHTPORTAL, H1::CSurfaceFlags::SURF_FLAG_LIGHTPORTAL);
-				convert(IW3::CSurfaceFlags::SURF_FLAG_OUTDOORBOUNDS, H1::CSurfaceFlags::SURF_FLAG_OUTDOORBOUNDS);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_SLICK, H1::CSurfaceFlags::SURF_FLAG_SLICK);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_NOIMPACT, H1::CSurfaceFlags::SURF_FLAG_NOIMPACT);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_NOMARKS, H1::CSurfaceFlags::SURF_FLAG_NOMARKS);
@@ -80,8 +76,6 @@ namespace ZoneTool
 				convert(IW3::CSurfaceFlags::SURF_FLAG_NODAMAGE, H1::CSurfaceFlags::SURF_FLAG_NODAMAGE);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_MANTLEON, H1::CSurfaceFlags::SURF_FLAG_MANTLEON);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_MANTLEOVER, H1::CSurfaceFlags::SURF_FLAG_MANTLEOVER);
-				convert(IW3::CSurfaceFlags::SURF_FLAG_STAIRS, H1::CSurfaceFlags::SURF_FLAG_STAIRS);
-				convert(IW3::CSurfaceFlags::SURF_FLAG_SOFT, H1::CSurfaceFlags::SURF_FLAG_SOFT);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_NOSTEPS, H1::CSurfaceFlags::SURF_FLAG_NOSTEPS);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_NODRAW, H1::CSurfaceFlags::SURF_FLAG_NODRAW);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_NOLIGHTMAP, H1::CSurfaceFlags::SURF_FLAG_NOLIGHTMAP);
@@ -136,8 +130,9 @@ namespace ZoneTool
 				std::memcpy(info->pCollisionTree.aabbTrees[i].halfSize, asset->aabbTrees[i].halfSize, sizeof(float[3]));
 				info->pCollisionTree.aabbTrees[i].materialIndex = asset->aabbTrees[i].materialIndex;
 				info->pCollisionTree.aabbTrees[i].childCount = asset->aabbTrees[i].childCount;
+
 				info->pCollisionTree.aabbTrees[i].u.firstChildIndex = asset->aabbTrees[i].u.firstChildIndex;
-				info->pCollisionTree.aabbTrees[i].u.partitionIndex = asset->aabbTrees[i].u.partitionIndex;
+				//info->pCollisionTree.aabbTrees[i].u.partitionIndex = asset->aabbTrees[i].u.partitionIndex;
 			}
 
 			info->sCollisionTree.numStaticModels = asset->numStaticModels;
@@ -213,13 +208,12 @@ namespace ZoneTool
 				REINTERPRET_CAST_SAFE(info->bCollisionData.brushes[i].baseAdjacentSide, asset->brushes[i].baseAdjacentSide);
 
 				memcpy(&info->bCollisionData.brushes[i].axialMaterialNum, &asset->brushes[i].axialMaterialNum, sizeof(info->bCollisionData.brushes[i].axialMaterialNum));
-				memcpy(&info->bCollisionData.brushes[i].firstAdjacentSideOffsets, &asset->brushes[i].firstAdjacentSideOffsets, sizeof(info->bCollisionData.brushes[i].firstAdjacentSideOffsets));
-				//info->bCollisionData.brushes[i].firstAdjacentSideOffsets[0][0] = asset->brushes[i].firstAdjacentSideOffsets[0][0];
-				//info->bCollisionData.brushes[i].firstAdjacentSideOffsets[0][1] = asset->brushes[i].firstAdjacentSideOffsets[0][1];
-				//info->bCollisionData.brushes[i].firstAdjacentSideOffsets[0][2] = asset->brushes[i].firstAdjacentSideOffsets[0][2];
-				//info->bCollisionData.brushes[i].firstAdjacentSideOffsets[1][0] = asset->brushes[i].firstAdjacentSideOffsets[1][0];
-				//info->bCollisionData.brushes[i].firstAdjacentSideOffsets[1][1] = asset->brushes[i].firstAdjacentSideOffsets[1][1];
-				//info->bCollisionData.brushes[i].firstAdjacentSideOffsets[1][2] = asset->brushes[i].firstAdjacentSideOffsets[1][2];
+				info->bCollisionData.brushes[i].firstAdjacentSideOffsets[0][0] = static_cast<unsigned char>(asset->brushes[i].firstAdjacentSideOffsets[0][0]);
+				info->bCollisionData.brushes[i].firstAdjacentSideOffsets[0][1] = static_cast<unsigned char>(asset->brushes[i].firstAdjacentSideOffsets[0][1]);
+				info->bCollisionData.brushes[i].firstAdjacentSideOffsets[0][2] = static_cast<unsigned char>(asset->brushes[i].firstAdjacentSideOffsets[0][2]);
+				info->bCollisionData.brushes[i].firstAdjacentSideOffsets[1][0] = static_cast<unsigned char>(asset->brushes[i].firstAdjacentSideOffsets[1][0]);
+				info->bCollisionData.brushes[i].firstAdjacentSideOffsets[1][1] = static_cast<unsigned char>(asset->brushes[i].firstAdjacentSideOffsets[1][1]);
+				info->bCollisionData.brushes[i].firstAdjacentSideOffsets[1][2] = static_cast<unsigned char>(asset->brushes[i].firstAdjacentSideOffsets[1][2]);
 				memcpy(&info->bCollisionData.brushes[i].edgeCount, &asset->brushes[i].edgeCount, sizeof(info->bCollisionData.brushes[i].edgeCount));
 			}
 

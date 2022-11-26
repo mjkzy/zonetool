@@ -20,6 +20,10 @@
 
 using namespace zonetool;
 
+#include "Json.hpp"
+using json = nlohmann::json;
+using ordered_json = nlohmann::ordered_json;
+
 #include "Assets/ClipMap.hpp"
 #include "Assets/ComWorld.hpp"
 #include "Assets/FxEffectDef.hpp"

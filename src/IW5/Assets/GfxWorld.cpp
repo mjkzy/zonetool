@@ -633,10 +633,7 @@ namespace ZoneTool
 			h1_asset->dpvs.smodelLighting = mem->Alloc<H1::GfxStaticModelLighting>(h1_asset->dpvs.smodelCount);
 			for (unsigned int i = 0; i < h1_asset->dpvs.smodelCount; i++)
 			{
-				memcpy(h1_asset->dpvs.smodelLighting[i].info2.cacheId, asset->dpvs.smodelDrawInsts[i].cacheId,
-					sizeof(unsigned short[4])); // not sure
-
-				// todo?
+				// todo
 			}
 
 			h1_asset->dpvs.subdivVertexLighting = nullptr;

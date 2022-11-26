@@ -430,6 +430,15 @@ namespace ZoneTool
 			int toolFlags;
 		};
 
+		enum GfxCameraRegionType : std::int8_t
+		{
+			CAMERA_REGION_LIT = 0x0,
+			CAMERA_REGION_DECAL = 0x1,
+			CAMERA_REGION_EMISSIVE = 0x2,
+			CAMERA_REGION_COUNT = 0x3,
+			CAMERA_REGION_NONE = 0x3,
+		};
+
 		struct Material
 		{
 			const char* name;
@@ -489,7 +498,7 @@ namespace ZoneTool
 		union GfxColor
 		{
 			unsigned int packed;
-			char array[4];
+			unsigned char array[4];
 		};
 
 		union PackedTexCoords
@@ -701,15 +710,12 @@ namespace ZoneTool
 			SURF_FLAG_CUSHION = 0x01A00000,
 			SURF_FLAG_FRUIT = 0x01B00000,
 			SURF_FLAG_PAINTEDMETAL = 0x01C00000,
-			SURF_FLAG_RIOTSHIELD = 0x01D00000,
-			SURF_FLAG_SLUSH = 0x01E00000,
 			SURF_FLAG_OPAQUEGLASS = 0x00900000,
 			SURF_FLAG_CLIPMISSILE = 0x00000000,
 			SURF_FLAG_AI_NOSIGHT = 0x00000000,
 			SURF_FLAG_CLIPSHOT = 0x00000000,
 			SURF_FLAG_PLAYERCLIP = 0x00000000,
 			SURF_FLAG_MONSTERCLIP = 0x00000000,
-			SURF_FLAG_AICLIPALLOWDEATH = 0x00000000,
 			SURF_FLAG_VEHICLECLIP = 0x00000000,
 			SURF_FLAG_ITEMCLIP = 0x00000000,
 			SURF_FLAG_NODROP = 0x00000000,
@@ -723,7 +729,6 @@ namespace ZoneTool
 			SURF_FLAG_NOCASTSHADOW = 0x00040000,
 			SURF_FLAG_PHYSICSGEOM = 0x00000000,
 			SURF_FLAG_LIGHTPORTAL = 0x00000000,
-			SURF_FLAG_OUTDOORBOUNDS = 0x00000000,
 			SURF_FLAG_SLICK = 0x00000002,
 			SURF_FLAG_NOIMPACT = 0x00000010,
 			SURF_FLAG_NOMARKS = 0x00000020,
@@ -732,8 +737,6 @@ namespace ZoneTool
 			SURF_FLAG_NODAMAGE = 0x00000001,
 			SURF_FLAG_MANTLEON = 0x02000000,
 			SURF_FLAG_MANTLEOVER = 0x04000000,
-			SURF_FLAG_STAIRS = 0x00000200,
-			SURF_FLAG_SOFT = 0x00001000,
 			SURF_FLAG_NOSTEPS = 0x00002000,
 			SURF_FLAG_NODRAW = 0x00000080,
 			SURF_FLAG_NOLIGHTMAP = 0x00000400,
@@ -1703,7 +1706,7 @@ namespace ZoneTool
 
 		struct FxElemVisualState
 		{
-			char color[4];
+			unsigned char color[4];
 			float rotationDelta;
 			float rotationTotal;
 			float size[2];
@@ -1971,9 +1974,62 @@ namespace ZoneTool
 		struct SoundFile	// 0x10
 		{
 			char type;
-			char _pad[2];
 			bool exists;
+			char _pad[2];
 			SoundData sound;
+		};
+		enum SoundChannel : std::uint32_t
+		{
+			SND_CHANNEL_PHYSICS,
+			SND_CHANNEL_AUTO,
+			SND_CHANNEL_AUTO2,
+			SND_CHANNEL_AUTODOG,
+			SND_CHANNEL_BULLETIMPACT,
+			SND_CHANNEL_BULLETWHIZBY,
+			SND_CHANNEL_ELEMENT,
+			SND_CHANNEL_AUTO2D,
+			SND_CHANNEL_VEHICLE,
+			SND_CHANNEL_VEHICLELIMITED,
+			SND_CHANNEL_MENU,
+			SND_CHANNEL_BODY,
+			SND_CHANNEL_BODY2D,
+			SND_CHANNEL_RELOAD,
+			SND_CHANNEL_RELOAD2D,
+			SND_CHANNEL_ITEM,
+			SND_CHANNEL_EFFECTS1,
+			SND_CHANNEL_EFFECTS2,
+			SND_CHANNEL_WEAPON,
+			SND_CHANNEL_WEAPON2D,
+			SND_CHANNEL_NONSHOCK,
+			SND_CHANNEL_VOICE,
+			SND_CHANNEL_LOCAL,
+			SND_CHANNEL_LOCAL2,
+			SND_CHANNEL_AMBIENT,
+			SND_CHANNEL_HURT,
+			SND_CHANNEL_PLAYER1,
+			SND_CHANNEL_PLAYER2,
+			SND_CHANNEL_MUSIC,
+			SND_CHANNEL_MUSICNOPAUSE,
+			SND_CHANNEL_MISSION,
+			SND_CHANNEL_ANNOUNCER,
+			SND_CHANNEL_SHELLSHOCK,
+
+			SND_CHANNEL_COUNT
+		};
+		union SoundAliasFlags
+		{
+			struct
+			{
+				unsigned int looping : 1;
+				unsigned int isMaster : 1;
+				unsigned int isSlave : 1;
+				unsigned int fullDryLevel : 1;
+				unsigned int noWetLevel : 1;
+				unsigned int unknown1 : 1;
+				unsigned int type : 2;
+				unsigned int channel : 6;
+			};
+			unsigned int intValue;
 		};
 #pragma pack(push, 4)
 		struct SndCurve

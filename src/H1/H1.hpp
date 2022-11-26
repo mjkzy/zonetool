@@ -33,6 +33,7 @@ using namespace zonetool;
 #include "Assets/MapEnts.hpp"
 #include "Assets/PhysWorld.hpp"
 #include "Assets/RawFile.hpp"
+#include "Assets/Sound.hpp"
 #include "Assets/XAnimParts.hpp"
 #include "Assets/XModel.hpp"
 #include "Assets/XSurface.hpp"

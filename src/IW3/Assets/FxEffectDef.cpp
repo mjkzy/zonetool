@@ -175,11 +175,14 @@ namespace ZoneTool
 				for (int i = 0; i < elem->visStateIntervalCount + 1; i++)
 				{
 					// check
+					
+					// iw3: bgra
+					// h1: rgba
 
 					// base
-					h1_elem->visSamples[i].base.color[0] = static_cast<int>(elem->visSamples[i].base.color[0]) / 255.0f;
+					h1_elem->visSamples[i].base.color[0] = static_cast<int>(elem->visSamples[i].base.color[2]) / 255.0f;
 					h1_elem->visSamples[i].base.color[1] = static_cast<int>(elem->visSamples[i].base.color[1]) / 255.0f;
-					h1_elem->visSamples[i].base.color[2] = static_cast<int>(elem->visSamples[i].base.color[2]) / 255.0f;
+					h1_elem->visSamples[i].base.color[2] = static_cast<int>(elem->visSamples[i].base.color[0]) / 255.0f;
 					h1_elem->visSamples[i].base.color[3] = static_cast<int>(elem->visSamples[i].base.color[3]) / 255.0f;
 					h1_elem->visSamples[i].base.pad1[0] = 1.0f;
 					h1_elem->visSamples[i].base.pad1[1] = 1.0f;
@@ -193,9 +196,9 @@ namespace ZoneTool
 					h1_elem->visSamples[i].base.pad2[1] = 0.0f;
 
 					// amplitude
-					h1_elem->visSamples[i].amplitude.color[0] = static_cast<int>(elem->visSamples[i].amplitude.color[0]) / 255.0f;
+					h1_elem->visSamples[i].amplitude.color[0] = static_cast<int>(elem->visSamples[i].amplitude.color[2]) / 255.0f;
 					h1_elem->visSamples[i].amplitude.color[1] = static_cast<int>(elem->visSamples[i].amplitude.color[1]) / 255.0f;
-					h1_elem->visSamples[i].amplitude.color[2] = static_cast<int>(elem->visSamples[i].amplitude.color[2]) / 255.0f;
+					h1_elem->visSamples[i].amplitude.color[2] = static_cast<int>(elem->visSamples[i].amplitude.color[0]) / 255.0f;
 					h1_elem->visSamples[i].amplitude.color[3] = static_cast<int>(elem->visSamples[i].amplitude.color[3]) / 255.0f;
 					h1_elem->visSamples[i].amplitude.pad1[0] = 1.0f;
 					h1_elem->visSamples[i].amplitude.pad1[1] = 1.0f;

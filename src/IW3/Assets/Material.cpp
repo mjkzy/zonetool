@@ -2,194 +2,335 @@
 //#include "H1/Assets/Material.hpp"
 #include "H1/Utils/IO/assetmanager.hpp"
 
-#include "Json.hpp"
-using json = nlohmann::json;
-using ordered_json = nlohmann::ordered_json;
-
-namespace
+namespace ZoneTool
 {
-	std::unordered_map<std::string, std::string> mapped_techsets =
+	namespace
 	{
+		std::unordered_map<std::string, std::string> mapped_techsets =
+		{
 		//	IW3,										H1
-		{"l_sm_r0c0",								"l_sm_r0c0_nfwpf"},
-		{"l_sm_r0c0s0",								"l_sm_r0c0sd0_nfwpf"},
-		{"l_sm_r0c0n0",								"l_sm_r0c0n0_nfwpf"},
+			{"wc_l_sm_a0c0",							"wc_l_sm_a0c0_nfwpf_frt_aat"},
+			{"wc_l_sm_r0c0",							"wc_l_sm_r0c0_nfwpf"},
+			{"wc_l_sm_r0c0d0n0s0",						"wc_l_sm_r0c0d0n0sd0_nfwpf"},
+			{"wc_l_sm_r0c0d0n0s0p0",					"wc_l_sm_r0c0d0n0sd0_nfwpf"}, // couldn't find
+			{"wc_l_sm_r0c0n0",							"wc_l_sm_r0c0n0_nfwpf"},
+			{"wc_l_sm_r0c0n0s0",						"wc_l_sm_r0c0n0sd0_nfwpf"},
+			{"wc_l_sm_r0c0n0s0_nocast",					"wc_l_sm_r0c0n0sd0_nfwpf"}, // no nocast
+			{"wc_l_sm_r0c0n0s0p0",						"wc_l_sm_r0c0n0sd0p0_nfwpf"},
+			{"wc_l_sm_r0c0q0n0s0",						"wc_l_sm_r0c0q0n0sd0_nfwpf"},
+			{"wc_l_sm_r0c0q0n0s0p0",					"wc_l_sm_r0c0q0n0sd0p0_nfwpf"},
+			{"wc_l_sm_r0c0s0",							"wc_l_sm_r0c0sd0_nfwpf"},
+			{"wc_l_sm_r0c0s0p0",						"wc_l_sm_r0c0sd0p0_nfwpf"},
+			{"wc_l_sm_t0c0",							"wc_l_sm_lmpb_t0c0_nfwpf"},
+			{"wc_l_sm_t0c0n0",							"wc_l_sm_lmpb_t0c0n0_nfwpf"},
+			{"wc_l_sm_t0c0n0s0",						"wc_l_sm_lmpb_t0c0n0sd0_nfwpf"},
+			{"wc_l_sm_t0c0s0",							"wc_l_sm_lmpb_t0c0sd0_nfwpf"},
+			{"wc_l_sm_t0c0p0",							"wc_l_sm_lmpb_t0c0_nfwpf"}, // couldn't find
+			{"wc_l_sm_b0c0",							"wc_l_sm_lmpb_ndw_b0c0_nfwpf_frt_im_aat"},
+			{"wc_l_sm_b0c0d0n0",						"wc_l_sm_ndw_b0c0d0n0_nfwpf_frt_aat"},
+			{"wc_l_sm_b0c0d0n0s0",						"wc_l_sm_ndw_b0c0d0n0_nfwpf_frt_aat"}, // couldn't find
+			{"wc_l_sm_b0c0n0",							"wc_l_sm_lmpb_ndw_b0c0n0_nfwpf_frt_im_aat"},
+			{"wc_l_sm_b0c0n0s0",						"wc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"},
+			{"wc_l_sm_b0c0n0s0p0",						"wc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
+			{"wc_l_sm_b0c0n0p0",						"wc_l_sm_lmpb_ndw_b0c0n0_nfwpf_frt_im_aat"}, // couldn't find
+			{"wc_l_sm_b0c0s0",							"wc_l_sm_lmpb_ndw_b0c0sd0_nfwpf_frt_aat"},
+			{"wc_l_sm_b0c0s0_nocast",					"wc_l_sm_lmpb_ndw_b0c0sd0_nfwpf_frt_aat"}, // no nocast
+			{"wc_l_sm_b0c0s0p0",						"wc_l_sm_lmpb_ndw_b0c0sd0_nfwpf_frt_aat"}, // couldn't find
+			{"wc_l_sm_b0c0q0n0s0",						"wc_l_sm_lmpb_ndw_b0c0q0n0sd0_nfwpf_frt_aat"},
+			{"wc_l_sm_ua_b0c0n0s0p0_nocast",			"wc_l_sm_ndw_ua_b0c0n0sd0p0_cltrans_nocast_frt_aat"},
+			//{"wc_l_sm_b0c0n0s0_custom_growing_ice_cracks", "wc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // coudln't find
+			//{"wc_l_sm_b0c0n0s0_custom_growing_ice_cracks_sat", "wc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
 
-		{"wc_l_sm_a0c0",							"wc_l_sm_a0c0_nfwpf_frt_aat"},
-		{"wc_l_sm_r0c0",							"wc_l_sm_r0c0_nfwpf"},
-		{"mc_l_sm_r0c0d0n0s0",						"wc_l_sm_r0c0d0n0sd0_nfwpf"},
-		{"wc_l_sm_r0c0d0n0s0p0",					"wc_l_sm_r0c0d0n0sd0_nfwpf"}, // couldn't find
-		{"wc_l_sm_r0c0n0",							"wc_l_sm_r0c0n0_nfwpf"},
-		{"wc_l_sm_r0c0n0s0",						"wc_l_sm_r0c0n0sd0_nfwpf"},
-		{"wc_l_sm_r0c0n0s0_nocast",					"wc_l_sm_r0c0n0sd0_nfwpf"}, // no nocast
-		{"wc_l_sm_r0c0n0s0p0",						"wc_l_sm_r0c0n0sd0p0_nfwpf"},
-		{"wc_l_sm_r0c0q0n0s0",						"wc_l_sm_r0c0q0n0sd0_nfwpf"},
-		{"wc_l_sm_r0c0q0n0s0p0",					"wc_l_sm_r0c0q0n0sd0p0_nfwpf"},
-		{"wc_l_sm_r0c0s0",							"wc_l_sm_r0c0sd0_nfwpf"},
-		{"wc_l_sm_r0c0s0p0",						"wc_l_sm_r0c0sd0p0_nfwpf"},
-		{"wc_l_sm_t0c0",							"wc_l_sm_lmpb_t0c0_nfwpf"},
-		{"wc_l_sm_t0c0n0",							"wc_l_sm_lmpb_t0c0n0_nfwpf"},
-		{"wc_l_sm_t0c0n0s0",						"wc_l_sm_lmpb_t0c0n0sd0_nfwpf"},
-		{"wc_l_sm_t0c0p0",							"wc_l_sm_lmpb_t0c0_nfwpf"}, // couldn't find
-		{"wc_l_sm_b0c0",							"wc_l_sm_lmpb_ndw_b0c0_nfwpf_frt_im_aat"},
-		{"wc_l_sm_b0c0n0",							"wc_l_sm_lmpb_ndw_b0c0n0_nfwpf_frt_im_aat"},
-		{"wc_l_sm_b0c0n0s0",						"wc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"},
-		{"wc_l_sm_b0c0n0s0p0",						"wc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
-		{"wc_l_sm_b0c0n0p0",						"wc_l_sm_lmpb_ndw_b0c0n0_nfwpf_frt_im_aat"}, // couldn't find
-		{"wc_l_sm_b0c0s0",							"wc_l_sm_lmpb_ndw_b0c0sd0_nfwpf_frt_aat"},
-		{"wc_l_sm_b0c0s0_nocast",					"wc_l_sm_lmpb_ndw_b0c0sd0_nfwpf_frt_aat"}, // no nocast
-		{"wc_l_sm_b0c0s0p0",						"wc_l_sm_lmpb_ndw_b0c0sd0_nfwpf_frt_aat"}, // couldn't find
-		{"wc_l_sm_b0c0q0n0s0",						"wc_l_sm_lmpb_ndw_b0c0q0n0sd0_nfwpf_frt_aat"},
-		{"wc_l_sm_ua_b0c0n0s0p0_nocast",			"wc_l_sm_ndw_ua_b0c0n0sd0p0_cltrans_nocast_frt_aat"},
-		//{"wc_l_sm_b0c0n0s0_custom_growing_ice_cracks", "wc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // coudln't find
-		//{"wc_l_sm_b0c0n0s0_custom_growing_ice_cracks_sat", "wc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
+			{"wc_unlit",								"wc_unlit_blend_lin_ndw_nfwpf"}, // couldn't find
+			{"wc_unlit_nofog",							"wc_unlit_blend_lin_ndw_nfwpf"}, // couldn't find
+			{"wc_unlit_alphatest",						"wc_unlit_blend_lin_ndw_nfwpf"}, // couldn't find
+			{"wc_unlit_add",							"wc_unlit_add_lin_ndw_nfwpf"}, // coudln't find
+			{"wc_unlit_add_lin",						"wc_unlit_add_lin_ndw_nfwpf"},
+			{"wc_unlit_blend",							"wc_unlit_blend_lin_ndw_nfwpf"}, // couldn't find
+			{"wc_unlit_blend_lin_ua",					"wc_unlit_blend_lin_ndw_ua_cltrans"},
+			{"wc_unlit_distfalloff",					"wc_unlit_distfalloff_replace_ndw_cltrans"}, // couldn't find
+			{"wc_unlit_distfalloff_replace",			"wc_unlit_distfalloff_replace_ndw_cltrans"},
+			{"wc_unlit_falloff_add",					"wc_unlit_falloff_add_lin_ndw_cltrans"}, // couldn't find
+			{"wc_unlit_multiply",						"wc_unlit_multiply_lin_ndw_nfwpf"}, // couldn't find
+			{"wc_unlit_multiply_lin",					"wc_unlit_multiply_lin_ndw_nfwpf_im"},
+			{"wc_unlit_replace",						"wc_unlit_replace_lin_nfwpf"}, // couldn't find
+			{"wc_unlit_replace_lin",					"wc_unlit_replace_lin_nfwpf"},
+			{"wc_ambient_t0c0",							"wc_ambient_t0c0_nfwpf"},
+			{"wc_sky",									"wc_sky_nfwpf"},
+			{"wc_shadowcaster",							"wc_shadowcaster"},
+			{"wc_water",								"2d"}, // couldn't find
+			{"wc_tools",								"wc_tools_r0c0ct0"}, // possibly be wrong
+			{"wc_default",								"wc_default"},
 
-		{"wc_unlit",								"wc_unlit_add_lin_ndw_nfwpf"}, // couldn't find
-		{"wc_unlit_add",							"wc_unlit_add_lin_ndw_nfwpf"}, // coudln't find
-		{"wc_unlit_add_lin",						"wc_unlit_add_lin_ndw_nfwpf"},
-		{"wc_unlit_blend_lin_ua",					"wc_unlit_blend_lin_ndw_ua_cltrans"},
-		{"wc_unlit_distfalloff_replace",			"wc_unlit_distfalloff_replace_ndw_cltrans"},
-		{"wc_unlit_multiply_lin",					"wc_unlit_multiply_lin_ndw_nfwpf_im"},
-		{"wc_unlit_replace_lin",					"wc_unlit_replace_lin_nfwpf"},
-		{"wc_sky",									"wc_sky_nfwpf"},
-		{"wc_shadowcaster",							"wc_shadowcaster"},
-		{"wc_water",								"2d"}, // couldn't find
-		{"wc_tools",								"wc_tools_r0c0ct0"}, // possibly be wrong
-		{"wc_default",								"wc_default"},
+			{"m_l_sm_b0c0n0s0p0",						"m_l_sm_b0c0n0sd0p0_cltrans"},
+			{"m_l_sm_b0c0q0n0s0",						"m_l_sm_b0c0n0sd0_cltrans"}, // couldn't find
 
-		{"m_l_sm_b0c0n0s0p0",						"m_l_sm_b0c0n0sd0p0_cltrans"},
-		{"m_l_sm_b0c0q0n0s0",						"m_l_sm_b0c0n0sd0_cltrans"}, // couldn't find
+			{"mc_l_sm_a0c0",							"wc_l_sm_a0c0_nfwpf_frt_aat"},
+			{"mc_l_sm_a0c0_nocast",						"wc_l_sm_a0c0_nfwpf_frt_aat"}, // no nocast
+			{"mc_l_sm_r0c0",							"mc_l_sm_r0c0_nfwpf"},
+			{"mc_l_sm_r0c0_nocast",						"mc_l_sm_r0c0_nfwpf"}, // no nocast
+			{"mc_l_sm_r0c0d0",							"mc_l_sm_r0c0_nfwpf"}, // couldn't find
+			{"mc_l_sm_r0c0d0s0",						"mc_l_sm_r0c0sd0_nfwpf"}, // couldn't find
+			{"mc_l_sm_r0c0d0n0",						"mc_l_sm_r0c0n0_nfwpf"}, // couldn't find
+			{"mc_l_sm_r0c0d0n0s0",						"mc_l_sm_r0c0d0n0sd0_nfwpf"},
+			{"mc_l_sm_r0c0d0n0s0p0",					"mc_l_sm_r0c0d0n0sd0p0_nfwpf"},
+			{"mc_l_sm_r0c0s0",							"mc_l_sm_r0c0sd0_nfwpf"},
+			{"mc_l_sm_r0c0s0p0",						"mc_l_sm_r0c0sd0p0_nfwpf"},
+			{"mc_l_sm_r0c0n0",							"mc_l_sm_r0c0n0_nfwpf"},
+			{"mc_l_sm_r0c0n0s0",						"mc_l_sm_r0c0n0sd0_nfwpf"},
+			{"mc_l_sm_r0c0n0s0_nocast",					"mc_l_sm_r0c0n0sd0_nfwpf"}, // no nocast
+			{"mc_l_sm_r0c0n0s0p0",						"mc_l_sm_r0c0n0sd0p0_nfwpf"},
+			{"mc_l_sm_r0c0q0n0",						"mc_l_sm_r0c0n0_nfwpf"}, // couldn't find
+			{"mc_l_sm_r0c0q0n0s0",						"mc_l_sm_r0c0n0_nfwpf"}, // couldn't find
+			{"mc_l_sm_r0c0q0n0s0p0",					"mc_l_sm_r0c0q0n0sd0p0_nfwpf"},
+			{"mc_l_sm_t0c0",							"mc_l_sm_t0c0_nfwpf"},
+			{"mc_l_sm_t0c0_nocast",						"mc_l_sm_t0c0_nfwpf_nocast"},
+			{"mc_l_sm_t0c0s0",							"mc_l_sm_t0c0sd0_nfwpf"},
+			{"mc_l_sm_t0c0n0",							"mc_l_sm_t0c0n0_nfwpf_frt_aat"}, // could be wrong
+			{"mc_l_sm_t0c0n0_nocast",					"mc_l_sm_t0c0n0_nfwpf_frt_aat"}, // no nocast
+			{"mc_l_sm_t0c0n0s0",						"mc_l_sm_t0c0n0sd0_nfwpf"},
+			{"mc_l_sm_t0c0q0n0s0",						"mc_l_sm_t0c0n0sd0_nfwpf"}, // couldn't find
+			{"mc_l_sm_t0c0q0n0s0p0",					"mc_l_sm_t0c0n0sd0p0_nfwpf"}, // couldn't find // mc_l_sm_t0c0d0n0sd0p0ct0_nfwpf
+			{"mc_l_sm_b0c0",							"mc_l_sm_lmpb_ndw_b0c0_nfwpf_frt_im_aat"},
+			{"mc_l_sm_b0c0_nocast",						"mc_l_sm_lmpb_ndw_b0c0_nfwpf_frt_im_aat"}, // couldn't find
+			{"mc_l_sm_b0c0d0p0",						"mc_l_sm_ndw_b0c0d0p0_cltrans"},
+			{"mc_l_sm_b0c0s0",							"mc_l_sm_lmpb_ndw_b0c0sd0_nfwpf_frt_aat"},
+			{"mc_l_sm_b0c0n0",							"mc_l_sm_lmpb_ndw_b0c0n0_nfwpf_frt_im_aat"},
+			{"mc_l_sm_b0c0n0s0",						"mc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"},
+			{"mc_l_sm_b0c0n0s0p0",						"mc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
+			{"mc_l_sm_b0c0p0",							"mc_l_sm_lmpb_ndw_b0c0_nfwpf_frt_im_aat"}, // couldn't find
+			{"mc_l_sm_b0c0q0n0s0",						"mc_l_sm_ndw_b0c0q0n0sd0_nfwpf_frt_aat"},
+			{"mc_l_sm_b0c0n0s0_custom_growing_ice_cracks", "mc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
+			{"mc_l_sm_b0c0n0s0_custom_growing_ice_cracks_sat", "mc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
+			{"mc_l_sm_flag_t0c0n0s0",					"mc_l_sm_flag_fuv_t0c0n0sd0_nfwpf"},
+			{"mc_l_r0c0n0s0",							"mc_l_r0c0n0sd0_nfwpf"},
+			{"mc_l_r0c0n0s0_nocast",					"mc_l_r0c0n0sd0_nfwpf"}, // no nocast
+			{"mc_l_t0c0n0s0",							"mc_l_t0c0n0sd0_nfwpf"},
 
-		{"mc_l_sm_a0c0",							"wc_l_sm_a0c0_nfwpf_frt_aat"},
-		{"mc_l_sm_a0c0_nocast",						"wc_l_sm_a0c0_nfwpf_frt_aat"}, // no nocast
-		{"mc_l_sm_r0c0",							"mc_l_sm_r0c0_nfwpf"},
-		{"mc_l_sm_r0c0_nocast",						"mc_l_sm_r0c0_nfwpf"}, // no nocast
-		{"mc_l_sm_r0c0d0s0",						"mc_l_sm_r0c0sd0_nfwpf"}, // couldn't find
-		{"mc_l_sm_r0c0d0n0s0p0",					"mc_l_sm_r0c0d0n0sd0p0_nfwpf"},
-		{"mc_l_sm_r0c0s0",							"mc_l_sm_r0c0sd0_nfwpf"},
-		{"mc_l_sm_r0c0s0p0",						"mc_l_sm_r0c0sd0p0_nfwpf"},
-		{"mc_l_sm_r0c0n0",							"mc_l_sm_r0c0n0_nfwpf"},
-		{"mc_l_sm_r0c0n0s0",						"mc_l_sm_r0c0n0sd0_nfwpf"},
-		{"mc_l_sm_r0c0n0s0_nocast",					"mc_l_sm_r0c0n0sd0_nfwpf"}, // no nocast
-		{"mc_l_sm_r0c0n0s0p0",						"mc_l_sm_r0c0n0sd0p0_nfwpf"},
-		{"mc_l_sm_r0c0q0n0",						"mc_l_sm_r0c0n0_nfwpf"}, // couldn't find
-		{"mc_l_sm_r0c0q0n0s0",						"mc_l_sm_r0c0n0_nfwpf"}, // couldn't find
-		{"mc_l_sm_r0c0q0n0s0p0",					"mc_l_sm_r0c0q0n0sd0p0_nfwpf"},
-		{"mc_l_sm_t0c0",							"mc_l_sm_t0c0_nfwpf"},
-		{"mc_l_sm_t0c0_nocast",						"mc_l_sm_t0c0_nfwpf_nocast"},
-		{"mc_l_sm_t0c0s0",							"mc_l_sm_t0c0sd0_nfwpf"},
-		{"mc_l_sm_t0c0n0",							"mc_l_sm_t0c0n0_nfwpf_frt_aat"}, // could be wrong
-		{"mc_l_sm_t0c0n0_nocast",					"mc_l_sm_t0c0n0_nfwpf_frt_aat"}, // no nocast
-		{"mc_l_sm_t0c0n0s0",						"mc_l_sm_t0c0n0sd0_nfwpf"},
-		{"mc_l_sm_t0c0q0n0s0",						"mc_l_sm_t0c0n0sd0_nfwpf"}, // couldn't find
-		{"mc_l_sm_t0c0q0n0s0p0",					"mc_l_sm_t0c0n0sd0p0_nfwpf"}, // couldn't find // mc_l_sm_t0c0d0n0sd0p0ct0_nfwpf
-		{"mc_l_sm_b0c0",							"mc_l_sm_lmpb_ndw_b0c0_nfwpf_frt_im_aat"},
-		{"mc_l_sm_b0c0_nocast",						"mc_l_sm_lmpb_ndw_b0c0_nfwpf_frt_im_aat"}, // couldn't find
-		{"mc_l_sm_b0c0d0p0",						"mc_l_sm_ndw_b0c0d0p0_cltrans"},
-		{"mc_l_sm_b0c0s0",							"mc_l_sm_lmpb_ndw_b0c0sd0_nfwpf_frt_aat"},
-		{"mc_l_sm_b0c0n0",							"mc_l_sm_lmpb_ndw_b0c0n0_nfwpf_frt_im_aat"},
-		{"mc_l_sm_b0c0n0s0",						"mc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"},
-		{"mc_l_sm_b0c0n0s0p0",						"mc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
-		{"mc_l_sm_b0c0p0",							"mc_l_sm_lmpb_ndw_b0c0_nfwpf_frt_im_aat"}, // couldn't find
-		{"mc_l_sm_b0c0q0n0s0",						"mc_l_sm_ndw_b0c0q0n0sd0_nfwpf_frt_aat"},
-		{"mc_l_sm_b0c0n0s0_custom_growing_ice_cracks", "mc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
-		{"mc_l_sm_b0c0n0s0_custom_growing_ice_cracks_sat", "mc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
-		{"mc_l_sm_flag_t0c0n0s0",					"mc_l_sm_flag_fuv_t0c0n0sd0_nfwpf"},
-		{"mc_l_r0c0n0s0",							"mc_l_r0c0n0sd0_nfwpf"},
-		{"mc_l_r0c0n0s0_nocast",					"mc_l_r0c0n0sd0_nfwpf"}, // no nocast
-		{"mc_l_t0c0n0s0",							"mc_l_t0c0n0sd0_nfwpf"},
+			{"mc_unlit",								"mc_unlit_blend_lin_ndw_nfwpf"}, // couldn't find
+			{"mc_unlit_nofog",							"mc_unlit_blend_lin_ndw_nfwpf"}, // couldn't find
+			{"mc_unlit_alphatest",						"mc_unlit_blend_lin_ndw_nfwpf"}, // couldn't find
+			{"mc_unlit_add",							"mc_unlit_add_lin_ndw_cltrans"}, // couldn't find
+			{"mc_unlit_add_lin",						"mc_unlit_add_lin_ndw_cltrans"},
+			{"mc_unlit_add_lin_ua",						"mc_unlit_add_lin_ndw_cltrans"}, // no ua
+			{"mc_unlit_blend_lin",						"mc_unlit_blend_lin_ct_ndw_nfwpf"},
+			{"mc_unlit_multiply",						"mc_unlit_multiply_lin_ndw_nfwpf"}, // couldn't find
+			{"mc_unlit_multiply_lin",					"mc_unlit_multiply_lin_ndw_nfwpf"},
+			{"mc_unlit_replace",						"mc_unlit_replace_lin_nfwpf"}, // couldn't find
+			{"mc_unlit_replace_lin",					"mc_unlit_replace_lin_nfwpf"},
+			{"mc_unlit_replace_lin_nocast",				"mc_unlit_replace_lin_nfwpf_nocast"},
+			{"mc_ambient_t0c0",							"mc_ambient_t0c0_nfwpf"},
+			{"mc_ambient_t0c0_nocast",					"mc_ambient_t0c0_nfwpf_nocast"},
+			{"mc_shadowcaster",							"mc_shadowcaster_atest"}, // couldn't find
+			{"mc_shadowcaster_atest",					"mc_shadowcaster_atest"},
+			{"mc_reflexsight",							"mc_reflexsight"},
 
-		{"mc_unlit",								"mc_unlit_add_lin_ct_ndw_cltrans_objective2"}, // couldn't find
-		{"mc_unlit_add",							"mc_unlit_add_lin_ct_ndw_cltrans_objective2"}, // couldn't find
-		{"mc_unlit_add_lin",						"mc_unlit_add_lin_ct_ndw_cltrans_objective2"},
-		{"mc_unlit_add_lin_ua",						"mc_unlit_add_lin_ct_ndw_cltrans_objective2"}, // no ua
-		{"mc_unlit_blend_lin",						"mc_unlit_blend_lin_ct_ndw_nfwpf"},
-		{"mc_unlit_multiply_lin",					"mc_unlit_multiply_lin_ndw_nfwpf"},
-		{"mc_unlit_replace_lin",					"mc_unlit_replace_lin_nfwpf"},
-		{"mc_unlit_replace_lin_nocast",				"mc_unlit_replace_lin_nfwpf_nocast"},
-		{"mc_ambient_t0c0",							"mc_ambient_t0c0_nfwpf"},
-		{"mc_ambient_t0c0_nocast",					"mc_ambient_t0c0_nfwpf_nocast"},
-		{"mc_shadowcaster_atest",					"mc_shadowcaster_atest"},
-		{"mc_reflexsight",							"mc_reflexsight"},
-		{"mc_effect_add_nofog",						"mc_effect_blend_nofog_ndw"}, // couldn't find
-		{"mc_effect_blend_nofog",					"mc_effect_blend_nofog_ndw"},
-		{"mc_effect_falloff_add_nofog",				"mc_effect_blend_nofog_ndw"}, // coudln't find
-		{"mc_effect_falloff_add_lin_nofog",			"mc_effect_blend_nofog_ndw"}, // coudln't find
-		{"mc_effect_zfeather_falloff_add_nofog_eyeoffset", "mc_effect_zf_falloff_add_nofog_eo_ndw"},
-		{"mc_effect_zfeather_falloff_add_lin_nofog", "mc_effect_zf_add_nofog_ndw"}, // coudln't find
-		{"mc_effect_zfeather_falloff_add_lin_nofog_eyeoffset", "mc_effect_zf_falloff_add_nofog_eo_ndw"}, // coudln't find
-		{"mc_effect_zfeather_falloff_screen_nofog_eyeoffset", "mc_effect_zf_screen_nofog_spot_sm_ndw"}, // coudln't find
+			{"mc_effect",								"mc_effect_blend_nofog_ndw"}, // couldn't find
+			{"mc_effect_add_nofog",						"mc_effect_blend_nofog_ndw"}, // couldn't find
+			{"mc_effect_blend_nofog",					"mc_effect_blend_nofog_ndw"},
+			{"mc_effect_falloff_add_nofog",				"mc_effect_blend_nofog_ndw"}, // coudln't find
+			{"mc_effect_falloff_add_lin_nofog",			"mc_effect_blend_nofog_ndw"}, // coudln't find
+			{"mc_effect_zfeather_falloff_add_nofog",	"mc_effect_zf_falloff_add_nofog_eo_ndw"}, // couldn't find
+			{"mc_effect_zfeather_falloff_add_nofog_eyeoffset", "mc_effect_zf_falloff_add_nofog_eo_ndw"},
+			{"mc_effect_zfeather_falloff_add_lin_nofog", "mc_effect_zf_add_nofog_ndw"}, // coudln't find
+			{"mc_effect_zfeather_falloff_add_lin_nofog_eyeoffset", "mc_effect_zf_falloff_add_nofog_eo_ndw"}, // coudln't find
+			{"mc_effect_zfeather_falloff_screen_nofog_eyeoffset", "mc_effect_zf_screen_nofog_spot_sm_ndw"}, // coudln't find
 
-		//{"mc_tools",								"2d"}, // couldn't find
+			//{"mc_tools",								"2d"}, // couldn't find
 
-		{"2d",										"2d"},
+			{"2d",										"2d"},
 
-		{"distortion_scale",						"distortion_scale_legacydst_dat"}, // could be wrong
-		{"distortion_scale_zfeather",				"distortion_scale_legacydst_zf_dat"}, // could be wrong
+			{"distortion_scale",						"distortion_scale_legacydst_dat"}, // could be wrong
+			{"distortion_scale_zfeather",				"distortion_scale_legacydst_zf_dat"}, // could be wrong
 
-		{"effect",									"effect_add_ndw" }, // couldn't find
-		{"effect_add",								"effect_add_ndw"},
-		{"effect_add_eyeoffset",					"effect_add_eo"},
-		{"effect_add_nofog",						"effect_add_nofog_ndw"},
-		{"effect_add_nofog_eyeoffset",				"effect_add_nofog_eo_ndw"},
-		{"effect_blend",							"effect_blend_ndw"},
-		{"effect_blend_nofog",						"effect_blend_nofog_ndw"},
-		//{"effect_replace_lin",					"2d"}, // m_effect_replace_ndw
-		{"effect_zfeather",							"effect_zf_add_ndw"}, // couldn't find
-		{"effect_zfeather_add",						"effect_zf_add_ndw"},
-		{"effect_zfeather_add_nofog",				"effect_zf_add_nofog_ndw"},
-		{"effect_zfeather_blend",					"effect_zf_blend_ndw"},
-		{"effect_zfeather_blend_nofog",				"effect_zf_blend_nofog_ndw"},
-		{"effect_zfeather_blend_spot_sm",			"effect_zf_blend_ndw"}, // couldn't find
-		{"effect_zfeather_falloff_add",				"effect_zf_falloff_add_ndw"},
-		{"effect_zfeather_falloff_add_eyeoffset",	"effect_zf_falloff_add_eo_ndw"},
-		{"effect_zfeather_falloff_add_nofog_eyeoffset", "effect_zf_falloff_add_nofog_eo_ndw"},
-		{"effect_zfeather_falloff_blend",			"effect_zf_falloff_blend_ndw"},
-		{"effect_zfeather_falloff_screen",			"effect_zf_falloff_screen_nofog_ndw"}, // closest i could find
-		{"effect_zfeather_add_nofog_eyeoffset",		"effect_zf_add_nofog_eo_ndw"},
-		{"effect_zfeather_outdoor_blend",			"effect_zf_outdoor_blend_ndw"},
+			{"effect",									"effect_blend_ndw"}, // couldn't find
+			{"effect_nofog",							"effect_blend_nofog_ndw"}, // couldn't find
+			{"effect_add",								"effect_add_ndw"},
+			{"effect_add_eyeoffset",					"effect_add_eo"},
+			{"effect_add_nofog",						"effect_add_nofog_ndw"},
+			{"effect_add_nofog_eyeoffset",				"effect_add_nofog_eo_ndw"},
+			{"effect_blend",							"effect_blend_ndw"},
+			{"effect_blend_nofog",						"effect_blend_nofog_ndw"},
+			//{"effect_replace_lin",					"2d"}, // m_effect_replace_ndw
+			{"effect_zfeather",							"effect_zf_blend_ndw"}, // couldn't find
+			{"effect_zfeather_nofog",					"effect_zf_blend_nofog_ndw" }, // couldn't find
+			{"effect_zfeather_add",						"effect_zf_add_ndw"},
+			{"effect_zfeather_add_nofog",				"effect_zf_add_nofog_ndw"},
+			{"effect_zfeather_blend",					"effect_zf_blend_ndw"},
+			{"effect_zfeather_blend_nofog",				"effect_zf_blend_nofog_ndw"},
+			{"effect_zfeather_blend_spot_sm",			"effect_zf_blend_ndw"}, // couldn't find
+			{"effect_zfeather_falloff",					"effect_zf_falloff_blend_ndw"}, // couldn't find
+			{"effect_zfeather_falloff_nofog",			"effect_zf_falloff_blend_nofog_ndw"}, // couldn't find
+			{"effect_zfeather_falloff_add",				"effect_zf_falloff_add_ndw"},
+			{"effect_zfeather_falloff_add_nofog",		"effect_zf_falloff_add_nofog_ndw" },
+			{"effect_zfeather_falloff_add_eyeoffset",	"effect_zf_falloff_add_eo_ndw"},
+			{"effect_zfeather_falloff_add_nofog_eyeoffset", "effect_zf_falloff_add_nofog_eo_ndw"},
+			{"effect_zfeather_falloff_blend",			"effect_zf_falloff_blend_ndw"},
+			{"effect_zfeather_falloff_screen",			"effect_zf_falloff_screen_nofog_ndw"}, // closest i could find
+			{"effect_zfeather_add_nofog_eyeoffset",		"effect_zf_add_nofog_eo_ndw"},
+			{"effect_zfeather_outdoor_blend",			"effect_zf_outdoor_blend_ndw"},
 
-		{"particle_cloud",							"particle_cloud_atlas_replace_ga"}, // could be wrong
-		{"particle_cloud_add",						"particle_cloud_add_ga"},
-		{"particle_cloud_outdoor_add",				"particle_cloud_outdoor_add_ga"},
-		{"particle_cloud_sparkf_add",				"particle_cloud_sparkf_add_ga"},
-		{"particle_cloud_spark_add",				"particle_cloud_spark_add_ga"},
+			{"particle_cloud",							"particle_cloud_atlas_replace_ga"}, // could be wrong
+			{"particle_cloud_add",						"particle_cloud_add_ga"},
+			{"particle_cloud_outdoor",					"particle_cloud_outdoor_replace_ga"}, // could be wrong
+			{"particle_cloud_outdoor_add",				"particle_cloud_outdoor_add_ga"},
+			{"particle_cloud_sparkf_add",				"particle_cloud_sparkf_add_ga"},
+			{"particle_cloud_spark_add",				"particle_cloud_spark_add_ga"},
 
-		{"grain_overlay",							"grain_overlay"},
+			{"grain_overlay",							"grain_overlay"},
 
-		{"splatter_alt",							"splatter_alt"},
+			{"splatter_alt",							"splatter_alt"},
 
-		{"tools_b0c0",								"tools_b0c0ct0"}, // could be wrong
-	};
+			{"tools_b0c0",								"tools_b0c0ct0"}, // could be wrong
+		};
 
-	std::string get_h1_techset(std::string name, std::string matname, bool* result)
-	{
-		if (mapped_techsets.find(name) == mapped_techsets.end())
+		std::string get_h1_techset(std::string name, std::string matname, bool* result)
 		{
-			ZONETOOL_ERROR("Could not find mapped H1 techset for IW3 techset \"%s\" (material: %s)", name.data(), matname.data());
-			*result = false;
-			return "2d";
-		}
-		*result = true;
-		return mapped_techsets[name];
-	}
-
-	std::string clean_name(const std::string& name)
-	{
-		auto new_name = name;
-
-		for (auto i = 0u; i < name.size(); i++)
-		{
-			switch (new_name[i])
+			if (mapped_techsets.find(name) == mapped_techsets.end())
 			{
-			case '*':
-				new_name[i] = '_';
-				break;
+				ZONETOOL_ERROR("Could not find mapped H1 techset for IW3 techset \"%s\" (material: %s)", name.data(), matname.data());
+				*result = false;
+				return "2d";
 			}
+			*result = true;
+			return mapped_techsets[name];
 		}
 
-		return new_name;
-	}
+		std::unordered_map<std::uint8_t, std::uint8_t> mapped_sortkeys =
+		{
+			{0, 48},	// Distortion (confirmed)
+						// Opaque water (never used)
+						// Boat hull (never used)
+			{3, 1},		// Opaque ambient
+			{4, 2},		// Opaque (confirmed)
+			{5, 3},		// Sky (confirmed)
+			{6, 4},		// Skybox sun/moon
+			{7, 5},		// Clouds  NOT SURE
+			{8, 6},		// Horizon NOT SURE
+			{9, 7},		// Decal bottom 1
+			{10, 8},	// Decal bottom 2
+			{11, 9},	// Decal bottom 3
+			{12, 10},	// Decal static (confirmed)
+			{13, 11},	// Decal mid 1
+			{14, 12},	// Decal mid 2 (confirmed)
+			{15, 13},	// Decal mid 3
+			{24, 14},	// Weapon Impact (confirmed)
+			{29, 15},	// Decal top 1
+			{30, 16},	// Decal top 2 (confirmed)
+			{31, 17},	// Decal top 3
+			//{32, 32},	// Multiplicative
+			//{33, 33},	// Banner/ Curtain (wild guess!)
+			//{34, 34},	// Hair. I matched it with german shepherd material sortkey, i hope its ok.
+			//{35, 35},	// Underwater
+			//{36, 36},	// Transparent water
+			//{37, 37},	// Corona (wild guess)
+			{38, 26},	// Window inside
+			{39, 27},	// Window outside (confirmed)
+			//{40, 40},	// Before effects 1 (wild guess)
+			//{41, 41},	// Before effects 2 (wild guess)
+			//{42, 42},	// Before effects 3 (extremely wild guess)
+			{43, 17},	// Blend / additive => to a decal layer (confirmed)
+			{48, 53},	// Effect auto sort! (confirmed)
+			{56, 30},	// AE Bottom
+			{57, 31},	// AE Middle
+			{58, 32},	// AE top (confirmed)
+			{59, 36},	// Viewmodel effect
+		};
+
+		std::unordered_map<std::string, std::uint8_t> mapped_sortkeys_by_techset =
+		{
+			{"2d", 60},
+			{"mc_shadowcaster_atest", 38},
+			{"wc_shadowcaster", 38},
+		};
+
+		std::uint8_t get_h1_sortkey(std::uint8_t sortkey, std::string matname, std::string h1_techset)
+		{
+			if (mapped_sortkeys_by_techset.find(h1_techset) != mapped_sortkeys_by_techset.end())
+			{
+				return mapped_sortkeys_by_techset[h1_techset];
+			}
+
+			if (mapped_sortkeys.contains(sortkey))
+			{
+				return mapped_sortkeys[sortkey];
+			}
+
+			ZONETOOL_ERROR("Could not find mapped H1 sortkey for sortkey: %d (material: %s)", sortkey, matname.data());
+
+			return sortkey;
+		}
+
+		std::unordered_map<std::uint8_t, std::uint8_t> mapped_camera_regions =
+		{
+			{IW3::CAMERA_REGION_LIT, H1::CAMERA_REGION_LIT_OPAQUE},
+			{IW3::CAMERA_REGION_DECAL, H1::CAMERA_REGION_LIT_DECAL},
+			{IW3::CAMERA_REGION_EMISSIVE, H1::CAMERA_REGION_EMISSIVE},
+			{IW3::CAMERA_REGION_NONE, H1::CAMERA_REGION_NONE},
+		};
+
+		std::uint8_t get_h1_camera_region(std::uint8_t camera_region, std::string matname)
+		{
+			if (mapped_camera_regions.contains(camera_region))
+			{
+				return mapped_camera_regions[camera_region];
+			}
+
+			ZONETOOL_ERROR("Could not find mapped H1 camera region for camera region: %d (material: %s)", camera_region, matname.data());
+
+			return camera_region;
+		}
+
+		std::uint8_t get_material_type_from_name(const std::string& name)
+		{
+			auto prefix_idx = name.find("/");
+			if (prefix_idx != std::string::npos && prefix_idx)
+			{
+				std::string prefix = std::string(name.begin(), name.begin() + prefix_idx);
+				if (prefix == "m")
+				{
+					return H1::MTL_TYPE_MODEL;
+				}
+				else if (prefix == "me")
+				{
+					return H1::MTL_TYPE_MODEL_GREY;
+				}
+				else if (prefix == "mc")
+				{
+					return H1::MTL_TYPE_MODEL_VERTCOL;
+				}
+				else if (prefix == "w")
+				{
+					return H1::MTL_TYPE_WORLD;
+				}
+				else if (prefix == "wc")
+				{
+					return H1::MTL_TYPE_WORLD_VERTCOL;
+				}
+				else if (prefix != "gfx")
+				{
+					ZONETOOL_WARNING("Unknown material type for prefix \"%s\" (material: %s)", prefix.data(), name.data());
+				}
+			}
+			return H1::MTL_TYPE_DEFAULT;
+		}
+
+		std::string clean_name(const std::string& name)
+		{
+			auto new_name = name;
+
+			for (auto i = 0u; i < name.size(); i++)
+			{
+				switch (new_name[i])
+				{
+				case '*':
+					new_name[i] = '_';
+					break;
+				}
+			}
+
+			return new_name;
+		}
 
 #define MATERIAL_DUMP_STRING(entry) \
 	matdata[#entry] = std::string(asset->entry);
@@ -199,10 +340,8 @@ namespace
 
 #define MATERIAL_DUMP_INFO(entry) \
 	matdata[#entry] = asset->info.entry;
-}
+	}
 
-namespace ZoneTool
-{
 	namespace IW3
 	{
 		void IMaterial::dump(Material* asset, ZoneMemory* mem)
@@ -235,7 +374,7 @@ namespace ZoneTool
 				}
 
 				matdata["gameFlags"] = asset->gameFlags; // convert
-				matdata["sortKey"] = asset->sortKey; // convert
+				matdata["sortKey"] = get_h1_sortkey(asset->sortKey, asset->name, h1_techset);
 				matdata["renderFlags"] = 0; // idk
 
 				matdata["textureAtlasRowCount"] = asset->textureAtlasRowCount;
@@ -246,22 +385,36 @@ namespace ZoneTool
 				matdata["surfaceTypeBits"] = 0; //asset->surfaceTypeBits; // convert
 				// hashIndex;
 
-				//matdata["stateFlags"] = asset->stateFlags; // convert
-				matdata["cameraRegion"] = asset->cameraRegion; // convert
-				matdata["materialType"] = 0; // idk
-				matdata["assetFlags"] = 0; // idk
+				//matdata["stateFlags"] = asset->stateFlags; // convert ( should be the same )
+				matdata["cameraRegion"] = get_h1_camera_region(asset->cameraRegion, asset->name);
+				matdata["materialType"] = get_material_type_from_name(asset->name);
+				matdata["assetFlags"] = H1::MTL_ASSETFLAG_NONE;
 
 				ordered_json constant_table;
 				for (int i = 0; i < asset->constantCount; i++)
 				{
 					ordered_json table;
-					std::string name = asset->constantTable[i].name;
-					name.resize(12);
-					table["name"] = name.data();
+					std::string constant_name = asset->constantTable[i].name;
+
+					if (constant_name.size() > 12)
+					{
+						constant_name.resize(12);
+					}
+
+					if (constant_name == "colorTint" && 
+						asset->constantTable[i].literal[0] == 1.0f && 
+						asset->constantTable[i].literal[1] == 1.0f && 
+						asset->constantTable[i].literal[2] == 1.0f && 
+						asset->constantTable[i].literal[3] == 1.0f)
+					{
+						continue;
+					}
+
+					table["name"] = constant_name.data();
 					table["nameHash"] = asset->constantTable[i].nameHash;
 
 					nlohmann::json literal_entry;
-					if (name == "envMapParms")
+					if (constant_name == "envMapParms")
 					{
 						literal_entry[0] = asset->constantTable[i].literal[0] * 0.0875f;
 						literal_entry[1] = asset->constantTable[i].literal[1] * 0.165f;
@@ -279,6 +432,40 @@ namespace ZoneTool
 
 					constant_table[i] = table;
 				}
+
+#define CONSTANT_TABLE_ADD_IF_NOT_FOUND(CONST_NAME, CONST_HASH, LITERAL_1, LITERAL_2, LITERAL_3, LITERAL_4) \
+				bool has_table = false; \
+				for (std::size_t i = 0; i < constant_table.size(); i++) \
+				{ \
+					if (constant_table[i]["name"] == CONST_NAME) \
+					{ \
+						has_table = true; \
+					} \
+				} \
+				if (!has_table) \
+				{ \
+					ordered_json table; \
+					table["name"] = CONST_NAME; \
+					table["nameHash"] = CONST_HASH; \
+					nlohmann::json literal_entry; \
+					literal_entry[0] = LITERAL_1; \
+					literal_entry[1] = LITERAL_2; \
+					literal_entry[2] = LITERAL_3; \
+					literal_entry[3] = LITERAL_4; \
+					table["literal"] = literal_entry; \
+					constant_table[constant_table.size()] = table; \
+				} \
+
+				if (h1_techset.find("_flag_") != std::string::npos)
+				{
+					CONSTANT_TABLE_ADD_IF_NOT_FOUND("flagParms", 2292903761, 1.0f, 0.0f, 0.0f, 0.0f);
+				}
+
+				if (h1_techset.find("shadowcaster") != std::string::npos)
+				{
+					CONSTANT_TABLE_ADD_IF_NOT_FOUND("uvScale", 3809220315, 1.0f, 1.0f, 0.0f, 0.0f);
+				}
+
 				matdata["constantTable"] = constant_table;
 
 				int i_3447584578 = -1;
@@ -309,8 +496,8 @@ namespace ZoneTool
 						}
 					}
 
-					image["semantic"] = asset->maps[i].semantic;
-					image["samplerState"] = asset->maps[i].sampleState; // convert?
+					image["semantic"] = asset->maps[i].semantic; // convert? ( should be the same )
+					image["samplerState"] = asset->maps[i].sampleState; // convert? ( should be fine )
 					image["lastCharacter"] = asset->maps[i].secondLastCharacter;
 					image["firstCharacter"] = asset->maps[i].firstCharacter;
 					image["typeHash"] = asset->maps[i].typeHash;
@@ -320,7 +507,7 @@ namespace ZoneTool
 				}
 
 				// fix for certain techniques
-				if (h1_techset.find("_lmpb_") != std::string::npos)
+				if (h1_techset.find("_lmpb_") != std::string::npos || h1_techset.find("_flag_") != std::string::npos)
 				{
 					if (i_3447584578 == -1)
 					{

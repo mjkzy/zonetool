@@ -231,7 +231,7 @@ namespace ZoneTool
 		{
 			h1_asset->flags = 0;
 			h1_asset->flags |= asset->deformed ? H1::SURF_FLAG_SKINNED : 0;
-			h1_asset->flags |= H1::SURF_FLAG_VERTCOL_NONE;
+			//h1_asset->flags |= H1::SURF_FLAG_VERTCOL_NONE;
 
 			h1_asset->vertCount = asset->vertCount;
 			h1_asset->triCount = asset->triCount;
@@ -356,7 +356,7 @@ namespace ZoneTool
 
 		namespace
 		{
-			H1::CSurfaceFlags surf_flags_conversion_table[31]
+			H1::CSurfaceFlags surf_flags_conversion_table[29]
 			{
 				H1::SURF_FLAG_DEFAULT,
 				H1::SURF_FLAG_BARK,
@@ -387,8 +387,6 @@ namespace ZoneTool
 				H1::SURF_FLAG_CUSHION,
 				H1::SURF_FLAG_FRUIT,
 				H1::SURF_FLAG_PAINTEDMETAL,
-				H1::SURF_FLAG_RIOTSHIELD,
-				H1::SURF_FLAG_SLUSH,
 			}; IW3::CSurfaceFlags;
 
 			int convert_surf_flags(int flags)
@@ -404,7 +402,6 @@ namespace ZoneTool
 				convert(IW3::CSurfaceFlags::SURF_FLAG_CLIPSHOT, H1::CSurfaceFlags::SURF_FLAG_CLIPSHOT);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_PLAYERCLIP, H1::CSurfaceFlags::SURF_FLAG_PLAYERCLIP);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_MONSTERCLIP, H1::CSurfaceFlags::SURF_FLAG_MONSTERCLIP);
-				convert(IW3::CSurfaceFlags::SURF_FLAG_AICLIPALLOWDEATH, H1::CSurfaceFlags::SURF_FLAG_AICLIPALLOWDEATH);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_VEHICLECLIP, H1::CSurfaceFlags::SURF_FLAG_VEHICLECLIP);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_ITEMCLIP, H1::CSurfaceFlags::SURF_FLAG_ITEMCLIP);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_NODROP, H1::CSurfaceFlags::SURF_FLAG_NODROP);
@@ -418,7 +415,6 @@ namespace ZoneTool
 				convert(IW3::CSurfaceFlags::SURF_FLAG_NOCASTSHADOW, H1::CSurfaceFlags::SURF_FLAG_NOCASTSHADOW);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_PHYSICSGEOM, H1::CSurfaceFlags::SURF_FLAG_PHYSICSGEOM);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_LIGHTPORTAL, H1::CSurfaceFlags::SURF_FLAG_LIGHTPORTAL);
-				convert(IW3::CSurfaceFlags::SURF_FLAG_OUTDOORBOUNDS, H1::CSurfaceFlags::SURF_FLAG_OUTDOORBOUNDS);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_SLICK, H1::CSurfaceFlags::SURF_FLAG_SLICK);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_NOIMPACT, H1::CSurfaceFlags::SURF_FLAG_NOIMPACT);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_NOMARKS, H1::CSurfaceFlags::SURF_FLAG_NOMARKS);
@@ -427,8 +423,6 @@ namespace ZoneTool
 				convert(IW3::CSurfaceFlags::SURF_FLAG_NODAMAGE, H1::CSurfaceFlags::SURF_FLAG_NODAMAGE);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_MANTLEON, H1::CSurfaceFlags::SURF_FLAG_MANTLEON);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_MANTLEOVER, H1::CSurfaceFlags::SURF_FLAG_MANTLEOVER);
-				convert(IW3::CSurfaceFlags::SURF_FLAG_STAIRS, H1::CSurfaceFlags::SURF_FLAG_STAIRS);
-				convert(IW3::CSurfaceFlags::SURF_FLAG_SOFT, H1::CSurfaceFlags::SURF_FLAG_SOFT);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_NOSTEPS, H1::CSurfaceFlags::SURF_FLAG_NOSTEPS);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_NODRAW, H1::CSurfaceFlags::SURF_FLAG_NODRAW);
 				convert(IW3::CSurfaceFlags::SURF_FLAG_NOLIGHTMAP, H1::CSurfaceFlags::SURF_FLAG_NOLIGHTMAP);
@@ -477,7 +471,7 @@ namespace ZoneTool
 
 			for (auto i = 0; i < 6; i++)
 			{
-				h1_asset->lodInfo[i].dist = 1000000;
+				h1_asset->lodInfo[i].dist = 1000000.0f;
 			}
 
 			// level of detail data
@@ -491,6 +485,9 @@ namespace ZoneTool
 				H1::IXSurface::dump(h1_asset->lodInfo[i].modelSurfs);
 
 				memcpy(&h1_asset->lodInfo[i].partBits, &asset->lodInfo[i].partBits, sizeof(asset->lodInfo[i].partBits));
+
+				// not sure if correct
+				memcpy(&h1_asset->lodInfo[i].unknown, &asset->lodInfo[i].lod, 4);
 			}
 
 			//h1_asset->maxLoadedLod = asset->maxLoadedLod;
@@ -543,7 +540,10 @@ namespace ZoneTool
 
 			// idk
 			h1_asset->invHighMipRadius = mem->Alloc<unsigned short>(asset->numsurfs);
-			memset(h1_asset->invHighMipRadius, 0, sizeof(unsigned short) * asset->numsurfs);
+			for (unsigned char i = 0; i < asset->numsurfs; i++)
+			{
+				h1_asset->invHighMipRadius[i] = -1;
+			}
 
 			h1_asset->quantization = 0.0f; //1.0f;
 

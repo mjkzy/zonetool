@@ -210,18 +210,18 @@ namespace ZoneTool
 
 				auto add_portal = [&](H1::GfxPortal* h1_portal, IW3::GfxPortal* iw3_portal)
 				{
-					h1_portal->writable.isQueued = iw3_portal->writable.isQueued;
-					h1_portal->writable.isAncestor = iw3_portal->writable.isAncestor;
-					h1_portal->writable.recursionDepth = iw3_portal->writable.recursionDepth;
-					h1_portal->writable.hullPointCount = iw3_portal->writable.hullPointCount;
-					h1_portal->writable.hullPoints = reinterpret_cast<float(*__ptr64)[2]>(iw3_portal->writable.hullPoints);
+					//h1_portal->writable.isQueued = iw3_portal->writable.isQueued;
+					//h1_portal->writable.isAncestor = iw3_portal->writable.isAncestor;
+					//h1_portal->writable.recursionDepth = iw3_portal->writable.recursionDepth;
+					//h1_portal->writable.hullPointCount = iw3_portal->writable.hullPointCount;
+					//h1_portal->writable.hullPoints = reinterpret_cast<float(*__ptr64)[2]>(iw3_portal->writable.hullPoints);
 					//h1_portal->writable.queuedParent = add_portal(iw5_portal->writable.queuedParent); // mapped at runtime
 
 					memcpy(h1_portal->plane.coeffs, iw3_portal->plane.coeffs, sizeof(float[4]));
 					h1_portal->vertices = reinterpret_cast<float(*__ptr64)[3]>(iw3_portal->vertices);
 
-					h1_portal->cellIndex = static_cast<unsigned short>(iw3_portal->cell - asset->cells) / sizeof(IW3::GfxCell);
-					assert(h1_portal->cellIndex >= static_cast<unsigned short>(h1_asset->dpvsPlanes.cellCount));
+					h1_portal->cellIndex = static_cast<unsigned short>(iw3_portal->cell - asset->cells);
+					assert(h1_portal->cellIndex < static_cast<unsigned short>(h1_asset->dpvsPlanes.cellCount));
 
 					h1_portal->closeDistance = 0;
 					h1_portal->vertexCount = iw3_portal->vertexCount;
@@ -419,20 +419,20 @@ namespace ZoneTool
 			h1_asset->models = mem->Alloc<H1::GfxBrushModel>(h1_asset->modelCount);
 			for (int i = 0; i < h1_asset->modelCount; i++)
 			{
-				int decals = asset->models[i].surfaceCountNoDecal - asset->models[i].surfaceCount;
+				int decals = asset->models[i].surfaceCount - asset->models[i].surfaceCountNoDecal;
 
-				memcpy(&h1_asset->models[i].writable.bounds, bounds::compute(asset->models[i].writable.mins, asset->models[i].writable.maxs), sizeof(float[2][3]));
+				//memcpy(&h1_asset->models[i].writable.bounds, bounds::compute(asset->models[i].writable.mins, asset->models[i].writable.maxs), sizeof(float[2][3])); // Irrevelant
 				memcpy(&h1_asset->models[i].bounds, bounds::compute(asset->models[i].bounds[0], asset->models[i].bounds[1]), sizeof(float[2][3]));
 
 				float* halfSize = h1_asset->models[i].bounds.halfSize;
 				h1_asset->models[i].radius = static_cast<float>(std::sqrt(std::pow(halfSize[0], 2) + std::pow(halfSize[1], 2) + std::pow(halfSize[2], 2)));
 
 				h1_asset->models[i].startSurfIndex = asset->models[i].startSurfIndex;
-				h1_asset->models[i].surfaceCount = asset->models[i].surfaceCount + decals;
+				h1_asset->models[i].surfaceCount = asset->models[i].surfaceCountNoDecal + decals;
 				h1_asset->models[i].mdaoVolumeIndex = -1;
 			}
 
-			//memcpy(&h1_asset->mins1, bounds::compute(asset->mins, asset->maxs), sizeof(float[2][3])); // then what is this?
+			memcpy(&h1_asset->mins1, bounds::compute(asset->mins, asset->maxs), sizeof(float[2][3])); // then what is this?
 			memcpy(&h1_asset->mins2, bounds::compute(asset->mins, asset->maxs), sizeof(float[2][3])); // (i think this is the correct one)
 
 			h1_asset->checksum = asset->checksum;
@@ -523,11 +523,11 @@ namespace ZoneTool
 				}
 			}
 
-			unsigned int lit_decal_count = asset->dpvs.staticSurfaceCountNoDecal - asset->dpvs.staticSurfaceCount;
+			unsigned int lit_decal_count = asset->dpvs.staticSurfaceCount - asset->dpvs.staticSurfaceCountNoDecal;
 
 			h1_asset->dpvs.smodelCount = asset->dpvs.smodelCount;
 			h1_asset->dpvs.subdivVertexLightingInfoCount = 0;
-			h1_asset->dpvs.staticSurfaceCount = asset->dpvs.staticSurfaceCount + lit_decal_count;
+			h1_asset->dpvs.staticSurfaceCount = asset->dpvs.staticSurfaceCountNoDecal + lit_decal_count;
 			h1_asset->dpvs.litOpaqueSurfsBegin = asset->dpvs.litSurfsBegin;
 			h1_asset->dpvs.litOpaqueSurfsEnd = asset->dpvs.litSurfsEnd;
 			h1_asset->dpvs.unkSurfsBegin = 0;
@@ -625,50 +625,46 @@ namespace ZoneTool
 				memcpy(&h1_asset->dpvs.smodelDrawInsts[i].placement, &asset->dpvs.smodelDrawInsts[i].placement, sizeof(IW3::GfxPackedPlacement));
 				h1_asset->dpvs.smodelDrawInsts[i].model = reinterpret_cast<H1::XModel * __ptr64>(asset->dpvs.smodelDrawInsts[i].model);
 				h1_asset->dpvs.smodelDrawInsts[i].lightingHandle = asset->dpvs.smodelDrawInsts[i].lightingHandle;
-				
-				auto no_shadows = (asset->dpvs.smodelDrawInsts[i].flags & 0x1) != 0;
-				h1_asset->dpvs.smodelDrawInsts[i].flags |= no_shadows ?
-					H1::StaticModelFlag::STATIC_MODEL_FLAG_NO_CAST_SHADOW : 0;
-				h1_asset->dpvs.smodelDrawInsts[i].flags |= H1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTGRID_LIGHTING;
-
-				if (asset->dpvs.smodelInsts[i].groundLighting.packed > 0)
-				{
-					h1_asset->dpvs.smodelDrawInsts[i].flags |= H1::StaticModelFlag::STATIC_MODEL_FLAG_GROUND_LIGHTING;
-				}
-
 				h1_asset->dpvs.smodelDrawInsts[i].staticModelId = 0;
 				h1_asset->dpvs.smodelDrawInsts[i].primaryLightEnvIndex = asset->dpvs.smodelDrawInsts[i].primaryLightIndex;
 				h1_asset->dpvs.smodelDrawInsts[i].reflectionProbeIndex = asset->dpvs.smodelDrawInsts[i].reflectionProbeIndex;
 				h1_asset->dpvs.smodelDrawInsts[i].firstMtlSkinIndex = 0;
 				h1_asset->dpvs.smodelDrawInsts[i].sunShadowFlags = 0;
 
-				float iw3_cull_dist = asset->dpvs.smodelDrawInsts[i].cullDist;
-
-				// Double cull distance so it looks nicer
-				iw3_cull_dist *= 2;
-
-				unsigned short new_cull_dist = 0;
-				int imin = std::numeric_limits<int>::min();
-
-				if (iw3_cull_dist > std::numeric_limits<unsigned short>::max())
+				// casts no shadows
+				auto no_shadows = (asset->dpvs.smodelDrawInsts[i].flags & 0x1) != 0;
+				if (no_shadows)
 				{
-					new_cull_dist = std::numeric_limits<unsigned short>::max();
+					h1_asset->dpvs.smodelDrawInsts[i].flags |= H1::StaticModelFlag::STATIC_MODEL_FLAG_NO_CAST_SHADOW;
 				}
+
+				// ground lighting
+				if (asset->dpvs.smodelInsts[i].groundLighting.packed > 0)
+				{
+					h1_asset->dpvs.smodelDrawInsts[i].flags |= H1::StaticModelFlag::STATIC_MODEL_FLAG_GROUND_LIGHTING;
+				}
+				// regular lighting
 				else
 				{
-					new_cull_dist = static_cast<unsigned short>(iw3_cull_dist);
+					h1_asset->dpvs.smodelDrawInsts[i].flags |= H1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTGRID_LIGHTING;
 				}
 
-				h1_asset->dpvs.smodelDrawInsts[i].cullDist = new_cull_dist;
+				h1_asset->dpvs.smodelDrawInsts[i].cullDist = static_cast<unsigned short>(asset->dpvs.smodelDrawInsts[i].cullDist / 100.0f);
 				h1_asset->dpvs.smodelDrawInsts[i].unk0 = h1_asset->dpvs.smodelDrawInsts[i].cullDist;
 			}
 
 			h1_asset->dpvs.smodelLighting = mem->Alloc<H1::GfxStaticModelLighting>(h1_asset->dpvs.smodelCount);
 			for (unsigned int i = 0; i < h1_asset->dpvs.smodelCount; i++)
 			{
-				memcpy(h1_asset->dpvs.smodelLighting[i].info2.cacheId, asset->dpvs.smodelDrawInsts[i].smodelCacheIndex,
-					sizeof(unsigned short[4])); // not sure
-
+				if (asset->dpvs.smodelInsts[i].groundLighting.packed > 0)
+				{
+					// figure out how to properly convert this
+					h1_asset->dpvs.smodelLighting[i].lightmapInfo.groundLighting[0] = 14340;
+					h1_asset->dpvs.smodelLighting[i].lightmapInfo.groundLighting[1] = 14340;
+					h1_asset->dpvs.smodelLighting[i].lightmapInfo.groundLighting[2] = 14340;
+					h1_asset->dpvs.smodelLighting[i].lightmapInfo.groundLighting[3] = 14340;
+				}
+				
 				// todo?
 			}
 
@@ -735,7 +731,7 @@ namespace ZoneTool
 			h1_asset->buildInfo.buildEndTime = nullptr;
 
 			// sort triangles & vertices
-			/*int tri_index = 0;
+			int tri_index = 0;
 			h1_asset->draw.indices = mem->Alloc<unsigned short>(h1_asset->draw.indexCount);
 			for (auto i = 0; i < h1_asset->surfaceCount; i++)
 			{
@@ -746,7 +742,7 @@ namespace ZoneTool
 				surface->tris.baseIndex = tri_index;
 				tri_index += surface->tris.triCount * 3;
 			}
-			assert(tri_index == h1_asset->draw.indexCount);*/
+			assert(tri_index == h1_asset->draw.indexCount);
 
 			return h1_asset;
 		}

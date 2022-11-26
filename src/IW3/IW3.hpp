@@ -18,6 +18,10 @@
 
 using namespace zonetool;
 
+#include "Json.hpp"
+using json = nlohmann::json;
+using ordered_json = nlohmann::ordered_json;
+
 namespace bounds
 {
 	static auto compute(float* mins, float* maxs)
@@ -39,9 +43,11 @@ namespace bounds
 #include "Assets/GfxImage.hpp"
 #include "Assets/GfxLightDef.hpp"
 #include "Assets/GfxWorld.hpp"
+#include "Assets/LoadedSound.hpp"
 #include "Assets/MapEnts.hpp"
 #include "Assets/Material.hpp"
 #include "Assets/RawFile.hpp"
+#include "Assets/Sound.hpp"
 #include "Assets/XAnimParts.hpp"
 #include "Assets/XModel.hpp"
 

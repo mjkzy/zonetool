@@ -2,10 +2,6 @@
 //#include "H1/Assets/Material.hpp"
 #include "H1/Utils/IO/assetmanager.hpp"
 
-#include "Json.hpp"
-using json = nlohmann::json;
-using ordered_json = nlohmann::ordered_json;
-
 namespace
 {
 	std::unordered_map<std::string, std::string> mapped_techsets =
@@ -132,7 +128,7 @@ namespace
 			{"distortion_scale",						"distortion_scale_legacydst_dat"}, // could be wrong
 			{"distortion_scale_zfeather",				"distortion_scale_legacydst_zf_dat"}, // could be wrong
 
-			{"effect",									"effect_add_ndw" }, // couldn't find
+			{"effect",									"effect_blend_ndw" }, // couldn't find
 			{"effect_add",								"effect_add_ndw"},
 			{"effect_add_eyeoffset",					"effect_add_eo"},
 			{"effect_add_nofog",						"effect_add_nofog_ndw"},
@@ -140,7 +136,7 @@ namespace
 			{"effect_blend",							"effect_blend_ndw"},
 			{"effect_blend_nofog",						"effect_blend_nofog_ndw"},
 			//{"effect_replace_lin",					"2d"}, // m_effect_replace_ndw
-			{"effect_zfeather",							"effect_zf_add_ndw"}, // couldn't find
+			{"effect_zfeather",							"effect_zf_blend_ndw"}, // couldn't find
 			{"effect_zfeather_add",						"effect_zf_add_ndw"},
 			{"effect_zfeather_add_nofog",				"effect_zf_add_nofog_ndw"},
 			{"effect_zfeather_blend",					"effect_zf_blend_ndw"},
