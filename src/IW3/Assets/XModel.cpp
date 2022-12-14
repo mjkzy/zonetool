@@ -477,7 +477,12 @@ namespace ZoneTool
 			// level of detail data
 			for (auto i = 0; i < asset->numLods; i++)
 			{
-				h1_asset->lodInfo[i].dist = asset->lodInfo[i].dist;
+				float dist = asset->lodInfo[i].dist * 10.0f;
+				if (asset->lodInfo[i].dist < 1000000.0f)
+				{
+					h1_asset->lodInfo[i].dist = dist;
+				}
+
 				h1_asset->lodInfo[i].numsurfs = asset->lodInfo[i].numsurfs;
 				h1_asset->lodInfo[i].surfIndex = asset->lodInfo[i].surfIndex;
 
@@ -487,7 +492,7 @@ namespace ZoneTool
 				memcpy(&h1_asset->lodInfo[i].partBits, &asset->lodInfo[i].partBits, sizeof(asset->lodInfo[i].partBits));
 
 				// not sure if correct
-				memcpy(&h1_asset->lodInfo[i].unknown, &asset->lodInfo[i].lod, 4);
+				//memcpy(&h1_asset->lodInfo[i].unknown, &asset->lodInfo[i].lod, 4);
 			}
 
 			//h1_asset->maxLoadedLod = asset->maxLoadedLod;
@@ -542,7 +547,7 @@ namespace ZoneTool
 			h1_asset->invHighMipRadius = mem->Alloc<unsigned short>(asset->numsurfs);
 			for (unsigned char i = 0; i < asset->numsurfs; i++)
 			{
-				h1_asset->invHighMipRadius[i] = -1;
+				h1_asset->invHighMipRadius[i] = 0xFFFF;
 			}
 
 			h1_asset->quantization = 0.0f; //1.0f;

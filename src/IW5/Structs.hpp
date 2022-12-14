@@ -1022,6 +1022,17 @@ namespace ZoneTool
 			unsigned int loadBits[2];
 		};
 
+		enum GfxCameraRegionType : std::uint16_t
+		{
+			CAMERA_REGION_LIT_OPAQUE = 0x0,
+			CAMERA_REGION_LIT_TRANS = 0x1,
+			CAMERA_REGION_EMISSIVE = 0x2,
+			CAMERA_REGION_DEPTH_HACK = 0x3,
+			CAMERA_REGION_LIGHT_MAP_OPAQUE = 0x4,
+			CAMERA_REGION_COUNT = 0x5,
+			CAMERA_REGION_NONE = 0x5,
+		};
+
 		struct Material
 		{
 			const char* name; // 0
@@ -1031,8 +1042,8 @@ namespace ZoneTool
 			unsigned char animationY; // 7 // amount of animation frames in Y
 			int subRendererIndex; // 8 // 0x00
 			unsigned int rendererIndex; // 12 // only for 3D models
-			int unknown;
 			unsigned int surfaceTypeBits; //+20
+			int unknown;
 			char stateBitsEntry[54];
 			unsigned char numMaps;
 			unsigned char constantCount;
@@ -1161,7 +1172,7 @@ namespace ZoneTool
 		struct XSurface
 		{
 			char tileMode; // +0
-			char deformed; // +1			
+			char flags; // +1			
 			unsigned short vertCount; // +2
 			unsigned short triCount; // +4
 			unsigned char streamHandle; // +6

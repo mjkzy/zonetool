@@ -128,7 +128,7 @@ namespace ZoneTool
 
 			for (auto i = 0; i < 6; i++)
 			{
-				h1_asset->lodInfo[i].dist = 1000000;
+				h1_asset->lodInfo[i].dist = 1000000.0f;
 			}
 
 			// level of detail data
@@ -184,7 +184,10 @@ namespace ZoneTool
 
 			// idk
 			h1_asset->invHighMipRadius = mem->Alloc<unsigned short>(asset->numSurfaces);
-			memset(h1_asset->invHighMipRadius, 0, sizeof(unsigned short) * asset->numSurfaces);
+			for (unsigned char i = 0; i < asset->numSurfaces; i++)
+			{
+				h1_asset->invHighMipRadius[i] = 0xFFFF;
+			}
 
 			h1_asset->quantization = 0.0f; //1.0f;
 

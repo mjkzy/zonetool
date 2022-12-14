@@ -420,13 +420,14 @@ namespace ZoneTool
 			h1_asset->models = mem->Alloc<H1::GfxBrushModel>(h1_asset->modelCount);
 			for (int i = 0; i < h1_asset->modelCount; i++)
 			{
-				int decals = asset->models[i].surfaceCountNoDecal - asset->models[i].surfaceCount;
+				int decals = asset->models[i].surfaceCount - asset->models[i].surfaceCountNoDecal;
 
-				memcpy(&h1_asset->models[i].writable.bounds, &asset->models[i].writable.bounds, sizeof(float[2][3]));
+				//memcpy(&h1_asset->models[i].writable.bounds, &asset->models[i].writable.bounds, sizeof(float[2][3])); // Irrevelant
 				memcpy(&h1_asset->models[i].bounds, &asset->models[i].bounds, sizeof(float[2][3]));
+
 				h1_asset->models[i].radius = asset->models[i].radius;
 				h1_asset->models[i].startSurfIndex = asset->models[i].startSurfIndex;
-				h1_asset->models[i].surfaceCount = asset->models[i].surfaceCount + decals;
+				h1_asset->models[i].surfaceCount = asset->models[i].surfaceCountNoDecal + decals;
 				h1_asset->models[i].mdaoVolumeIndex = -1;
 			}
 
@@ -521,17 +522,17 @@ namespace ZoneTool
 				}
 			}
 
-			unsigned int lit_decal_count = asset->dpvs.staticSurfaceCountNoDecal - asset->dpvs.staticSurfaceCount;
+			unsigned int lit_decal_count = asset->dpvs.staticSurfaceCount - asset->dpvs.staticSurfaceCountNoDecal;
 
 			h1_asset->dpvs.smodelCount = asset->dpvs.smodelCount;
 			h1_asset->dpvs.subdivVertexLightingInfoCount = 0;
-			h1_asset->dpvs.staticSurfaceCount = asset->dpvs.staticSurfaceCount + lit_decal_count;
+			h1_asset->dpvs.staticSurfaceCount = asset->dpvs.staticSurfaceCountNoDecal + lit_decal_count;
 			h1_asset->dpvs.litOpaqueSurfsBegin = asset->dpvs.litOpaqueSurfsBegin;
 			h1_asset->dpvs.litOpaqueSurfsEnd = asset->dpvs.litOpaqueSurfsEnd;
 			h1_asset->dpvs.unkSurfsBegin = 0;
 			h1_asset->dpvs.unkSurfsEnd = 0;
-			h1_asset->dpvs.litDecalSurfsBegin = asset->dpvs.staticSurfaceCount;
-			h1_asset->dpvs.litDecalSurfsEnd = asset->dpvs.staticSurfaceCount + lit_decal_count;
+			h1_asset->dpvs.litDecalSurfsBegin = asset->dpvs.litOpaqueSurfsEnd; // skip
+			h1_asset->dpvs.litDecalSurfsEnd = asset->dpvs.litOpaqueSurfsEnd; // skip
 			h1_asset->dpvs.litTransSurfsBegin = asset->dpvs.litTransSurfsBegin;
 			h1_asset->dpvs.litTransSurfsEnd = asset->dpvs.litTransSurfsEnd;
 			h1_asset->dpvs.shadowCasterSurfsBegin = asset->dpvs.shadowCasterSurfsBegin;
@@ -612,28 +613,62 @@ namespace ZoneTool
 			h1_asset->dpvs.smodelDrawInsts = mem->Alloc<H1::GfxStaticModelDrawInst>(h1_asset->dpvs.smodelCount);
 			for (unsigned int i = 0; i < h1_asset->dpvs.smodelCount; i++)
 			{
-				bool has_ground_lighting = (asset->dpvs.smodelDrawInsts[i].flags & 0x20) != 0;
-
 				memcpy(&h1_asset->dpvs.smodelDrawInsts[i].placement, &asset->dpvs.smodelDrawInsts[i].placement, sizeof(IW5::GfxPackedPlacement));
 				h1_asset->dpvs.smodelDrawInsts[i].model = reinterpret_cast<H1::XModel * __ptr64>(asset->dpvs.smodelDrawInsts[i].model);
-				h1_asset->dpvs.smodelDrawInsts[i].cullDist = asset->dpvs.smodelDrawInsts[i].cullDist;
 				h1_asset->dpvs.smodelDrawInsts[i].lightingHandle = asset->dpvs.smodelDrawInsts[i].lightingHandle;
-				h1_asset->dpvs.smodelDrawInsts[i].flags = asset->dpvs.smodelDrawInsts[i].flags;
-				h1_asset->dpvs.smodelDrawInsts[i].flags |= has_ground_lighting ?
-					H1::StaticModelFlag::STATIC_MODEL_FLAG_ALLOW_FXMARK : H1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTGRID_LIGHTING;
-				h1_asset->dpvs.smodelDrawInsts[i].staticModelId = 0;
+				h1_asset->dpvs.smodelDrawInsts[i].staticModelId = i;
 				h1_asset->dpvs.smodelDrawInsts[i].primaryLightEnvIndex = asset->dpvs.smodelDrawInsts[i].primaryLightIndex;
 				h1_asset->dpvs.smodelDrawInsts[i].reflectionProbeIndex = asset->dpvs.smodelDrawInsts[i].reflectionProbeIndex;
-				h1_asset->dpvs.smodelDrawInsts[i].firstMtlSkinIndex = asset->dpvs.smodelDrawInsts[i].firstMtlSkinIndex;
-				h1_asset->dpvs.smodelDrawInsts[i].sunShadowFlags = 0;
+				h1_asset->dpvs.smodelDrawInsts[i].firstMtlSkinIndex = 0;
+				h1_asset->dpvs.smodelDrawInsts[i].sunShadowFlags = asset->dpvs.smodelDrawInsts[i].flags;
 
+				h1_asset->dpvs.smodelDrawInsts[i].cullDist = asset->dpvs.smodelDrawInsts[i].cullDist;
 				h1_asset->dpvs.smodelDrawInsts[i].unk0 = h1_asset->dpvs.smodelDrawInsts[i].cullDist;
+				h1_asset->dpvs.smodelDrawInsts[i].unk1 = 0;
+
+				// casts no shadows
+				auto no_shadows = (asset->dpvs.smodelDrawInsts[i].flags & 0x10) != 0;
+				if (no_shadows)
+				{
+					h1_asset->dpvs.smodelDrawInsts[i].flags |= H1::StaticModelFlag::STATIC_MODEL_FLAG_NO_CAST_SHADOW;
+				}
+
+				// ground lighting
+				auto ground_lighting = (asset->dpvs.smodelDrawInsts[i].flags & 0x20) != 0 || asset->dpvs.smodelDrawInsts[i].groundLighting.packed != 0;
+				if (ground_lighting)
+				{
+					h1_asset->dpvs.smodelDrawInsts[i].flags |= H1::StaticModelFlag::STATIC_MODEL_FLAG_GROUND_LIGHTING;
+				}
+				// regular lighting
+				else
+				{
+					h1_asset->dpvs.smodelDrawInsts[i].flags |= H1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTGRID_LIGHTING;
+				}
 			}
 
 			h1_asset->dpvs.smodelLighting = mem->Alloc<H1::GfxStaticModelLighting>(h1_asset->dpvs.smodelCount);
 			for (unsigned int i = 0; i < h1_asset->dpvs.smodelCount; i++)
 			{
-				// todo
+				if ((h1_asset->dpvs.smodelDrawInsts[i].flags & H1::StaticModelFlag::STATIC_MODEL_FLAG_GROUND_LIGHTING) != 0)
+				{
+					// figure out how to properly convert this
+					h1_asset->dpvs.smodelLighting[i].modelGroundLightingInfo.groundLighting[0] = 14340; // r: 0.4
+					h1_asset->dpvs.smodelLighting[i].modelGroundLightingInfo.groundLighting[1] = 14340; // g: 0.4
+					h1_asset->dpvs.smodelLighting[i].modelGroundLightingInfo.groundLighting[2] = 14340; // b: 0.4
+					h1_asset->dpvs.smodelLighting[i].modelGroundLightingInfo.groundLighting[3] = 14340; // a: 0.4
+				}
+				else if ((h1_asset->dpvs.smodelDrawInsts[i].flags & H1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTGRID_LIGHTING) != 0)
+				{
+					// todo?
+				}
+				else if ((h1_asset->dpvs.smodelDrawInsts[i].flags & H1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTMAP_LIGHTING) != 0)
+				{
+					// todo?
+				}
+				else if ((h1_asset->dpvs.smodelDrawInsts[i].flags & H1::StaticModelFlag::STATIC_MODEL_FLAG_VERTEXLIT_LIGHTING) != 0)
+				{
+					// todo?
+				}
 			}
 
 			h1_asset->dpvs.subdivVertexLighting = nullptr;

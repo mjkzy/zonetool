@@ -229,12 +229,10 @@ namespace ZoneTool
 		void GenerateH1XSurface(H1::XSurface* h1_asset, XSurface* asset, ZoneMemory* mem)
 		{
 			h1_asset->flags = 0;
-			h1_asset->flags |= ((asset->deformed & IW5::SURF_FLAG_VERTCOL_GREY) != 0) ? H1::SURF_FLAG_VERTCOL_GREY : 0;
-			h1_asset->flags |= ((asset->deformed & IW5::SURF_FLAG_VERTCOL_NONE) != 0) ? H1::SURF_FLAG_VERTCOL_NONE : 0;
-			//h1_asset->flags |= ((asset->deformed & IW5::SURF_FLAG_QUANTIZED) != 0) ? H1::SURF_FLAG_QUANTIZED : 0;
-			h1_asset->flags |= ((asset->deformed & IW5::SURF_FLAG_SKINNED) != 0) ? H1::SURF_FLAG_SKINNED : 0;
-
-			h1_asset->flags |= ((h1_asset->flags & H1::SURF_FLAG_VERTCOL_GREY) == 0) ? H1::SURF_FLAG_VERTCOL_NONE : 0;
+			h1_asset->flags |= ((asset->flags & IW5::SURF_FLAG_VERTCOL_GREY) != 0) ? H1::SURF_FLAG_VERTCOL_GREY : 0;
+			h1_asset->flags |= ((asset->flags & IW5::SURF_FLAG_VERTCOL_NONE) != 0) ? H1::SURF_FLAG_VERTCOL_NONE : 0;
+			//h1_asset->flags |= ((asset->flags & IW5::SURF_FLAG_QUANTIZED) != 0) ? H1::SURF_FLAG_QUANTIZED : 0;
+			h1_asset->flags |= ((asset->flags & IW5::SURF_FLAG_SKINNED) != 0) ? H1::SURF_FLAG_SKINNED : 0;
 
 			h1_asset->vertCount = asset->vertCount;
 			h1_asset->triCount = asset->triCount;

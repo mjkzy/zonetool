@@ -354,8 +354,8 @@ namespace ZoneTool
 			for (unsigned int i = 0; i < h1_asset->lightGrid.colorCount; i++)
 			{
 				// colorVec3 -> colorVec6
-
-				memcpy(&h1_asset->lightGrid.colors[i].colorVec6, &asset->lightGrid.colors[i].rgb, sizeof(asset->lightGrid.colors[i]));
+				
+				//memcpy(&h1_asset->lightGrid.colors[i].colorVec6, &asset->lightGrid.colors[i].rgb, sizeof(asset->lightGrid.colors[i]));
 			}
 
 			//h1_asset->lightGrid.__pad0; // unknown data in pad
@@ -397,15 +397,15 @@ namespace ZoneTool
 			h1_asset->lightGrid.paletteBitstream = mem->Alloc<unsigned char>(h1_asset->lightGrid.paletteBitstreamSize);
 			memcpy(h1_asset->lightGrid.paletteBitstream, paletteBitStream, sizeof(paletteBitStream));
 
-			//h1_asset->lightGrid.missingGridColorIndex = h1_asset->lightGrid.paletteEntryCount - 1;
+			h1_asset->lightGrid.missingGridColorIndex = h1_asset->lightGrid.paletteEntryCount - 1;
 
 			h1_asset->lightGrid.rangeExponent8BitsEncoding = 0;
 			h1_asset->lightGrid.rangeExponent12BitsEncoding = 4;
 			h1_asset->lightGrid.rangeExponent16BitsEncoding = 23;
 
 			h1_asset->lightGrid.stageCount = 1;
-			h1_asset->lightGrid.stageLightingContrastGain = mem->Alloc<float>();
-			h1_asset->lightGrid.stageLightingContrastGain[0] = 1.0f;
+			h1_asset->lightGrid.stageLightingContrastGain = mem->Alloc<float>(1);
+			h1_asset->lightGrid.stageLightingContrastGain[0] = 0.3f;
 
 			for (auto i = 0; i < 3; i++)
 			{
@@ -625,11 +625,24 @@ namespace ZoneTool
 				memcpy(&h1_asset->dpvs.smodelDrawInsts[i].placement, &asset->dpvs.smodelDrawInsts[i].placement, sizeof(IW3::GfxPackedPlacement));
 				h1_asset->dpvs.smodelDrawInsts[i].model = reinterpret_cast<H1::XModel * __ptr64>(asset->dpvs.smodelDrawInsts[i].model);
 				h1_asset->dpvs.smodelDrawInsts[i].lightingHandle = asset->dpvs.smodelDrawInsts[i].lightingHandle;
-				h1_asset->dpvs.smodelDrawInsts[i].staticModelId = 0;
+				h1_asset->dpvs.smodelDrawInsts[i].staticModelId = i;
 				h1_asset->dpvs.smodelDrawInsts[i].primaryLightEnvIndex = asset->dpvs.smodelDrawInsts[i].primaryLightIndex;
 				h1_asset->dpvs.smodelDrawInsts[i].reflectionProbeIndex = asset->dpvs.smodelDrawInsts[i].reflectionProbeIndex;
 				h1_asset->dpvs.smodelDrawInsts[i].firstMtlSkinIndex = 0;
-				h1_asset->dpvs.smodelDrawInsts[i].sunShadowFlags = 0;
+				h1_asset->dpvs.smodelDrawInsts[i].sunShadowFlags = asset->dpvs.smodelDrawInsts[i].flags;
+
+				unsigned int cullDist = static_cast<unsigned int>(asset->dpvs.smodelDrawInsts[i].cullDist) * 10;
+				if (cullDist > std::numeric_limits<unsigned short>::max())
+				{
+					cullDist = std::numeric_limits<unsigned short>::max();
+				}
+				else
+				{
+					cullDist = cullDist;
+				}
+				h1_asset->dpvs.smodelDrawInsts[i].cullDist = cullDist;
+				h1_asset->dpvs.smodelDrawInsts[i].unk0 = cullDist;
+				h1_asset->dpvs.smodelDrawInsts[i].unk1 = 0;
 
 				// casts no shadows
 				auto no_shadows = (asset->dpvs.smodelDrawInsts[i].flags & 0x1) != 0;
@@ -639,7 +652,8 @@ namespace ZoneTool
 				}
 
 				// ground lighting
-				if (asset->dpvs.smodelInsts[i].groundLighting.packed > 0)
+				auto ground_lighting = asset->dpvs.smodelInsts[i].groundLighting.packed != 0;
+				if (ground_lighting)
 				{
 					h1_asset->dpvs.smodelDrawInsts[i].flags |= H1::StaticModelFlag::STATIC_MODEL_FLAG_GROUND_LIGHTING;
 				}
@@ -648,24 +662,39 @@ namespace ZoneTool
 				{
 					h1_asset->dpvs.smodelDrawInsts[i].flags |= H1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTGRID_LIGHTING;
 				}
-
-				h1_asset->dpvs.smodelDrawInsts[i].cullDist = static_cast<unsigned short>(asset->dpvs.smodelDrawInsts[i].cullDist / 100.0f);
-				h1_asset->dpvs.smodelDrawInsts[i].unk0 = h1_asset->dpvs.smodelDrawInsts[i].cullDist;
 			}
 
 			h1_asset->dpvs.smodelLighting = mem->Alloc<H1::GfxStaticModelLighting>(h1_asset->dpvs.smodelCount);
 			for (unsigned int i = 0; i < h1_asset->dpvs.smodelCount; i++)
 			{
-				if (asset->dpvs.smodelInsts[i].groundLighting.packed > 0)
+				if ((h1_asset->dpvs.smodelDrawInsts[i].flags & H1::StaticModelFlag::STATIC_MODEL_FLAG_GROUND_LIGHTING) != 0)
 				{
 					// figure out how to properly convert this
-					h1_asset->dpvs.smodelLighting[i].lightmapInfo.groundLighting[0] = 14340;
-					h1_asset->dpvs.smodelLighting[i].lightmapInfo.groundLighting[1] = 14340;
-					h1_asset->dpvs.smodelLighting[i].lightmapInfo.groundLighting[2] = 14340;
-					h1_asset->dpvs.smodelLighting[i].lightmapInfo.groundLighting[3] = 14340;
+					h1_asset->dpvs.smodelLighting[i].modelGroundLightingInfo.groundLighting[0] = 14340; // r: 0.4
+					h1_asset->dpvs.smodelLighting[i].modelGroundLightingInfo.groundLighting[1] = 14340; // g: 0.4
+					h1_asset->dpvs.smodelLighting[i].modelGroundLightingInfo.groundLighting[2] = 14340; // b: 0.4
+					h1_asset->dpvs.smodelLighting[i].modelGroundLightingInfo.groundLighting[3] = 14340; // a: 0.4
 				}
-				
-				// todo?
+				else if ((h1_asset->dpvs.smodelDrawInsts[i].flags & H1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTGRID_LIGHTING) != 0)
+				{
+					// fixme
+					h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.colorFloat16[0] = 14340; // r: 0.4
+					h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.colorFloat16[1] = 14340; // g: 0.4
+					h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.colorFloat16[2] = 14340; // b: 0.4
+					//h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.colorFloat16[3] = 14340; // a: 0.4
+					//h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.a = 47280;
+					//h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.b = 1.0f;
+
+					// todo?
+				}
+				else if ((h1_asset->dpvs.smodelDrawInsts[i].flags & H1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTMAP_LIGHTING) != 0)
+				{
+					// todo?
+				}
+				else if ((h1_asset->dpvs.smodelDrawInsts[i].flags & H1::StaticModelFlag::STATIC_MODEL_FLAG_VERTEXLIT_LIGHTING) != 0)
+				{
+					// todo?
+				}
 			}
 
 			h1_asset->dpvs.subdivVertexLighting = nullptr;
@@ -709,12 +738,12 @@ namespace ZoneTool
 			h1_asset->dpvsDyn.dynEntVisData[1][2] = reinterpret_cast<unsigned char* __ptr64>(asset->dpvsDyn.dynEntVisData[1][2]);
 			h1_asset->dpvsDyn.dynEntVisData[1][3] = mem->Alloc<unsigned char>(h1_asset->dpvsDyn.dynEntClientWordCount[1] * 32);
 
-			h1_asset->mapVtxChecksum = 0xDEADB33F;
+			h1_asset->mapVtxChecksum = 0xDEADBEEF;
 
 			h1_asset->heroOnlyLightCount = 0;
 			h1_asset->heroOnlyLights = nullptr;
 
-			h1_asset->fogTypesAllowed = H1::FogTypes::FOG_NORMAL;
+			h1_asset->fogTypesAllowed = H1::FogTypes::FOG_NORMAL | H1::FogTypes::FOG_DFOG;
 
 			h1_asset->umbraTomeSize = 0;
 			h1_asset->umbraTomeData = nullptr;

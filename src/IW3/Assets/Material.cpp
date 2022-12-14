@@ -196,6 +196,48 @@ namespace ZoneTool
 			return mapped_techsets[name];
 		}
 
+		std::uint64_t convert_surf_type_bits(std::uint32_t bits)
+		{
+			std::uint64_t h1_bits = H1::SurfaceTypeBits::SURFTYPE_BITS_DEFAULT;
+
+			auto convert = [&](IW3::SurfaceTypeBits a, H1::SurfaceTypeBits b)
+			{
+				h1_bits |= ((bits & a) == a) ? b : 0;
+			};
+
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_BARK, H1::SurfaceTypeBits::SURFTYPE_BITS_BARK);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_BRICK, H1::SurfaceTypeBits::SURFTYPE_BITS_BRICK);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_CARPET, H1::SurfaceTypeBits::SURFTYPE_BITS_CARPET);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_CLOTH, H1::SurfaceTypeBits::SURFTYPE_BITS_CLOTH);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_CONCRETE, H1::SurfaceTypeBits::SURFTYPE_BITS_CONCRETE);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_DIRT, H1::SurfaceTypeBits::SURFTYPE_BITS_DIRT);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_FLESH, H1::SurfaceTypeBits::SURFTYPE_BITS_FLESH);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_FOLIAGE, H1::SurfaceTypeBits::SURFTYPE_BITS_FOLIAGE_DEBRIS);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_GLASS, H1::SurfaceTypeBits::SURFTYPE_BITS_GLASS);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_GRASS, H1::SurfaceTypeBits::SURFTYPE_BITS_GRASS);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_GRAVEL, H1::SurfaceTypeBits::SURFTYPE_BITS_GRAVEL);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_ICE, H1::SurfaceTypeBits::SURFTYPE_BITS_ICE);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_METAL, H1::SurfaceTypeBits::SURFTYPE_BITS_METAL_SOLID);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_MUD, H1::SurfaceTypeBits::SURFTYPE_BITS_MUD);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_PAPER, H1::SurfaceTypeBits::SURFTYPE_BITS_PAPER);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_PLASTER, H1::SurfaceTypeBits::SURFTYPE_BITS_PLASTER);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_ROCK, H1::SurfaceTypeBits::SURFTYPE_BITS_ROCK);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_SAND, H1::SurfaceTypeBits::SURFTYPE_BITS_SAND);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_SNOW, H1::SurfaceTypeBits::SURFTYPE_BITS_SNOW);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_WATER, H1::SurfaceTypeBits::SURFTYPE_BITS_WATER_WAIST);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_WOOD, H1::SurfaceTypeBits::SURFTYPE_BITS_WOOD_SOLID);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_ASPHALT, H1::SurfaceTypeBits::SURFTYPE_BITS_ASPHALT);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_CERAMIC, H1::SurfaceTypeBits::SURFTYPE_BITS_CERAMIC);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_PLASTIC, H1::SurfaceTypeBits::SURFTYPE_BITS_PLASTIC_SOLID);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_RUBBER, H1::SurfaceTypeBits::SURFTYPE_BITS_RUBBER);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_CUSHION, H1::SurfaceTypeBits::SURFTYPE_BITS_CUSHION);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_FRUIT, H1::SurfaceTypeBits::SURFTYPE_BITS_FRUIT);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_PAINTEDMETAL, H1::SurfaceTypeBits::SURFTYPE_BITS_PAINTEDMETAL);
+			convert(IW3::SurfaceTypeBits::SURFTYPE_BITS_SLUSH, H1::SurfaceTypeBits::SURFTYPE_BITS_SLUSH);
+
+			return h1_bits;
+		} IW3::CSurfaceFlags;
+
 		std::unordered_map<std::uint8_t, std::uint8_t> mapped_sortkeys =
 		{
 			{0, 48},	// Distortion (confirmed)
@@ -269,8 +311,25 @@ namespace ZoneTool
 			{IW3::CAMERA_REGION_NONE, H1::CAMERA_REGION_NONE},
 		};
 
-		std::uint8_t get_h1_camera_region(std::uint8_t camera_region, std::string matname)
+		std::unordered_map<std::string, std::uint8_t> mapped_camera_regions_by_techset =
 		{
+			{"2d", H1::CAMERA_REGION_NONE},
+			{"mc_shadowcaster_atest", H1::CAMERA_REGION_NONE},
+			{"wc_shadowcaster", H1::CAMERA_REGION_NONE},
+		};
+
+		std::uint8_t get_h1_camera_region(std::uint8_t camera_region, std::string matname, std::string h1_techset)
+		{
+			if (mapped_camera_regions_by_techset.find(h1_techset) != mapped_camera_regions_by_techset.end())
+			{
+				return mapped_camera_regions_by_techset[h1_techset];
+			}
+
+			if (h1_techset.find("_t0c0") != std::string::npos || h1_techset.find("_b0c0") != std::string::npos)
+			{
+				//return H1::CAMERA_REGION_LIT_TRANS;
+			}
+
 			if (mapped_camera_regions.contains(camera_region))
 			{
 				return mapped_camera_regions[camera_region];
@@ -373,7 +432,18 @@ namespace ZoneTool
 					matdata["techniqueSet->name"] = h1_techset;
 				}
 
-				matdata["gameFlags"] = asset->gameFlags; // convert
+				MaterialGameFlags gameFlags;
+				gameFlags.packed = asset->gameFlags;
+
+				MaterialGameFlags newGameFlags;
+				newGameFlags.packed = gameFlags.packed;
+
+				// ??? - @Louve
+				newGameFlags.fields.unk8 = gameFlags.fields.unk7;
+				newGameFlags.fields.unk7 = gameFlags.fields.unk8;
+
+				matdata["gameFlags"] = newGameFlags.packed;//asset->gameFlags; // convert
+
 				matdata["sortKey"] = get_h1_sortkey(asset->sortKey, asset->name, h1_techset);
 				matdata["renderFlags"] = 0; // idk
 
@@ -382,11 +452,11 @@ namespace ZoneTool
 				matdata["textureAtlasFrameBlend"] = 0;
 				matdata["textureAtlasAsArray"] = 0;
 
-				matdata["surfaceTypeBits"] = 0; //asset->surfaceTypeBits; // convert
+				matdata["surfaceTypeBits"] = convert_surf_type_bits(asset->surfaceTypeBits);
 				// hashIndex;
 
 				//matdata["stateFlags"] = asset->stateFlags; // convert ( should be the same )
-				matdata["cameraRegion"] = get_h1_camera_region(asset->cameraRegion, asset->name);
+				matdata["cameraRegion"] = get_h1_camera_region(asset->cameraRegion, asset->name, h1_techset);
 				matdata["materialType"] = get_material_type_from_name(asset->name);
 				matdata["assetFlags"] = H1::MTL_ASSETFLAG_NONE;
 
