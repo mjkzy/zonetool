@@ -215,11 +215,11 @@ namespace ZoneTool
 
 				auto add_portal = [](H1::GfxPortal* h1_portal, IW5::GfxPortal* iw5_portal)
 				{
-					h1_portal->writable.isQueued = iw5_portal->writable.isQueued;
-					h1_portal->writable.isAncestor = iw5_portal->writable.isAncestor;
-					h1_portal->writable.recursionDepth = iw5_portal->writable.recursionDepth;
-					h1_portal->writable.hullPointCount = iw5_portal->writable.hullPointCount;
-					h1_portal->writable.hullPoints = reinterpret_cast<float(*__ptr64)[2]>(iw5_portal->writable.hullPoints);
+					//h1_portal->writable.isQueued = iw5_portal->writable.isQueued;
+					//h1_portal->writable.isAncestor = iw5_portal->writable.isAncestor;
+					//h1_portal->writable.recursionDepth = iw5_portal->writable.recursionDepth;
+					//h1_portal->writable.hullPointCount = iw5_portal->writable.hullPointCount;
+					//h1_portal->writable.hullPoints = reinterpret_cast<float(*__ptr64)[2]>(iw5_portal->writable.hullPoints);
 					//h1_portal->writable.queuedParent = add_portal(iw5_portal->writable.queuedParent); // mapped at runtime
 
 					memcpy(&h1_portal->plane, &iw5_portal->plane, sizeof(float[4]));
@@ -398,15 +398,15 @@ namespace ZoneTool
 			h1_asset->lightGrid.paletteBitstream = mem->Alloc<unsigned char>(h1_asset->lightGrid.paletteBitstreamSize);
 			memcpy(h1_asset->lightGrid.paletteBitstream, paletteBitStream, sizeof(paletteBitStream));
 
-			//h1_asset->lightGrid.missingGridColorIndex = h1_asset->lightGrid.paletteEntryCount - 1;
+			h1_asset->lightGrid.missingGridColorIndex = h1_asset->lightGrid.paletteEntryCount - 1;
 
 			h1_asset->lightGrid.rangeExponent8BitsEncoding = 0;
 			h1_asset->lightGrid.rangeExponent12BitsEncoding = 4;
 			h1_asset->lightGrid.rangeExponent16BitsEncoding = 23;
 
 			h1_asset->lightGrid.stageCount = 1;
-			h1_asset->lightGrid.stageLightingContrastGain = mem->Alloc<float>();
-			h1_asset->lightGrid.stageLightingContrastGain[0] = 1.0f;
+			h1_asset->lightGrid.stageLightingContrastGain = mem->Alloc<float>(1);
+			h1_asset->lightGrid.stageLightingContrastGain[0] = 0.3f;
 
 			for (auto i = 0; i < 3; i++)
 			{
@@ -542,15 +542,21 @@ namespace ZoneTool
 			h1_asset->dpvs.smodelVisDataCount = asset->dpvs.smodelVisDataCount;
 			h1_asset->dpvs.surfaceVisDataCount = asset->dpvs.surfaceVisDataCount;
 
-			h1_asset->dpvs.smodelVisData[0] = mem->Alloc<unsigned int>(h1_asset->dpvs.smodelVisDataCount);
-			h1_asset->dpvs.smodelVisData[1] = mem->Alloc<unsigned int>(h1_asset->dpvs.smodelVisDataCount);
-			h1_asset->dpvs.smodelVisData[2] = mem->Alloc<unsigned int>(h1_asset->dpvs.smodelVisDataCount);
-			h1_asset->dpvs.smodelVisData[3] = mem->Alloc<unsigned int>(h1_asset->dpvs.smodelVisDataCount);
+			for (auto i = 0; i < 4; i++)
+			{
+				h1_asset->dpvs.smodelVisData[i] = mem->Alloc<unsigned int>(h1_asset->dpvs.smodelVisDataCount);
+			}
 
-			h1_asset->dpvs.surfaceVisData[0] = mem->Alloc<unsigned int>(h1_asset->dpvs.surfaceVisDataCount);
-			h1_asset->dpvs.surfaceVisData[1] = mem->Alloc<unsigned int>(h1_asset->dpvs.surfaceVisDataCount);
-			h1_asset->dpvs.surfaceVisData[2] = mem->Alloc<unsigned int>(h1_asset->dpvs.surfaceVisDataCount);
-			h1_asset->dpvs.surfaceVisData[3] = mem->Alloc<unsigned int>(h1_asset->dpvs.surfaceVisDataCount);
+			for (auto i = 0; i < 4; i++)
+			{
+				h1_asset->dpvs.surfaceVisData[i] = mem->Alloc<unsigned int>(h1_asset->dpvs.smodelVisDataCount);
+			}
+
+			for (auto i = 0; i < 3; i++)
+			{
+				memcpy(h1_asset->dpvs.smodelVisData[i], asset->dpvs.smodelVisData[i], sizeof(int) * h1_asset->dpvs.smodelVisDataCount);
+				memcpy(h1_asset->dpvs.surfaceVisData[i], asset->dpvs.surfaceVisData[i], sizeof(int) * h1_asset->dpvs.surfaceVisDataCount);
+			}
 
 			for (auto i = 0; i < 27; i++)
 			{
@@ -616,11 +622,11 @@ namespace ZoneTool
 				memcpy(&h1_asset->dpvs.smodelDrawInsts[i].placement, &asset->dpvs.smodelDrawInsts[i].placement, sizeof(IW5::GfxPackedPlacement));
 				h1_asset->dpvs.smodelDrawInsts[i].model = reinterpret_cast<H1::XModel * __ptr64>(asset->dpvs.smodelDrawInsts[i].model);
 				h1_asset->dpvs.smodelDrawInsts[i].lightingHandle = asset->dpvs.smodelDrawInsts[i].lightingHandle;
-				h1_asset->dpvs.smodelDrawInsts[i].staticModelId = i;
+				h1_asset->dpvs.smodelDrawInsts[i].staticModelId = 0;
 				h1_asset->dpvs.smodelDrawInsts[i].primaryLightEnvIndex = asset->dpvs.smodelDrawInsts[i].primaryLightIndex;
 				h1_asset->dpvs.smodelDrawInsts[i].reflectionProbeIndex = asset->dpvs.smodelDrawInsts[i].reflectionProbeIndex;
 				h1_asset->dpvs.smodelDrawInsts[i].firstMtlSkinIndex = 0;
-				h1_asset->dpvs.smodelDrawInsts[i].sunShadowFlags = asset->dpvs.smodelDrawInsts[i].flags;
+				h1_asset->dpvs.smodelDrawInsts[i].sunShadowFlags = 0;
 
 				h1_asset->dpvs.smodelDrawInsts[i].cullDist = asset->dpvs.smodelDrawInsts[i].cullDist;
 				h1_asset->dpvs.smodelDrawInsts[i].unk0 = h1_asset->dpvs.smodelDrawInsts[i].cullDist;
@@ -659,6 +665,14 @@ namespace ZoneTool
 				}
 				else if ((h1_asset->dpvs.smodelDrawInsts[i].flags & H1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTGRID_LIGHTING) != 0)
 				{
+					// fixme
+					h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.colorFloat16[0] = 14340; // r: 0.4
+					h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.colorFloat16[1] = 14340; // g: 0.4
+					h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.colorFloat16[2] = 14340; // b: 0.4
+					//h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.colorFloat16[3] = 14340; // a: 0.4
+					//h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.a = 47280;
+					//h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.b = 1.0f;
+
 					// todo?
 				}
 				else if ((h1_asset->dpvs.smodelDrawInsts[i].flags & H1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTMAP_LIGHTING) != 0)

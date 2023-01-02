@@ -55,8 +55,9 @@ namespace ZoneTool
 			{"wc_unlit_multiply_lin",					"wc_unlit_multiply_lin_ndw_nfwpf_im"},
 			{"wc_unlit_replace",						"wc_unlit_replace_lin_nfwpf"}, // couldn't find
 			{"wc_unlit_replace_lin",					"wc_unlit_replace_lin_nfwpf"},
+			{"wc_effect",								"wc_unlit_blend_lin_ndw_nfwpf"}, // ??
 			{"wc_ambient_t0c0",							"wc_ambient_t0c0_nfwpf"},
-			{"wc_sky",									"wc_sky_nfwpf"},
+			{"wc_sky",									"wc_sky_cso_nfwpf"},
 			{"wc_shadowcaster",							"wc_shadowcaster"},
 			{"wc_water",								"2d"}, // couldn't find
 			{"wc_tools",								"wc_tools_r0c0ct0"}, // possibly be wrong
@@ -170,7 +171,7 @@ namespace ZoneTool
 			{"effect_zfeather_add_nofog_eyeoffset",		"effect_zf_add_nofog_eo_ndw"},
 			{"effect_zfeather_outdoor_blend",			"effect_zf_outdoor_blend_ndw"},
 
-			{"particle_cloud",							"particle_cloud_atlas_replace_ga"}, // could be wrong
+			{"particle_cloud",							"particle_cloud_replace_ga"}, // could be wrong
 			{"particle_cloud_add",						"particle_cloud_add_ga"},
 			{"particle_cloud_outdoor",					"particle_cloud_outdoor_replace_ga"}, // could be wrong
 			{"particle_cloud_outdoor_add",				"particle_cloud_outdoor_add_ga"},
@@ -271,7 +272,7 @@ namespace ZoneTool
 			//{40, 40},	// Before effects 1 (wild guess)
 			//{41, 41},	// Before effects 2 (wild guess)
 			//{42, 42},	// Before effects 3 (extremely wild guess)
-			{43, 17},	// Blend / additive => to a decal layer (confirmed)
+			{43, 7},	// Blend / additive => to a decal layer (confirmed)
 			{48, 53},	// Effect auto sort! (confirmed)
 			{56, 30},	// AE Bottom
 			{57, 31},	// AE Middle
@@ -286,8 +287,13 @@ namespace ZoneTool
 			{"wc_shadowcaster", 38},
 		};
 
-		std::uint8_t get_h1_sortkey(std::uint8_t sortkey, std::string matname, std::string h1_techset)
+		std::uint8_t get_h1_sortkey(std::uint8_t sortkey, std::string matname, std::string h1_techset, std::string iw3_techset)
 		{
+			if (iw3_techset == "wc_effect")
+			{
+				return 12;
+			}
+
 			if (mapped_sortkeys_by_techset.find(h1_techset) != mapped_sortkeys_by_techset.end())
 			{
 				return mapped_sortkeys_by_techset[h1_techset];
@@ -306,7 +312,7 @@ namespace ZoneTool
 		std::unordered_map<std::uint8_t, std::uint8_t> mapped_camera_regions =
 		{
 			{IW3::CAMERA_REGION_LIT, H1::CAMERA_REGION_LIT_OPAQUE},
-			{IW3::CAMERA_REGION_DECAL, H1::CAMERA_REGION_LIT_DECAL},
+			{IW3::CAMERA_REGION_DECAL, H1::CAMERA_REGION_LIT_TRANS},
 			{IW3::CAMERA_REGION_EMISSIVE, H1::CAMERA_REGION_EMISSIVE},
 			{IW3::CAMERA_REGION_NONE, H1::CAMERA_REGION_NONE},
 		};
@@ -318,8 +324,13 @@ namespace ZoneTool
 			{"wc_shadowcaster", H1::CAMERA_REGION_NONE},
 		};
 
-		std::uint8_t get_h1_camera_region(std::uint8_t camera_region, std::string matname, std::string h1_techset)
+		std::uint8_t get_h1_camera_region(std::uint8_t camera_region, std::string matname, std::string h1_techset, std::string iw3_techset)
 		{
+			if (iw3_techset == "wc_effect")
+			{
+				return H1::CAMERA_REGION_LIT_DECAL;
+			}
+
 			if (mapped_camera_regions_by_techset.find(h1_techset) != mapped_camera_regions_by_techset.end())
 			{
 				return mapped_camera_regions_by_techset[h1_techset];
@@ -401,6 +412,27 @@ namespace ZoneTool
 	matdata[#entry] = asset->info.entry;
 	}
 
+	namespace H1
+	{
+		struct MaterialGameFlagsFields
+		{
+			unsigned char unk1 : 1; // 0x1
+			unsigned char addShadowToPrimaryLight : 1; // 0x2
+			unsigned char isFoliageRequiresGroundLighting : 1; // 0x4
+			unsigned char unk4 : 1; // 0x8
+			unsigned char unk5 : 1; // 0x10
+			unsigned char unk6 : 1; // 0x20
+			unsigned char unk7 : 1; // 0x40
+			unsigned char unkCastShadowMaybe : 1; // 0x80
+		};
+
+		union MaterialGameFlags
+		{
+			MaterialGameFlagsFields fields;
+			unsigned char packed;
+		};
+	}
+
 	namespace IW3
 	{
 		void IMaterial::dump(Material* asset, ZoneMemory* mem)
@@ -423,7 +455,7 @@ namespace ZoneTool
 					iw3_techset = asset->techniqueSet->name;
 
 					bool result = false;
-					h1_techset = get_h1_techset(asset->techniqueSet->name, asset->name, &result);
+					h1_techset = get_h1_techset(iw3_techset, asset->name, &result);
 					if (!result)
 					{
 						ZONETOOL_ERROR("Not dumping material \"%s\"", asset->name);
@@ -432,19 +464,17 @@ namespace ZoneTool
 					matdata["techniqueSet->name"] = h1_techset;
 				}
 
-				MaterialGameFlags gameFlags;
-				gameFlags.packed = asset->gameFlags;
+				MaterialGameFlags iw3_game_flags;
+				iw3_game_flags.packed = asset->gameFlags;
 
-				MaterialGameFlags newGameFlags;
-				newGameFlags.packed = gameFlags.packed;
+				H1::MaterialGameFlags h1_game_flags;
+				h1_game_flags.packed = iw3_game_flags.packed;
+				h1_game_flags.fields.unk7 = iw3_game_flags.fields.unkNeededForSModelDisplay;
+				h1_game_flags.fields.unkCastShadowMaybe = iw3_game_flags.fields.MTL_GAMEFLAG_CASTS_SHADOW;
 
-				// ??? - @Louve
-				newGameFlags.fields.unk8 = gameFlags.fields.unk7;
-				newGameFlags.fields.unk7 = gameFlags.fields.unk8;
+				matdata["gameFlags"] = h1_game_flags.packed;//asset->gameFlags; // convert
 
-				matdata["gameFlags"] = newGameFlags.packed;//asset->gameFlags; // convert
-
-				matdata["sortKey"] = get_h1_sortkey(asset->sortKey, asset->name, h1_techset);
+				matdata["sortKey"] = get_h1_sortkey(asset->sortKey, asset->name, h1_techset, iw3_techset);
 				matdata["renderFlags"] = 0; // idk
 
 				matdata["textureAtlasRowCount"] = asset->textureAtlasRowCount;
@@ -456,9 +486,25 @@ namespace ZoneTool
 				// hashIndex;
 
 				//matdata["stateFlags"] = asset->stateFlags; // convert ( should be the same )
-				matdata["cameraRegion"] = get_h1_camera_region(asset->cameraRegion, asset->name, h1_techset);
+				matdata["cameraRegion"] = get_h1_camera_region(asset->cameraRegion, asset->name, h1_techset, iw3_techset);
 				matdata["materialType"] = get_material_type_from_name(asset->name);
 				matdata["assetFlags"] = H1::MTL_ASSETFLAG_NONE;
+
+				if (asset->drawSurf.packed != 0)
+				{
+					matdata["drawSurf"]["objectId"] = static_cast<int>(asset->drawSurf.fields.objectId);
+					matdata["drawSurf"]["reflectionProbeIndex"] = static_cast<int>(asset->drawSurf.fields.reflectionProbeIndex);
+					matdata["drawSurf"]["hasGfxEntIndex"] = 0;
+					matdata["drawSurf"]["customIndex"] = static_cast<int>(asset->drawSurf.fields.customIndex);
+					matdata["drawSurf"]["materialSortedIndex"] = static_cast<int>(asset->drawSurf.fields.materialSortedIndex);
+					matdata["drawSurf"]["tessellation"] = 0;
+					matdata["drawSurf"]["prepass"] = static_cast<int>(asset->drawSurf.fields.prepass);
+					matdata["drawSurf"]["useHeroLighting"] = 0;
+					matdata["drawSurf"]["sceneLightEnvIndex"] = static_cast<int>(asset->drawSurf.fields.primaryLightIndex);
+					matdata["drawSurf"]["viewModelRender"] = 0;
+					matdata["drawSurf"]["surfType"] = static_cast<int>(asset->drawSurf.fields.surfType); // convert
+					matdata["drawSurf"]["primarySortKey"] = matdata["sortKey"].get<int>(); // static_cast<int>(asset->drawSurf.fields.primarySortKey)
+				}
 
 				ordered_json constant_table;
 				for (int i = 0; i < asset->constantCount; i++)
@@ -500,7 +546,7 @@ namespace ZoneTool
 					}
 					table["literal"] = literal_entry;
 
-					constant_table[i] = table;
+					constant_table[constant_table.size()] = table;
 				}
 
 #define CONSTANT_TABLE_ADD_IF_NOT_FOUND(CONST_NAME, CONST_HASH, LITERAL_1, LITERAL_2, LITERAL_3, LITERAL_4) \
@@ -529,6 +575,11 @@ namespace ZoneTool
 				if (h1_techset.find("_flag_") != std::string::npos)
 				{
 					CONSTANT_TABLE_ADD_IF_NOT_FOUND("flagParms", 2292903761, 1.0f, 0.0f, 0.0f, 0.0f);
+				}
+
+				if (h1_techset.find("_cso_") != std::string::npos)
+				{
+					CONSTANT_TABLE_ADD_IF_NOT_FOUND("hdrColorParm", 3379990750, 20.0f, 0.0f, 0.0f, 0.0f);
 				}
 
 				if (h1_techset.find("shadowcaster") != std::string::npos)

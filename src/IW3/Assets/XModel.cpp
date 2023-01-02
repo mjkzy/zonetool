@@ -229,7 +229,7 @@ namespace ZoneTool
 
 		void GenerateH1XSurface(H1::XSurface* h1_asset, XSurface* asset, ZoneMemory* mem)
 		{
-			h1_asset->flags = 0;
+			h1_asset->flags = asset->tileMode;
 			h1_asset->flags |= asset->deformed ? H1::SURF_FLAG_SKINNED : 0;
 			//h1_asset->flags |= H1::SURF_FLAG_VERTCOL_NONE;
 
@@ -342,6 +342,13 @@ namespace ZoneTool
 
 			h1_asset->name = mem->StrDup(va("%s_lod%d", model->name, index));
 			h1_asset->numsurfs = model->lodInfo[index].numsurfs;
+
+			if (h1_asset->numsurfs > 16)
+			{
+				h1_asset->numsurfs = 16;
+				//__debugbreak();
+			}
+
 			memcpy(&h1_asset->partBits, &model->lodInfo[index].partBits, sizeof(model->lodInfo[index].partBits));
 
 			h1_asset->surfs = mem->Alloc<H1::XSurface>(h1_asset->numsurfs);
@@ -349,6 +356,15 @@ namespace ZoneTool
 			for (unsigned short i = 0; i < h1_asset->numsurfs; i++)
 			{
 				GenerateH1XSurface(&h1_asset->surfs[i], &model->surfs[model->lodInfo[index].surfIndex + i], mem);
+
+				///if (i != model->collLod)
+				//{
+				//	auto target = &h1_asset->surfs[i];
+				//	for (unsigned char k = 0; k < target->rigidVertListCount; k++)
+				//	{
+				//		target->rigidVertLists[k].collisionTree = nullptr; // Only collod is used
+				//	}
+				//}
 			}
 
 			return h1_asset;
@@ -471,20 +487,23 @@ namespace ZoneTool
 
 			for (auto i = 0; i < 6; i++)
 			{
-				h1_asset->lodInfo[i].dist = 1000000.0f;
+				h1_asset->lodInfo[i].dist = 1000000.00f;
 			}
 
 			// level of detail data
 			for (auto i = 0; i < asset->numLods; i++)
 			{
-				float dist = asset->lodInfo[i].dist * 10.0f;
-				if (asset->lodInfo[i].dist < 1000000.0f)
-				{
-					h1_asset->lodInfo[i].dist = dist;
-				}
+				h1_asset->lodInfo[i].dist = asset->lodInfo[i].dist;
 
 				h1_asset->lodInfo[i].numsurfs = asset->lodInfo[i].numsurfs;
 				h1_asset->lodInfo[i].surfIndex = asset->lodInfo[i].surfIndex;
+
+				if (h1_asset->lodInfo[i].numsurfs > 16)
+				{
+					h1_asset->lodInfo[i].numsurfs = 16;
+					//__debugbreak();
+				}
+
 
 				h1_asset->lodInfo[i].modelSurfs = GenerateH1XModelSurfs(asset, i, mem);
 				H1::IXSurface::dump(h1_asset->lodInfo[i].modelSurfs);
@@ -541,6 +560,7 @@ namespace ZoneTool
 			if (asset->physGeoms)
 			{
 				// todo:
+				h1_asset->physCollmap = nullptr;
 			}
 
 			// idk

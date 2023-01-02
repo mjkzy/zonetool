@@ -368,14 +368,14 @@ namespace ZoneTool
 
 		struct MaterialGameFlagsFields
 		{
-			unsigned char unk1 : 1;
-			unsigned char addShadowToPrimaryLight : 1;
-			unsigned char isFoliageRequiresGroundLighting : 1;
-			unsigned char unk4 : 1;
-			unsigned char unk5 : 1;
-			unsigned char unk6 : 1;
-			unsigned char unk7 : 1;
-			unsigned char unk8 : 1;
+			unsigned char unk1 : 1; // 0x1
+			unsigned char addShadowToPrimaryLight : 1; // 0x2
+			unsigned char isFoliageRequiresGroundLighting : 1; // 0x4
+			unsigned char unk4 : 1; // 0x8
+			unsigned char unk5 : 1; // 0x10
+			unsigned char unk6 : 1; // 0x20
+			unsigned char MTL_GAMEFLAG_CASTS_SHADOW : 1; // 0x40
+			unsigned char unkNeededForSModelDisplay : 1; // 0x80
 		};
 
 		union MaterialGameFlags

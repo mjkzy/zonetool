@@ -141,7 +141,7 @@ namespace ZoneTool
 
 			if (!memory)
 			{
-				memory = std::make_shared<ZoneMemory>(1024 * 1024 * 128);		// 128mb
+				memory = std::make_shared<ZoneMemory>(1024 * 1024 * 512);		// 512mb
 			}
 
 			fastfile = static_cast<std::string>(reinterpret_cast<const char*>(*reinterpret_cast<DWORD*>(0x1294A00)

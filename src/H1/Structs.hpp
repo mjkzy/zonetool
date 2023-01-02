@@ -1282,6 +1282,14 @@ namespace ZoneTool
 			const char* __ptr64 name;
 		}; assert_sizeof(LocalizeEntry, 0x10);
 
+		enum ContentMask : std::int32_t
+		{
+			CONTENTS_ALL = -1,
+			CONTENTS_NONE = 0x0,
+			CONTENTS_SOLID = 0x1,
+			CONTENTS_PLAYERCLIP = 0x10000,
+		};
+
 		struct TriggerModel
 		{
 			int contents;
@@ -1351,7 +1359,7 @@ namespace ZoneTool
 			short* __ptr64 unk3;
 			short* __ptr64 unk4;
 			short* __ptr64 unk5;
-			char __pad0[8];
+			short* __ptr64 unk6;
 		}; assert_sizeof(ClientTriggers, 0xB0);
 
 		struct ClientTriggerBlendNode

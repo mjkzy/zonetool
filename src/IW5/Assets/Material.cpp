@@ -169,7 +169,7 @@ namespace ZoneTool
 				{"effect_zfeather_add_nofog_eyeoffset",		"effect_zf_add_nofog_eo_ndw"},
 				{"effect_zfeather_outdoor_blend",			"effect_zf_outdoor_blend_ndw"},
 
-				{"particle_cloud",							"particle_cloud_atlas_replace_ga"}, // could be wrong
+				{"particle_cloud",							"particle_cloud_replace_ga"}, // could be wrong
 				{"particle_cloud_add",						"particle_cloud_add_ga"},
 				{"particle_cloud_outdoor",					"particle_cloud_outdoor_replace_ga"}, // could be wrong
 				{"particle_cloud_outdoor_add",				"particle_cloud_outdoor_add_ga"},
@@ -197,43 +197,60 @@ namespace ZoneTool
 
 		std::unordered_map<std::uint8_t, std::uint8_t> mapped_sortkeys =
 		{
-			{43, 48},	// Distortion (confirmed)
-						// Opaque water (never used)
-						// Boat hull (never used)
 			{0, 1},		// Opaque ambient
-			{1, 2},		// Opaque (confirmed)
-			{2, 3},		// Sky (confirmed)
+			{1, 2},		// Opaque
+			{2, 3},		// Sky
 			{3, 4},		// Skybox sun/moon
 			{4, 5},		// Clouds  NOT SURE
 			{5, 6},		// Horizon NOT SURE
 			{6, 7},		// Decal bottom 1
 			{7, 8},	// Decal bottom 2
 			{8, 9},	// Decal bottom 3
-			{9, 10},	// Decal static (confirmed)
+			{9, 10},	// Decal static
 			{10, 11},	// Decal mid 1
-			{11, 12},	// Decal mid 2 (confirmed)
+			{11, 12},	// Decal mid 2
 			{12, 13},	// Decal mid 3
-			{13, 14},	// Weapon Impact (confirmed)
+			{13, 14},	// Weapon Impact
 			{14, 15},	// Decal top 1
-			{15, 16},	// Decal top 2 (confirmed)
+			{15, 16},	// Decal top 2
 			{16, 17},	// Decal top 3
-			//{41, 32},	// Multiplicative
-			//{17, 33},	// Banner/ Curtain (wild guess!)
-			//{4, 34},	// Hair. I matched it with german shepherd material sortkey, i hope its ok.
-			//{19, 35},	// Underwater
-			//{20, 36},	// Transparent water
-			//{33, 37},	// Corona (wild guess)
+			//{17, },	// ?
+			//{18, },	// ?
+			//{19, },	// ?
+			//{20, },	// ?
+			//{21, },	// ?
+			//{22, },	// ?
+			//{23, },	// ?
 			{24, 26},	// Window inside
-			{25, 27},	// Window outside (confirmed)
-			//{44, 40},	// Before effects 1 (wild guess)
-			//{45, 41},	// Before effects 2 (wild guess)
-			//{46, 42},	// Before effects 3 (extremely wild guess)
-			{29, 17},	// Blend / additive => to a decal layer (confirmed)
-			{48, 53},	// Effect auto sort! (confirmed)
-			{49, 30},	// AE Bottom
-			{50, 31},	// AE Middle
-			{51, 32},	// AE top (confirmed)
-			{53, 36},	// Viewmodel effect
+			{25, 27},	// Window outside
+			//{26, 14},	// ?
+			//{27, },	// ?
+			//{28, },	// ?
+			{29, 29},	// Blend 1
+			{30, 29},	// Blend 2
+			{31, 29},	// Blend 3
+			//{32, },	// ?
+			//{33, },	// ?
+			//{34, },	// ?
+			{35, 35},	// Opaque
+			//{36, },	// ?
+			//{37, },	// ?
+			//{38, },	// ?
+			//{39, },	// ?
+			//{40, },	// ?
+			//{41, },	// ?
+			//{42, },	// ?
+			{43, 48},	// Distortion
+			{44, 48},	// Distortion heavy
+			//{45, },	// ?
+			//{46, },	// ?
+			{47, 53},	// Effect 1
+			{48, 53},	// Effect 2
+			{49, 53},	// Effect 3
+			//{50, },	// ?
+			//{51, },	// ?
+			//{52, },	// ?
+			{53, 36},	// Viewmodel Effect
 		};
 
 		std::unordered_map<std::string, std::uint8_t> mapped_sortkeys_by_techset =
@@ -263,7 +280,7 @@ namespace ZoneTool
 		std::unordered_map<std::uint8_t, std::uint8_t> mapped_camera_regions =
 		{
 			{IW5::CAMERA_REGION_LIT_OPAQUE, H1::CAMERA_REGION_LIT_OPAQUE},
-			{IW5::CAMERA_REGION_LIT_TRANS, H1::CAMERA_REGION_LIT_OPAQUE_SSS},
+			{IW5::CAMERA_REGION_LIT_TRANS, H1::CAMERA_REGION_LIT_TRANS},
 			{IW5::CAMERA_REGION_EMISSIVE, H1::CAMERA_REGION_EMISSIVE},
 			{IW5::CAMERA_REGION_DEPTH_HACK, H1::CAMERA_REGION_DEPTH_HACK},
 			{IW5::CAMERA_REGION_LIGHT_MAP_OPAQUE, H1::CAMERA_REGION_LIT_OPAQUE},
@@ -273,6 +290,8 @@ namespace ZoneTool
 		std::unordered_map<std::string, std::uint8_t> mapped_camera_regions_by_techset =
 		{
 			{"2d", H1::CAMERA_REGION_NONE},
+			{"mc_shadowcaster_atest", H1::CAMERA_REGION_NONE},
+			{"wc_shadowcaster", H1::CAMERA_REGION_NONE},
 		};
 
 		std::uint8_t get_h1_camera_region(std::uint8_t camera_region, std::string matname, std::string h1_techset)
@@ -386,7 +405,7 @@ namespace ZoneTool
 					}
 
 					bool result = false;
-					h1_techset = get_h1_techset(asset->techniqueSet->name, asset->name, &result);
+					h1_techset = get_h1_techset(iw5_techset, asset->name, &result);
 					if (!result)
 					{
 						ZONETOOL_ERROR("Not dumping material \"%s\"", asset->name);
@@ -442,7 +461,7 @@ namespace ZoneTool
 					literal_entry[3] = asset->constantTable[i].literal[3];
 					table["literal"] = literal_entry;
 
-					constant_table[i] = table;
+					constant_table[constant_table.size()] = table;
 				}
 
 #define CONSTANT_TABLE_ADD_IF_NOT_FOUND(CONST_NAME, CONST_HASH, LITERAL_1, LITERAL_2, LITERAL_3, LITERAL_4) \
