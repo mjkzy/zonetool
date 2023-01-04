@@ -550,7 +550,7 @@ namespace ZoneTool
 
 			for (auto i = 0; i < 4; i++)
 			{
-				h1_asset->dpvs.surfaceVisData[i] = mem->Alloc<unsigned int>(h1_asset->dpvs.smodelVisDataCount);
+				h1_asset->dpvs.surfaceVisData[i] = mem->Alloc<unsigned int>(h1_asset->dpvs.surfaceVisDataCount);
 			}
 
 			for (auto i = 0; i < 3; i++)

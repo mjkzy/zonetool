@@ -134,7 +134,7 @@ namespace ZoneTool
 			// level of detail data
 			for (auto i = 0; i < asset->numLods; i++)
 			{
-				h1_asset->lodInfo[i].dist = asset->lods[i].dist/* * 100*/;
+				h1_asset->lodInfo[i].dist = asset->lods[i].dist;
 				h1_asset->lodInfo[i].numsurfs = asset->lods[i].numSurfacesInLod;
 				h1_asset->lodInfo[i].surfIndex = asset->lods[i].surfIndex;
 				h1_asset->lodInfo[i].modelSurfs = mem->Alloc<H1::XModelSurfs>(asset->lods[i].numSurfacesInLod);

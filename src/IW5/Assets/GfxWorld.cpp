@@ -516,8 +516,10 @@ namespace ZoneTool
 				h1_asset->lightRegion[i].hulls = mem->Alloc<H1::GfxLightRegionHull>(h1_asset->lightRegion[i].hullCount);
 				for (unsigned int j = 0; j < h1_asset->lightRegion[i].hullCount; j++)
 				{
-					memcpy(&h1_asset->lightRegion[i].hulls[j].kdopMidPoint, &asset->lightRegion[i].hulls[j].kdopMidPoint,
-						(sizeof(float[9]) * 2) + sizeof(unsigned int));
+					memcpy(&h1_asset->lightRegion[i].hulls[j].kdopMidPoint, &asset->lightRegion[i].hulls[j].kdopMidPoint, sizeof(float[9]));
+					memcpy(&h1_asset->lightRegion[i].hulls[j].kdopHalfSize, &asset->lightRegion[i].hulls[j].kdopHalfSize, sizeof(float[9]));
+
+					h1_asset->lightRegion[i].hulls[j].axisCount = asset->lightRegion[i].hulls[j].axisCount;
 					REINTERPRET_CAST_SAFE(h1_asset->lightRegion[i].hulls[j].axis, asset->lightRegion[i].hulls[j].axis);
 				}
 			}
@@ -549,13 +551,13 @@ namespace ZoneTool
 
 			for (auto i = 0; i < 4; i++)
 			{
-				h1_asset->dpvs.surfaceVisData[i] = mem->Alloc<unsigned int>(h1_asset->dpvs.smodelVisDataCount);
+				h1_asset->dpvs.surfaceVisData[i] = mem->Alloc<unsigned int>(h1_asset->dpvs.surfaceVisDataCount);
 			}
 
 			for (auto i = 0; i < 3; i++)
 			{
-				memcpy(h1_asset->dpvs.smodelVisData[i], asset->dpvs.smodelVisData[i], sizeof(int) * h1_asset->dpvs.smodelVisDataCount);
-				memcpy(h1_asset->dpvs.surfaceVisData[i], asset->dpvs.surfaceVisData[i], sizeof(int) * h1_asset->dpvs.surfaceVisDataCount);
+				//memcpy(h1_asset->dpvs.smodelVisData[i], asset->dpvs.smodelVisData[i], sizeof(int) * h1_asset->dpvs.smodelVisDataCount);
+				//memcpy(h1_asset->dpvs.surfaceVisData[i], asset->dpvs.surfaceVisData[i], sizeof(int) * h1_asset->dpvs.surfaceVisDataCount);
 			}
 
 			for (auto i = 0; i < 27; i++)
@@ -625,8 +627,8 @@ namespace ZoneTool
 				h1_asset->dpvs.smodelDrawInsts[i].staticModelId = 0;
 				h1_asset->dpvs.smodelDrawInsts[i].primaryLightEnvIndex = asset->dpvs.smodelDrawInsts[i].primaryLightIndex;
 				h1_asset->dpvs.smodelDrawInsts[i].reflectionProbeIndex = asset->dpvs.smodelDrawInsts[i].reflectionProbeIndex;
-				h1_asset->dpvs.smodelDrawInsts[i].firstMtlSkinIndex = 0;
-				h1_asset->dpvs.smodelDrawInsts[i].sunShadowFlags = 0;
+				h1_asset->dpvs.smodelDrawInsts[i].firstMtlSkinIndex = asset->dpvs.smodelDrawInsts[i].firstMtlSkinIndex;
+				h1_asset->dpvs.smodelDrawInsts[i].sunShadowFlags = 1;
 
 				h1_asset->dpvs.smodelDrawInsts[i].cullDist = asset->dpvs.smodelDrawInsts[i].cullDist;
 				h1_asset->dpvs.smodelDrawInsts[i].unk0 = h1_asset->dpvs.smodelDrawInsts[i].cullDist;
@@ -666,9 +668,9 @@ namespace ZoneTool
 				else if ((h1_asset->dpvs.smodelDrawInsts[i].flags & H1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTGRID_LIGHTING) != 0)
 				{
 					// fixme
-					h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.colorFloat16[0] = 14340; // r: 0.4
-					h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.colorFloat16[1] = 14340; // g: 0.4
-					h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.colorFloat16[2] = 14340; // b: 0.4
+					//h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.colorFloat16[0] = 14340; // r: 0.4
+					//h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.colorFloat16[1] = 14340; // g: 0.4
+					//h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.colorFloat16[2] = 14340; // b: 0.4
 					//h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.colorFloat16[3] = 14340; // a: 0.4
 					//h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.a = 47280;
 					//h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.b = 1.0f;

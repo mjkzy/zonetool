@@ -504,7 +504,6 @@ namespace ZoneTool
 					//__debugbreak();
 				}
 
-
 				h1_asset->lodInfo[i].modelSurfs = GenerateH1XModelSurfs(asset, i, mem);
 				H1::IXSurface::dump(h1_asset->lodInfo[i].modelSurfs);
 
