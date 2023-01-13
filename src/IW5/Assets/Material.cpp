@@ -517,7 +517,7 @@ namespace ZoneTool
 					}
 					else
 					{
-						if (asset->maps[i].image->name)
+						if (asset->maps[i].image && asset->maps[i].image->name)
 						{
 							image["image"] = asset->maps[i].image->name;
 						}
