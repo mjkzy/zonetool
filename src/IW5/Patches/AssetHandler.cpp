@@ -631,6 +631,9 @@ namespace ZoneTool
 			// Prevent sound data from getting lost
 			Memory(0x00438551).jump(MssSound_ReadXFile_stub);
 
+			// Remove check for me_pictureframes (messes up dumping)
+			Memory(0x004CC493).set(0xEB);
+
 #ifdef USE_VMPROTECT
 			VMProtectEnd();
 #endif
