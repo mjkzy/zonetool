@@ -716,7 +716,10 @@ namespace ZoneTool
 			h1_asset->dpvs.constantBuffersAmbient = mem->Alloc<char* __ptr64>(h1_asset->dpvs.smodelCount); //nullptr;
 			h1_asset->dpvs.usageCount = asset->dpvs.usageCount;
 
-			memcpy(&h1_asset->dpvsDyn.dynEntClientWordCount, &asset->dpvsDyn.dynEntClientWordCount, sizeof(float[2]) * 2);
+			h1_asset->dpvsDyn.dynEntClientWordCount[0] = asset->dpvsDyn.dynEntClientWordCount[0];
+			h1_asset->dpvsDyn.dynEntClientWordCount[1] = asset->dpvsDyn.dynEntClientWordCount[1];
+			h1_asset->dpvsDyn.dynEntClientCount[0] = asset->dpvsDyn.dynEntClientCount[0];
+			h1_asset->dpvsDyn.dynEntClientCount[1] = asset->dpvsDyn.dynEntClientCount[1];
 			h1_asset->dpvsDyn.dynEntCellBits[0] = reinterpret_cast<unsigned int* __ptr64>(asset->dpvsDyn.dynEntCellBits[0]);
 			h1_asset->dpvsDyn.dynEntCellBits[1] = reinterpret_cast<unsigned int* __ptr64>(asset->dpvsDyn.dynEntCellBits[1]);
 			h1_asset->dpvsDyn.dynEntVisData[0][0] = reinterpret_cast<unsigned char* __ptr64>(asset->dpvsDyn.dynEntVisData[0][0]);

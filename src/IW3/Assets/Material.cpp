@@ -11,6 +11,7 @@ namespace ZoneTool
 		//	IW3,										H1
 			{"wc_l_sm_a0c0",							"wc_l_sm_a0c0_nfwpf_frt_aat"},
 			{"wc_l_sm_r0c0",							"wc_l_sm_r0c0_nfwpf"},
+			{"wc_l_sm_r0c0_nocast",						"wc_l_sm_r0c0_nfwpf_nocast"},
 			{"wc_l_sm_r0c0d0n0s0",						"wc_l_sm_r0c0d0n0sd0_nfwpf"},
 			{"wc_l_sm_r0c0d0n0s0p0",					"wc_l_sm_r0c0d0n0sd0_nfwpf"}, // couldn't find
 			{"wc_l_sm_r0c0n0",							"wc_l_sm_r0c0n0_nfwpf"},
@@ -21,9 +22,11 @@ namespace ZoneTool
 			{"wc_l_sm_r0c0q0n0s0p0",					"wc_l_sm_r0c0q0n0sd0p0_nfwpf"},
 			{"wc_l_sm_r0c0s0",							"wc_l_sm_r0c0sd0_nfwpf"},
 			{"wc_l_sm_r0c0s0p0",						"wc_l_sm_r0c0sd0p0_nfwpf"},
+			{"wc_l_sm_r0c0p0",							"wc_l_sm_r0c0_nfwpf"}, // couldn't find
 			{"wc_l_sm_t0c0",							"wc_l_sm_lmpb_t0c0_nfwpf"},
 			{"wc_l_sm_t0c0n0",							"wc_l_sm_lmpb_t0c0n0_nfwpf"},
 			{"wc_l_sm_t0c0n0s0",						"wc_l_sm_lmpb_t0c0n0sd0_nfwpf"},
+			{"wc_l_sm_t0c0n0s0p0",						"wc_l_sm_lmpb_t0c0n0sd0_nfwpf"}, // couldn't find
 			{"wc_l_sm_t0c0s0",							"wc_l_sm_lmpb_t0c0sd0_nfwpf"},
 			{"wc_l_sm_t0c0p0",							"wc_l_sm_lmpb_t0c0_nfwpf"}, // couldn't find
 			{"wc_l_sm_b0c0",							"wc_l_sm_lmpb_ndw_b0c0_nfwpf_frt_im_aat"},
@@ -37,24 +40,31 @@ namespace ZoneTool
 			{"wc_l_sm_b0c0s0_nocast",					"wc_l_sm_lmpb_ndw_b0c0sd0_nfwpf_frt_aat"}, // no nocast
 			{"wc_l_sm_b0c0s0p0",						"wc_l_sm_lmpb_ndw_b0c0sd0_nfwpf_frt_aat"}, // couldn't find
 			{"wc_l_sm_b0c0q0n0s0",						"wc_l_sm_lmpb_ndw_b0c0q0n0sd0_nfwpf_frt_aat"},
+			{"wc_l_sm_b0c0q0n0s0p0",					"wc_l_sm_lmpb_ndw_b0c0q0n0sd0_nfwpf_frt_aat"}, // couldn't find
 			{"wc_l_sm_ua_b0c0n0s0p0_nocast",			"wc_l_sm_ndw_ua_b0c0n0sd0p0_cltrans_nocast_frt_aat"},
 			//{"wc_l_sm_b0c0n0s0_custom_growing_ice_cracks", "wc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // coudln't find
 			//{"wc_l_sm_b0c0n0s0_custom_growing_ice_cracks_sat", "wc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
+
+			{"wc_l_ua_b0c0_nocast",						"wc_l_sm_ndw_ua_b0c0_cltrans_nocast"}, // could be wrong
 
 			{"wc_unlit",								"wc_unlit_blend_lin_ndw_nfwpf"}, // couldn't find
 			{"wc_unlit_nofog",							"wc_unlit_blend_lin_ndw_nfwpf"}, // couldn't find
 			{"wc_unlit_alphatest",						"wc_unlit_blend_lin_ndw_nfwpf"}, // couldn't find
 			{"wc_unlit_add",							"wc_unlit_add_lin_ndw_nfwpf"}, // coudln't find
 			{"wc_unlit_add_lin",						"wc_unlit_add_lin_ndw_nfwpf"},
+			{"wc_unlit_add_lin_ua",						"wc_unlit_add_lin_ndw_ua_nfwpf"},
 			{"wc_unlit_blend",							"wc_unlit_blend_lin_ndw_nfwpf"}, // couldn't find
 			{"wc_unlit_blend_lin_ua",					"wc_unlit_blend_lin_ndw_ua_cltrans"},
 			{"wc_unlit_distfalloff",					"wc_unlit_distfalloff_replace_ndw_cltrans"}, // couldn't find
 			{"wc_unlit_distfalloff_replace",			"wc_unlit_distfalloff_replace_ndw_cltrans"},
 			{"wc_unlit_falloff_add",					"wc_unlit_falloff_add_lin_ndw_cltrans"}, // couldn't find
+			{"wc_unlit_falloff_add_lin",				"wc_unlit_falloff_add_lin_ndw_cltrans"},
+			{"wc_unlit_falloff_add_lin_ua",				"wc_unlit_falloff_add_lin_ndw_cltrans"}, // couldn't find
 			{"wc_unlit_multiply",						"wc_unlit_multiply_lin_ndw_nfwpf"}, // couldn't find
 			{"wc_unlit_multiply_lin",					"wc_unlit_multiply_lin_ndw_nfwpf_im"},
 			{"wc_unlit_replace",						"wc_unlit_replace_lin_nfwpf"}, // couldn't find
 			{"wc_unlit_replace_lin",					"wc_unlit_replace_lin_nfwpf"},
+			{"wc_unlit_replace_lin_nocast",				"wc_unlit_replace_lin_nfwpf_nocast"},
 			{"wc_effect",								"wc_unlit_blend_lin_ndw_nfwpf"}, // ??
 			{"wc_ambient_t0c0",							"wc_ambient_t0c0_nfwpf"},
 			{"wc_sky",									"wc_sky_cso_nfwpf"},
@@ -76,11 +86,14 @@ namespace ZoneTool
 			{"mc_l_sm_r0c0d0n0s0",						"mc_l_sm_r0c0d0n0sd0_nfwpf"},
 			{"mc_l_sm_r0c0d0n0s0p0",					"mc_l_sm_r0c0d0n0sd0p0_nfwpf"},
 			{"mc_l_sm_r0c0s0",							"mc_l_sm_r0c0sd0_nfwpf"},
+			{"mc_l_sm_r0c0s0_nocast",					"mc_l_sm_r0c0sd0_nfwpf"}, // no nocast
 			{"mc_l_sm_r0c0s0p0",						"mc_l_sm_r0c0sd0p0_nfwpf"},
 			{"mc_l_sm_r0c0n0",							"mc_l_sm_r0c0n0_nfwpf"},
 			{"mc_l_sm_r0c0n0s0",						"mc_l_sm_r0c0n0sd0_nfwpf"},
+			{"mc_l_sm_r0c0n0s0_em",						"mc_l_sm_r0c0n0sd0_nfwpf"}, // codo
 			{"mc_l_sm_r0c0n0s0_nocast",					"mc_l_sm_r0c0n0sd0_nfwpf"}, // no nocast
 			{"mc_l_sm_r0c0n0s0p0",						"mc_l_sm_r0c0n0sd0p0_nfwpf"},
+			{"mc_l_sm_r0c0p0",							"mc_l_sm_r0c0p0_nfwpf"},
 			{"mc_l_sm_r0c0q0n0",						"mc_l_sm_r0c0n0_nfwpf"}, // couldn't find
 			{"mc_l_sm_r0c0q0n0s0",						"mc_l_sm_r0c0n0_nfwpf"}, // couldn't find
 			{"mc_l_sm_r0c0q0n0s0p0",					"mc_l_sm_r0c0q0n0sd0p0_nfwpf"},
@@ -90,6 +103,9 @@ namespace ZoneTool
 			{"mc_l_sm_t0c0n0",							"mc_l_sm_t0c0n0_nfwpf_frt_aat"}, // could be wrong
 			{"mc_l_sm_t0c0n0_nocast",					"mc_l_sm_t0c0n0_nfwpf_frt_aat"}, // no nocast
 			{"mc_l_sm_t0c0n0s0",						"mc_l_sm_t0c0n0sd0_nfwpf"},
+			{"mc_l_sm_t0c0n0s0_nocast",					"mc_l_sm_t0c0n0sd0_nfwpf_nocast"},
+			{"mc_l_sm_t0c0n0s0p0",						"mc_l_sm_t0c0n0sd0p0_nfwpf"},
+			{"mc_l_sm_t0c0p0",							"mc_l_sm_t0c0_nfwpf"}, // couldn't find
 			{"mc_l_sm_t0c0q0n0s0",						"mc_l_sm_t0c0n0sd0_nfwpf"}, // couldn't find
 			{"mc_l_sm_t0c0q0n0s0p0",					"mc_l_sm_t0c0n0sd0p0_nfwpf"}, // couldn't find // mc_l_sm_t0c0d0n0sd0p0ct0_nfwpf
 			{"mc_l_sm_b0c0",							"mc_l_sm_lmpb_ndw_b0c0_nfwpf_frt_im_aat"},
@@ -119,6 +135,7 @@ namespace ZoneTool
 			{"mc_unlit_multiply_lin",					"mc_unlit_multiply_lin_ndw_nfwpf"},
 			{"mc_unlit_replace",						"mc_unlit_replace_lin_nfwpf"}, // couldn't find
 			{"mc_unlit_replace_lin",					"mc_unlit_replace_lin_nfwpf"},
+			{"mc_unlit_replace_lin_nofog",				"mc_unlit_replace_lin_nfwpf"}, // no nofog
 			{"mc_unlit_replace_lin_nocast",				"mc_unlit_replace_lin_nfwpf_nocast"},
 			{"mc_ambient_t0c0",							"mc_ambient_t0c0_nfwpf"},
 			{"mc_ambient_t0c0_nocast",					"mc_ambient_t0c0_nfwpf_nocast"},
@@ -129,13 +146,13 @@ namespace ZoneTool
 			{"mc_effect",								"mc_effect_blend_nofog_ndw"}, // couldn't find
 			{"mc_effect_add_nofog",						"mc_effect_blend_nofog_ndw"}, // couldn't find
 			{"mc_effect_blend_nofog",					"mc_effect_blend_nofog_ndw"},
-			{"mc_effect_falloff_add_nofog",				"mc_effect_blend_nofog_ndw"}, // coudln't find
-			{"mc_effect_falloff_add_lin_nofog",			"mc_effect_blend_nofog_ndw"}, // coudln't find
-			{"mc_effect_zfeather_falloff_add_nofog",	"mc_effect_zf_falloff_add_nofog_eo_ndw"}, // couldn't find
+			{"mc_effect_falloff_add_nofog",				"mc_effect_blend_nofog_ndw"}, // couldn't find
+			{"mc_effect_falloff_add_lin_nofog",			"mc_effect_blend_nofog_ndw"}, // couldn't find
+			{"mc_effect_zfeather_falloff_add_nofog",	"mc_effect_zf_add_nofog_ndw"}, // couldn't find
 			{"mc_effect_zfeather_falloff_add_nofog_eyeoffset", "mc_effect_zf_falloff_add_nofog_eo_ndw"},
-			{"mc_effect_zfeather_falloff_add_lin_nofog", "mc_effect_zf_add_nofog_ndw"}, // coudln't find
-			{"mc_effect_zfeather_falloff_add_lin_nofog_eyeoffset", "mc_effect_zf_falloff_add_nofog_eo_ndw"}, // coudln't find
-			{"mc_effect_zfeather_falloff_screen_nofog_eyeoffset", "mc_effect_zf_screen_nofog_spot_sm_ndw"}, // coudln't find
+			{"mc_effect_zfeather_falloff_add_lin_nofog", "mc_effect_zf_add_nofog_ndw"}, // couldn't find
+			{"mc_effect_zfeather_falloff_add_lin_nofog_eyeoffset", "mc_effect_zf_falloff_add_nofog_eo_ndw"}, // couldn't find
+			{"mc_effect_zfeather_falloff_screen_nofog_eyeoffset", "mc_effect_zf_screen_nofog_spot_sm_ndw"}, // couldn't find
 
 			//{"mc_tools",								"2d"}, // couldn't find
 
@@ -153,10 +170,15 @@ namespace ZoneTool
 			{"effect_blend",							"effect_blend_ndw"},
 			{"effect_blend_nofog",						"effect_blend_nofog_ndw"},
 			//{"effect_replace_lin",					"2d"}, // m_effect_replace_ndw
+			{"effect_falloff_add",						"effect_falloff_add_ndw"},
+			{"effect_falloff_add_nofog",				"effect_falloff_add_nofog_ndw"},
+			{"effect_falloff_blend",					"effect_falloff_blend_ndw"},
 			{"effect_zfeather",							"effect_zf_blend_ndw"}, // couldn't find
 			{"effect_zfeather_nofog",					"effect_zf_blend_nofog_ndw" }, // couldn't find
 			{"effect_zfeather_add",						"effect_zf_add_ndw"},
 			{"effect_zfeather_add_nofog",				"effect_zf_add_nofog_ndw"},
+			{"effect_zfeather_add_nofog_eyeoffset",		"effect_zf_add_nofog_eo_ndw"},
+			{"effect_zfeather_add_eyeoffset",			"effect_zf_add_eo_ndw"},
 			{"effect_zfeather_blend",					"effect_zf_blend_ndw"},
 			{"effect_zfeather_blend_nofog",				"effect_zf_blend_nofog_ndw"},
 			{"effect_zfeather_blend_spot_sm",			"effect_zf_blend_ndw"}, // couldn't find
@@ -168,8 +190,8 @@ namespace ZoneTool
 			{"effect_zfeather_falloff_add_nofog_eyeoffset", "effect_zf_falloff_add_nofog_eo_ndw"},
 			{"effect_zfeather_falloff_blend",			"effect_zf_falloff_blend_ndw"},
 			{"effect_zfeather_falloff_screen",			"effect_zf_falloff_screen_nofog_ndw"}, // closest i could find
-			{"effect_zfeather_add_nofog_eyeoffset",		"effect_zf_add_nofog_eo_ndw"},
 			{"effect_zfeather_outdoor_blend",			"effect_zf_outdoor_blend_ndw"},
+			{"effect_zfeather_screen",					"effect_zf_screen_ndw"},
 
 			{"particle_cloud",							"particle_cloud_replace_ga"}, // could be wrong
 			{"particle_cloud_add",						"particle_cloud_add_ga"},
@@ -182,6 +204,7 @@ namespace ZoneTool
 
 			{"splatter_alt",							"splatter_alt"},
 
+			{"tools",									"tools_r0c0ct0"}, // could be wrong
 			{"tools_b0c0",								"tools_b0c0ct0"}, // could be wrong
 		};
 
@@ -490,7 +513,7 @@ namespace ZoneTool
 				matdata["materialType"] = get_material_type_from_name(asset->name);
 				matdata["assetFlags"] = H1::MTL_ASSETFLAG_NONE;
 
-				if (asset->drawSurf.packed != 0)
+				/*if (asset->drawSurf.packed != 0)
 				{
 					matdata["drawSurf"]["objectId"] = static_cast<int>(asset->drawSurf.fields.objectId);
 					matdata["drawSurf"]["reflectionProbeIndex"] = static_cast<int>(asset->drawSurf.fields.reflectionProbeIndex);
@@ -504,7 +527,7 @@ namespace ZoneTool
 					matdata["drawSurf"]["viewModelRender"] = 0;
 					matdata["drawSurf"]["surfType"] = static_cast<int>(asset->drawSurf.fields.surfType); // convert
 					matdata["drawSurf"]["primarySortKey"] = matdata["sortKey"].get<int>(); // static_cast<int>(asset->drawSurf.fields.primarySortKey)
-				}
+				}*/
 
 				ordered_json constant_table;
 				for (int i = 0; i < asset->constantCount; i++)
@@ -607,7 +630,7 @@ namespace ZoneTool
 					}
 					else
 					{
-						if (asset->maps[i].image->name)
+						if (asset->maps[i].image && asset->maps[i].image->name)
 						{
 							image["image"] = asset->maps[i].image->name;
 						}

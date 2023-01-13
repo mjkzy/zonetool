@@ -286,13 +286,16 @@ namespace ZoneTool
 			case FX_ELEM_TYPE_SPOT_LIGHT:
 				// check
 				h1_elem->extended.spotLightDef = mem->Alloc<H1::FxSpotLightDef>();
-				h1_elem->extended.spotLightDef->fovInnerFraction = elem->extended.spotLightDef->fovInnerFraction;
-				h1_elem->extended.spotLightDef->startRadius = elem->extended.spotLightDef->startRadius;
-				h1_elem->extended.spotLightDef->endRadius = elem->extended.spotLightDef->endRadius;
-				h1_elem->extended.spotLightDef->brightness = elem->extended.spotLightDef->brightness;
-				h1_elem->extended.spotLightDef->maxLength = elem->extended.spotLightDef->maxLength;
-				h1_elem->extended.spotLightDef->exponent = elem->extended.spotLightDef->exponent;
-				// pad
+				if (elem->extended.spotLightDef)
+				{
+					h1_elem->extended.spotLightDef->fovInnerFraction = elem->extended.spotLightDef->fovInnerFraction;
+					h1_elem->extended.spotLightDef->startRadius = elem->extended.spotLightDef->startRadius;
+					h1_elem->extended.spotLightDef->endRadius = elem->extended.spotLightDef->endRadius;
+					h1_elem->extended.spotLightDef->brightness = elem->extended.spotLightDef->brightness;
+					h1_elem->extended.spotLightDef->maxLength = elem->extended.spotLightDef->maxLength;
+					h1_elem->extended.spotLightDef->exponent = elem->extended.spotLightDef->exponent;
+					// pad
+				}
 				break;
 			case FX_ELEM_TYPE_OMNI_LIGHT:
 				h1_elem->extended.omniLightDef = mem->Alloc<H1::FxOmniLightDef>();
