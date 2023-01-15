@@ -222,6 +222,7 @@ namespace ZoneTool
 						DUMPCASE(glass_map, IGlassWorld, GlassWorld);
 						DUMPCASE(map_ents, IMapEnts, MapEnts);
 						DUMPCASE(material, IMaterial, Material);
+						DUMPCASE(physpreset, IPhysPreset, PhysPreset);
 						DUMPCASE(rawfile, IRawFile, RawFile);
 						DUMPCASE(xmodel, IXModel, XModel);
 						DUMPCASE(xmodelsurfs, IXSurface, ModelSurface);

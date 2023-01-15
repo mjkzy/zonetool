@@ -921,6 +921,29 @@ namespace ZoneTool
 			char* name;
 		};
 
+		struct WaterWritable
+		{
+			float floatTime;
+		};
+
+		struct water_t
+		{
+			WaterWritable writable;
+			float* H0X;
+			float* H0Y;
+			float* wTerm;
+			int M;
+			int N;
+			float Lx;
+			float Lz;
+			float gravity;
+			float windvel;
+			float winddir[2];
+			float amplitude;
+			float codeConstant[4];
+			GfxImage* image;
+		};
+
 		struct MaterialImage
 		{
 			unsigned int typeHash; // asset hash of type
@@ -1294,6 +1317,14 @@ namespace ZoneTool
 			PhysGeomInfo* info;
 			char pad2[60];
 		};
+
+		enum PhysPresetScaling : __int32
+		{
+			PHYSPRESET_SCALING_LINEAR = 0x0,
+			PHYSPRESET_SCALING_QUADRATIC = 0x1,
+			PHYSPRESET_SCALING_COUNT = 0x2,
+		};
+
 #pragma pack(push, 4)
 		struct PhysPreset
 		{
@@ -1307,7 +1338,14 @@ namespace ZoneTool
 			const char* sndAliasPrefix;
 			float piecesSpreadFraction;
 			float piecesUpwardVelocity;
-			int unknowns[7];
+			float minMomentum;
+			float maxMomentum;
+			float minPitch;
+			float maxPitch;
+			PhysPresetScaling volumeType;
+			PhysPresetScaling pitchType;
+			bool tempDefaultToCylinder;
+			bool perSurfaceSndAlias;
 		};
 #pragma pack(pop)
 

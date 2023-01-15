@@ -83,23 +83,13 @@ namespace ZoneTool
 				out[1] = *reinterpret_cast<float*>(&val);
 			}
 
-			PackedUnitVec Vec3PackUnitVec(float* in) // h2 func
+			PackedUnitVec Vec3PackUnitVec(float* in) // h1 func
 			{
-				float v2; // xmm0_8
-				unsigned int v3; // ebx
-				float v4; // xmm0_8
-				int v5; // ebx
-				float v6; // xmm0_8
+				int result;
 
-				v2 = ((((fmaxf(-1.0f, fminf(1.0f, in[2])) + 1.0f) * 0.5f) * 1023.0f) + 0.5f);
-				v2 = floorf(v2);
-				v3 = ((int)v2 | 0xFFFFFC00) << 10;
-				v4 = ((((fmaxf(-1.0f, fminf(1.0f, in[1])) + 1.0f) * 0.5f) * 1023.0f) + 0.5f);
-				v4 = floorf(v4);
-				v5 = ((int)v4 | v3) << 10;
-				v6 = ((((fmaxf(-1.0f, fminf(1.0f, in[0])) + 1.0f) * 0.5f) * 1023.0f) + 0.5f);
-				v6 = floorf(v6);
-				return (PackedUnitVec)(v5 | (int)v6);
+				result = ((int)floor(((((fmaxf(-1.0f, fminf(1.0f, in[2])) + 1.0f) * 0.5f) * 1023.0f) + 0.5f)) | 0xFFFFFC00) << 10;
+				result = ((int)floor(((((fmaxf(-1.0f, fminf(1.0f, in[1])) + 1.0f) * 0.5f) * 1023.0f) + 0.5f)) | result) << 10;
+				return (PackedUnitVec)(result | (int)floor(((((fmaxf(-1.0f, fminf(1.0f, in[0])) + 1.0f) * 0.5f) * 1023.0f) + 0.5f)));
 			}
 
 			void Vec3UnpackUnitVec(const PackedUnitVec in, float* out) // t6 func
@@ -320,6 +310,12 @@ namespace ZoneTool
 				//float tangent_unpacked[3]{ 0 };
 				//PackedShit::Vec3UnpackUnitVec(asset->worldDraw.vd.vertices[i].tangent, tangent_unpacked);
 				h1_asset->draw.vd.vertices[i].tangent.packed = PackedShit::Vec3PackUnitVec(normal_unpacked).packed;
+
+				// correct color : bgra->rgba
+				h1_asset->draw.vd.vertices[i].color.array[0] = asset->worldDraw.vd.vertices[i].color.array[2];
+				h1_asset->draw.vd.vertices[i].color.array[1] = asset->worldDraw.vd.vertices[i].color.array[1];
+				h1_asset->draw.vd.vertices[i].color.array[2] = asset->worldDraw.vd.vertices[i].color.array[0];
+				h1_asset->draw.vd.vertices[i].color.array[3] = asset->worldDraw.vd.vertices[i].color.array[3];
 			}
 
 			h1_asset->draw.vertexLayerDataSize = asset->worldDraw.vertexLayerDataSize;
@@ -334,8 +330,8 @@ namespace ZoneTool
 			h1_asset->lightGrid.hasLightRegions = asset->lightGrid.hasLightRegions;
 			h1_asset->lightGrid.useSkyForLowZ = 0;
 			h1_asset->lightGrid.lastSunPrimaryLightIndex = asset->lightGrid.sunPrimaryLightIndex;
-			memcpy(&h1_asset->lightGrid.mins, &asset->lightGrid.mins, sizeof(short[3]));
-			memcpy(&h1_asset->lightGrid.maxs, &asset->lightGrid.maxs, sizeof(short[3]));
+			memcpy(h1_asset->lightGrid.mins, asset->lightGrid.mins, sizeof(short[3]));
+			memcpy(h1_asset->lightGrid.maxs, asset->lightGrid.maxs, sizeof(short[3]));
 			h1_asset->lightGrid.rowAxis = asset->lightGrid.rowAxis;
 			h1_asset->lightGrid.colAxis = asset->lightGrid.colAxis;
 			REINTERPRET_CAST_SAFE(h1_asset->lightGrid.rowDataStart, asset->lightGrid.rowDataStart);
@@ -355,8 +351,8 @@ namespace ZoneTool
 			for (unsigned int i = 0; i < h1_asset->lightGrid.colorCount; i++)
 			{
 				// colorVec3 -> colorVec6
-
-				memcpy(&h1_asset->lightGrid.colors[i].colorVec6[0], &asset->lightGrid.colors[i].rgb, sizeof(asset->lightGrid.colors[i]));
+				
+				memcpy(&h1_asset->lightGrid.colors[i].colorVec6, &asset->lightGrid.colors[i].rgb, sizeof(asset->lightGrid.colors[i]));
 			}
 
 			//h1_asset->lightGrid.__pad0; // unknown data in pad
@@ -431,10 +427,19 @@ namespace ZoneTool
 				h1_asset->models[i].mdaoVolumeIndex = -1;
 			}
 
+			h1_asset->mins1[0] = -6400.f;
+			h1_asset->mins1[1] = -10240.f;
+			h1_asset->mins1[2] = -512.f;
+			h1_asset->maxs1[0] = 6400.f;
+			h1_asset->maxs1[1] = 10240.f;
+			h1_asset->maxs1[2] = 2048.f;
 			//memcpy(h1_asset->mins1, asset->mins, sizeof(float[3])); // then what is this?
 			//memcpy(h1_asset->maxs1, asset->maxs, sizeof(float[3])); // ^^
 			memcpy(h1_asset->mins2, asset->mins, sizeof(float[3])); //h1_asset->mins2; // ? (i think this is the correct one)
 			memcpy(h1_asset->maxs2, asset->maxs, sizeof(float[3])); //h1_asset->maxs2; // ?
+
+			// bounds1 = ?
+			// bounds2 = shadowBounds;
 
 			h1_asset->checksum = asset->checksum;
 

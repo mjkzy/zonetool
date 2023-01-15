@@ -229,8 +229,8 @@ namespace ZoneTool
 			{4, 5},		// Clouds  NOT SURE
 			{5, 6},		// Horizon NOT SURE
 			{6, 7},		// Decal bottom 1
-			{7, 8},	// Decal bottom 2
-			{8, 9},	// Decal bottom 3
+			{7, 8},		// Decal bottom 2
+			{8, 9},		// Decal bottom 3
 			{9, 10},	// Decal static
 			{10, 11},	// Decal mid 1
 			{11, 12},	// Decal mid 2
@@ -248,12 +248,12 @@ namespace ZoneTool
 			//{23, },	// ?
 			{24, 26},	// Window inside
 			{25, 27},	// Window outside
-			//{26, 14},	// ?
-			//{27, },	// ?
-			//{28, },	// ?
-			{29, 29},	// Blend 1
-			{30, 29},	// Blend 2
-			{31, 29},	// Blend 3
+			{26, 28},	// Cloud 1
+			{27, 29},	// Cloud 2
+			{28, 30},	// Cloud 3
+			{29, 31},	// Blend 1
+			//{30, 32},	// Blend 2
+			//{31, 33},	// Blend 3
 			//{32, },	// ?
 			//{33, },	// ?
 			{34, 38},	// Cloud dust?
@@ -542,7 +542,15 @@ namespace ZoneTool
 					ordered_json image;
 					if (asset->maps[i].semantic == 11)
 					{
-						image["image"] = "default";
+						auto* water = reinterpret_cast<water_t*>(asset->maps[i].image);
+						if (water->image && water->image->name)
+						{
+							image["image"] = water->image->name;
+						}
+						else
+						{
+							image["image"] = "";
+						}
 						//image["waterinfo"] = nullptr;
 					}
 					else
@@ -557,7 +565,7 @@ namespace ZoneTool
 						}
 					}
 
-					image["semantic"] = asset->maps[i].semantic; // convert? ( should be the same )
+					image["semantic"] = asset->maps[i].semantic == 11 ? 2 : asset->maps[i].semantic; // convert? ( should be the same )
 					image["samplerState"] = asset->maps[i].sampleState; // convert? ( should be fine )
 					image["lastCharacter"] = asset->maps[i].secondLastCharacter;
 					image["firstCharacter"] = asset->maps[i].firstCharacter;

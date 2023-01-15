@@ -125,12 +125,36 @@ namespace ZoneTool
 			float array[4];
 		};
 
+		enum PhysPresetScaling : std::int32_t
+		{
+			PHYSPRESET_SCALING_LINEAR = 0x0,
+			PHYSPRESET_SCALING_QUADRATIC = 0x1,
+			PHYSPRESET_SCALING_COUNT = 0x2,
+		};
+
 		struct PhysPreset
 		{
 			const char* __ptr64 name;
-			char __pad0[32];
+			int type;
+			float mass;
+			float bounce;
+			float friction;
+			float bulletForceScale;
+			float explosiveForceScale;
+			char __pad0[8]; // something added before name and sndAlias
 			const char* __ptr64 sndAliasPrefix;
-			char __pad1[48];
+			float piecesSpreadFraction;
+			float piecesUpwardVelocity;
+			float minMomentum;
+			float maxMomentum;
+			float minVolume;
+			float maxVolume;
+			float minPitch;
+			float maxPitch;
+			PhysPresetScaling volumeType;
+			PhysPresetScaling pitchType;
+			bool tempDefaultToCylinder;
+			bool perSurfaceSndAlias;
 		}; assert_sizeof(PhysPreset, 0x60);
 		assert_offsetof(PhysPreset, sndAliasPrefix, 40);
 
@@ -5532,7 +5556,7 @@ namespace ZoneTool
 			snd_alias_list_t* __ptr64 damagedSound;
 			snd_alias_list_t* __ptr64 destroyedSound;
 			snd_alias_list_t* __ptr64 destroyedQuietSound;
-			char __pad[8];
+			float unk[2];
 			int numCrackRings;
 			bool isOpaque;
 		}; assert_sizeof(FxGlassDef, 120);
