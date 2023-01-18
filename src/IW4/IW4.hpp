@@ -12,7 +12,32 @@
 #include "Functions.hpp"
 #include "Structs.hpp"
 
+#include "H1/Utils/IO/filesystem.hpp"
+#include "H1/Utils/IO/assetmanager.hpp"
 #include "H1/Structs.hpp"
+
+using namespace zonetool;
+
+#include "Json.hpp"
+using json = nlohmann::json;
+using ordered_json = nlohmann::ordered_json;
+
+#include "Assets/ClipMap.hpp"
+#include "Assets/ComWorld.hpp"
+#include "Assets/FxEffectDef.hpp"
+#include "Assets/FxWorld.hpp"
+#include "Assets/GfxImage.hpp"
+#include "Assets/GfxLightDef.hpp"
+#include "Assets/GfxWorld.hpp"
+#include "Assets/GameWorldMp.hpp"
+#include "Assets/GameWorldSp.hpp"
+#include "Assets/MapEnts.hpp"
+#include "Assets/Material.hpp"
+#include "Assets/PhysPreset.hpp"
+#include "Assets/Rawfile.hpp"
+#include "Assets/XAnimParts.hpp"
+#include "Assets/XModel.hpp"
+#include "Assets/XSurface.hpp"
 
 namespace ZoneTool
 {
