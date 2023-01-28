@@ -141,7 +141,8 @@ namespace ZoneTool
 			float friction;
 			float bulletForceScale;
 			float explosiveForceScale;
-			char __pad0[8]; // something added before name and sndAlias
+			int unk1; // 0
+			int unk2; // 42001553
 			const char* __ptr64 sndAliasPrefix;
 			float piecesSpreadFraction;
 			float piecesUpwardVelocity;
