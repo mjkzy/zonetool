@@ -15,7 +15,7 @@ namespace ZoneTool
 			iw5_model->unk = 0;
 
 			// dump model
-			IW5::IXModel::dump(reinterpret_cast<IW5::XModel*>(asset), mem, SL_ConvertToString);
+			IW5::IXModel::dump(iw5_model, mem, SL_ConvertToString);
 		}
 	}
 }
