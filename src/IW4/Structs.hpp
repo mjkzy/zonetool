@@ -636,18 +636,10 @@ namespace ZoneTool
 			XSurfaceCollisionTree* collisionTree;
 		};
 
-		enum XSurfaceFlags : std::uint8_t
-		{
-			SURF_FLAG_VERTCOL_GREY = 0x8,
-			SURF_FLAG_VERTCOL_NONE = 0x10,
-			SURF_FLAG_QUANTIZED = 0x20,
-			SURF_FLAG_SKINNED = 0x40,
-		};
-
 		struct XSurface
 		{
 			char tileMode;
-			char flags;
+			char deformed;
 			unsigned short vertCount;
 			unsigned short triCount;
 			unsigned char streamHandle;
