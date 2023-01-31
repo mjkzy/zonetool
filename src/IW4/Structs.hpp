@@ -324,10 +324,10 @@ namespace ZoneTool
 		struct MaterialImage
 		{
 			unsigned int typeHash; // asset hash of type
-			char firstCharacter; // first character of image name
-			char secondLastCharacter; // second-last character of image name (maybe only in CoD4?!)
-			char sampleState;
-			char semantic;
+			unsigned char firstCharacter; // first character of image name
+			unsigned char secondLastCharacter; // second-last character of image name (maybe only in CoD4?!)
+			unsigned char sampleState;
+			unsigned char semantic;
 			GfxImage* image; // Image* actually
 		};
 
@@ -509,8 +509,8 @@ namespace ZoneTool
 		struct Material
 		{
 			const char* name; // 0
-			char gameFlags;
-			char sortKey;
+			unsigned char gameFlags;
+			unsigned char sortKey;
 			unsigned char animationX; // 6 // amount of animation frames in X
 			unsigned char animationY; // 7 // amount of animation frames in Y
 			unsigned int subRendererIndex; // 0x00 //+8

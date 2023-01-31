@@ -84,23 +84,12 @@ namespace ZoneTool
 				out[1] = *reinterpret_cast<float*>(&val);
 			}
 
-			PackedUnitVec Vec3PackUnitVec(float* in) // h2 func
+			PackedUnitVec Vec3PackUnitVec(float* in) // h1 func
 			{
-				float v2; // xmm0_8
-				unsigned int v3; // ebx
-				float v4; // xmm0_8
-				int v5; // ebx
-				float v6; // xmm0_8
-
-				v2 = ((((fmaxf(-1.0f, fminf(1.0f, in[2])) + 1.0f) * 0.5f) * 1023.0f) + 0.5f);
-				v2 = floorf(v2);
-				v3 = ((int)v2 | 0xFFFFFC00) << 10;
-				v4 = ((((fmaxf(-1.0f, fminf(1.0f, in[1])) + 1.0f) * 0.5f) * 1023.0f) + 0.5f);
-				v4 = floorf(v4);
-				v5 = ((int)v4 | v3) << 10;
-				v6 = ((((fmaxf(-1.0f, fminf(1.0f, in[0])) + 1.0f) * 0.5f) * 1023.0f) + 0.5f);
-				v6 = floorf(v6);
-				return (PackedUnitVec)(v5 | (int)v6);
+				int x = (int)floor(((fmaxf(-1.0f, fminf(1.0f, in[0])) + 1.0f) * 0.5f) * 1023.0f + 0.5f);
+				int y = (int)floor(((fmaxf(-1.0f, fminf(1.0f, in[1])) + 1.0f) * 0.5f) * 1023.0f + 0.5f);
+				int z = (int)floor(((fmaxf(-1.0f, fminf(1.0f, in[2])) + 1.0f) * 0.5f) * 1023.0f + 0.5f);
+				return (PackedUnitVec)((z << 20) | (y << 10) | x);
 			}
 
 			void Vec3UnpackUnitVec(const PackedUnitVec in, float* out) // t6 func
@@ -273,6 +262,12 @@ namespace ZoneTool
 				//float tangent_unpacked[3]{ 0 };
 				//PackedShit::Vec3UnpackUnitVec(asset->verticies[i].tangent, tangent_unpacked);
 				h1_asset->verts0.packedVerts0[i].tangent.packed = PackedShit::Vec3PackUnitVec(normal_unpacked).packed;
+
+				// correct color : bgra->rgba
+				h1_asset->verts0.packedVerts0[i].color.array[0] = asset->verts0[i].color.array[2];
+				h1_asset->verts0.packedVerts0[i].color.array[1] = asset->verts0[i].color.array[1];
+				h1_asset->verts0.packedVerts0[i].color.array[2] = asset->verts0[i].color.array[0];
+				h1_asset->verts0.packedVerts0[i].color.array[3] = asset->verts0[i].color.array[3];
 			}
 
 			// unknown

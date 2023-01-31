@@ -242,6 +242,25 @@ char**>(0x00799278)[type]);
 
 						ZONETOOL_INFO("Dumping additional asset \"%s\" because it is referenced by %s.", asset_name, currentDumpingZone.data());
 
+						if (ref.first == XAssetType::xmodel)
+						{
+							auto* xmodel = reinterpret_cast<XModel*>(ref_asset);
+							for (auto i = 0; i < xmodel->numSurfaces; i++)
+							{
+								XAsset material_asset;
+								material_asset.type = XAssetType::material;
+								material_asset.ptr.material = xmodel->materials[i];
+								DB_AddXAsset(material_asset.type, material_asset.ptr);
+							}
+							for (auto i = 0; i < xmodel->numLods; i++)
+							{
+								XAsset surface_asset;
+								surface_asset.type = XAssetType::xmodelsurfs;
+								surface_asset.ptr.xsurface = xmodel->lods[i].surfaces;
+								DB_AddXAsset(surface_asset.type, surface_asset.ptr);
+							}
+						}
+
 						XAssetHeader header;
 						header.data = ref_asset;
 						
