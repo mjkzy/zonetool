@@ -35,6 +35,7 @@ using namespace zonetool;
 #include "Assets/PhysWorld.hpp"
 #include "Assets/RawFile.hpp"
 #include "Assets/Sound.hpp"
+#include "Assets/SoundCurve.hpp"
 #include "Assets/XAnimParts.hpp"
 #include "Assets/XModel.hpp"
 #include "Assets/XSurface.hpp"

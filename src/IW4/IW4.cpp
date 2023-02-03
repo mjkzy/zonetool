@@ -305,6 +305,9 @@ char**>(0x00799278)[type]);
 						DECLARE_ASSET(fx, IFxEffectDef);
 						DECLARE_ASSET(game_map_mp, IGameWorldMp);
 						DECLARE_ASSET(physpreset, IPhysPreset);
+						DECLARE_ASSET(sound, ISound);
+						DECLARE_ASSET(sndcurve, ISoundCurve);
+						DECLARE_ASSET(loaded_sound, ILoadedSound);
 					}
 					catch (std::exception& ex)
 					{
