@@ -81,6 +81,12 @@ namespace ZoneTool
 			float data[N];
 		};
 
+		struct Bounds
+		{
+			vec3_t midPoint;
+			vec3_t halfSize;
+		};
+
 		// Localized Strings
 		struct LocalizeEntry
 		{
@@ -1273,59 +1279,72 @@ namespace ZoneTool
 		{
 			float normal[3];
 			float dist;
-			char type;
-			char pad[3];
-		};
-
-		struct cplane_t
-		{
-			char pad[20];
+			unsigned char type;
+			unsigned char pad[3];
 		};
 
 		struct cbrushside_t
 		{
 			cplane_s* plane;
-			unsigned __int16 materialNum;
-			char firstAdjacentSideOffset;
-			char edgeCount;
+			unsigned short materialNum;
+			unsigned char firstAdjacentSideOffset;
+			unsigned char edgeCount;
+		};
+
+		struct cbrushWrapper_t
+		{
+			unsigned short numsides;
+			unsigned short glassPieceIndex;
+			cbrushside_t* sides;
+			unsigned char* baseAdjacentSide;
+			short axialMaterialNum[2][3];
+			unsigned char firstAdjacentSideOffsets[2][3];
+			unsigned char edgeCount[2][3];
 		};
 
 		struct BrushWrapper
 		{
-			float mins[3];
-			float maxs[3];
-			unsigned int numPlaneSide;
-			cbrushside_t* side;
-			char* edge;
-			__int16 axialMaterialNum[2][3];
-			__int16 firstAdjacentSideOffsets[2][3];
-			int numEdge;
-			cplane_s* plane;
+			Bounds bounds;
+			cbrushWrapper_t brush;
+			int totalEdgeCount;
+			cplane_s* planes;
 		};
 
-		//struct BrushWrapper
-		//{
-		//	char pad[24]; // 24
-		//	short numPlaneSide; // 2
-		//	short pad2; // 2
-		//	cbrushside_t* side; // 4
-		//	char* edge; // 4
-		//	char pad3[24]; // 24
-		//	int numEdge; // 4
-		//	cplane_s* plane; // 4
-		//}; // 68 bytes total
+		enum PhysicsGeomType
+		{
+			PHYS_GEOM_NONE = 0x0,
+			PHYS_GEOM_BOX = 0x1,
+			PHYS_GEOM_BRUSHMODEL = 0x2,
+			PHYS_GEOM_BRUSH = 0x3,
+			PHYS_GEOM_COLLMAP = 0x4,
+			PHYS_GEOM_CYLINDER = 0x5,
+			PHYS_GEOM_CAPSULE = 0x6,
+			PHYS_GEOM_GLASS = 0x7,
+			PHYS_GEOM_COUNT = 0x8
+		};
+
 		struct PhysGeomInfo
 		{
-			BrushWrapper* brush;
-			char pad[64];
+			BrushWrapper* brushWrapper;
+			PhysicsGeomType type;
+			float orientation[3][3];
+			Bounds bounds;
+		};
+
+		struct PhysMass
+		{
+			float centerOfMass[3];
+			float momentsOfInertia[3];
+			float productsOfInertia[3];
 		};
 
 		struct PhysCollmap
 		{
-			char* name;
-			int numInfo;
-			PhysGeomInfo* info;
-			char pad2[60];
+			const char* name;
+			unsigned int count;
+			PhysGeomInfo* geoms;
+			PhysMass mass;
+			Bounds bounds;
 		};
 
 		enum PhysPresetScaling : __int32
@@ -1381,12 +1400,6 @@ namespace ZoneTool
 			float quat[4];
 			float trans[3];
 			float transWeight;
-		};
-
-		struct Bounds
-		{
-			vec3_t midPoint;
-			vec3_t halfSize;
 		};
 
 		struct XModel
@@ -2682,14 +2695,6 @@ namespace ZoneTool
 		{
 			float quat[4];
 			float origin[3];
-		};
-
-		struct PhysMass
-		{
-			float centerOfMass[3];
-			float momentsOfInertia[3];
-			float productsOfInertia[3];
-			// int contents;
 		};
 
 		struct DynEntityHingeDef

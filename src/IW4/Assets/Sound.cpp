@@ -98,7 +98,7 @@ namespace ZoneTool
 				memcpy(&current_iw5->probability, &current_iw4->probability, 36);
 			}
 
-			IW5::ISound::dump(iw5_asset, mem);
+			IW5::ISound::dump(iw5_asset, mem, filesystem_read_big_file);
 		}
 	}
 }

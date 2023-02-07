@@ -161,7 +161,7 @@ namespace ZoneTool
 			H1::SoundVolMod::SND_VOLMOD_DEFAULT,	//SND_VOLMOD_DEFAULT,
 		};
 
-		void GenerateH1SoundAlias(snd_alias_t* alias, H1::snd_alias_t* h1_alias, ZoneMemory* mem)
+		void GenerateH1SoundAlias(snd_alias_t* alias, H1::snd_alias_t* h1_alias, ZoneMemory* mem, const std::function<std::string(const char* filename)>& get_streamed_sound_data)
 		{
 			h1_alias->aliasName = alias->aliasName;
 			h1_alias->subtitle = alias->subtitle;
@@ -195,6 +195,29 @@ namespace ZoneTool
 				const auto path = std::filesystem::path(s_dir + "/" + s_name);
 
 				std::string noext_path = remove_extension(path.string());
+
+				const auto is_mp3 = path.string().find(".mp3") != std::string::npos;
+				//ZONETOOL_INFO("SAT_STREAMED->SAT_LOADED (%s)", alias->aliasName/*, path.string().data()*/);
+
+				if (!is_mp3)
+				{
+					const auto dest_path = va("loaded_sound/%s", path.string().data());
+					const auto internal_path = va("sound/%s", path.string().data());
+
+					auto data = get_streamed_sound_data(internal_path.data());
+
+					if (data.size())
+					{
+						filesystem::file dest_file(dest_path);
+						dest_file.open("wb");
+						dest_file.write(data.data(), data.size(), 1);
+						dest_file.close();
+					}
+				}
+				else
+				{
+					ZONETOOL_INFO("manual convertion needed for file: %s\n", path.string().data());
+				}
 
 				h1_alias->soundFile->u.loadSnd = mem->Alloc<H1::LoadedSound>();
 				h1_alias->soundFile->u.loadSnd->name = mem->StrDup(noext_path);
@@ -359,7 +382,7 @@ namespace ZoneTool
 			h1_alias->dspBusIndex = channel_to_dspbus_index[iw5_flags.channel];
 		}
 
-		H1::snd_alias_list_t* GenerateH1Sound(snd_alias_list_t* asset, ZoneMemory* mem)
+		H1::snd_alias_list_t* GenerateH1Sound(snd_alias_list_t* asset, ZoneMemory* mem, const std::function<std::string(const char* filename)>& get_streamed_sound_data)
 		{
 			auto* h1_asset = mem->Alloc<H1::snd_alias_list_t>();
 			h1_asset->aliasName = asset->aliasName;
@@ -368,7 +391,7 @@ namespace ZoneTool
 			h1_asset->head = mem->Alloc<H1::snd_alias_t>(h1_asset->count);
 			for (unsigned char i = 0; i < h1_asset->count; i++)
 			{
-				GenerateH1SoundAlias(&asset->head[i], &h1_asset->head[i], mem);
+				GenerateH1SoundAlias(&asset->head[i], &h1_asset->head[i], mem, get_streamed_sound_data);
 			}
 
 			h1_asset->contextList = nullptr;
@@ -377,10 +400,10 @@ namespace ZoneTool
 			return h1_asset;
 		}
 
-		void ISound::dump(snd_alias_list_t* asset, ZoneMemory* mem)
+		void ISound::dump(snd_alias_list_t* asset, ZoneMemory* mem, const std::function<std::string(const char* filename)>& get_streamed_sound_data)
 		{
 			// generate h1 asset
-			auto* h1_asset = GenerateH1Sound(asset, mem);
+			auto* h1_asset = GenerateH1Sound(asset, mem, get_streamed_sound_data);
 
 			// dump lightdef
 			H1::ISound::dump(h1_asset);

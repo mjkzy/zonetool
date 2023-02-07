@@ -596,6 +596,41 @@ char**>(0x00799278)[type]);
 			}
 		}
 
+		FS_FOpenFileReadForThread_t FS_FOpenFileReadForThread = FS_FOpenFileReadForThread_t(0x643270);
+		FS_FCloseFile_t FS_FCloseFile = FS_FCloseFile_t(0x462000);
+		FS_Read_t FS_Read = FS_Read_t(0x4A04C0);
+
+		std::string filesystem_read_big_file(const char* filename)
+		{
+			std::string file_buffer{};
+
+			int handle = -1;
+			FS_FOpenFileReadForThread(filename, &handle, 2);
+
+			if (handle > 0)
+			{
+				constexpr unsigned int BUFF_SIZE = 1024;
+
+				while (true)
+				{
+					char buffer[BUFF_SIZE];
+					auto size_read = FS_Read(buffer, BUFF_SIZE, handle);
+
+					file_buffer.append(buffer, size_read);
+
+					if (size_read < BUFF_SIZE)
+					{
+						// We're done!
+						break;
+					}
+				}
+
+				FS_FCloseFile(handle);
+			}
+
+			return file_buffer;
+		}
+
 		void Linker::startup()
 		{
 			if (this->is_used())

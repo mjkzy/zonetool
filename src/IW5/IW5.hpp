@@ -47,6 +47,11 @@ namespace ZoneTool
 {
 	namespace IW5
 	{
+		typedef int (*FS_Read_t)(void* buffer, int len, int handle);
+		extern FS_Read_t FS_Read;
+
+		extern std::string filesystem_read_big_file(const char* filename);
+
 		class Linker : public ILinker
 		{
 		private:

@@ -46,6 +46,17 @@ namespace ZoneTool
 {
 	namespace IW4
 	{
+		typedef int(*FS_FOpenFileReadForThread_t)(const char* filename, int* file, int thread);
+		extern FS_FOpenFileReadForThread_t FS_FOpenFileReadForThread;
+
+		typedef int(*FS_FCloseFile_t)(int stream);
+		extern FS_FCloseFile_t FS_FCloseFile;
+
+		typedef int (*FS_Read_t)(void* buffer, int len, int handle);
+		extern FS_Read_t FS_Read;
+
+		extern std::string filesystem_read_big_file(const char* filename);
+
 		class Linker : public ILinker
 		{
 		public:
