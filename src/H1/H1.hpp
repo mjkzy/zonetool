@@ -39,6 +39,10 @@ using namespace zonetool;
 #include "Assets/XAnimParts.hpp"
 #include "Assets/XModel.hpp"
 #include "Assets/XSurface.hpp"
+#include "Assets/Techset.hpp"
+#include "Assets/PixelShader.hpp"
+#include "Assets/VertexShader.hpp"
+#include "Assets/VertexDecl.hpp"
 
 namespace ZoneTool
 {
