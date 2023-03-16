@@ -1,12 +1,6 @@
 #include "stdafx.hpp"
 #include "H1/Assets/GfxImage.hpp"
 
-#pragma warning( push )
-#pragma warning( disable : 4459 )
-#include <DirectXTex.h>
-#pragma warning( pop )
-
-
 namespace ZoneTool
 {
 	namespace directx1
