@@ -386,7 +386,7 @@ namespace ZoneTool
 				memset(h1_asset->noScalePartBits, 0, sizeof(unsigned int[8]));
 
 				h1_asset->boneNames = allocator.allocate<H1::scr_string_t>(asset->numBones);
-				for (auto i = 0; i < asset->numBones; i++)
+				for (auto i = 0u; i < asset->numBones; i++)
 				{
 					h1_asset->boneNames[i] = static_cast<H1::scr_string_t>(asset->boneNames[i]);
 				}
@@ -401,7 +401,7 @@ namespace ZoneTool
 				h1_asset->reactiveMotionTweaks = nullptr;
 
 				h1_asset->materialHandles = allocator.allocate<H1::Material* __ptr64>(asset->numSurfaces);
-				for (auto i = 0; i < asset->numSurfaces; i++)
+				for (auto i = 0u; i < asset->numSurfaces; i++)
 				{
 					if (asset->materials[i])
 					{
@@ -414,7 +414,6 @@ namespace ZoneTool
 				{
 					h1_asset->lodInfo[i].dist = 1000000.0f;
 				}
-
 
 				for (auto i = 0; i < asset->numLods; i++)
 				{
@@ -453,7 +452,7 @@ namespace ZoneTool
 				h1_asset->contents = asset->contents;
 
 				h1_asset->boneInfo = allocator.allocate<H1::XBoneInfo>(asset->numBones);
-				for (char i = 0; i < asset->numBones; ++i)
+				for (auto i = 0u; i < asset->numBones; ++i)
 				{
 					auto* target = &h1_asset->boneInfo[i];
 					auto* source = &asset->boneInfo[i];
