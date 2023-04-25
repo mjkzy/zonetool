@@ -2796,17 +2796,17 @@ namespace ZoneTool
 		{
 			int numCPlanes;
 			cplane_s* cPlanes;
-			int numMaterials;
+			unsigned int numMaterials;
 			dmaterial_t* materials;
-			int numCBrushSides;
+			unsigned int numCBrushSides;
 			cbrushside_t* cBrushSides;
-			int numCBrushEdges;
+			unsigned int numCBrushEdges;
 			cbrushedge_t* cBrushEdges;
-			int numCLeafBrushNodes;
+			unsigned int numCLeafBrushNodes;
 			cLeafBrushNode_s* cLeafBrushNodes; // cmodels use this?
-			int numLeafBrushes;
-			short* leafBrushes;
-			short numBrushes;
+			unsigned int numLeafBrushes;
+			unsigned short* leafBrushes;
+			unsigned short numBrushes;
 			cbrush_t* brushes;
 			Bounds* brushBounds;
 			int* brushContents;
@@ -2869,33 +2869,33 @@ namespace ZoneTool
 			char pad1[3];
 			ClipInfo info;
 			ClipInfo* pInfo;
-			int numStaticModels;
+			unsigned int numStaticModels;
 			cStaticModel_s* staticModelList;
-			int numCNodes;
+			unsigned int numCNodes;
 			cNode_t* cNodes;
-			int numCLeaf;
+			unsigned int numCLeaf;
 			cLeaf_t* cLeaf;
-			int numVerts;
+			unsigned int numVerts;
 			VecInternal<3>* verts;
 			int numTriIndices;
-			short* triIndices;
-			char* triEdgeIsWalkable; //Size = ((triCount << 1) + triCount + 0x1F) >> 3 << 2
+			unsigned short* triIndices;
+			unsigned char* triEdgeIsWalkable; //Size = ((triCount << 1) + triCount + 0x1F) >> 3 << 2
 			int numCollisionBorders;
 			CollisionBorder* collisionBorders;
 			int numCollisionPartitions;
 			CollisionPartition* collisionPartitions;
 			int numCollisionAABBTrees;
 			CollisionAabbTree* collisionAABBTrees;
-			int numCModels;
+			unsigned int numCModels;
 			cmodel_t* cModels;
 			MapEnts* mapEnts;
 			Stage* stages;
 			unsigned char stageCount;
 			char pad2[3];
 			MapTriggers trigger;
-			short smodelNodeCount;
+			unsigned short smodelNodeCount;
 			SModelAabbNode* smodelNodes;
-			unsigned __int16 dynEntCount[2];
+			unsigned short dynEntCount[2];
 			DynEntityDef* dynEntDefList[2];
 			DynEntityPose* dynEntPoseList[2];
 			DynEntityClient* dynEntClientList[2];

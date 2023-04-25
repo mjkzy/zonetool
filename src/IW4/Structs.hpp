@@ -4127,44 +4127,44 @@ namespace ZoneTool
 			int isInUse; // 4
 			int numCPlanes; // +8
 			cplane_s* cPlanes; // sizeof 20, +12
-			int numStaticModels; // +16
+			unsigned int numStaticModels; // +16
 			cStaticModel_s* staticModelList; // sizeof 76, +20
-			int numMaterials; // +24
+			unsigned int numMaterials; // +24
 			dmaterial_t* materials; // sizeof 12 with a string (possibly name?), +28
-			int numCBrushSides; // +32
+			unsigned int numCBrushSides; // +32
 			cbrushside_t* cBrushSides; // sizeof 8, +36
-			int numCBrushEdges; // +40			NOT USED IN T5
+			unsigned int numCBrushEdges; // +40			NOT USED IN T5
 			cbrushedge_t* cBrushEdges; // +44			NOT USED IN T5
-			int numCNodes; // +48
+			unsigned int numCNodes; // +48
 			cNode_t* cNodes; // sizeof 8, +52
-			int numCLeaf; // +56
+			unsigned int numCLeaf; // +56
 			cLeaf_t* cLeaf; // +60
-			int numCLeafBrushNodes; // +64
+			unsigned int numCLeafBrushNodes; // +64
 			cLeafBrushNode_s* cLeafBrushNodes; // +68
-			int numLeafBrushes; // +72
-			short* leafBrushes; // +76
-			int numLeafSurfaces; // +80
-			int* leafSurfaces; // +84
-			int numVerts; // +88
+			unsigned int numLeafBrushes; // +72
+			unsigned short* leafBrushes; // +76
+			unsigned int numLeafSurfaces; // +80
+			unsigned int* leafSurfaces; // +84
+			unsigned int numVerts; // +88
 			VecInternal<3>* verts; // +92
 			int numTriIndices; // +96
-			short* triIndices; // +100
-			char* triEdgeIsWalkable; // +104
+			unsigned short* triIndices; // +100
+			unsigned char* triEdgeIsWalkable; // +104
 			int numCollisionBorders; // +108
 			CollisionBorder* collisionBorders; // sizeof 28, +112
 			int numCollisionPartitions; // +116
 			CollisionPartition* collisionPartitions; // sizeof 12, +120
 			int numCollisionAABBTrees; // +124
 			CollisionAabbTree* collisionAABBTrees; // sizeof 32, +128
-			int numCModels; // +132
+			unsigned int numCModels; // +132
 			cmodel_t* cModels; // sizeof 68, +136
-			short numBrushes; // +140
+			unsigned short numBrushes; // +140
 			short pad2; // +142
 			cbrush_t* brushes; // sizeof 36, +144
 			Bounds* brushBounds; // same count as cBrushes, +148
 			int* brushContents; // same count as cBrushes, +152
 			MapEnts* mapEnts; // +156
-			short smodelNodeCount; // +160
+			unsigned short smodelNodeCount; // +160
 			short pad3;
 			SModelAabbNode* smodelNodes; // +164
 			unsigned __int16 dynEntCount[2];

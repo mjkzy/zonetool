@@ -47,7 +47,7 @@ namespace ZoneTool
 			{20, 22},	// Water Ocean?
 			//{21, },	// ?
 			//{22, },	// ?
-			//{23, },	// ?
+			//{23, 25},	// ? (mc/mtl_codo_screen_graphic1)
 			{24, 26},	// Window inside
 			{25, 27},	// Window outside
 			{26, 28},	// Cloud 1
