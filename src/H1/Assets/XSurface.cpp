@@ -10,24 +10,26 @@ namespace ZoneTool
 			{
 				dumper.dump_single(surf->subdiv);
 
-				auto* levels = surf->subdiv->levels;
-				auto level_count = surf->subdivLevelCount;
-
-				dumper.dump_array(levels, level_count);
-				for (unsigned char level_index = 0; level_index < level_count; level_index++)
+				if (surf->subdiv->levels)
 				{
-					auto* level = &levels[level_index];
+					dumper.dump_array(surf->subdiv->levels, surf->subdivLevelCount);
+					auto* levels = surf->subdiv->levels;
+					auto level_count = surf->subdivLevelCount;
+					for (unsigned char level_index = 0; level_index < level_count; level_index++)
+					{
+						auto* level = &levels[level_index];
 
-					dumper.dump_array(level->rigidVertLists, surf->rigidVertListCount);
-					dumper.dump_array(level->faceIndices, level->faceCount);
-					dumper.dump_array(level->regularPatchIndices, level->regularPatchCount);
-					dumper.dump_array(level->regularPatchFlags, level->regularPatchCount);
-					dumper.dump_array(level->facePoints, level->facePointBufferSize & 0xFFFFFFFC);
-					dumper.dump_array(level->edgePoints, level->edgePointCount);
-					dumper.dump_array(level->vertexPoints, level->vertexPointBufferSize & 0xFFFFFFFC);
-					dumper.dump_array(level->normals, level->normalBufferSize & 0xFFFFFFFC);
-					dumper.dump_array(level->transitionPoints, level->transitionPointCount);
-					dumper.dump_array(level->regularPatchCones, level->regularPatchCount);
+						dumper.dump_raw(level->rigidVertLists, 16 * surf->rigidVertListCount);
+						dumper.dump_raw(level->faceIndices, 12 * level->faceCount);
+						dumper.dump_raw(level->regularPatchIndices, 32 * level->regularPatchCount);
+						dumper.dump_raw(level->regularPatchFlags, 4 * level->regularPatchCount);
+						dumper.dump_raw(level->facePoints, level->facePointBufferSize & 0xFFFFFFFC);
+						dumper.dump_raw(level->edgePoints, 8 * level->edgePointCount);
+						dumper.dump_raw(level->vertexPoints, level->vertexPointBufferSize & 0xFFFFFFFC);
+						dumper.dump_raw(level->normals, level->normalBufferSize & 0xFFFFFFFC);
+						dumper.dump_raw(level->transitionPoints, 4 * level->transitionPointCount);
+						dumper.dump_raw(level->regularPatchCones, 32 * level->regularPatchCount);
+					}
 				}
 			}
 		}
