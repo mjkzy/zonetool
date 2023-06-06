@@ -486,8 +486,6 @@ namespace ZoneTool
 			return physmap;
 		}
 
-		
-
 		void IClipMap::dump(clipMap_t* asset, ZoneMemory* mem)
 		{
 			// generate h1 clipmap

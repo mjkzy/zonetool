@@ -29,41 +29,6 @@ namespace ZoneTool
 
 			PackedTexCoords Vec2PackTexCoords(float* in)
 			{
-				/*int v2; // eax
-				int v3; // esi
-				int v4; // eax
-				int v5; // ecx
-				PackedTexCoords result; // eax
-				int v7; // [esp+8h] [ebp+8h]
-				int v8; // [esp+8h] [ebp+8h]
-
-				v7 = LODWORD(in[0]);
-				v2 = (int)((2 * v7) ^ 0x80003FFF) >> 14;
-				if (v2 < 0x3FFF)
-				{
-					if (v2 <= -16384)
-						LOWORD(v2) = -16384;
-				}
-				else
-				{
-					LOWORD(v2) = 0x3FFF;
-				}
-				v3 = (v7 >> 16) & 0xC000 | v2 & 0x3FFF;
-				v8 = LODWORD(in[1]);
-				v4 = (int)((2 * v8) ^ 0x80003FFF) >> 14;
-				v5 = (v8 >> 16) & 0xC000;
-				if (v4 < 0x3FFF)
-				{
-					if (v4 <= -16384)
-						LOWORD(v4) = -16384;
-					result.packed = v3 + ((v5 | v4 & 0x3FFF) << 16);
-				}
-				else
-				{
-					result.packed = v3 + ((v5 | 0x3FFF) << 16);
-				}
-				return result;*/
-
 				__m128 xmm0 = _mm_loadu_ps(in);
 				__m128i xmmi0 = _mm_cvtps_ph(xmm0, 3);
 				uint32_t result = _mm_cvtsi128_si32(xmmi0);

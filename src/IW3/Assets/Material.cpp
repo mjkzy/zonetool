@@ -314,22 +314,6 @@ namespace ZoneTool
 				matdata["materialType"] = get_material_type_from_name(asset->name);
 				matdata["assetFlags"] = H1::MTL_ASSETFLAG_NONE;
 
-				/*if (asset->drawSurf.packed != 0)
-				{
-					matdata["drawSurf"]["objectId"] = static_cast<int>(asset->drawSurf.fields.objectId);
-					matdata["drawSurf"]["reflectionProbeIndex"] = static_cast<int>(asset->drawSurf.fields.reflectionProbeIndex);
-					matdata["drawSurf"]["hasGfxEntIndex"] = 0;
-					matdata["drawSurf"]["customIndex"] = static_cast<int>(asset->drawSurf.fields.customIndex);
-					matdata["drawSurf"]["materialSortedIndex"] = static_cast<int>(asset->drawSurf.fields.materialSortedIndex);
-					matdata["drawSurf"]["tessellation"] = 0;
-					matdata["drawSurf"]["prepass"] = static_cast<int>(asset->drawSurf.fields.prepass);
-					matdata["drawSurf"]["useHeroLighting"] = 0;
-					matdata["drawSurf"]["sceneLightEnvIndex"] = static_cast<int>(asset->drawSurf.fields.primaryLightIndex);
-					matdata["drawSurf"]["viewModelRender"] = 0;
-					matdata["drawSurf"]["surfType"] = static_cast<int>(asset->drawSurf.fields.surfType); // convert
-					matdata["drawSurf"]["primarySortKey"] = matdata["sortKey"].get<int>(); // static_cast<int>(asset->drawSurf.fields.primarySortKey)
-				}*/
-
 				ordered_json constant_table;
 				for (int i = 0; i < asset->constantCount; i++)
 				{

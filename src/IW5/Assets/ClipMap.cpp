@@ -336,6 +336,7 @@ namespace ZoneTool
 			return h1_asset;
 		}
 
+#if 0
 		H1::PhysWorld* generate_physics_world(H1::clipMap_t* col_map, allocator& allocator)
 		{
 			// TODO: 
@@ -623,6 +624,37 @@ namespace ZoneTool
 
 			return phys_col_map;
 		}
+#else
+		H1::PhysWorld* generate_physics_world(H1::clipMap_t* asset, allocator& allocator)
+		{
+			const auto mem = &allocator;
+
+			auto* physmap = mem->allocate<H1::PhysWorld>();
+			physmap->name = asset->name;
+
+			physmap->brushModelCount = asset->numSubModels;
+			physmap->brushModels = mem->allocate<H1::PhysBrushModel>(physmap->brushModelCount);
+			for (unsigned int i = 0; i < physmap->brushModelCount; i++)
+			{
+				physmap->brushModels[i].fields.polytopeIndex = -1;
+				physmap->brushModels[i].fields.unk = -1;
+				physmap->brushModels[i].fields.worldIndex = 0;
+				physmap->brushModels[i].fields.meshIndex = -1;
+			}
+
+			physmap->polytopeCount = 0;
+			physmap->polytopeDatas = nullptr;
+
+			// todo: mesh data
+			physmap->meshDataCount = 0;
+			physmap->meshDatas = nullptr;
+
+			physmap->waterVolumeDefCount = 0;
+			physmap->waterVolumeDefs = nullptr;
+
+			return physmap;
+		}
+#endif
 
 		void IClipMap::dump(clipMap_t* asset, ZoneMemory* mem)
 		{

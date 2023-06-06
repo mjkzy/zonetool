@@ -26,42 +26,12 @@ namespace ZoneTool
 #define BYTE1(x)   BYTEn(x,  1)         // byte 1 (counting from 0)
 #define BYTE2(x)   BYTEn(x,  2)
 
-			PackedTexCoords Vec2PackTexCoords(float* in) // iw5 func
+			PackedTexCoords Vec2PackTexCoords(float* in)
 			{
-				int v2; // eax
-				int v3; // esi
-				int v4; // eax
-				int v5; // ecx
-				PackedTexCoords result; // eax
-				int v7; // [esp+8h] [ebp+8h]
-				int v8; // [esp+8h] [ebp+8h]
-
-				v7 = LODWORD(in[0]);
-				v2 = (int)((2 * v7) ^ 0x80003FFF) >> 14;
-				if (v2 < 0x3FFF)
-				{
-					if (v2 <= -16384)
-						LOWORD(v2) = -16384;
-				}
-				else
-				{
-					LOWORD(v2) = 0x3FFF;
-				}
-				v3 = (v7 >> 16) & 0xC000 | v2 & 0x3FFF;
-				v8 = LODWORD(in[1]);
-				v4 = (int)((2 * v8) ^ 0x80003FFF) >> 14;
-				v5 = (v8 >> 16) & 0xC000;
-				if (v4 < 0x3FFF)
-				{
-					if (v4 <= -16384)
-						LOWORD(v4) = -16384;
-					result.packed = v3 + ((v5 | v4 & 0x3FFF) << 16);
-				}
-				else
-				{
-					result.packed = v3 + ((v5 | 0x3FFF) << 16);
-				}
-				return result;
+				__m128 xmm0 = _mm_loadu_ps(in);
+				__m128i xmmi0 = _mm_cvtps_ph(xmm0, 3);
+				uint32_t result = _mm_cvtsi128_si32(xmmi0);
+				return { result };
 			}
 
 			void Vec2UnpackTexCoords(const PackedTexCoords in, float* out) // iw5 func
@@ -86,10 +56,25 @@ namespace ZoneTool
 
 			PackedUnitVec Vec3PackUnitVec(float* in) // h1 func
 			{
-				int x = (int)floor(((fmaxf(-1.0f, fminf(1.0f, in[0])) + 1.0f) * 0.5f) * 1023.0f + 0.5f);
-				int y = (int)floor(((fmaxf(-1.0f, fminf(1.0f, in[1])) + 1.0f) * 0.5f) * 1023.0f + 0.5f);
-				int z = (int)floor(((fmaxf(-1.0f, fminf(1.0f, in[2])) + 1.0f) * 0.5f) * 1023.0f + 0.5f);
-				return (PackedUnitVec)((z << 20) | (y << 10) | x);
+				unsigned int bits;
+
+				bits = ((unsigned int)floor(((((fmaxf(-1.0f, fminf(1.0f, in[2])) + 1.0f) * 0.5f) * 1023.0f) + 0.5f)) | 0xFFFFFC00) << 10;
+				bits = ((unsigned int)floor(((((fmaxf(-1.0f, fminf(1.0f, in[1])) + 1.0f) * 0.5f) * 1023.0f) + 0.5f)) | bits) << 10;
+				bits = ((unsigned int)floor(((((fmaxf(-1.0f, fminf(1.0f, in[0])) + 1.0f) * 0.5f) * 1023.0f) + 0.5f)) | bits);
+
+				return { bits };
+			}
+
+			PackedUnitVec Vec3PackUnitVecWithAlpha(float* in, float alpha) // h1 func
+			{
+				unsigned int bits;
+
+				bits = ((unsigned int)floor(((((fmaxf(-1.0f, fminf(1.0f, alpha)) + 1.0f) * 0.5f) * 1023.0f) + 0.5f)) | 0xFFFFFC00) << 10;
+				bits = ((unsigned int)floor(((((fmaxf(-1.0f, fminf(1.0f, in[2])) + 1.0f) * 0.5f) * 1023.0f) + 0.5f)) | bits) << 10;
+				bits = ((unsigned int)floor(((((fmaxf(-1.0f, fminf(1.0f, in[1])) + 1.0f) * 0.5f) * 1023.0f) + 0.5f)) | bits) << 10;
+				bits = ((unsigned int)floor(((((fmaxf(-1.0f, fminf(1.0f, in[0])) + 1.0f) * 0.5f) * 1023.0f) + 0.5f)) | bits);
+
+				return { bits };
 			}
 
 			void Vec3UnpackUnitVec(const PackedUnitVec in, float* out) // t6 func
@@ -248,20 +233,29 @@ namespace ZoneTool
 			{
 				memcpy(&h1_asset->verts0.packedVerts0[i], &asset->verts0[i], sizeof(IW3::GfxPackedVertex));
 
-				float texCoord_unpacked[2]{ 0 };
+				float texCoord_unpacked[2]{ 0.0f, 0.0f };
 				PackedShit::Vec2UnpackTexCoords(asset->verts0[i].texCoord, texCoord_unpacked);
 				std::swap(texCoord_unpacked[0], texCoord_unpacked[1]); // these are inverted...
 				h1_asset->verts0.packedVerts0[i].texCoord.packed = PackedShit::Vec2PackTexCoords(texCoord_unpacked).packed;
 
 				// re-calculate these...
-				float normal_unpacked[3]{ 0 };
+				float normal_unpacked[3]{ 0.0f, 0.0f, 0.0f };
 				PackedShit::Vec3UnpackUnitVec(asset->verts0[i].normal, normal_unpacked);
-				h1_asset->verts0.packedVerts0[i].normal.packed = PackedShit::Vec3PackUnitVec(normal_unpacked).packed;
 
-				// i don't understand why normal unpacked seems to be correct instead
-				//float tangent_unpacked[3]{ 0 };
-				//PackedShit::Vec3UnpackUnitVec(asset->verticies[i].tangent, tangent_unpacked);
-				h1_asset->verts0.packedVerts0[i].tangent.packed = PackedShit::Vec3PackUnitVec(normal_unpacked).packed;
+				float tangent_unpacked[3]{ 0.0f, 0.0f, 0.0f };
+				PackedShit::Vec3UnpackUnitVec(asset->verts0[i].tangent, tangent_unpacked);
+
+				float normal[3] = { normal_unpacked[0], normal_unpacked[1], normal_unpacked[2] };
+				float tangent[3] = { tangent_unpacked[0], tangent_unpacked[1], tangent_unpacked[2] };
+
+				float sign = 0.0f;
+				if (asset->verts0[i].binormalSign == -1.0f)
+				{
+					sign = 1.0f;
+				}
+
+				h1_asset->verts0.packedVerts0[i].normal.packed = PackedShit::Vec3PackUnitVecWithAlpha(normal, 1.0f).packed;
+				h1_asset->verts0.packedVerts0[i].tangent.packed = PackedShit::Vec3PackUnitVecWithAlpha(tangent, sign).packed;
 
 				// correct color : bgra->rgba
 				h1_asset->verts0.packedVerts0[i].color.array[0] = asset->verts0[i].color.array[2];
