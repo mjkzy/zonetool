@@ -462,6 +462,12 @@ namespace ZoneTool
 						iw5_techset.erase(idx, 4);
 					}
 
+					if (iw5_techset.ends_with(".3x")) // iw3xport
+					{
+						auto idx = iw5_techset.find(".3x");
+						iw5_techset.erase(idx, 3);
+					}
+
 					bool result = false;
 					h1_techset = get_h1_techset(iw5_techset, asset->name, &result);
 					if (!result)

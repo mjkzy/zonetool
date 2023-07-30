@@ -221,24 +221,30 @@ namespace ZoneTool
 
 				MATERIAL_DUMP_STRING(name);
 
-				std::string IW4_techset;
+				std::string iw4_techset;
 				std::string h1_techset;
 				if (asset->techniqueSet)
 				{
-					IW4_techset = asset->techniqueSet->name;
-					if (IW4_techset.starts_with("iw3/"))
+					iw4_techset = asset->techniqueSet->name;
+					if (iw4_techset.starts_with("iw3/"))
 					{
-						IW4_techset.erase(0, 4);
+						iw4_techset.erase(0, 4);
 					}
 
-					if (IW4_techset.ends_with("_sat"))
+					if (iw4_techset.ends_with("_sat"))
 					{
-						auto idx = IW4_techset.find("_sat");
-						IW4_techset.erase(idx, 4);
+						auto idx = iw4_techset.find("_sat");
+						iw4_techset.erase(idx, 4);
+					}
+
+					if (iw4_techset.ends_with(".3x")) // iw3xport
+					{
+						auto idx = iw4_techset.find(".3x");
+						iw4_techset.erase(idx, 3);
 					}
 
 					bool result = false;
-					h1_techset = get_h1_techset(IW4_techset, asset->name, &result);
+					h1_techset = get_h1_techset(iw4_techset, asset->name, &result);
 					if (!result)
 					{
 						ZONETOOL_ERROR("Not dumping material \"%s\"", asset->name);
@@ -265,7 +271,7 @@ namespace ZoneTool
 				matdata["assetFlags"] = H1::MTL_ASSETFLAG_NONE;
 
 				ordered_json constant_table;
-				for (int i = 0; i < asset->constantCount && IW4_techset != "2d"; i++)
+				for (int i = 0; i < asset->constantCount && iw4_techset != "2d"; i++)
 				{
 					ordered_json table;
 					std::string constant_name = asset->constantTable[i].name;
