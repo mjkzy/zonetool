@@ -34,6 +34,15 @@ namespace bounds
 		}
 		return bounds;
 	}
+
+	static void compute(float* mins, float* maxs, float(*dest)[3])
+	{
+		for (int i = 0; i < 3; ++i)
+		{
+			dest[1][i] = (maxs[i] - mins[i]) / 2;
+			dest[0][i] = dest[1][i] + mins[i];
+		}
+	}
 }
 
 #include "Assets/ClipMap.hpp"

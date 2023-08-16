@@ -4,9 +4,9 @@ namespace ZoneTool
 {
 	namespace H1
 	{
-		void ITechset::dump_constant_buffer_indexes(const std::string& techset, unsigned char* cbi)
+		void ITechset::dump_constant_buffer_indexes(const std::string& techset, const std::string& material, unsigned char* cbi)
 		{
-			const auto path = "techsets\\constantbuffer\\"s + techset + ".cbi";
+			const auto path = "techsets\\constantbuffer\\"s + techset + "\\"s + material + ".cbi";
 			auto file = filesystem::file(path);
 			file.open("wb");
 			auto fp = file.get_fp();
@@ -18,9 +18,9 @@ namespace ZoneTool
 			}
 		}
 
-		void ITechset::dump_constant_buffer_def_array(const std::string& techset, unsigned char count, MaterialConstantBufferDef* def)
+		void ITechset::dump_constant_buffer_def_array(const std::string& techset, const std::string& material, unsigned char count, MaterialConstantBufferDef* def)
 		{
-			const auto path = "techsets\\constantbuffer\\"s + techset + ".cbt";
+			const auto path = "techsets\\constantbuffer\\"s + techset + "\\"s + material + ".cbt";
 			assetmanager::dumper dump;
 			if (!dump.open(path))
 			{
@@ -68,9 +68,9 @@ namespace ZoneTool
 			dump.close();
 		}
 
-		void ITechset::dump_stateinfo(const std::string& techset, Material* mat)
+		void ITechset::dump_stateinfo(const std::string& techset, const std::string& material, Material* mat)
 		{
-			const auto path = "techsets\\state\\"s + techset + ".stateinfo";
+			const auto path = "techsets\\state\\"s + techset + "\\"s + material + ".stateinfo";
 
 			ordered_json json_data = {};
 
@@ -87,9 +87,9 @@ namespace ZoneTool
 			}
 		}
 
-		void ITechset::dump_statebits(const std::string& techset, unsigned char* statebits)
+		void ITechset::dump_statebits(const std::string& techset, const std::string& material, unsigned char* statebits)
 		{
-			const auto path = "techsets\\state\\"s + techset + ".statebits";
+			const auto path = "techsets\\state\\"s + techset + "\\"s + material + ".statebits";
 			auto file = filesystem::file(path);
 			file.open("wb");
 			auto fp = file.get_fp();
@@ -101,9 +101,9 @@ namespace ZoneTool
 			}
 		}
 
-		void ITechset::dump_statebits_map(const std::string& techset, GfxStateBits* map, unsigned char count)
+		void ITechset::dump_statebits_map(const std::string& techset, const std::string& material, GfxStateBits* map, unsigned char count)
 		{
-			const auto path = "techsets\\state\\"s + techset + ".statebitsmap";
+			const auto path = "techsets\\state\\"s + techset + "\\"s + material + ".statebitsmap";
 
 			ordered_json json_data = {};
 			for (unsigned char i = 0; i < count; i++)
@@ -157,31 +157,31 @@ namespace ZoneTool
 				if (asset->passArray[i].vertexShader)
 				{
 					dumper.dump_asset(asset->passArray[i].vertexShader);
-					//IVertexShader::dump(asset->passArray[i].vertexShader);
+					//vertex_shader::dump(asset->passArray[i].vertexShader);
 				}
 
 				if (asset->passArray[i].vertexDecl)
 				{
 					dumper.dump_asset(asset->passArray[i].vertexDecl);
-					//IVertexDecl::dump(asset->passArray[i].vertexDecl);
+					IVertexDecl::dump(asset->passArray[i].vertexDecl);
 				}
 
 				if (asset->passArray[i].hullShader)
 				{
 					dumper.dump_asset(asset->passArray[i].hullShader);
-					//IHullShader::dump(asset->passArray[i].hullShader);
+					//hull_shader::dump(asset->passArray[i].hullShader);
 				}
 
 				if (asset->passArray[i].domainShader)
 				{
 					dumper.dump_asset(asset->passArray[i].domainShader);
-					//IDomainShader::dump(asset->passArray[i].domainShader);
+					//domain_shader::dump(asset->passArray[i].domainShader);
 				}
 
 				if (asset->passArray[i].pixelShader)
 				{
 					dumper.dump_asset(asset->passArray[i].pixelShader);
-					//IPixelShader::dump(asset->passArray[i].pixelShader);
+					//pixel_shader::dump(asset->passArray[i].pixelShader);
 				}
 
 				if (asset->passArray[i].args)

@@ -22,6 +22,8 @@ std::string currentzone;
 
 namespace ZoneTool
 {
+	linker_mode currentlinkermode{ linker_mode::none };
+
 	std::vector<std::shared_ptr<ILinker>> linkers;
 	std::map<std::string, std::function<void(std::vector<std::string>)>> commands;
 

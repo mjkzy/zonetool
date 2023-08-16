@@ -635,6 +635,8 @@ char**>(0x00799278)[type]);
 		{
 			if (this->is_used())
 			{
+				set_linker_mode(linker_mode::iw4);
+
 				// 
 				Memory(0x470E30).jump(Load_StreamHook);
 				Memory(0x458A20).jump(DB_PushStreamPosHook);

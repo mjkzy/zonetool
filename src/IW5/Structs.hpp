@@ -3281,7 +3281,7 @@ namespace ZoneTool
 
 		struct GfxLightGridColors
 		{
-			char rgb[56][3];
+			unsigned char rgb[56][3];
 		};
 
 		struct GfxLightGrid

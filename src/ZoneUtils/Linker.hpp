@@ -32,4 +32,22 @@ namespace ZoneTool
 		
 	private:
 	};
+
+	enum linker_mode
+	{
+		none = -1,
+		iw3 = 0,
+		iw4 = 1,
+		iw5 = 2,
+	};
+	extern linker_mode currentlinkermode;
+
+	static void set_linker_mode(linker_mode mode)
+	{
+		currentlinkermode = mode;
+	}
+	static linker_mode get_linker_mode()
+	{
+		return currentlinkermode;
+	}
 }

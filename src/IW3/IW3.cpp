@@ -256,6 +256,8 @@ namespace ZoneTool
 		{
 			if (this->is_used())
 			{
+				set_linker_mode(linker_mode::iw3);
+
 				// Realloc asset pools
 				ReallocateAssetPoolM(localize, 2);
 				ReallocateAssetPoolM(material, 2);
