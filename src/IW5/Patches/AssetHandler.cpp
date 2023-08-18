@@ -12,6 +12,12 @@ namespace ZoneTool
 {
 	namespace IW5
 	{
+#ifdef DEBUG
+		constexpr auto IS_DEBUG = true;
+#else
+		constexpr auto IS_DEBUG = false;
+#endif
+
 		extern bool is_dumping_complete;
 		extern bool is_dumping;
 

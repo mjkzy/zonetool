@@ -44,10 +44,7 @@ using namespace zonetool;
 #include "Assets/VertexShader.hpp"
 #include "Assets/VertexDecl.hpp"
 
-namespace ZoneTool
+namespace ZoneTool::H1
 {
-	namespace H1
-	{
-		
-	}
+
 }
