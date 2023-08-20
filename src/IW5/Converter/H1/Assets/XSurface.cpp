@@ -7,7 +7,7 @@
 
 namespace ZoneTool::IW5
 {
-	namespace Converter
+	namespace H1Converter
 	{
 		void GenerateH1BlendVertsShit(H1::XSurface* surf)
 		{

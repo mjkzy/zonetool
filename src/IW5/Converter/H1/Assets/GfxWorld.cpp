@@ -8,7 +8,7 @@
 
 namespace ZoneTool::IW5
 {
-	namespace Converter
+	namespace H1Converter
 	{
 		H1::GfxWorld* GenerateH1GfxWorld(GfxWorld* asset, ZoneMemory* mem)
 		{

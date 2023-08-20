@@ -17,7 +17,7 @@ namespace
 
 namespace ZoneTool::IW5
 {
-	namespace Converter
+	namespace H1Converter
 	{
 		H1::SoundDspBus channel_to_dspbus_index[IW5::SoundChannel::SND_CHANNEL_COUNT]
 		{
@@ -409,3 +409,5 @@ namespace ZoneTool::IW5
 		}
 	}
 }
+
+#undef STREAMED_TO_LOADED_IW5

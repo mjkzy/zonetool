@@ -5,7 +5,7 @@
 
 namespace ZoneTool::IW5
 {
-	namespace Converter
+	namespace H1Converter
 	{
 		typedef enum _D3DFORMAT : std::int32_t
 		{

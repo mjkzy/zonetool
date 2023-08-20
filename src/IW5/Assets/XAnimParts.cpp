@@ -1,16 +1,19 @@
 #include "stdafx.hpp"
-#include "H1/Assets/XAnimParts.hpp"
 
-#include "Converter/H1/Assets/XAnimParts.hpp"
+#include "Dumper/H1/Assets/XAnimParts.hpp"
+#include "Dumper/IW6/Assets/XAnimParts.hpp"
 
 namespace ZoneTool::IW5
 {
 	void IXAnimParts::dump(XAnimParts* asset, ZoneMemory* mem, const std::function<const char* (uint16_t)>& convertToString)
 	{
-		// generate h1 anims
-		auto h1_asset = Converter::convert(asset, mem);
-
-		// dump h1 anims
-		H1::IXAnimParts::dump(h1_asset, convertToString);
+		if (zonetool::dumping_target == zonetool::dump_target::h1)
+		{
+			return H1Dumper::dump(asset, mem, convertToString);
+		}
+		else if (zonetool::dumping_target == zonetool::dump_target::iw6)
+		{
+			return IW6Dumper::dump(asset, mem, convertToString);
+		}
 	}
 }

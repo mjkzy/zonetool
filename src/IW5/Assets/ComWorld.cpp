@@ -1,16 +1,19 @@
 #include "stdafx.hpp"
-#include "H1/Assets/ComWorld.hpp"
 
-#include "Converter/H1/Assets/ComWorld.hpp"
+#include "Dumper/H1/Assets/ComWorld.hpp"
+#include "Dumper/IW6/Assets/ComWorld.hpp"
 
 namespace ZoneTool::IW5
 {
 	void IComWorld::dump(ComWorld* asset, ZoneMemory* mem)
 	{
-		// generate h1 comworld
-		auto* h1_asset = Converter::convert(asset, mem);
-
-		// dump h1 comworld
-		H1::IComWorld::dump(h1_asset);
+		if (zonetool::dumping_target == zonetool::dump_target::h1)
+		{
+			return H1Dumper::dump(asset, mem);
+		}
+		else if (zonetool::dumping_target == zonetool::dump_target::iw6)
+		{
+			return IW6Dumper::dump(asset, mem);
+		}
 	}
 }

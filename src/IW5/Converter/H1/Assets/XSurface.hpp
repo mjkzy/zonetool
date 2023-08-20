@@ -2,7 +2,7 @@
 
 namespace ZoneTool::IW5
 {
-	namespace Converter
+	namespace H1Converter
 	{
 		H1::XModelSurfs* convert(ModelSurface* asset, ZoneMemory* mem);
 	}

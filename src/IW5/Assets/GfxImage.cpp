@@ -1,33 +1,19 @@
 #include "stdafx.hpp"
-#include "H1/Assets/GfxImage.hpp"
 
-#include "Converter/H1/Assets/GfxImage.hpp"
+#include "Dumper/H1/Assets/GfxImage.hpp"
+#include "Dumper/IW6/Assets/GfxImage.hpp"
 
 namespace ZoneTool::IW5
 {
 	void IGfxImage::dump(GfxImage* asset, ZoneMemory* mem)
 	{
-		std::string name = asset->name;
-
-		bool isMapImage = (name.size() >= 6)
-			? ((name.substr(0, 6) == "*light" || name.substr(0, 6) == "*refle" ||
-				name == "$outdoor")
-				? true
-				: false)
-			: false;
-
-		if (!isMapImage) return;
-
-		if (!asset->texture->resourceSize)
+		if (zonetool::dumping_target == zonetool::dump_target::h1)
 		{
-			ZONETOOL_INFO("Not dumping image %s", asset->name);
-			return;
+			return H1Dumper::dump(asset, mem);
 		}
-
-		// generate h1 gfximage
-		auto* h1_asset = Converter::convert(asset, mem);
-
-		// dump h1 gfximage
-		H1::IGfxImage::dump(h1_asset);
+		else if (zonetool::dumping_target == zonetool::dump_target::iw6)
+		{
+			return IW6Dumper::dump(asset, mem);
+		}
 	}
 }

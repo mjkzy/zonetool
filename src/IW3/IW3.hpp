@@ -92,7 +92,7 @@ namespace ZoneTool
             bool supports_building() override;
 			bool supports_version(const zone_target_version version) override;
 
-			void dump_zone(const std::string& name) override;
+			void dump_zone(const std::string& name, zonetool::dump_target target) override;
 			void verify_zone(const std::string& name) override;
 
 			static void* Dedicated_RegisterDvarBool(const char* name, bool defaultValue, unsigned int flags,

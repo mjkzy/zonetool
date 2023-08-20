@@ -5,7 +5,7 @@
 
 namespace ZoneTool::IW5
 {
-	namespace Converter
+	namespace H1Converter
 	{
 		H1::FxElemType convert_elem_type(IW5::FxElemType type)
 		{

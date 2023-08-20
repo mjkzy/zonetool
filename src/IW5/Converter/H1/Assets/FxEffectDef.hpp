@@ -2,7 +2,7 @@
 
 namespace ZoneTool::IW5
 {
-	namespace Converter
+	namespace H1Converter
 	{
 		H1::FxEffectDef* convert(FxEffectDef* asset, ZoneMemory* mem);
 	}

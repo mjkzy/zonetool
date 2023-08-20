@@ -1,16 +1,19 @@
 #include "stdafx.hpp"
-#include "H1/Assets/FxEffectDef.hpp"
 
-#include "Converter/H1/Assets/FxEffectDef.hpp"
+#include "Dumper/H1/Assets/FxEffectDef.hpp"
+#include "Dumper/IW6/Assets/FxEffectDef.hpp"
 
 namespace ZoneTool::IW5
 {
 	void IFxEffectDef::dump(FxEffectDef* asset, ZoneMemory* mem)
 	{
-		// generate h1 fx
-		auto* h1_asset = Converter::convert(asset, mem);
-
-		// dump fx
-		H1::IFxEffectDef::dump(h1_asset);
+		if (zonetool::dumping_target == zonetool::dump_target::h1)
+		{
+			return H1Dumper::dump(asset, mem);
+		}
+		else if (zonetool::dumping_target == zonetool::dump_target::iw6)
+		{
+			return IW6Dumper::dump(asset, mem);
+		}
 	}
 }

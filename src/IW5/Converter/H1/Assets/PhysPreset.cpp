@@ -5,7 +5,7 @@
 
 namespace ZoneTool::IW5
 {
-	namespace Converter
+	namespace H1Converter
 	{
 		H1::PhysPreset* GenerateH1Asset(PhysPreset* asset, ZoneMemory* mem)
 		{

@@ -5,7 +5,7 @@
 
 namespace ZoneTool::IW5
 {
-	namespace Converter
+	namespace H1Converter
 	{
 		H1::RawFile* GenerateH1RawFile(RawFile* asset, ZoneMemory* mem)
 		{

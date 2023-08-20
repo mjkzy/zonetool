@@ -2,7 +2,7 @@
 
 namespace ZoneTool::IW5
 {
-	namespace Converter
+	namespace H1Converter
 	{
 		H1::MapEnts* convert(MapEnts* asset, ZoneMemory* mem);
 	}

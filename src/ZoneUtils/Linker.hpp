@@ -21,7 +21,7 @@ namespace ZoneTool
         virtual bool supports_building() = 0;
 		virtual bool supports_version(const zone_target_version version) = 0;
 
-		virtual void dump_zone(const std::string& name) = 0;
+		virtual void dump_zone(const std::string& name, zonetool::dump_target target = zonetool::dump_target::h1) = 0;
 		virtual void verify_zone(const std::string& name) = 0;
 		virtual void load_zone(const std::string& name) = 0;
 		virtual void unload_zones() = 0;

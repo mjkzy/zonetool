@@ -16,8 +16,8 @@ namespace ZoneTool::H1
 				for (unsigned short j = 0; j < splineList->splines[i].splinePointCount; j++)
 				{
 					dumper.dump_array(splineList->splines[i].splinePoints[j].splineNodeLabel, 64);
-					dumper.dump_array(splineList->splines[i].splinePoints[j].positionCubic, 48);
-					dumper.dump_array(splineList->splines[i].splinePoints[j].tangentQuadratic, 36);
+					dumper.dump_array(splineList->splines[i].splinePoints[j].positionCubic, 4);
+					dumper.dump_array(splineList->splines[i].splinePoints[j].tangentQuadratic, 3);
 				}
 			}
 		}

@@ -2,7 +2,7 @@
 
 namespace ZoneTool::IW5
 {
-	static const char* SL_ConvertToString(std::uint16_t index);
+	extern const char* SL_ConvertToString(std::uint16_t index);
 
 	class IXModel
 	{

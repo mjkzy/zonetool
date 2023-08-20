@@ -217,8 +217,10 @@ namespace ZoneTool
 			return false;
 		}
 
-        void Linker::dump_zone(const std::string& name)
+        void Linker::dump_zone(const std::string& name, zonetool::dump_target target)
 		{
+			zonetool::dumping_target = target;
+
 			is_dumping_complete = false;
 			is_dumping = true;
 

@@ -1,5 +1,4 @@
 #include "stdafx.hpp"
-#include "H1/Assets/Sound.hpp"
 #include "IW5/Structs.hpp"
 
 #include "IW5/Assets/Sound.hpp"
