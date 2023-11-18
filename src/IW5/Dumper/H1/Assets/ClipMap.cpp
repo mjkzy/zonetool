@@ -17,9 +17,23 @@ namespace ZoneTool::IW5::H1Dumper
 		H1::IClipMap::dump(h1_asset, SL_ConvertToString);
 
 		// dump physmap here too i guess, since it's needed.
-		allocator allocator;
-		auto* physmap = ZoneTool::H1::physworld_gen::generate_physworld(h1_asset, &allocator);
+		{
+			{
+				const auto path = filesystem::get_dump_path() + asset->name + ".physmap"s;
+				filesystem::file file(path);
+				if (file.exists())
+				{
+					ZONETOOL_INFO("Not generating physmap since it already exists...");
+					return;
+				}
+			}
 
-		H1::IPhysWorld::dump(physmap, SL_ConvertToString);
+			ZONETOOL_INFO("Generating PhysWorld...");
+			allocator allocator;
+			auto* physmap = ZoneTool::H1::physworld_gen::generate_physworld(h1_asset, &allocator);
+			ZONETOOL_INFO("Generated PhysWorld.");
+
+			H1::IPhysWorld::dump(physmap, SL_ConvertToString);
+		}
 	}
 }

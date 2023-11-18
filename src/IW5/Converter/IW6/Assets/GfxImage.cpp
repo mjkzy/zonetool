@@ -125,31 +125,31 @@ namespace ZoneTool::IW5
 			const auto iw6_asset = mem->Alloc<IW6::GfxImage>();
 
 			iw6_asset->name = asset->name;
-			iw6_asset->imageFormat = get_d3d_to_dxgi(asset->texture->format); //iw6_asset->imageFormat = MFMapDX9FormatToDXGIFormat(asset->texture->format);
+			iw6_asset->imageFormat = get_d3d_to_dxgi(asset->texture.loadDef->format); //iw6_asset->imageFormat = MFMapDX9FormatToDXGIFormat(asset->texture->format);
 			iw6_asset->mapType = static_cast<IW6::MapType>(asset->mapType);
 			iw6_asset->semantic = asset->semantic;
 			iw6_asset->category = asset->category;
 			iw6_asset->flags = asset->flags;
-			iw6_asset->dataLen1 = asset->texture->resourceSize;
-			iw6_asset->dataLen2 = asset->texture->resourceSize;
+			iw6_asset->dataLen1 = asset->texture.loadDef->resourceSize;
+			iw6_asset->dataLen2 = asset->texture.loadDef->resourceSize;
 			iw6_asset->width = asset->width;
 			iw6_asset->height = asset->height;
 			iw6_asset->depth = asset->depth;
 			iw6_asset->numElements = asset->mapType == 5 ? 6 : 1;
 			iw6_asset->levelCount = asset->mapType == 5 ? 7 : 1;
 			iw6_asset->streamed = false;
-			iw6_asset->pixelData = reinterpret_cast<unsigned char*>(&asset->texture->data);
+			iw6_asset->pixelData = reinterpret_cast<unsigned char*>(&asset->texture.loadDef->data);
 
 			if (iw6_asset->imageFormat == DXGI_FORMAT_UNKNOWN)
 			{
-				ZONETOOL_INFO("Possible DXGIFORMAT: %d", MFMapDX9FormatToDXGIFormat(asset->texture->format));
-				ZONETOOL_FATAL("Unknown DXGIFORMAT for image \"%s\" (%d)", asset->name, asset->texture->format);
+				ZONETOOL_INFO("Possible DXGIFORMAT: %d", MFMapDX9FormatToDXGIFormat(asset->texture.loadDef->format));
+				ZONETOOL_FATAL("Unknown DXGIFORMAT for image \"%s\" (%d)", asset->name, asset->texture.loadDef->format);
 			}
 
-			if (asset->texture->format == D3DFMT_A8R8G8B8 && iw6_asset->imageFormat == DXGI_FORMAT_R8G8B8A8_UNORM)
+			if (asset->texture.loadDef->format == D3DFMT_A8R8G8B8 && iw6_asset->imageFormat == DXGI_FORMAT_R8G8B8A8_UNORM)
 			{
-				auto* new_pixels = mem->Alloc<unsigned char>(asset->texture->resourceSize);
-				argb_to_rgba(iw6_asset->pixelData, asset->texture->resourceSize, new_pixels);
+				auto* new_pixels = mem->Alloc<unsigned char>(asset->texture.loadDef->resourceSize);
+				argb_to_rgba(iw6_asset->pixelData, asset->texture.loadDef->resourceSize, new_pixels);
 				iw6_asset->pixelData = new_pixels;
 			}
 			else

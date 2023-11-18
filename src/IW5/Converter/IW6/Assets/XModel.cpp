@@ -98,9 +98,9 @@ namespace ZoneTool::IW5
 			iw6_asset->name = asset->name;
 			iw6_asset->numBones = asset->numBones;
 			iw6_asset->numRootBones = asset->numRootBones;
-			iw6_asset->numsurfs = asset->numSurfaces;
+			iw6_asset->numsurfs = asset->numsurfs;
 			iw6_asset->numReactiveMotionParts = 0;
-			iw6_asset->__pad0[0] = asset->lodRampType; // maybe wrong
+			//iw6_asset->__pad0[0] = asset->lodRampType; // maybe wrong
 			iw6_asset->scale = asset->scale;
 			memcpy(&iw6_asset->noScalePartBits, &asset->noScalePartBits, sizeof(asset->noScalePartBits));
 
@@ -111,19 +111,19 @@ namespace ZoneTool::IW5
 			}
 
 			REINTERPRET_CAST_SAFE(iw6_asset->parentList, asset->parentList);
-			REINTERPRET_CAST_SAFE(iw6_asset->tagAngles, asset->tagAngles);
-			REINTERPRET_CAST_SAFE(iw6_asset->tagPositions, asset->tagPositions);
+			REINTERPRET_CAST_SAFE(iw6_asset->tagAngles, asset->quats);
+			REINTERPRET_CAST_SAFE(iw6_asset->tagPositions, asset->trans);
 			REINTERPRET_CAST_SAFE(iw6_asset->partClassification, asset->partClassification);
-			REINTERPRET_CAST_SAFE(iw6_asset->baseMat, asset->animMatrix);
+			REINTERPRET_CAST_SAFE(iw6_asset->baseMat, asset->baseMat);
 			iw6_asset->reactiveMotionParts = nullptr;
 
-			iw6_asset->materialHandles = mem->Alloc<IW6::Material* __ptr64>(asset->numSurfaces);
-			for (auto i = 0; i < asset->numSurfaces; i++)
+			iw6_asset->materialHandles = mem->Alloc<IW6::Material* __ptr64>(asset->numsurfs);
+			for (auto i = 0; i < asset->numsurfs; i++)
 			{
-				if (asset->materials[i])
+				if (asset->materialHandles[i])
 				{
 					iw6_asset->materialHandles[i] = mem->Alloc<IW6::Material>();
-					iw6_asset->materialHandles[i]->name = mem->StrDup(asset->materials[i]->name);
+					iw6_asset->materialHandles[i]->name = mem->StrDup(asset->materialHandles[i]->info.name);
 				}
 			}
 
@@ -135,15 +135,15 @@ namespace ZoneTool::IW5
 			// level of detail data
 			for (auto i = 0; i < asset->numLods; i++)
 			{
-				iw6_asset->lodInfo[i].dist = asset->lods[i].dist;
-				iw6_asset->lodInfo[i].numsurfs = asset->lods[i].numSurfacesInLod;
-				iw6_asset->lodInfo[i].surfIndex = asset->lods[i].surfIndex;
-				iw6_asset->lodInfo[i].modelSurfs = mem->Alloc<IW6::XModelSurfs>(asset->lods[i].numSurfacesInLod);
-				for (auto j = 0; j < asset->lods[i].numSurfacesInLod; j++)
+				iw6_asset->lodInfo[i].dist = asset->lodInfo[i].dist;
+				iw6_asset->lodInfo[i].numsurfs = asset->lodInfo[i].numsurfs;
+				iw6_asset->lodInfo[i].surfIndex = asset->lodInfo[i].surfIndex;
+				iw6_asset->lodInfo[i].modelSurfs = mem->Alloc<IW6::XModelSurfs>(asset->lodInfo[i].numsurfs);
+				for (auto j = 0; j < asset->lodInfo[i].numsurfs; j++)
 				{
-					iw6_asset->lodInfo[i].modelSurfs[j].name = mem->StrDup(asset->lods[i].surfaces[j].name);
+					iw6_asset->lodInfo[i].modelSurfs[j].name = mem->StrDup(asset->lodInfo[i].modelSurfs[j].name);
 				}
-				memcpy(&iw6_asset->lodInfo[i].partBits, &asset->lods[i].partBits, sizeof(asset->lods[i].partBits));
+				memcpy(&iw6_asset->lodInfo[i].partBits, &asset->lodInfo[i].partBits, sizeof(asset->lodInfo[i].partBits));
 			}
 
 			iw6_asset->maxLoadedLod = asset->maxLoadedLod;
@@ -151,15 +151,15 @@ namespace ZoneTool::IW5
 			iw6_asset->collLod = asset->collLod;
 			iw6_asset->flags = asset->flags;
 
-			iw6_asset->numCollSurfs = asset->numColSurfs;
-			iw6_asset->collSurfs = mem->Alloc<IW6::XModelCollSurf_s>(asset->numColSurfs);
-			for (auto i = 0; i < asset->numColSurfs; i++)
+			iw6_asset->numCollSurfs = asset->numCollSurfs;
+			iw6_asset->collSurfs = mem->Alloc<IW6::XModelCollSurf_s>(asset->numCollSurfs);
+			for (auto i = 0; i < asset->numCollSurfs; i++)
 			{
-				memcpy(&iw6_asset->collSurfs[i].bounds, &asset->colSurf[i].mins, sizeof(float[2][3]));
+				memcpy(&iw6_asset->collSurfs[i].bounds, &asset->collSurfs[i].bounds, sizeof(float[2][3]));
 
-				iw6_asset->collSurfs[i].boneIdx = asset->colSurf[i].boneIdx;
-				iw6_asset->collSurfs[i].contents = asset->colSurf[i].contents;
-				iw6_asset->collSurfs[i].surfFlags = convert_surf_flags(asset->colSurf[i].surfFlags);
+				iw6_asset->collSurfs[i].boneIdx = asset->collSurfs[i].boneIdx;
+				iw6_asset->collSurfs[i].contents = asset->collSurfs[i].contents;
+				iw6_asset->collSurfs[i].surfFlags = convert_surf_flags(asset->collSurfs[i].surfFlags);
 			}
 
 			iw6_asset->contents = asset->contents;
@@ -183,8 +183,8 @@ namespace ZoneTool::IW5
 			}
 
 			// idk
-			iw6_asset->invHighMipRadius = mem->Alloc<unsigned short>(asset->numSurfaces);
-			for (unsigned char i = 0; i < asset->numSurfaces; i++)
+			iw6_asset->invHighMipRadius = mem->Alloc<unsigned short>(asset->numsurfs);
+			for (unsigned char i = 0; i < asset->numsurfs; i++)
 			{
 				iw6_asset->invHighMipRadius[i] = 0xFFFF;
 			}

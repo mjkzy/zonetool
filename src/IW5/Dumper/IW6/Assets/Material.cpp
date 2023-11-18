@@ -302,16 +302,16 @@ namespace ZoneTool
 					matdata["techniqueSet->name"] = iw6_techset;
 				}
 
-				matdata["gameFlags"] = asset->gameFlags; // convert
-				matdata["sortKey"] = IW6::get_iw6_sortkey(asset->sortKey, asset->name, iw6_techset); // convert
+				matdata["gameFlags"] = asset->info.gameFlags; // convert
+				matdata["sortKey"] = IW6::get_iw6_sortkey(asset->info.sortKey, asset->name, iw6_techset); // convert
 				matdata["renderFlags"] = 0; // idk
 
-				matdata["textureAtlasRowCount"] = asset->animationX;
-				matdata["textureAtlasColumnCount"] = asset->animationY;
+				matdata["textureAtlasRowCount"] = asset->info.textureAtlasRowCount;
+				matdata["textureAtlasColumnCount"] = asset->info.textureAtlasColumnCount;
 				matdata["textureAtlasFrameBlend"] = 0;
 				matdata["textureAtlasAsArray"] = 0;
 
-				matdata["surfaceTypeBits"] = asset->surfaceTypeBits; // convert
+				matdata["surfaceTypeBits"] = asset->info.surfaceTypeBits; // convert
 				// hashIndex;
 
 				//matdata["stateFlags"] = asset->stateFlags; // convert
@@ -420,17 +420,17 @@ namespace ZoneTool
 				int i_3447584578 = -1;
 
 				ordered_json material_images;
-				for (auto i = 0; i < asset->numMaps; i++)
+				for (auto i = 0; i < asset->textureCount; i++)
 				{
-					if (asset->maps[i].typeHash > 3447584578 && i_3447584578 == -1)
+					if (asset->textureTable[i].nameHash > 3447584578 && i_3447584578 == -1)
 					{
 						i_3447584578 = i;
 					}
 
 					ordered_json image;
-					if (asset->maps[i].semantic == 11)
+					if (asset->textureTable[i].semantic == 11)
 					{
-						auto* water = reinterpret_cast<water_t*>(asset->maps[i].image);
+						auto* water = reinterpret_cast<water_t*>(asset->textureTable[i].u.image);
 						if (water->image && water->image->name)
 						{
 							image["image"] = water->image->name;
@@ -443,9 +443,9 @@ namespace ZoneTool
 					}
 					else
 					{
-						if (asset->maps[i].image && asset->maps[i].image->name)
+						if (asset->textureTable[i].u.image && asset->textureTable[i].u.image->name)
 						{
-							image["image"] = asset->maps[i].image->name;
+							image["image"] = asset->textureTable[i].u.image->name;
 						}
 						else
 						{
@@ -453,11 +453,11 @@ namespace ZoneTool
 						}
 					}
 
-					image["semantic"] = asset->maps[i].semantic == 11 ? 2 : asset->maps[i].semantic; // convert? ( should be the same )
-					image["samplerState"] = asset->maps[i].sampleState == 11 ? 19 : asset->maps[i].sampleState; // convert? ( should be fine )
-					image["lastCharacter"] = asset->maps[i].secondLastCharacter;
-					image["firstCharacter"] = asset->maps[i].firstCharacter;
-					image["typeHash"] = asset->maps[i].typeHash;
+					image["semantic"] = asset->textureTable[i].semantic == 11 ? 2 : asset->textureTable[i].semantic; // convert? ( should be the same )
+					image["samplerState"] = asset->textureTable[i].samplerState == 11 ? 19 : asset->textureTable[i].samplerState; // convert? ( should be fine )
+					image["lastCharacter"] = asset->textureTable[i].nameEnd;
+					image["firstCharacter"] = asset->textureTable[i].nameStart;
+					image["typeHash"] = asset->textureTable[i].nameHash;
 
 					// add image data to material
 					material_images.push_back(image);
@@ -468,7 +468,7 @@ namespace ZoneTool
 				{
 					if (i_3447584578 == -1)
 					{
-						i_3447584578 = asset->numMaps;
+						i_3447584578 = asset->textureCount;
 					}
 
 					ordered_json image;

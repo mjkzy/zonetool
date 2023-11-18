@@ -132,8 +132,8 @@ namespace ZoneTool::IW5
 			iw6_asset->rigidVertListCount = asset->vertListCount;
 
 			// blend verts
-			memcpy(&iw6_asset->blendVertCounts, &asset->vertexInfo.vertCount, sizeof(asset->vertexInfo.vertCount));
-			iw6_asset->blendVerts = reinterpret_cast<unsigned short* __ptr64>(asset->vertexInfo.vertsBlend);
+			memcpy(&iw6_asset->blendVertCounts, &asset->vertInfo.vertCount, sizeof(asset->vertInfo.vertCount));
+			iw6_asset->blendVerts = reinterpret_cast<unsigned short* __ptr64>(asset->vertInfo.vertsBlend);
 
 			iw6_asset->blendVertsTable = mem->Alloc<IW6::BlendVertsUnknown>(asset->vertCount);
 			GenerateIW6BlendVertsShit(iw6_asset);
@@ -146,25 +146,25 @@ namespace ZoneTool::IW5
 			iw6_asset->verts0.packedVerts0 = mem->Alloc<IW6::GfxPackedVertex>(asset->vertCount);
 			for (unsigned short i = 0; i < asset->vertCount; i++)
 			{
-				memcpy(&iw6_asset->verts0.packedVerts0[i], &asset->verticies[i], sizeof(IW5::GfxPackedVertex));
+				memcpy(&iw6_asset->verts0.packedVerts0[i], &asset->verts0.packedVerts0[i], sizeof(IW5::GfxPackedVertex));
 
 				float texCoord_unpacked[2]{ 0.0f, 0.0f };
-				PackedVec::Vec2UnpackTexCoords(asset->verticies[i].texCoord.packed, texCoord_unpacked);
+				PackedVec::Vec2UnpackTexCoords(asset->verts0.packedVerts0[i].texCoord.packed, texCoord_unpacked);
 				std::swap(texCoord_unpacked[0], texCoord_unpacked[1]); // these are inverted...
 				iw6_asset->verts0.packedVerts0[i].texCoord.packed = PackedVec::Vec2PackTexCoords(texCoord_unpacked);
 
 				// re-calculate these...
 				float normal_unpacked[3]{ 0.0f, 0.0f, 0.0f };
-				PackedVec::Vec3UnpackUnitVec(asset->verticies[i].normal.array, normal_unpacked);
+				PackedVec::Vec3UnpackUnitVec(asset->verts0.packedVerts0[i].normal.array, normal_unpacked);
 
 				float tangent_unpacked[3]{ 0.0f, 0.0f, 0.0f };
-				PackedVec::Vec3UnpackUnitVec(asset->verticies[i].tangent.array, tangent_unpacked);
+				PackedVec::Vec3UnpackUnitVec(asset->verts0.packedVerts0[i].tangent.array, tangent_unpacked);
 
 				float normal[3] = { normal_unpacked[0], normal_unpacked[1], normal_unpacked[2] };
 				float tangent[3] = { tangent_unpacked[0], tangent_unpacked[1], tangent_unpacked[2] };
 
 				float sign = 0.0f;
-				if (asset->verticies[i].binormalSign == -1.0f)
+				if (asset->verts0.packedVerts0[i].binormalSign == -1.0f)
 				{
 					sign = 1.0f;
 				}
@@ -173,54 +173,54 @@ namespace ZoneTool::IW5
 				iw6_asset->verts0.packedVerts0[i].tangent.packed = PackedVec::Vec3PackUnitVecWithAlpha(tangent, sign);
 				
 				// correct color : bgra->rgba
-				iw6_asset->verts0.packedVerts0[i].color.array[0] = asset->verticies[i].color.array[2];
-				iw6_asset->verts0.packedVerts0[i].color.array[1] = asset->verticies[i].color.array[1];
-				iw6_asset->verts0.packedVerts0[i].color.array[2] = asset->verticies[i].color.array[0];
-				iw6_asset->verts0.packedVerts0[i].color.array[3] = asset->verticies[i].color.array[3];
+				iw6_asset->verts0.packedVerts0[i].color.array[0] = asset->verts0.packedVerts0[i].color.array[2];
+				iw6_asset->verts0.packedVerts0[i].color.array[1] = asset->verts0.packedVerts0[i].color.array[1];
+				iw6_asset->verts0.packedVerts0[i].color.array[2] = asset->verts0.packedVerts0[i].color.array[0];
+				iw6_asset->verts0.packedVerts0[i].color.array[3] = asset->verts0.packedVerts0[i].color.array[3];
 			}
 
 			// rigidVertLists
 			iw6_asset->rigidVertLists = mem->Alloc<IW6::XRigidVertList>(asset->vertListCount);
 			for (int i = 0; i < asset->vertListCount; i++)
 			{
-				iw6_asset->rigidVertLists[i].boneOffset = asset->rigidVertLists[i].boneOffset;
-				iw6_asset->rigidVertLists[i].vertCount = asset->rigidVertLists[i].vertCount;
-				iw6_asset->rigidVertLists[i].triOffset = asset->rigidVertLists[i].triOffset;
-				iw6_asset->rigidVertLists[i].triCount = asset->rigidVertLists[i].triCount;
+				iw6_asset->rigidVertLists[i].boneOffset = asset->vertList[i].boneOffset;
+				iw6_asset->rigidVertLists[i].vertCount = asset->vertList[i].vertCount;
+				iw6_asset->rigidVertLists[i].triOffset = asset->vertList[i].triOffset;
+				iw6_asset->rigidVertLists[i].triCount = asset->vertList[i].triCount;
 
-				if (asset->rigidVertLists[i].collisionTree)
+				if (asset->vertList[i].collisionTree)
 				{
 					iw6_asset->rigidVertLists[i].collisionTree = mem->Alloc<IW6::XSurfaceCollisionTree>();
-					memcpy(&iw6_asset->rigidVertLists[i].collisionTree->trans, &asset->rigidVertLists[i].collisionTree->trans,
-						sizeof(asset->rigidVertLists[i].collisionTree->trans));
-					memcpy(&iw6_asset->rigidVertLists[i].collisionTree->scale, &asset->rigidVertLists[i].collisionTree->scale,
-						sizeof(asset->rigidVertLists[i].collisionTree->scale));
+					memcpy(&iw6_asset->rigidVertLists[i].collisionTree->trans, &asset->vertList[i].collisionTree->trans,
+						sizeof(asset->vertList[i].collisionTree->trans));
+					memcpy(&iw6_asset->rigidVertLists[i].collisionTree->scale, &asset->vertList[i].collisionTree->scale,
+						sizeof(asset->vertList[i].collisionTree->scale));
 
-					iw6_asset->rigidVertLists[i].collisionTree->nodeCount = asset->rigidVertLists[i].collisionTree->nodeCount;
+					iw6_asset->rigidVertLists[i].collisionTree->nodeCount = asset->vertList[i].collisionTree->nodeCount;
 					iw6_asset->rigidVertLists[i].collisionTree->nodes = mem->Alloc<IW6::XSurfaceCollisionNode>(
-						asset->rigidVertLists[i].collisionTree->nodeCount);
-					for (int j = 0; j < asset->rigidVertLists[i].collisionTree->nodeCount; j++)
+						asset->vertList[i].collisionTree->nodeCount);
+					for (int j = 0; j < asset->vertList[i].collisionTree->nodeCount; j++)
 					{
 						memcpy(&iw6_asset->rigidVertLists[i].collisionTree->nodes[j].aabb.mins,
-							&asset->rigidVertLists[i].collisionTree->nodes[j].aabb.mins,
-							sizeof(asset->rigidVertLists[i].collisionTree->nodes[j].aabb.mins));
+							&asset->vertList[i].collisionTree->nodes[j].aabb.mins,
+							sizeof(asset->vertList[i].collisionTree->nodes[j].aabb.mins));
 						memcpy(&iw6_asset->rigidVertLists[i].collisionTree->nodes[j].aabb.maxs,
-							&asset->rigidVertLists[i].collisionTree->nodes[j].aabb.maxs,
-							sizeof(asset->rigidVertLists[i].collisionTree->nodes[j].aabb.maxs));
+							&asset->vertList[i].collisionTree->nodes[j].aabb.maxs,
+							sizeof(asset->vertList[i].collisionTree->nodes[j].aabb.maxs));
 
 						iw6_asset->rigidVertLists[i].collisionTree->nodes[j].childBeginIndex =
-							asset->rigidVertLists[i].collisionTree->nodes[j].childBeginIndex;
+							asset->vertList[i].collisionTree->nodes[j].childBeginIndex;
 						iw6_asset->rigidVertLists[i].collisionTree->nodes[j].childCount =
-							asset->rigidVertLists[i].collisionTree->nodes[j].childCount;
+							asset->vertList[i].collisionTree->nodes[j].childCount;
 					}
 
-					iw6_asset->rigidVertLists[i].collisionTree->leafCount = asset->rigidVertLists[i].collisionTree->leafCount;
+					iw6_asset->rigidVertLists[i].collisionTree->leafCount = asset->vertList[i].collisionTree->leafCount;
 					iw6_asset->rigidVertLists[i].collisionTree->leafs = mem->Alloc<IW6::XSurfaceCollisionLeaf>(
-						asset->rigidVertLists[i].collisionTree->leafCount);
-					for (int j = 0; j < asset->rigidVertLists[i].collisionTree->leafCount; j++)
+						asset->vertList[i].collisionTree->leafCount);
+					for (int j = 0; j < asset->vertList[i].collisionTree->leafCount; j++)
 					{
 						iw6_asset->rigidVertLists[i].collisionTree->leafs[j].triangleBeginIndex =
-							asset->rigidVertLists[i].collisionTree->leafs[j].triangleBeginIndex;
+							asset->vertList[i].collisionTree->leafs[j].triangleBeginIndex;
 					}
 				}
 			}
@@ -229,25 +229,25 @@ namespace ZoneTool::IW5
 			memcpy(&iw6_asset->partBits, &asset->partBits, sizeof(asset->partBits));
 		}
 
-		IW6::XModelSurfs* GenerateIW6XModelSurfs(ModelSurface* asset, ZoneMemory* mem)
+		IW6::XModelSurfs* GenerateIW6XModelSurfs(XModelSurfs* asset, ZoneMemory* mem)
 		{
 			// allocate IW6 XModelSurfs structure
 			const auto iw6_asset = mem->Alloc<IW6::XModelSurfs>();
 
 			iw6_asset->name = mem->StrDup(asset->name);
-			iw6_asset->numsurfs = asset->xSurficiesCount;
+			iw6_asset->numsurfs = asset->numsurfs;
 			memcpy(&iw6_asset->partBits, &asset->partBits, sizeof(asset->partBits));
 
-			iw6_asset->surfs = mem->Alloc<IW6::XSurface>(asset->xSurficiesCount);
-			for (int i = 0; i < asset->xSurficiesCount; i++)
+			iw6_asset->surfs = mem->Alloc<IW6::XSurface>(asset->numsurfs);
+			for (int i = 0; i < asset->numsurfs; i++)
 			{
-				GenerateIW6XSurface(&iw6_asset->surfs[i], &asset->xSurficies[i], mem);
+				GenerateIW6XSurface(&iw6_asset->surfs[i], &asset->surfs[i], mem);
 			}
 
 			return iw6_asset;
 		}
 
-		IW6::XModelSurfs* convert(ModelSurface* asset, ZoneMemory* mem)
+		IW6::XModelSurfs* convert(XModelSurfs* asset, ZoneMemory* mem)
 		{
 			// generate IW6 surfaces
 			return GenerateIW6XModelSurfs(asset, mem);

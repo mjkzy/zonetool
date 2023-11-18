@@ -163,19 +163,19 @@ namespace ZoneTool::IW6
 		write.dump_array(asset->dpvs.surfaceVisData[1], asset->dpvs.surfaceVisDataCount);
 		write.dump_array(asset->dpvs.surfaceVisData[2], asset->dpvs.surfaceVisDataCount);
 
-		write.dump_array(asset->dpvs.tessellationCutoffVisData[0], asset->dpvs.smodelVisDataCount + 1);
-		write.dump_array(asset->dpvs.tessellationCutoffVisData[1], asset->dpvs.smodelVisDataCount + 1);
-		write.dump_array(asset->dpvs.tessellationCutoffVisData[2], asset->dpvs.smodelVisDataCount + 1);
+		write.dump_array(asset->dpvs.unknownData01[0], asset->dpvs.smodelVisDataCount + 1);
+		write.dump_array(asset->dpvs.unknownData01[1], asset->dpvs.smodelVisDataCount + 1);
+		write.dump_array(asset->dpvs.unknownData01[2], asset->dpvs.smodelVisDataCount + 1);
 
-		write.dump_array(asset->dpvs.unknownData[0], asset->dpvs.surfaceVisDataCount);
-		write.dump_array(asset->dpvs.unknownData[1], asset->dpvs.surfaceVisDataCount);
-		write.dump_array(asset->dpvs.unknownData[2], asset->dpvs.surfaceVisDataCount);
+		write.dump_array(asset->dpvs.unknownData02[0], asset->dpvs.surfaceVisDataCount);
+		write.dump_array(asset->dpvs.unknownData02[1], asset->dpvs.surfaceVisDataCount);
+		write.dump_array(asset->dpvs.unknownData02[2], asset->dpvs.surfaceVisDataCount);
 
 		write.dump_array(asset->dpvs.lodData, asset->dpvs.smodelCount + 1);
 
-		write.dump_array(asset->dpvs.unknownData2[0], asset->dpvs.surfaceVisDataCount);
-		write.dump_array(asset->dpvs.unknownData2[1], asset->dpvs.surfaceVisDataCount);
-		write.dump_array(asset->dpvs.unknownData2[2], asset->dpvs.surfaceVisDataCount);
+		write.dump_array(asset->dpvs.tessellationCutoffVisData[0], asset->dpvs.surfaceVisDataCount);
+		write.dump_array(asset->dpvs.tessellationCutoffVisData[1], asset->dpvs.surfaceVisDataCount);
+		write.dump_array(asset->dpvs.tessellationCutoffVisData[2], asset->dpvs.surfaceVisDataCount);
 
 		write.dump_array(asset->dpvs.sortedSurfIndex, asset->dpvs.staticSurfaceCount);
 

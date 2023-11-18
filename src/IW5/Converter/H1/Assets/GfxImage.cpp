@@ -125,31 +125,31 @@ namespace ZoneTool::IW5
 			const auto h1_asset = mem->Alloc<H1::GfxImage>();
 
 			h1_asset->name = asset->name;
-			h1_asset->imageFormat = get_d3d_to_dxgi(asset->texture->format); //h1_asset->imageFormat = MFMapDX9FormatToDXGIFormat(asset->texture->format);
+			h1_asset->imageFormat = get_d3d_to_dxgi(asset->texture.loadDef->format); //h1_asset->imageFormat = MFMapDX9FormatToDXGIFormat(asset->texture->format);
 			h1_asset->mapType = static_cast<H1::MapType>(asset->mapType);
 			h1_asset->semantic = asset->semantic;
 			h1_asset->category = asset->category;
 			h1_asset->flags = asset->flags;
-			h1_asset->dataLen1 = asset->texture->resourceSize;
-			h1_asset->dataLen2 = asset->texture->resourceSize;
+			h1_asset->dataLen1 = asset->texture.loadDef->resourceSize;
+			h1_asset->dataLen2 = asset->texture.loadDef->resourceSize;
 			h1_asset->width = asset->width;
 			h1_asset->height = asset->height;
 			h1_asset->depth = asset->depth;
 			h1_asset->numElements = asset->mapType == 5 ? 6 : 1;
 			h1_asset->levelCount = asset->mapType == 5 ? 7 : 1;
 			h1_asset->streamed = false;
-			h1_asset->pixelData = reinterpret_cast<unsigned char*>(&asset->texture->data);
+			h1_asset->pixelData = reinterpret_cast<unsigned char*>(&asset->texture.loadDef->data);
 
 			if (h1_asset->imageFormat == DXGI_FORMAT_UNKNOWN)
 			{
-				ZONETOOL_INFO("Possible DXGIFORMAT: %d", MFMapDX9FormatToDXGIFormat(asset->texture->format));
-				ZONETOOL_FATAL("Unknown DXGIFORMAT for image \"%s\" (%d)", asset->name, asset->texture->format);
+				ZONETOOL_INFO("Possible DXGIFORMAT: %d", MFMapDX9FormatToDXGIFormat(asset->texture.loadDef->format));
+				ZONETOOL_FATAL("Unknown DXGIFORMAT for image \"%s\" (%d)", asset->name, asset->texture.loadDef->format);
 			}
 
-			if (asset->texture->format == D3DFMT_A8R8G8B8 && h1_asset->imageFormat == DXGI_FORMAT_R8G8B8A8_UNORM)
+			if (asset->texture.loadDef->format == D3DFMT_A8R8G8B8 && h1_asset->imageFormat == DXGI_FORMAT_R8G8B8A8_UNORM)
 			{
-				auto* new_pixels = mem->Alloc<unsigned char>(asset->texture->resourceSize);
-				argb_to_rgba(h1_asset->pixelData, asset->texture->resourceSize, new_pixels);
+				auto* new_pixels = mem->Alloc<unsigned char>(asset->texture.loadDef->resourceSize);
+				argb_to_rgba(h1_asset->pixelData, asset->texture.loadDef->resourceSize, new_pixels);
 				h1_asset->pixelData = new_pixels;
 			}
 			else

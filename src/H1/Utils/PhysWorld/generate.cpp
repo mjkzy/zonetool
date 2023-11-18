@@ -274,7 +274,7 @@ namespace ZoneTool::H1::physworld_gen
 		{
 			if (node_index + 1 >= max_nodes)
 			{
-				ZONETOOL_FATAL("out of nodes");
+				ZONETOOL_FATAL("out of nodes (%d / %d)", node_index, max_nodes);
 				return nullptr;
 			}
 
@@ -1031,6 +1031,61 @@ namespace ZoneTool::H1::physworld_gen
 			return 2 * (a1 + a2 + a3);
 		}
 
+		int calc_aabb_tree(dmMeshData* mesh, std::vector<triangle_t>& dest_triangles,
+			const std::vector<triangle_t>& parent_triangles,
+			const bounding_box& root, mesh_node* nodes, int& node_index, int& tree_depth)
+		{
+			const auto surface_area = calculate_surface_area(root);
+			const auto triangles = get_triangles_in_box(mesh, parent_triangles, root);
+
+			if (triangles.size() > max_tris_per_leaf && tree_depth < max_tree_depth && surface_area > 1.f)
+			{
+				float value{};
+				const auto axis = find_best_axis(mesh, triangles, root, &value);
+
+				bounding_box left{};
+				bounding_box right{};
+
+				std::memcpy(&left, &root, sizeof(bounding_box));
+				std::memcpy(&right, &root, sizeof(bounding_box));
+
+				left.upper[axis] = value;
+				right.lower[axis] = value;
+
+				const auto left_tris = get_triangles_in_box(mesh, triangles, left);
+				const auto right_tris = get_triangles_in_box(mesh, triangles, right);
+
+				if (left_tris.size() == 0 || right_tris.size() == 0)
+				{
+					if (left_tris.size() > 0)
+					{
+						return calc_aabb_tree(mesh, dest_triangles, left_tris, left, nodes, node_index, tree_depth);
+					}
+					else if (right_tris.size() > 0)
+					{
+						return calc_aabb_tree(mesh, dest_triangles, right_tris, right, nodes, node_index, tree_depth);
+					}
+				}
+
+				node_index++;
+				tree_depth++;
+
+				calc_aabb_tree(mesh, dest_triangles, triangles, left, nodes, node_index, tree_depth);
+				calc_aabb_tree(mesh, dest_triangles, triangles, right, nodes, node_index, tree_depth);
+
+				tree_depth--;
+			}
+			else if (triangles.size() > 0)
+			{
+				node_index++;
+			}
+			else
+			{
+				node_index++;
+			}
+			return node_index;
+		}
+
 		void compute_aabb_tree(dmMeshData* mesh, std::vector<triangle_t>& dest_triangles,
 			const std::vector<triangle_t>& parent_triangles,
 			const bounding_box& root, mesh_node* nodes, int& node_index, int& tree_depth)
@@ -1123,11 +1178,6 @@ namespace ZoneTool::H1::physworld_gen
 			mesh->m_aVertices = mem->allocate<dmFloat4>(mesh->m_vertexCount);
 			std::memcpy(mesh->m_aVertices, vertices.data(), vertices.size() * sizeof(dmFloat4));
 
-			max_nodes = static_cast<int>(triangles.size()) * max_tree_depth;
-			const auto nodes = mem->allocate<mesh_node>(max_nodes);
-
-			auto node_index = 0;
-
 			std::vector<triangle_t> dest_triangles;
 
 			for (auto& tri : triangles)
@@ -1136,7 +1186,16 @@ namespace ZoneTool::H1::physworld_gen
 			}
 
 			const auto root = compute_bounding_box(mesh, triangles);
+			
 			int tree_depth = 0;
+			auto node_index = 0;
+			const auto nodes_count = calc_aabb_tree(mesh, dest_triangles, triangles, root, nullptr, node_index, tree_depth) + 1;
+			max_nodes = nodes_count;
+			tree_depth = 0;
+			node_index = 0;
+
+			const auto nodes = mem->allocate<mesh_node>(max_nodes);
+
 			compute_aabb_tree(mesh, dest_triangles, triangles, root, nodes, node_index, tree_depth);
 
 			mesh->m_triangleCount = static_cast<int>(dest_triangles.size());
@@ -1154,14 +1213,14 @@ namespace ZoneTool::H1::physworld_gen
 				mesh->m_aTriangles[tri.index].collisionFlags = 1;
 			}
 
-			mesh->m_nodeCount = node_index;
+			mesh->m_nodeCount = nodes_count;
 			mesh->m_pRoot = mem->allocate<dmMeshNode>(mesh->m_nodeCount);
 
 			float maxs[3]{ std::numeric_limits<float>::min(), std::numeric_limits<float>::min(), std::numeric_limits<float>::min() };
 			float mins[3]{ std::numeric_limits<float>::max(),std::numeric_limits<float>::max(), std::numeric_limits<float>::max() };
 			float unquantize[3]{};
 
-			for (auto i = 0; i < node_index; i++)
+			for (auto i = 0; i < nodes_count; i++)
 			{
 				const auto node = &nodes[i];
 
@@ -1212,7 +1271,7 @@ namespace ZoneTool::H1::physworld_gen
 			mesh->m_height = 127;
 			mesh->contents = 1;
 
-			for (auto i = 0; i < node_index; i++)
+			for (auto i = 0; i < nodes_count; i++)
 			{
 				const auto node = &nodes[i];
 

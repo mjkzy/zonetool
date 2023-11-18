@@ -246,7 +246,7 @@ namespace ZoneTool::IW5
 				h1_elem->visuals.instance.anonymous = elem->visuals.instance.anonymous;
 			}
 
-			memcpy(&h1_elem->collBounds, &elem->collMins, sizeof(float[3][2]));
+			memcpy(&h1_elem->collBounds, &elem->collBounds, sizeof(float[3][2]));
 
 			h1_elem->effectOnImpact.name = elem->effectOnImpact.name;
 			h1_elem->effectOnDeath.name = elem->effectOnDeath.name;
@@ -283,7 +283,7 @@ namespace ZoneTool::IW5
 				break;
 			case FX_ELEM_TYPE_SPARKFOUNTAIN:
 				// check
-				REINTERPRET_CAST_SAFE(h1_elem->extended.sparkFountainDef, elem->extended.sparkFountain);
+				REINTERPRET_CAST_SAFE(h1_elem->extended.sparkFountainDef, elem->extended.sparkFountainDef);
 				break;
 			case FX_ELEM_TYPE_SPOT_LIGHT:
 				// check
@@ -313,7 +313,7 @@ namespace ZoneTool::IW5
 			h1_elem->lightingFrac = elem->lightingFrac;
 			h1_elem->useItemClip = elem->useItemClip;
 			h1_elem->fadeInfo = elem->fadeInfo;
-			h1_elem->randomSeed = elem->pad; // check
+			h1_elem->randomSeed = elem->randomSeed;
 
 			h1_elem->__pad0[0] = 0.0f;
 			h1_elem->__pad0[1] = 1.0f;

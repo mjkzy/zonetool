@@ -98,56 +98,56 @@ namespace ZoneTool::IW5
 				return;
 			}
 
-			info->planeCount = dinfo->numCPlanes;
-			info->planes = reinterpret_cast<IW6::cplane_s*>(dinfo->cPlanes);
+			info->planeCount = dinfo->planeCount;
+			info->planes = reinterpret_cast<IW6::cplane_s*>(dinfo->planes);
 
 			info->numMaterials = dinfo->numMaterials;
 			info->materials = mem->Alloc<IW6::ClipMaterial>(info->numMaterials);
 			for (unsigned int i = 0; i < info->numMaterials; i++)
 			{
-				info->materials[i].name = dinfo->materials[i].material;
+				info->materials[i].name = dinfo->materials[i].name;
 				info->materials[i].surfaceFlags = convert_surf_flags(dinfo->materials[i].surfaceFlags);
-				info->materials[i].contents = dinfo->materials[i].contentFlags;
+				info->materials[i].contents = dinfo->materials[i].contents;
 			}
 
 			std::unordered_map<cbrushside_t*, IW6::cbrushside_t*> mapped_brush_sides;
 
-			info->numBrushSides = dinfo->numCBrushSides;
+			info->numBrushSides = dinfo->numBrushSides;
 			info->brushsides = mem->Alloc<IW6::cbrushside_t>(info->numBrushSides);
 			for (unsigned int i = 0; i < info->numBrushSides; i++)
 			{
-				mapped_brush_sides[&dinfo->cBrushSides[i]] = &info->brushsides[i];
+				mapped_brush_sides[&dinfo->brushsides[i]] = &info->brushsides[i];
 
-				info->brushsides[i].plane = reinterpret_cast<IW6::cplane_s*>(dinfo->cBrushSides[i].plane);
-				info->brushsides[i].materialNum = dinfo->cBrushSides[i].materialNum;
-				info->brushsides[i].firstAdjacentSideOffset = dinfo->cBrushSides[i].firstAdjacentSideOffset;
-				info->brushsides[i].edgeCount = dinfo->cBrushSides[i].edgeCount;
+				info->brushsides[i].plane = reinterpret_cast<IW6::cplane_s*>(dinfo->brushsides[i].plane);
+				info->brushsides[i].materialNum = dinfo->brushsides[i].materialNum;
+				info->brushsides[i].firstAdjacentSideOffset = dinfo->brushsides[i].firstAdjacentSideOffset;
+				info->brushsides[i].edgeCount = dinfo->brushsides[i].edgeCount;
 			}
 
-			info->numBrushEdges = dinfo->numCBrushEdges;
-			info->brushEdges = reinterpret_cast<IW6::cbrushedge_t*>(dinfo->cBrushEdges);
+			info->numBrushEdges = dinfo->numBrushEdges;
+			info->brushEdges = reinterpret_cast<IW6::cbrushedge_t*>(dinfo->brushEdges);
 
-			info->leafbrushNodesCount = dinfo->numCLeafBrushNodes;
+			info->leafbrushNodesCount = dinfo->leafbrushNodesCount;
 			info->leafbrushNodes = mem->Alloc<IW6::cLeafBrushNode_s>(info->leafbrushNodesCount);
 			for (unsigned int i = 0; i < info->leafbrushNodesCount; i++)
 			{
-				info->leafbrushNodes[i].axis = dinfo->cLeafBrushNodes[i].axis;
-				info->leafbrushNodes[i].leafBrushCount = dinfo->cLeafBrushNodes[i].leafBrushCount;
-				info->leafbrushNodes[i].contents = dinfo->cLeafBrushNodes[i].contents;
+				info->leafbrushNodes[i].axis = dinfo->leafbrushNodes[i].axis;
+				info->leafbrushNodes[i].leafBrushCount = dinfo->leafbrushNodes[i].leafBrushCount;
+				info->leafbrushNodes[i].contents = dinfo->leafbrushNodes[i].contents;
 				if (info->leafbrushNodes[i].leafBrushCount > 0)
 				{
 					info->leafbrushNodes[i].data.leaf.brushes = reinterpret_cast<unsigned __int16*>(
-						dinfo->cLeafBrushNodes[i].data.leaf.brushes);
+						dinfo->leafbrushNodes[i].data.leaf.brushes);
 				}
 				else
 				{
-					memcpy(&info->leafbrushNodes[i].data.children, &dinfo->cLeafBrushNodes[i].data.children,
-						sizeof(dinfo->cLeafBrushNodes[i].data.children));
+					memcpy(&info->leafbrushNodes[i].data.children, &dinfo->leafbrushNodes[i].data.children,
+						sizeof(dinfo->leafbrushNodes[i].data.children));
 				}
 			}
 
 			info->numLeafBrushes = dinfo->numLeafBrushes;
-			info->leafbrushes = reinterpret_cast<unsigned __int16*>(dinfo->leafBrushes);
+			info->leafbrushes = reinterpret_cast<unsigned __int16*>(dinfo->leafbrushes);
 
 			info->numBrushes = dinfo->numBrushes;
 			info->brushes = mem->Alloc<IW6::cbrush_t>(info->numBrushes);
@@ -160,7 +160,7 @@ namespace ZoneTool::IW5
 					info->brushes[i].sides = mapped_brush_sides.find(dinfo->brushes[i].sides)->second;
 
 				//info->brushes[i].sides = reinterpret_cast<IW6::cbrushside_t*>(dinfo->brushes[i].sides);
-				info->brushes[i].baseAdjacentSide = reinterpret_cast<IW6::cbrushedge_t*>(dinfo->brushes[i].edge);
+				info->brushes[i].baseAdjacentSide = reinterpret_cast<IW6::cbrushedge_t*>(dinfo->brushes[i].baseAdjacentSide);
 
 				info->brushes[i].axialMaterialNum[0][0] = dinfo->brushes[i].axialMaterialNum[0][0];
 				info->brushes[i].axialMaterialNum[0][1] = dinfo->brushes[i].axialMaterialNum[0][1];
@@ -204,41 +204,41 @@ namespace ZoneTool::IW5
 				iw6_asset->staticModelList[i].xmodel = reinterpret_cast<IW6::XModel*>(asset->staticModelList[i].xmodel);
 				memcpy(&iw6_asset->staticModelList[i].origin, &asset->staticModelList[i].origin, sizeof(IW5::cStaticModel_s) - sizeof(IW5::XModel*));
 			}
-			iw6_asset->numNodes = asset->numCNodes;
+			iw6_asset->numNodes = asset->numNodes;
 			iw6_asset->nodes = mem->Alloc<IW6::cNode_t>(iw6_asset->numNodes);
 			for (unsigned int i = 0; i < iw6_asset->numNodes; i++)
 			{
-				iw6_asset->nodes[i].plane = reinterpret_cast<IW6::cplane_s*>(asset->cNodes[i].plane);
-				iw6_asset->nodes[i].children[0] = asset->cNodes[i].children[0];
-				iw6_asset->nodes[i].children[1] = asset->cNodes[i].children[1];
+				iw6_asset->nodes[i].plane = reinterpret_cast<IW6::cplane_s*>(asset->nodes[i].plane);
+				iw6_asset->nodes[i].children[0] = asset->nodes[i].children[0];
+				iw6_asset->nodes[i].children[1] = asset->nodes[i].children[1];
 			}
-			iw6_asset->numLeafs = asset->numCLeaf;
-			iw6_asset->leafs = reinterpret_cast<IW6::cLeaf_t *>(asset->cLeaf);
-			iw6_asset->vertCount = asset->numVerts;
+			iw6_asset->numLeafs = asset->numLeafs;
+			iw6_asset->leafs = reinterpret_cast<IW6::cLeaf_t *>(asset->leafs);
+			iw6_asset->vertCount = asset->vertCount;
 			iw6_asset->verts = reinterpret_cast<IW6::vec3_t*>(asset->verts);
-			iw6_asset->triCount = asset->numTriIndices;
+			iw6_asset->triCount = asset->triCount;
 			iw6_asset->triIndices = reinterpret_cast<unsigned __int16*>(asset->triIndices);
 			iw6_asset->triEdgeIsWalkable = reinterpret_cast<unsigned __int8*>(asset->triEdgeIsWalkable);
-			iw6_asset->borderCount = asset->numCollisionBorders;
-			iw6_asset->borders = reinterpret_cast<IW6::CollisionBorder *>(asset->collisionBorders);
-			iw6_asset->partitionCount = asset->numCollisionPartitions;
+			iw6_asset->borderCount = asset->borderCount;
+			iw6_asset->borders = reinterpret_cast<IW6::CollisionBorder *>(asset->borders);
+			iw6_asset->partitionCount = asset->partitionCount;
 			iw6_asset->partitions = mem->Alloc<IW6::CollisionPartition>(iw6_asset->partitionCount);
 			for (int i = 0; i < iw6_asset->partitionCount; i++)
 			{
-				iw6_asset->partitions[i].triCount = asset->collisionPartitions[i].triCount;
-				iw6_asset->partitions[i].borderCount = asset->collisionPartitions[i].borderCount;
-				iw6_asset->partitions[i].firstVertSegment = 0;
-				iw6_asset->partitions[i].firstTri = asset->collisionPartitions[i].firstTri;
-				iw6_asset->partitions[i].borders = reinterpret_cast<IW6::CollisionBorder*>(asset->collisionPartitions[i].borders);
+				iw6_asset->partitions[i].triCount = asset->partitions[i].triCount;
+				iw6_asset->partitions[i].borderCount = asset->partitions[i].borderCount;
+				iw6_asset->partitions[i].firstVertSegment = asset->partitions[i].firstVertSegment;
+				iw6_asset->partitions[i].firstTri = asset->partitions[i].firstTri;
+				iw6_asset->partitions[i].borders = reinterpret_cast<IW6::CollisionBorder*>(asset->partitions[i].borders);
 			}
-			iw6_asset->aabbTreeCount = asset->numCollisionAABBTrees;
-			iw6_asset->aabbTrees = reinterpret_cast<IW6::CollisionAabbTree*>(asset->collisionAABBTrees);
-			iw6_asset->numSubModels = asset->numCModels;
+			iw6_asset->aabbTreeCount = asset->aabbTreeCount;
+			iw6_asset->aabbTrees = reinterpret_cast<IW6::CollisionAabbTree*>(asset->aabbTreeCount);
+			iw6_asset->numSubModels = asset->numSubModels;
 			iw6_asset->cmodels = mem->Alloc<IW6::cmodel_t>(iw6_asset->numSubModels);
 			for (unsigned int i = 0; i < iw6_asset->numSubModels; i++)
 			{
-				memcpy(&iw6_asset->cmodels[i].bounds, &asset->cModels[i].bounds, sizeof(IW5::Bounds) + sizeof(float));
-				memcpy(&iw6_asset->cmodels[i].leaf, &asset->cModels[i].leaf, sizeof(IW5::cLeaf_t));
+				memcpy(&iw6_asset->cmodels[i].bounds, &asset->cmodels[i].bounds, sizeof(IW5::Bounds) + sizeof(float));
+				memcpy(&iw6_asset->cmodels[i].leaf, &asset->cmodels[i].leaf, sizeof(IW5::cLeaf_t));
 
 				iw6_asset->cmodels[i].info = nullptr; // mapped in h1
 			}
@@ -291,10 +291,10 @@ namespace ZoneTool::IW5
 					iw6_asset->dynEntClientList[i][j].health = asset->dynEntClientList[i]->health;
 					iw6_asset->dynEntClientList[i][j].hinge = nullptr;
 					iw6_asset->dynEntClientList[i][j].activeModel = nullptr;
-					iw6_asset->dynEntClientList[i][j].contents = asset->dynEntClientList[i]->contents;
+					iw6_asset->dynEntClientList[i][j].contents = 0;
 				}
 			}
-			iw6_asset->checksum = asset->isPlutoniumMap;
+			iw6_asset->checksum = asset->checksum;
 
 			return iw6_asset;
 		}

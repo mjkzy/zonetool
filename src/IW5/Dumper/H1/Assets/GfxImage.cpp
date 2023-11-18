@@ -19,7 +19,7 @@ namespace ZoneTool::IW5::H1Dumper
 
 		if (!isMapImage) return;
 
-		if (!asset->texture->resourceSize)
+		if (!asset->texture.loadDef->resourceSize)
 		{
 			ZONETOOL_INFO("Not dumping image %s", asset->name);
 			return;

@@ -3702,10 +3702,10 @@ namespace ZoneTool::IW6
 		unsigned int surfaceVisDataCount; // 52
 		unsigned int PTR64 smodelVisData[3]; // 56
 		unsigned int PTR64 surfaceVisData[3]; // 80
-		unsigned int PTR64 tessellationCutoffVisData[3]; // 104
-		unsigned int PTR64 unknownData[3]; // 128
+		unsigned int PTR64 unknownData01[3]; // 104
+		unsigned int PTR64 unknownData02[3]; // 128
 		unsigned int PTR64 lodData; // 152
-		unsigned int PTR64 unknownData2[3]; // 160
+		unsigned int PTR64 tessellationCutoffVisData[3]; // 160
 		unsigned int PTR64 sortedSurfIndex; // 184
 		GfxStaticModelInst PTR64 smodelInsts; // 192
 		GfxSurface PTR64 surfaces; // 200

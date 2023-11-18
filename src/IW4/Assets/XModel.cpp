@@ -11,7 +11,7 @@ namespace ZoneTool
 		{
 			auto* iw5_model = mem->Alloc<IW5::XModel>();
 			memcpy(iw5_model, asset, sizeof(XModel));
-			iw5_model->unk = 0;
+			iw5_model->quantization = 0;
 
 			// dump model
 			IW5::IXModel::dump(iw5_model, mem, SL_ConvertToString);

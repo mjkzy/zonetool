@@ -4,6 +4,6 @@ namespace ZoneTool::IW5
 {
 	namespace IW6Converter
 	{
-		IW6::XModelSurfs* convert(ModelSurface* asset, ZoneMemory* mem);
+		IW6::XModelSurfs* convert(XModelSurfs* asset, ZoneMemory* mem);
 	}
 }

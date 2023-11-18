@@ -5,7 +5,7 @@
 
 namespace ZoneTool::IW5
 {
-	void IXSurface::dump(ModelSurface* asset, ZoneMemory* mem)
+	void IXSurface::dump(XModelSurfs* asset, ZoneMemory* mem)
 	{
 		if (zonetool::dumping_target == zonetool::dump_target::h1)
 		{

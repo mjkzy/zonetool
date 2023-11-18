@@ -132,8 +132,8 @@ namespace ZoneTool::IW5
 			h1_asset->rigidVertListCount = asset->vertListCount;
 
 			// blend verts
-			memcpy(&h1_asset->blendVertCounts, &asset->vertexInfo.vertCount, sizeof(asset->vertexInfo.vertCount));
-			h1_asset->blendVerts = reinterpret_cast<unsigned short* __ptr64>(asset->vertexInfo.vertsBlend);
+			memcpy(&h1_asset->blendVertCounts, &asset->vertInfo.vertCount, sizeof(asset->vertInfo.vertCount));
+			h1_asset->blendVerts = reinterpret_cast<unsigned short* __ptr64>(asset->vertInfo.vertsBlend);
 
 			h1_asset->blendVertsTable = mem->Alloc<H1::BlendVertsUnknown>(asset->vertCount);
 			GenerateH1BlendVertsShit(h1_asset);
@@ -151,25 +151,25 @@ namespace ZoneTool::IW5
 			h1_asset->verts0.packedVerts0 = mem->Alloc<H1::GfxPackedVertex>(asset->vertCount);
 			for (unsigned short i = 0; i < asset->vertCount; i++)
 			{
-				memcpy(&h1_asset->verts0.packedVerts0[i], &asset->verticies[i], sizeof(IW5::GfxPackedVertex));
+				memcpy(&h1_asset->verts0.packedVerts0[i], &asset->verts0.packedVerts0[i], sizeof(IW5::GfxPackedVertex));
 
 				float texCoord_unpacked[2]{ 0.0f, 0.0f };
-				PackedVec::Vec2UnpackTexCoords(asset->verticies[i].texCoord.packed, texCoord_unpacked);
+				PackedVec::Vec2UnpackTexCoords(asset->verts0.packedVerts0[i].texCoord.packed, texCoord_unpacked);
 				std::swap(texCoord_unpacked[0], texCoord_unpacked[1]); // these are inverted...
 				h1_asset->verts0.packedVerts0[i].texCoord.packed = PackedVec::Vec2PackTexCoords(texCoord_unpacked);
 
 				// re-calculate these...
 				float normal_unpacked[3]{ 0.0f, 0.0f, 0.0f };
-				PackedVec::Vec3UnpackUnitVec(asset->verticies[i].normal.array, normal_unpacked);
+				PackedVec::Vec3UnpackUnitVec(asset->verts0.packedVerts0[i].normal.array, normal_unpacked);
 
 				float tangent_unpacked[3]{ 0.0f, 0.0f, 0.0f };
-				PackedVec::Vec3UnpackUnitVec(asset->verticies[i].tangent.array, tangent_unpacked);
+				PackedVec::Vec3UnpackUnitVec(asset->verts0.packedVerts0[i].tangent.array, tangent_unpacked);
 
 				float normal[3] = { normal_unpacked[0], normal_unpacked[1], normal_unpacked[2] };
 				float tangent[3] = { tangent_unpacked[0], tangent_unpacked[1], tangent_unpacked[2] };
 
 				float sign = 0.0f;
-				if (asset->verticies[i].binormalSign == -1.0f)
+				if (asset->verts0.packedVerts0[i].binormalSign == -1.0f)
 				{
 					sign = 1.0f;
 				}
@@ -178,10 +178,10 @@ namespace ZoneTool::IW5
 				h1_asset->verts0.packedVerts0[i].tangent.packed = PackedVec::Vec3PackUnitVecWithAlpha(tangent, sign);
 				
 				// correct color : bgra->rgba
-				h1_asset->verts0.packedVerts0[i].color.array[0] = asset->verticies[i].color.array[2];
-				h1_asset->verts0.packedVerts0[i].color.array[1] = asset->verticies[i].color.array[1];
-				h1_asset->verts0.packedVerts0[i].color.array[2] = asset->verticies[i].color.array[0];
-				h1_asset->verts0.packedVerts0[i].color.array[3] = asset->verticies[i].color.array[3];
+				h1_asset->verts0.packedVerts0[i].color.array[0] = asset->verts0.packedVerts0[i].color.array[2];
+				h1_asset->verts0.packedVerts0[i].color.array[1] = asset->verts0.packedVerts0[i].color.array[1];
+				h1_asset->verts0.packedVerts0[i].color.array[2] = asset->verts0.packedVerts0[i].color.array[0];
+				h1_asset->verts0.packedVerts0[i].color.array[3] = asset->verts0.packedVerts0[i].color.array[3];
 			}
 
 			// unknown
@@ -198,44 +198,44 @@ namespace ZoneTool::IW5
 			h1_asset->rigidVertLists = mem->Alloc<H1::XRigidVertList>(asset->vertListCount);
 			for (int i = 0; i < asset->vertListCount; i++)
 			{
-				h1_asset->rigidVertLists[i].boneOffset = asset->rigidVertLists[i].boneOffset;
-				h1_asset->rigidVertLists[i].vertCount = asset->rigidVertLists[i].vertCount;
-				h1_asset->rigidVertLists[i].triOffset = asset->rigidVertLists[i].triOffset;
-				h1_asset->rigidVertLists[i].triCount = asset->rigidVertLists[i].triCount;
+				h1_asset->rigidVertLists[i].boneOffset = asset->vertList[i].boneOffset;
+				h1_asset->rigidVertLists[i].vertCount = asset->vertList[i].vertCount;
+				h1_asset->rigidVertLists[i].triOffset = asset->vertList[i].triOffset;
+				h1_asset->rigidVertLists[i].triCount = asset->vertList[i].triCount;
 
-				if (asset->rigidVertLists[i].collisionTree)
+				if (asset->vertList[i].collisionTree)
 				{
 					h1_asset->rigidVertLists[i].collisionTree = mem->Alloc<H1::XSurfaceCollisionTree>();
-					memcpy(&h1_asset->rigidVertLists[i].collisionTree->trans, &asset->rigidVertLists[i].collisionTree->trans,
-						sizeof(asset->rigidVertLists[i].collisionTree->trans));
-					memcpy(&h1_asset->rigidVertLists[i].collisionTree->scale, &asset->rigidVertLists[i].collisionTree->scale,
-						sizeof(asset->rigidVertLists[i].collisionTree->scale));
+					memcpy(&h1_asset->rigidVertLists[i].collisionTree->trans, &asset->vertList[i].collisionTree->trans,
+						sizeof(asset->vertList[i].collisionTree->trans));
+					memcpy(&h1_asset->rigidVertLists[i].collisionTree->scale, &asset->vertList[i].collisionTree->scale,
+						sizeof(asset->vertList[i].collisionTree->scale));
 
-					h1_asset->rigidVertLists[i].collisionTree->nodeCount = asset->rigidVertLists[i].collisionTree->nodeCount;
+					h1_asset->rigidVertLists[i].collisionTree->nodeCount = asset->vertList[i].collisionTree->nodeCount;
 					h1_asset->rigidVertLists[i].collisionTree->nodes = mem->Alloc<H1::XSurfaceCollisionNode>(
-						asset->rigidVertLists[i].collisionTree->nodeCount);
-					for (int j = 0; j < asset->rigidVertLists[i].collisionTree->nodeCount; j++)
+						asset->vertList[i].collisionTree->nodeCount);
+					for (int j = 0; j < asset->vertList[i].collisionTree->nodeCount; j++)
 					{
 						memcpy(&h1_asset->rigidVertLists[i].collisionTree->nodes[j].aabb.mins,
-							&asset->rigidVertLists[i].collisionTree->nodes[j].aabb.mins,
-							sizeof(asset->rigidVertLists[i].collisionTree->nodes[j].aabb.mins));
+							&asset->vertList[i].collisionTree->nodes[j].aabb.mins,
+							sizeof(asset->vertList[i].collisionTree->nodes[j].aabb.mins));
 						memcpy(&h1_asset->rigidVertLists[i].collisionTree->nodes[j].aabb.maxs,
-							&asset->rigidVertLists[i].collisionTree->nodes[j].aabb.maxs,
-							sizeof(asset->rigidVertLists[i].collisionTree->nodes[j].aabb.maxs));
+							&asset->vertList[i].collisionTree->nodes[j].aabb.maxs,
+							sizeof(asset->vertList[i].collisionTree->nodes[j].aabb.maxs));
 
 						h1_asset->rigidVertLists[i].collisionTree->nodes[j].childBeginIndex =
-							asset->rigidVertLists[i].collisionTree->nodes[j].childBeginIndex;
+							asset->vertList[i].collisionTree->nodes[j].childBeginIndex;
 						h1_asset->rigidVertLists[i].collisionTree->nodes[j].childCount =
-							asset->rigidVertLists[i].collisionTree->nodes[j].childCount;
+							asset->vertList[i].collisionTree->nodes[j].childCount;
 					}
 
-					h1_asset->rigidVertLists[i].collisionTree->leafCount = asset->rigidVertLists[i].collisionTree->leafCount;
+					h1_asset->rigidVertLists[i].collisionTree->leafCount = asset->vertList[i].collisionTree->leafCount;
 					h1_asset->rigidVertLists[i].collisionTree->leafs = mem->Alloc<H1::XSurfaceCollisionLeaf>(
-						asset->rigidVertLists[i].collisionTree->leafCount);
-					for (int j = 0; j < asset->rigidVertLists[i].collisionTree->leafCount; j++)
+						asset->vertList[i].collisionTree->leafCount);
+					for (int j = 0; j < asset->vertList[i].collisionTree->leafCount; j++)
 					{
 						h1_asset->rigidVertLists[i].collisionTree->leafs[j].triangleBeginIndex =
-							asset->rigidVertLists[i].collisionTree->leafs[j].triangleBeginIndex;
+							asset->vertList[i].collisionTree->leafs[j].triangleBeginIndex;
 					}
 				}
 			}
@@ -244,25 +244,25 @@ namespace ZoneTool::IW5
 			memcpy(&h1_asset->partBits, &asset->partBits, sizeof(asset->partBits));
 		}
 
-		H1::XModelSurfs* GenerateH1XModelSurfs(ModelSurface* asset, ZoneMemory* mem)
+		H1::XModelSurfs* GenerateH1XModelSurfs(XModelSurfs* asset, ZoneMemory* mem)
 		{
 			// allocate H1 XModelSurfs structure
 			const auto h1_asset = mem->Alloc<H1::XModelSurfs>();
 
 			h1_asset->name = mem->StrDup(asset->name);
-			h1_asset->numsurfs = asset->xSurficiesCount;
+			h1_asset->numsurfs = asset->numsurfs;
 			memcpy(&h1_asset->partBits, &asset->partBits, sizeof(asset->partBits));
 
-			h1_asset->surfs = mem->Alloc<H1::XSurface>(asset->xSurficiesCount);
-			for (int i = 0; i < asset->xSurficiesCount; i++)
+			h1_asset->surfs = mem->Alloc<H1::XSurface>(asset->numsurfs);
+			for (int i = 0; i < asset->numsurfs; i++)
 			{
-				GenerateH1XSurface(&h1_asset->surfs[i], &asset->xSurficies[i], mem);
+				GenerateH1XSurface(&h1_asset->surfs[i], &asset->surfs[i], mem);
 			}
 
 			return h1_asset;
 		}
 
-		H1::XModelSurfs* convert(ModelSurface* asset, ZoneMemory* mem)
+		H1::XModelSurfs* convert(XModelSurfs* asset, ZoneMemory* mem)
 		{
 			// generate h1 surfaces
 			return GenerateH1XModelSurfs(asset, mem);

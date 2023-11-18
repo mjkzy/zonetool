@@ -181,7 +181,7 @@ namespace ZoneTool::IW5
 			{
 			case H1::snd_alias_type_t::SAT_LOADED:
 			{
-				const std::string s_name = alias->soundFile->sound.loadSnd->name;
+				const std::string s_name = alias->soundFile->u.loadSnd->name;
 				const std::string s_name_no_ext = remove_extension(s_name);
 
 				h1_alias->soundFile->u.loadSnd = mem->Alloc<H1::LoadedSound>();
@@ -192,8 +192,8 @@ namespace ZoneTool::IW5
 			{
 #ifdef STREAMED_TO_LOADED_IW5
 				h1_alias->soundFile->type = H1::snd_alias_type_t::SAT_LOADED;
-				const std::string s_dir = alias->soundFile->sound.streamSnd.dir;
-				const std::string s_name = alias->soundFile->sound.streamSnd.name;
+				const std::string s_dir = alias->soundFile->u.streamSnd.dir;
+				const std::string s_name = alias->soundFile->u.streamSnd.name;
 				const auto path = std::filesystem::path(s_dir + "/" + s_name);
 
 				std::string noext_path = remove_extension(path.string());
@@ -310,7 +310,7 @@ namespace ZoneTool::IW5
 				{
 					for (char y = 0; y < 2; y++)
 					{
-						h1_alias->speakerMap->channelMaps[x][y].speakerCount = alias->speakerMap->channelMaps[x][y].entryCount;
+						h1_alias->speakerMap->channelMaps[x][y].speakerCount = alias->speakerMap->channelMaps[x][y].speakerCount;
 						for (char i = 0; i < 6; i++)
 						{
 							h1_alias->speakerMap->channelMaps[x][y].speakers[i].speaker = alias->speakerMap->channelMaps[x][y].speakers[i].speaker;
@@ -348,7 +348,7 @@ namespace ZoneTool::IW5
 			IW5::SoundAliasFlags iw5_flags{ 0 };
 
 			h1_flags.intValue = 0;
-			iw5_flags.intValue = alias->flags;
+			iw5_flags.intValue = alias->flags.intValue;
 
 			const auto get_unk1 = [&](auto type, auto channel)
 			{
@@ -373,7 +373,7 @@ namespace ZoneTool::IW5
 			h1_flags.packed.isSlave = iw5_flags.isSlave;
 			h1_flags.packed.fullDryLevel = iw5_flags.fullDryLevel;
 			h1_flags.packed.noWetLevel = iw5_flags.noWetLevel;
-			h1_flags.packed.is3d = iw5_flags.unknown2;
+			h1_flags.packed.is3d = iw5_flags.unk_is3D;
 			h1_flags.packed.unk1 = get_unk1(h1_alias->soundFile->type, iw5_flags.channel);
 			h1_flags.packed.type = h1_alias->soundFile->type; //iw5_flags.type;
 			h1_flags.packed.unk2 = 0;

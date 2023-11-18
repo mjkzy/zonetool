@@ -192,7 +192,7 @@ namespace ZoneTool
 		{
 			auto xassettypes = reinterpret_cast<char**>(0x7C6208);
 
-			for (std::int32_t i = 0; i < max; i++)
+			for (std::int32_t i = 0; i < ASSET_TYPE_COUNT; i++)
 			{
 				if (xassettypes[i] == type)
 					return i;

@@ -94,53 +94,53 @@ namespace ZoneTool::IW5
 
 		void GenerateH1ClipInfo(H1::ClipInfo* info, clipMap_t* asset, ZoneMemory* mem)
 		{
-			info->planeCount = asset->info.numCPlanes;
-			REINTERPRET_CAST_SAFE(info->planes, asset->info.cPlanes);
+			info->planeCount = asset->info.planeCount;
+			REINTERPRET_CAST_SAFE(info->planes, asset->info.planes);
 
 			info->numMaterials = asset->info.numMaterials;
 			info->materials = mem->Alloc<H1::ClipMaterial>(info->numMaterials);
 			for (unsigned int i = 0; i < info->numMaterials; i++)
 			{
-				info->materials[i].name = asset->info.materials[i].material;
+				info->materials[i].name = asset->info.materials[i].name;
 				info->materials[i].surfaceFlags = convert_surf_flags(asset->info.materials[i].surfaceFlags);
-				info->materials[i].contents = asset->info.materials[i].contentFlags;
+				info->materials[i].contents = asset->info.materials[i].contents;
 			}
 
-			info->bCollisionTree.leafbrushNodesCount = asset->info.numCLeafBrushNodes;
+			info->bCollisionTree.leafbrushNodesCount = asset->info.leafbrushNodesCount;
 			info->bCollisionTree.leafbrushNodes = mem->Alloc<H1::cLeafBrushNode_s>(info->bCollisionTree.leafbrushNodesCount);
 			for (unsigned int i = 0; i < info->bCollisionTree.leafbrushNodesCount; i++)
 			{
-				info->bCollisionTree.leafbrushNodes[i].axis = asset->info.cLeafBrushNodes[i].axis;
-				info->bCollisionTree.leafbrushNodes[i].leafBrushCount = asset->info.cLeafBrushNodes[i].leafBrushCount;
-				info->bCollisionTree.leafbrushNodes[i].contents = asset->info.cLeafBrushNodes[i].contents;
+				info->bCollisionTree.leafbrushNodes[i].axis = asset->info.leafbrushNodes[i].axis;
+				info->bCollisionTree.leafbrushNodes[i].leafBrushCount = asset->info.leafbrushNodes[i].leafBrushCount;
+				info->bCollisionTree.leafbrushNodes[i].contents = asset->info.leafbrushNodes[i].contents;
 				if (info->bCollisionTree.leafbrushNodes[i].leafBrushCount > 0)
 				{
-					REINTERPRET_CAST_SAFE(info->bCollisionTree.leafbrushNodes[i].data.leaf.brushes, asset->info.cLeafBrushNodes[i].data.leaf.brushes);
+					REINTERPRET_CAST_SAFE(info->bCollisionTree.leafbrushNodes[i].data.leaf.brushes, asset->info.leafbrushNodes[i].data.leaf.brushes);
 				}
 				else
 				{
-					info->bCollisionTree.leafbrushNodes[i].data.children.dist = asset->info.cLeafBrushNodes[i].data.children.dist;
-					info->bCollisionTree.leafbrushNodes[i].data.children.range = asset->info.cLeafBrushNodes[i].data.children.range;
+					info->bCollisionTree.leafbrushNodes[i].data.children.dist = asset->info.leafbrushNodes[i].data.children.dist;
+					info->bCollisionTree.leafbrushNodes[i].data.children.range = asset->info.leafbrushNodes[i].data.children.range;
 
-					info->bCollisionTree.leafbrushNodes[i].data.children.childOffset[0] = asset->info.cLeafBrushNodes[i].data.children.childOffset[0];
-					info->bCollisionTree.leafbrushNodes[i].data.children.childOffset[1] = asset->info.cLeafBrushNodes[i].data.children.childOffset[1];
+					info->bCollisionTree.leafbrushNodes[i].data.children.childOffset[0] = asset->info.leafbrushNodes[i].data.children.childOffset[0];
+					info->bCollisionTree.leafbrushNodes[i].data.children.childOffset[1] = asset->info.leafbrushNodes[i].data.children.childOffset[1];
 				}
 			}
 
 			info->bCollisionTree.numLeafBrushes = asset->info.numLeafBrushes;
-			REINTERPRET_CAST_SAFE(info->bCollisionTree.leafbrushes, asset->info.leafBrushes);
+			REINTERPRET_CAST_SAFE(info->bCollisionTree.leafbrushes, asset->info.leafbrushes);
 
-			info->pCollisionTree.aabbTreeCount = asset->numCollisionAABBTrees;
+			info->pCollisionTree.aabbTreeCount = asset->aabbTreeCount;
 			info->pCollisionTree.aabbTrees = mem->Alloc<H1::CollisionAabbTree>(info->pCollisionTree.aabbTreeCount);
 			for (int i = 0; i < info->pCollisionTree.aabbTreeCount; i++)
 			{
-				std::memcpy(info->pCollisionTree.aabbTrees[i].midPoint, asset->collisionAABBTrees[i].midPoint, sizeof(float[3]));
-				std::memcpy(info->pCollisionTree.aabbTrees[i].halfSize, asset->collisionAABBTrees[i].halfSize, sizeof(float[3]));
-				info->pCollisionTree.aabbTrees[i].materialIndex = asset->collisionAABBTrees[i].materialIndex;
-				info->pCollisionTree.aabbTrees[i].childCount = asset->collisionAABBTrees[i].childCount;
+				std::memcpy(info->pCollisionTree.aabbTrees[i].midPoint, asset->aabbTrees[i].midPoint, sizeof(float[3]));
+				std::memcpy(info->pCollisionTree.aabbTrees[i].halfSize, asset->aabbTrees[i].halfSize, sizeof(float[3]));
+				info->pCollisionTree.aabbTrees[i].materialIndex = asset->aabbTrees[i].materialIndex;
+				info->pCollisionTree.aabbTrees[i].childCount = asset->aabbTrees[i].childCount;
 
-				info->pCollisionTree.aabbTrees[i].u.firstChildIndex = asset->collisionAABBTrees[i].u.firstChildIndex;
-				//info->pCollisionTree.aabbTrees[i].u.partitionIndex = asset->collisionAABBTrees[i].u.partitionIndex;
+				info->pCollisionTree.aabbTrees[i].u.firstChildIndex = asset->aabbTrees[i].u.firstChildIndex;
+				//info->pCollisionTree.aabbTrees[i].u.partitionIndex = asset->aabbTrees[i].u.partitionIndex;
 			}
 
 			info->sCollisionTree.numStaticModels = asset->numStaticModels;
@@ -149,24 +149,24 @@ namespace ZoneTool::IW5
 
 			std::unordered_map<cbrushside_t*, H1::cbrushside_t*> mapped_brush_sides;
 
-			info->bCollisionData.numBrushSides = asset->info.numCBrushSides;
+			info->bCollisionData.numBrushSides = asset->info.numBrushSides;
 			info->bCollisionData.brushSides = mem->Alloc<H1::cbrushside_t>(info->bCollisionData.numBrushSides);
 			for (unsigned int i = 0; i < info->bCollisionData.numBrushSides; i++)
 			{
-				mapped_brush_sides[&asset->info.cBrushSides[i]] = &info->bCollisionData.brushSides[i];
+				mapped_brush_sides[&asset->info.brushsides[i]] = &info->bCollisionData.brushSides[i];
 
 				// check
 				info->bCollisionData.brushSides[i].planeIndex =
-					(reinterpret_cast<std::uintptr_t>(asset->info.cBrushSides[i].plane) - reinterpret_cast<std::uintptr_t>(asset->info.cPlanes)) / sizeof(cplane_s);
+					(reinterpret_cast<std::uintptr_t>(asset->info.brushsides[i].plane) - reinterpret_cast<std::uintptr_t>(asset->info.planes)) / sizeof(cplane_s);
 				assert(info->bCollisionData.brushSides[i].planeIndex <= info->planeCount);
 
-				info->bCollisionData.brushSides[i].materialNum = asset->info.cBrushSides[i].materialNum;
-				info->bCollisionData.brushSides[i].firstAdjacentSideOffset = asset->info.cBrushSides[i].firstAdjacentSideOffset;
-				info->bCollisionData.brushSides[i].edgeCount = asset->info.cBrushSides[i].edgeCount;
+				info->bCollisionData.brushSides[i].materialNum = asset->info.brushsides[i].materialNum;
+				info->bCollisionData.brushSides[i].firstAdjacentSideOffset = asset->info.brushsides[i].firstAdjacentSideOffset;
+				info->bCollisionData.brushSides[i].edgeCount = asset->info.brushsides[i].edgeCount;
 			}
 
-			info->bCollisionData.numBrushEdges = asset->info.numCBrushEdges;
-			REINTERPRET_CAST_SAFE(info->bCollisionData.brushEdges, asset->info.cBrushEdges);
+			info->bCollisionData.numBrushEdges = asset->info.numBrushEdges;
+			REINTERPRET_CAST_SAFE(info->bCollisionData.brushEdges, asset->info.brushEdges);
 
 			info->bCollisionData.numBrushes = asset->info.numBrushes;
 			info->bCollisionData.brushes = mem->Alloc<H1::cbrush_t>(asset->info.numBrushes);
@@ -178,7 +178,7 @@ namespace ZoneTool::IW5
 				if (asset->info.brushes[i].sides)
 					info->bCollisionData.brushes[i].sides = mapped_brush_sides.find(asset->info.brushes[i].sides)->second;
 
-				REINTERPRET_CAST_SAFE(info->bCollisionData.brushes[i].baseAdjacentSide, asset->info.brushes[i].edge);
+				REINTERPRET_CAST_SAFE(info->bCollisionData.brushes[i].baseAdjacentSide, asset->info.brushes[i].baseAdjacentSide);
 
 				memcpy(&info->bCollisionData.brushes[i].axialMaterialNum, &asset->info.brushes[i].axialMaterialNum, sizeof(short[2][3]));
 				memcpy(&info->bCollisionData.brushes[i].firstAdjacentSideOffsets, &asset->info.brushes[i].firstAdjacentSideOffsets, sizeof(char[2][3]));
@@ -188,22 +188,22 @@ namespace ZoneTool::IW5
 			REINTERPRET_CAST_SAFE(info->bCollisionData.brushBounds, asset->info.brushBounds);
 			REINTERPRET_CAST_SAFE(info->bCollisionData.brushContents, asset->info.brushContents);
 
-			info->pCollisionData.vertCount = asset->numVerts;
+			info->pCollisionData.vertCount = asset->vertCount;
 			REINTERPRET_CAST_SAFE(info->pCollisionData.verts, asset->verts);
-			info->pCollisionData.triCount = asset->numTriIndices;
+			info->pCollisionData.triCount = asset->triCount;
 			REINTERPRET_CAST_SAFE(info->pCollisionData.triIndices, asset->triIndices);
 			REINTERPRET_CAST_SAFE(info->pCollisionData.triEdgeIsWalkable, asset->triEdgeIsWalkable);
-			info->pCollisionData.borderCount = asset->numCollisionBorders;
-			REINTERPRET_CAST_SAFE(info->pCollisionData.borders, asset->collisionBorders);
-			info->pCollisionData.partitionCount = asset->numCollisionPartitions;
+			info->pCollisionData.borderCount = asset->borderCount;
+			REINTERPRET_CAST_SAFE(info->pCollisionData.borders, asset->borders);
+			info->pCollisionData.partitionCount = asset->partitionCount;
 			info->pCollisionData.partitions = mem->Alloc<H1::CollisionPartition>(info->pCollisionData.partitionCount);
 			for (int i = 0; i < info->pCollisionData.partitionCount; i++)
 			{
-				info->pCollisionData.partitions[i].triCount = asset->collisionPartitions[i].triCount;
-				info->pCollisionData.partitions[i].borderCount = asset->collisionPartitions[i].borderCount;
-				info->pCollisionData.partitions[i].firstVertSegment = asset->collisionPartitions[i].firstVertSegment;
-				info->pCollisionData.partitions[i].firstTri = asset->collisionPartitions[i].firstTri;
-				REINTERPRET_CAST_SAFE(info->pCollisionData.partitions[i].borders, asset->collisionPartitions[i].borders);
+				info->pCollisionData.partitions[i].triCount = asset->partitions[i].triCount;
+				info->pCollisionData.partitions[i].borderCount = asset->partitions[i].borderCount;
+				info->pCollisionData.partitions[i].firstVertSegment = asset->partitions[i].firstVertSegment;
+				info->pCollisionData.partitions[i].firstTri = asset->partitions[i].firstTri;
+				REINTERPRET_CAST_SAFE(info->pCollisionData.partitions[i].borders, asset->partitions[i].borders);
 			}
 
 			info->sCollisionData.numStaticModels = asset->numStaticModels;
@@ -214,7 +214,7 @@ namespace ZoneTool::IW5
 
 				memcpy(&info->sCollisionData.staticModelList[i].origin, &asset->staticModelList[i].origin, sizeof(float[3]));
 				memcpy(&info->sCollisionData.staticModelList[i].invScaledAxis, &asset->staticModelList[i].invScaledAxis, sizeof(float[3][3]));
-				memcpy(&info->sCollisionData.staticModelList[i].absBounds, &asset->staticModelList[i].absmin, sizeof(float[2][3]));
+				memcpy(&info->sCollisionData.staticModelList[i].absBounds, &asset->staticModelList[i].absBounds, sizeof(float[2][3]));
 				info->sCollisionData.staticModelList[i].lightingHandle = 0;
 			}
 		}
@@ -230,42 +230,42 @@ namespace ZoneTool::IW5
 			GenerateH1ClipInfo(&h1_asset->info, asset, mem);
 			h1_asset->pInfo = &h1_asset->info;
 
-			h1_asset->numNodes = asset->numCNodes;
+			h1_asset->numNodes = asset->numNodes;
 			h1_asset->nodes = mem->Alloc<H1::cNode_t>(h1_asset->numNodes);
 			for (unsigned int i = 0; i < h1_asset->numNodes; i++)
 			{
-				REINTERPRET_CAST_SAFE(h1_asset->nodes[i].plane, asset->cNodes[i].plane);
-				h1_asset->nodes[i].children[0] = asset->cNodes[i].children[0];
-				h1_asset->nodes[i].children[1] = asset->cNodes[i].children[1];
+				REINTERPRET_CAST_SAFE(h1_asset->nodes[i].plane, asset->nodes[i].plane);
+				h1_asset->nodes[i].children[0] = asset->nodes[i].children[0];
+				h1_asset->nodes[i].children[1] = asset->nodes[i].children[1];
 			}
 
-			h1_asset->numLeafs = asset->numCLeaf;
+			h1_asset->numLeafs = asset->numLeafs;
 			h1_asset->leafs = mem->Alloc<H1::cLeaf_t>(h1_asset->numLeafs);
 			for (unsigned int i = 0; i < h1_asset->numLeafs; i++)
 			{
-				h1_asset->leafs[i].firstCollAabbIndex = asset->cLeaf[i].firstCollAabbIndex;
-				h1_asset->leafs[i].collAabbCount = asset->cLeaf[i].collAabbCount;
-				h1_asset->leafs[i].brushContents = asset->cLeaf[i].brushContents;
-				h1_asset->leafs[i].terrainContents = asset->cLeaf[i].terrainContents;
-				memcpy(&h1_asset->leafs[i].bounds, &asset->cLeaf[i].bounds, sizeof(IW5::Bounds));
-				h1_asset->leafs[i].leafBrushNode = asset->cLeaf[i].leafBrushNode;
+				h1_asset->leafs[i].firstCollAabbIndex = asset->leafs[i].firstCollAabbIndex;
+				h1_asset->leafs[i].collAabbCount = asset->leafs[i].collAabbCount;
+				h1_asset->leafs[i].brushContents = asset->leafs[i].brushContents;
+				h1_asset->leafs[i].terrainContents = asset->leafs[i].terrainContents;
+				memcpy(&h1_asset->leafs[i].bounds, &asset->leafs[i].bounds, sizeof(IW5::Bounds));
+				h1_asset->leafs[i].leafBrushNode = asset->leafs[i].leafBrushNode;
 			}
 
-			h1_asset->numSubModels = asset->numCModels;
+			h1_asset->numSubModels = asset->numSubModels;
 			h1_asset->cmodels = mem->Alloc<H1::cmodel_t>(h1_asset->numSubModels);
 			for (unsigned int i = 0; i < h1_asset->numSubModels; i++)
 			{
-				memcpy(&h1_asset->cmodels[i].bounds, &asset->cModels[i].bounds, sizeof(IW5::Bounds));
-				h1_asset->cmodels[i].radius = asset->cModels[i].radius;
+				memcpy(&h1_asset->cmodels[i].bounds, &asset->cmodels[i].bounds, sizeof(IW5::Bounds));
+				h1_asset->cmodels[i].radius = asset->cmodels[i].radius;
 
 				h1_asset->cmodels[i].info = nullptr; // mapped in h1
 
-				h1_asset->cmodels[i].leaf.firstCollAabbIndex = asset->cModels[i].leaf.firstCollAabbIndex;
-				h1_asset->cmodels[i].leaf.collAabbCount = asset->cModels[i].leaf.collAabbCount;
-				h1_asset->cmodels[i].leaf.brushContents = asset->cModels[i].leaf.brushContents;
-				h1_asset->cmodels[i].leaf.terrainContents = asset->cModels[i].leaf.terrainContents;
-				memcpy(&h1_asset->cmodels[i].leaf.bounds, &asset->cModels[i].leaf.bounds, sizeof(IW5::Bounds));
-				h1_asset->cmodels[i].leaf.leafBrushNode = asset->cModels[i].leaf.leafBrushNode;
+				h1_asset->cmodels[i].leaf.firstCollAabbIndex = asset->cmodels[i].leaf.firstCollAabbIndex;
+				h1_asset->cmodels[i].leaf.collAabbCount = asset->cmodels[i].leaf.collAabbCount;
+				h1_asset->cmodels[i].leaf.brushContents = asset->cmodels[i].leaf.brushContents;
+				h1_asset->cmodels[i].leaf.terrainContents = asset->cmodels[i].leaf.terrainContents;
+				memcpy(&h1_asset->cmodels[i].leaf.bounds, &asset->cmodels[i].leaf.bounds, sizeof(IW5::Bounds));
+				h1_asset->cmodels[i].leaf.leafBrushNode = asset->cmodels[i].leaf.leafBrushNode;
 			}
 
 			h1_asset->mapEnts = mem->Alloc<H1::MapEnts>();
@@ -322,7 +322,7 @@ namespace ZoneTool::IW5
 					h1_asset->dynEntClientList[i][j].health = asset->dynEntClientList[i]->health;
 					h1_asset->dynEntClientList[i][j].hinge = nullptr;
 					h1_asset->dynEntClientList[i][j].activeModel = nullptr;
-					h1_asset->dynEntClientList[i][j].contents = asset->dynEntClientList[i]->contents;
+					h1_asset->dynEntClientList[i][j].contents = 0;
 				}
 			}
 
@@ -333,7 +333,7 @@ namespace ZoneTool::IW5
 
 			h1_asset->grappleData;
 
-			h1_asset->checksum = asset->isPlutoniumMap;
+			h1_asset->checksum = asset->checksum;
 
 			return h1_asset;
 		}

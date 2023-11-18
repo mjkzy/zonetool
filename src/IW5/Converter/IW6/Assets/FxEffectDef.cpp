@@ -232,7 +232,7 @@ namespace ZoneTool::IW5
 				iw6_elem->visuals.instance.anonymous = elem->visuals.instance.anonymous;
 			}
 
-			memcpy(&iw6_elem->collBounds, &elem->collMins, sizeof(float[3][2]));
+			memcpy(&iw6_elem->collBounds, &elem->collBounds, sizeof(float[3][2]));
 
 			iw6_elem->effectOnImpact.name = elem->effectOnImpact.name;
 			iw6_elem->effectOnDeath.name = elem->effectOnDeath.name;
@@ -269,7 +269,7 @@ namespace ZoneTool::IW5
 				break;
 			case FX_ELEM_TYPE_SPARKFOUNTAIN:
 				// check
-				REINTERPRET_CAST_SAFE(iw6_elem->extended.sparkFountainDef, elem->extended.sparkFountain);
+				REINTERPRET_CAST_SAFE(iw6_elem->extended.sparkFountainDef, elem->extended.sparkFountainDef);
 				break;
 			case FX_ELEM_TYPE_SPOT_LIGHT:
 				// check
@@ -299,7 +299,7 @@ namespace ZoneTool::IW5
 			iw6_elem->lightingFrac = elem->lightingFrac;
 			iw6_elem->useItemClip = elem->useItemClip;
 			iw6_elem->fadeInfo = elem->fadeInfo;
-			iw6_elem->randomSeed = elem->pad; // check
+			iw6_elem->randomSeed = elem->randomSeed;
 		}
 
 		IW6::FxEffectDef* GenerateIW6FxEffectDef(FxEffectDef* asset, ZoneMemory* mem)

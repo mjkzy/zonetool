@@ -11,7 +11,7 @@ namespace ZoneTool::IW5
 		{
 			auto* iw6_asset = mem->Alloc<IW6::SndCurve>();
 
-			iw6_asset->name = asset->name;
+			iw6_asset->name = asset->filename;
 			iw6_asset->knotCount = asset->knotCount;
 			memcpy(iw6_asset->knots, asset->knots, sizeof(IW5::vec2_t[16]));
 
