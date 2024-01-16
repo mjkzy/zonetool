@@ -283,7 +283,7 @@ namespace ZoneTool
 
 				if (iw6_techset.find("_cso_") != std::string::npos)
 				{
-					CONSTANT_TABLE_ADD_IF_NOT_FOUND("hdrColorParm", 3379990750, 20.0f, 0.0f, 0.0f, 0.0f);
+					CONSTANT_TABLE_ADD_IF_NOT_FOUND("hdrColorParm", 3379990750, 1.0f, 0.0f, 0.0f, 0.0f);
 				}
 
 				if (iw6_techset.find("shadowcaster") != std::string::npos)
