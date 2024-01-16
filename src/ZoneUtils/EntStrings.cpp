@@ -72,7 +72,16 @@ namespace mapents2spawns
 					}
 					if (tokens.size() < 3)
 					{
-						throw std::runtime_error("mapents error: origin got fucked");
+						if (!tokens.size())
+						{
+							// fixup to (0,0,0)
+							for (auto i = 0; i < 3; i++)
+								tokens.push_back("0");
+						}
+						else
+						{
+							throw std::runtime_error(va("mapents error: origin got fucked, line: %d", line));
+						}
 					}
 					for (auto i = 0; i < 3; i++)
 					{
@@ -90,7 +99,16 @@ namespace mapents2spawns
 					}
 					if (tokens.size() < 3)
 					{
-						throw std::runtime_error("mapents error: angles got fucked");
+						if (!tokens.size())
+						{
+							// fixup to (0,0,0)
+							for (auto i = 0; i < 3; i++)
+								tokens.push_back("0");
+						}
+						else
+						{
+							throw std::runtime_error(va("mapents error: angles got fucked, line: %d", line));
+						}
 					}
 					for (auto i = 0; i < 3; i++)
 					{
@@ -268,16 +286,23 @@ namespace mapents2spawns
 
 	void dump_spawns(const std::string& out, char* entity_string)
 	{
-		auto* spawn_list = mapents2spawns::generate_spawnpoint_list(entity_string);
-		if (spawn_list)
+		try
 		{
-			if (spawn_list->num_spawns)
+			auto* spawn_list = mapents2spawns::generate_spawnpoint_list(entity_string);
+			if (spawn_list)
 			{
-				dump_spawnpoint_list(out, spawn_list);
-			}
+				if (spawn_list->num_spawns)
+				{
+					dump_spawnpoint_list(out, spawn_list);
+				}
 
-			delete[] spawn_list->spawns;
-			delete spawn_list;
+				delete[] spawn_list->spawns;
+				delete spawn_list;
+			}
+		}
+		catch(std::runtime_error& err)
+		{
+			ZONETOOL_FATAL("entstrings.cpp\n%s", err.what());
 		}
 	}
 }
