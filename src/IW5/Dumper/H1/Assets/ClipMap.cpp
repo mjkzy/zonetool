@@ -28,12 +28,19 @@ namespace ZoneTool::IW5::H1Dumper
 				}
 			}
 
-			ZONETOOL_INFO("Generating PhysWorld...");
-			allocator allocator;
-			auto* physmap = ZoneTool::H1::physworld_gen::generate_physworld(h1_asset, &allocator);
-			ZONETOOL_INFO("Generated PhysWorld.");
+			try
+			{
+				ZONETOOL_INFO("Generating PhysWorld...");
+				allocator allocator;
+				auto* physmap = ZoneTool::H1::physworld_gen::generate_physworld(h1_asset, &allocator);
+				ZONETOOL_INFO("Generated PhysWorld.");
 
-			H1::IPhysWorld::dump(physmap, SL_ConvertToString);
+				H1::IPhysWorld::dump(physmap, SL_ConvertToString);
+			}
+			catch (std::exception& err)
+			{
+				ZONETOOL_ERROR("Failed to generate and dump physicsworld asset.\nError: %s", err.what());
+			}
 		}
 	}
 }
