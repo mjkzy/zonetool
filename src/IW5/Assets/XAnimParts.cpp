@@ -5,15 +5,15 @@
 
 namespace ZoneTool::IW5
 {
-	void IXAnimParts::dump(XAnimParts* asset, ZoneMemory* mem, const std::function<const char* (uint16_t)>& convertToString)
+	void IXAnimParts::dump(XAnimParts* asset, const std::function<const char* (uint16_t)>& convertToString)
 	{
 		if (zonetool::dumping_target == zonetool::dump_target::h1)
 		{
-			return H1Dumper::dump(asset, mem, convertToString);
+			return H1Dumper::dump(asset, convertToString);
 		}
 		else if (zonetool::dumping_target == zonetool::dump_target::iw6)
 		{
-			return IW6Dumper::dump(asset, mem, convertToString);
+			return IW6Dumper::dump(asset, convertToString);
 		}
 	}
 }

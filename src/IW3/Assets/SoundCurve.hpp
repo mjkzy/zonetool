@@ -7,7 +7,7 @@ namespace ZoneTool
 		class ISoundCurve
 		{
 		public:
-			static void dump(SndCurve* asset, ZoneMemory* mem);
+			static void dump(SndCurve* asset);
 		};
 	}
 }

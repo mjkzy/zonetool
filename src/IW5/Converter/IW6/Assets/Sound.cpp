@@ -163,7 +163,7 @@ namespace ZoneTool::IW5
 			IW6::SoundVolMod::SND_VOLMOD_DEFAULT,	//SND_VOLMOD_DEFAULT,
 		};
 
-		void GenerateIW6SoundAlias(snd_alias_t* alias, IW6::snd_alias_t* iw6_alias, ZoneMemory* mem, const std::function<std::string(const char* filename)>& get_streamed_sound_data)
+		void GenerateIW6SoundAlias(snd_alias_t* alias, IW6::snd_alias_t* iw6_alias, allocator& mem, const std::function<std::string(const char* filename)>& get_streamed_sound_data)
 		{
 			iw6_alias->aliasName = alias->aliasName;
 			iw6_alias->subtitle = alias->subtitle;
@@ -172,7 +172,7 @@ namespace ZoneTool::IW5
 
 			// todo
 			iw6_alias->soundFile;
-			iw6_alias->soundFile = mem->Alloc<IW6::SoundFile>();
+			iw6_alias->soundFile = mem.allocate<IW6::SoundFile>();
 
 			iw6_alias->soundFile->exists = alias->soundFile->exists;
 			iw6_alias->soundFile->type = static_cast<IW6::snd_alias_type_t>(alias->soundFile->type);
@@ -184,8 +184,8 @@ namespace ZoneTool::IW5
 				const std::string s_name = alias->soundFile->u.loadSnd->name;
 				const std::string s_name_no_ext = remove_extension(s_name);
 
-				iw6_alias->soundFile->u.loadSnd = mem->Alloc<IW6::LoadedSound>();
-				iw6_alias->soundFile->u.loadSnd->name = mem->StrDup(s_name_no_ext);
+				iw6_alias->soundFile->u.loadSnd = mem.allocate<IW6::LoadedSound>();
+				iw6_alias->soundFile->u.loadSnd->name = mem.duplicate_string(s_name_no_ext);
 				break;
 			}
 			case IW6::snd_alias_type_t::SAT_STREAMED:
@@ -221,8 +221,8 @@ namespace ZoneTool::IW5
 					ZONETOOL_INFO("manual convertion needed for file: %s\n", path.string().data());
 				}
 
-				iw6_alias->soundFile->u.loadSnd = mem->Alloc<IW6::LoadedSound>();
-				iw6_alias->soundFile->u.loadSnd->name = mem->StrDup(noext_path);
+				iw6_alias->soundFile->u.loadSnd = mem.allocate<IW6::LoadedSound>();
+				iw6_alias->soundFile->u.loadSnd->name = mem.duplicate_string(noext_path);
 #else
 				iw6_alias->soundFile->u.streamSnd.filename.isLocalized = false;
 				iw6_alias->soundFile->u.streamSnd.filename.isStreamed = false;
@@ -263,14 +263,14 @@ namespace ZoneTool::IW5
 			iw6_alias->centerPercentage = alias->centerPercentage;
 			iw6_alias->startDelay = alias->startDelay;
 
-			auto* default_sndcurve = mem->Alloc<IW6::SndCurve>();
+			auto* default_sndcurve = mem.allocate<IW6::SndCurve>();
 			default_sndcurve->name = "$default";
 			default_sndcurve->isDefault = 1;
 
 			IW6::SndCurve* sndcurve = nullptr;
 			if (alias->volumeFalloffCurve && alias->volumeFalloffCurve->filename != ""s)
 			{
-				sndcurve = mem->Alloc<IW6::SndCurve>();
+				sndcurve = mem.allocate<IW6::SndCurve>();
 				sndcurve->filename = alias->volumeFalloffCurve->filename;
 				sndcurve->isDefault = 0;
 				sndcurve->knotCount = alias->volumeFalloffCurve->knotCount;
@@ -288,7 +288,7 @@ namespace ZoneTool::IW5
 			iw6_alias->speakerMap = nullptr;
 			if (alias->speakerMap)
 			{
-				iw6_alias->speakerMap = mem->Alloc<IW6::SpeakerMap>();
+				iw6_alias->speakerMap = mem.allocate<IW6::SpeakerMap>();
 				iw6_alias->speakerMap->isDefault = alias->speakerMap->isDefault;
 				iw6_alias->speakerMap->name = alias->speakerMap->name;
 
@@ -339,13 +339,13 @@ namespace ZoneTool::IW5
 			iw6_alias->flags = iw6_flags.intValue;
 		}
 
-		IW6::snd_alias_list_t* GenerateIW6Sound(snd_alias_list_t* asset, ZoneMemory* mem, const std::function<std::string(const char* filename)>& get_streamed_sound_data)
+		IW6::snd_alias_list_t* GenerateIW6Sound(snd_alias_list_t* asset, allocator& mem, const std::function<std::string(const char* filename)>& get_streamed_sound_data)
 		{
-			auto* iw6_asset = mem->Alloc<IW6::snd_alias_list_t>();
+			auto* iw6_asset = mem.allocate<IW6::snd_alias_list_t>();
 			iw6_asset->aliasName = asset->aliasName;
 			
 			iw6_asset->count = asset->count;
-			iw6_asset->head = mem->Alloc<IW6::snd_alias_t>(iw6_asset->count);
+			iw6_asset->head = mem.allocate<IW6::snd_alias_t>(iw6_asset->count);
 			for (unsigned char i = 0; i < iw6_asset->count; i++)
 			{
 				GenerateIW6SoundAlias(&asset->head[i], &iw6_asset->head[i], mem, get_streamed_sound_data);
@@ -354,10 +354,10 @@ namespace ZoneTool::IW5
 			return iw6_asset;
 		}
 
-		IW6::snd_alias_list_t* convert(snd_alias_list_t* asset, ZoneMemory* mem, const std::function<std::string(const char* filename)>& get_streamed_sound_data)
+		IW6::snd_alias_list_t* convert(snd_alias_list_t* asset, allocator& allocator, const std::function<std::string(const char* filename)>& get_streamed_sound_data)
 		{
 			// generate IW6 asset
-			return GenerateIW6Sound(asset, mem, get_streamed_sound_data);
+			return GenerateIW6Sound(asset, allocator, get_streamed_sound_data);
 		}
 	}
 }

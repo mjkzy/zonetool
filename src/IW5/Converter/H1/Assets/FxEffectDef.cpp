@@ -152,7 +152,7 @@ namespace ZoneTool::IW5
 			return h1_flags;
 		}
 
-		void GenerateH1FxElemDef(H1::FxElemDef* h1_elem, FxElemDef* elem, ZoneMemory* mem)
+		void GenerateH1FxElemDef(H1::FxElemDef* h1_elem, FxElemDef* elem, allocator& mem)
 		{
 			h1_elem->flags = static_cast<H1::FxElemDefFlags>(convert_elem_flags(elem->flags));
 			h1_elem->flags2 = 0;
@@ -182,7 +182,7 @@ namespace ZoneTool::IW5
 
 			if (elem->visSamples)
 			{
-				h1_elem->visSamples = mem->Alloc<H1::FxElemVisStateSample>(elem->visStateIntervalCount + 1);
+				h1_elem->visSamples = mem.allocate<H1::FxElemVisStateSample>(elem->visStateIntervalCount + 1);
 				for (int i = 0; i < elem->visStateIntervalCount + 1; i++)
 				{
 					// check
@@ -223,7 +223,7 @@ namespace ZoneTool::IW5
 
 			if (elem->elemType == FX_ELEM_TYPE_DECAL)
 			{
-				h1_elem->visuals.markArray = mem->Alloc<H1::FxElemMarkVisuals>(elem->visualCount);
+				h1_elem->visuals.markArray = mem.allocate<H1::FxElemMarkVisuals>(elem->visualCount);
 				for (int i = 0; i < elem->visualCount; i++)
 				{
 					h1_elem->visuals.markArray[i].materials[0] = reinterpret_cast<H1::Material*>(elem->visuals.markArray[i].materials[0]); // mc
@@ -233,7 +233,7 @@ namespace ZoneTool::IW5
 			}
 			else if (elem->visualCount > 1)
 			{
-				h1_elem->visuals.array = mem->Alloc<H1::FxElemVisuals>(elem->visualCount);
+				h1_elem->visuals.array = mem.allocate<H1::FxElemVisuals>(elem->visualCount);
 				for (int i = 0; i < elem->visualCount; i++)
 				{
 					// this is fine
@@ -257,7 +257,7 @@ namespace ZoneTool::IW5
 			switch (elem->elemType)
 			{
 			case FX_ELEM_TYPE_TRAIL:
-				h1_elem->extended.trailDef = mem->Alloc<H1::FxTrailDef>();
+				h1_elem->extended.trailDef = mem.allocate<H1::FxTrailDef>();
 
 				// check
 				h1_elem->extended.trailDef->scrollTimeMsec = elem->extended.trailDef->scrollTimeMsec;
@@ -268,7 +268,7 @@ namespace ZoneTool::IW5
 				// pad
 
 				h1_elem->extended.trailDef->vertCount = elem->extended.trailDef->vertCount;
-				h1_elem->extended.trailDef->verts = mem->Alloc<H1::FxTrailVertex>(h1_elem->extended.trailDef->vertCount);
+				h1_elem->extended.trailDef->verts = mem.allocate<H1::FxTrailVertex>(h1_elem->extended.trailDef->vertCount);
 				for (int i = 0; i < h1_elem->extended.trailDef->vertCount; i++)
 				{
 					// check
@@ -287,7 +287,7 @@ namespace ZoneTool::IW5
 				break;
 			case FX_ELEM_TYPE_SPOT_LIGHT:
 				// check
-				h1_elem->extended.spotLightDef = mem->Alloc<H1::FxSpotLightDef>();
+				h1_elem->extended.spotLightDef = mem.allocate<H1::FxSpotLightDef>();
 				if (elem->extended.spotLightDef)
 				{
 					h1_elem->extended.spotLightDef->fovInnerFraction = elem->extended.spotLightDef->fovInnerFraction;
@@ -300,7 +300,7 @@ namespace ZoneTool::IW5
 				}
 				break;
 			case FX_ELEM_TYPE_OMNI_LIGHT:
-				h1_elem->extended.omniLightDef = mem->Alloc<H1::FxOmniLightDef>();
+				h1_elem->extended.omniLightDef = mem.allocate<H1::FxOmniLightDef>();
 				// todo?
 				break;
 			default:
@@ -323,9 +323,9 @@ namespace ZoneTool::IW5
 			h1_elem->__pad0[5] = -1.0f;
 		}
 
-		H1::FxEffectDef* GenerateH1FxEffectDef(FxEffectDef* asset, ZoneMemory* mem)
+		H1::FxEffectDef* GenerateH1FxEffectDef(FxEffectDef* asset, allocator& mem)
 		{
-			auto* h1_asset = mem->Alloc<H1::FxEffectDef>();
+			auto* h1_asset = mem.allocate<H1::FxEffectDef>();
 			h1_asset->name = asset->name;
 
 			h1_asset->flags = asset->flags; // convert? should be the same...
@@ -341,7 +341,7 @@ namespace ZoneTool::IW5
 			h1_asset->occlusionQueryScaleRange.base = asset->occlusionQueryScaleRange.base;
 			h1_asset->occlusionQueryScaleRange.amplitude = asset->occlusionQueryScaleRange.amplitude;
 
-			h1_asset->elemDefs = mem->Alloc<H1::FxElemDef>(asset->elemDefCountLooping + asset->elemDefCountOneShot + asset->elemDefCountEmission);
+			h1_asset->elemDefs = mem.allocate<H1::FxElemDef>(asset->elemDefCountLooping + asset->elemDefCountOneShot + asset->elemDefCountEmission);
 			for (auto i = 0; i < asset->elemDefCountLooping + asset->elemDefCountOneShot + asset->elemDefCountEmission; i++)
 			{
 				GenerateH1FxElemDef(&h1_asset->elemDefs[i], &asset->elemDefs[i], mem);
@@ -350,10 +350,10 @@ namespace ZoneTool::IW5
 			return h1_asset;
 		}
 
-		H1::FxEffectDef* convert(FxEffectDef* asset, ZoneMemory* mem)
+		H1::FxEffectDef* convert(FxEffectDef* asset, allocator& allocator)
 		{
 			// generate h1 fx
-			return GenerateH1FxEffectDef(asset, mem);
+			return GenerateH1FxEffectDef(asset, allocator);
 		}
 	}
 }

@@ -6,10 +6,11 @@
 
 namespace ZoneTool::IW5::IW6Dumper
 {
-	void dump(FxWorld* asset, ZoneMemory* mem)
+	void dump(FxWorld* asset)
 	{
 		// generate IW6 fxworld
-		auto* iw6_asset = IW6Converter::convert(asset, mem);
+		allocator allocator;
+		auto* iw6_asset = IW6Converter::convert(asset, allocator);
 
 		// dump IW6 fxworld
 		IW6::IFxWorld::dump(iw6_asset);

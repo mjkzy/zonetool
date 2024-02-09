@@ -7,7 +7,7 @@ namespace ZoneTool
 		class IPhysPreset
 		{
 		public:
-			static void dump(PhysPreset* asset, ZoneMemory* mem);
+			static void dump(PhysPreset* asset);
 		};
 	}
 }

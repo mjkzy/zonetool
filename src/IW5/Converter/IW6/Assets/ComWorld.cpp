@@ -7,15 +7,15 @@ namespace ZoneTool::IW5
 {
 	namespace IW6Converter
 	{
-		IW6::ComWorld* GenerateIW6ComWorld(ComWorld* asset, ZoneMemory* mem)
+		IW6::ComWorld* GenerateIW6ComWorld(ComWorld* asset, allocator& mem)
 		{
 			// allocate IW6 ComWorld structure
-			const auto iw6_asset = mem->Alloc<IW6::ComWorld>();
+			const auto iw6_asset = mem.allocate<IW6::ComWorld>();
 
 			iw6_asset->name = asset->name;
 			iw6_asset->isInUse = asset->isInUse;
 			iw6_asset->primaryLightCount = asset->primaryLightCount;
-			iw6_asset->primaryLights = mem->Alloc<IW6::ComPrimaryLight>(iw6_asset->primaryLightCount);
+			iw6_asset->primaryLights = mem.allocate<IW6::ComPrimaryLight>(iw6_asset->primaryLightCount);
 			for (unsigned int i = 0; i < iw6_asset->primaryLightCount; i++)
 			{
 				iw6_asset->primaryLights[i].type = asset->primaryLights[i].type; // don't think there is a need for converting
@@ -52,7 +52,7 @@ namespace ZoneTool::IW5
 			}
 
 			iw6_asset->primaryLightEnvCount = iw6_asset->primaryLightCount + 1;
-			iw6_asset->primaryLightEnvs = mem->Alloc<IW6::ComPrimaryLightEnv>(iw6_asset->primaryLightEnvCount);
+			iw6_asset->primaryLightEnvs = mem.allocate<IW6::ComPrimaryLightEnv>(iw6_asset->primaryLightEnvCount);
 			
 			for (unsigned int i = 1; i < iw6_asset->primaryLightCount; i++)
 			{
@@ -66,10 +66,10 @@ namespace ZoneTool::IW5
 			return iw6_asset;
 		}
 
-		IW6::ComWorld* convert(ComWorld* asset, ZoneMemory* mem)
+		IW6::ComWorld* convert(ComWorld* asset, allocator& allocator)
 		{
 			// generate IW6 comworld
-			return GenerateIW6ComWorld(asset, mem);
+			return GenerateIW6ComWorld(asset, allocator);
 		}
 	}
 }

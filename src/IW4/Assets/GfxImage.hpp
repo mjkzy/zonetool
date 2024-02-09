@@ -7,7 +7,7 @@ namespace ZoneTool
 		class IGfxImage
 		{
 		public:
-			static void dump(GfxImage* asset, ZoneMemory* mem);
+			static void dump(GfxImage* asset);
 		};
 	}
 }

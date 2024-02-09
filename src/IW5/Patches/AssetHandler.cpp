@@ -38,8 +38,6 @@ namespace ZoneTool
 		std::unordered_map<std::string, XAsset> AssetHandler::StoredAssets;
 		std::vector<std::pair<XAssetType, std::string>> AssetHandler::referencedAssets;
 
-		// std::shared_ptr < ZoneMemory > mem;
-
 		XAssetHeader AssetHandler::FindXAsset(std::int32_t type, const char* name, std::uint32_t unk)
 		{
 			if (StoredAssets.find(name) != StoredAssets.end())
@@ -141,14 +139,7 @@ namespace ZoneTool
 #ifdef USE_VMPROTECT
 			VMProtectBeginUltra("IW5::DB_LogLoadedAsset");
 #endif
-
-			static std::shared_ptr<ZoneMemory> memory;
 			static std::vector<std::pair<XAssetType, std::string>> referencedAssets;
-
-			if (!memory)
-			{
-				memory = std::make_shared<ZoneMemory>(1024 * 1024 * 128 * 8);		// 128mb
-			}
 
 			fastfile = static_cast<std::string>(reinterpret_cast<const char*>(*reinterpret_cast<DWORD*>(0x1294A00)
 				+ 4));
@@ -233,7 +224,7 @@ namespace ZoneTool
 				if (type == __type__) \
 				{ \
 					auto asset = reinterpret_cast<__struct__*>(ptr); \
-					__interface__::dump(asset, memory.get()); \
+					__interface__::dump(asset); \
 				}
 					try
 					{

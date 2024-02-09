@@ -90,7 +90,7 @@ namespace ZoneTool::IW5
 			}
 		}
 
-		void GenerateIW6ClipInfo(IW6::ClipInfo* info, IW5::ClipInfo* dinfo, ZoneMemory* mem)
+		void GenerateIW6ClipInfo(IW6::ClipInfo* info, IW5::ClipInfo* dinfo, allocator& mem)
 		{
 			if (!dinfo)
 			{
@@ -102,7 +102,7 @@ namespace ZoneTool::IW5
 			info->planes = reinterpret_cast<IW6::cplane_s*>(dinfo->planes);
 
 			info->numMaterials = dinfo->numMaterials;
-			info->materials = mem->Alloc<IW6::ClipMaterial>(info->numMaterials);
+			info->materials = mem.allocate<IW6::ClipMaterial>(info->numMaterials);
 			for (unsigned int i = 0; i < info->numMaterials; i++)
 			{
 				info->materials[i].name = dinfo->materials[i].name;
@@ -113,7 +113,7 @@ namespace ZoneTool::IW5
 			std::unordered_map<cbrushside_t*, IW6::cbrushside_t*> mapped_brush_sides;
 
 			info->numBrushSides = dinfo->numBrushSides;
-			info->brushsides = mem->Alloc<IW6::cbrushside_t>(info->numBrushSides);
+			info->brushsides = mem.allocate<IW6::cbrushside_t>(info->numBrushSides);
 			for (unsigned int i = 0; i < info->numBrushSides; i++)
 			{
 				mapped_brush_sides[&dinfo->brushsides[i]] = &info->brushsides[i];
@@ -128,7 +128,7 @@ namespace ZoneTool::IW5
 			info->brushEdges = reinterpret_cast<IW6::cbrushedge_t*>(dinfo->brushEdges);
 
 			info->leafbrushNodesCount = dinfo->leafbrushNodesCount;
-			info->leafbrushNodes = mem->Alloc<IW6::cLeafBrushNode_s>(info->leafbrushNodesCount);
+			info->leafbrushNodes = mem.allocate<IW6::cLeafBrushNode_s>(info->leafbrushNodesCount);
 			for (unsigned int i = 0; i < info->leafbrushNodesCount; i++)
 			{
 				info->leafbrushNodes[i].axis = dinfo->leafbrushNodes[i].axis;
@@ -150,7 +150,7 @@ namespace ZoneTool::IW5
 			info->leafbrushes = reinterpret_cast<unsigned __int16*>(dinfo->leafbrushes);
 
 			info->numBrushes = dinfo->numBrushes;
-			info->brushes = mem->Alloc<IW6::cbrush_t>(info->numBrushes);
+			info->brushes = mem.allocate<IW6::cbrush_t>(info->numBrushes);
 			for (unsigned int i = 0; i < info->numBrushes; i++)
 			{
 				info->brushes[i].numsides = dinfo->brushes[i].numsides;
@@ -188,24 +188,24 @@ namespace ZoneTool::IW5
 			info->brushContents = reinterpret_cast<int*>(dinfo->brushContents);
 		}
 
-		IW6::clipMap_t* GenerateIW6ClipMap(clipMap_t* asset, ZoneMemory* mem)
+		IW6::clipMap_t* GenerateIW6ClipMap(clipMap_t* asset, allocator& mem)
 		{
 			// allocate IW6 clipMap_t structure
-			const auto iw6_asset = mem->Alloc<IW6::clipMap_t>();
+			const auto iw6_asset = mem.allocate<IW6::clipMap_t>();
 
 			iw6_asset->name = asset->name;
 			iw6_asset->isInUse = asset->isInUse;
 			GenerateIW6ClipInfo(&iw6_asset->info, &asset->info, mem);
 			iw6_asset->pInfo = &iw6_asset->info;
 			iw6_asset->numStaticModels = asset->numStaticModels;
-			iw6_asset->staticModelList = mem->Alloc<IW6::cStaticModel_s>(iw6_asset->numStaticModels);
+			iw6_asset->staticModelList = mem.allocate<IW6::cStaticModel_s>(iw6_asset->numStaticModels);
 			for (unsigned int i = 0; i < iw6_asset->numStaticModels; i++)
 			{
 				iw6_asset->staticModelList[i].xmodel = reinterpret_cast<IW6::XModel*>(asset->staticModelList[i].xmodel);
 				memcpy(&iw6_asset->staticModelList[i].origin, &asset->staticModelList[i].origin, sizeof(IW5::cStaticModel_s) - sizeof(IW5::XModel*));
 			}
 			iw6_asset->numNodes = asset->numNodes;
-			iw6_asset->nodes = mem->Alloc<IW6::cNode_t>(iw6_asset->numNodes);
+			iw6_asset->nodes = mem.allocate<IW6::cNode_t>(iw6_asset->numNodes);
 			for (unsigned int i = 0; i < iw6_asset->numNodes; i++)
 			{
 				iw6_asset->nodes[i].plane = reinterpret_cast<IW6::cplane_s*>(asset->nodes[i].plane);
@@ -222,7 +222,7 @@ namespace ZoneTool::IW5
 			iw6_asset->borderCount = asset->borderCount;
 			iw6_asset->borders = reinterpret_cast<IW6::CollisionBorder *>(asset->borders);
 			iw6_asset->partitionCount = asset->partitionCount;
-			iw6_asset->partitions = mem->Alloc<IW6::CollisionPartition>(iw6_asset->partitionCount);
+			iw6_asset->partitions = mem.allocate<IW6::CollisionPartition>(iw6_asset->partitionCount);
 			for (int i = 0; i < iw6_asset->partitionCount; i++)
 			{
 				iw6_asset->partitions[i].triCount = asset->partitions[i].triCount;
@@ -234,7 +234,7 @@ namespace ZoneTool::IW5
 			iw6_asset->aabbTreeCount = asset->aabbTreeCount;
 			iw6_asset->aabbTrees = reinterpret_cast<IW6::CollisionAabbTree*>(asset->aabbTreeCount);
 			iw6_asset->numSubModels = asset->numSubModels;
-			iw6_asset->cmodels = mem->Alloc<IW6::cmodel_t>(iw6_asset->numSubModels);
+			iw6_asset->cmodels = mem.allocate<IW6::cmodel_t>(iw6_asset->numSubModels);
 			for (unsigned int i = 0; i < iw6_asset->numSubModels; i++)
 			{
 				memcpy(&iw6_asset->cmodels[i].bounds, &asset->cmodels[i].bounds, sizeof(IW5::Bounds) + sizeof(float));
@@ -243,11 +243,11 @@ namespace ZoneTool::IW5
 				iw6_asset->cmodels[i].info = nullptr; // mapped in h1
 			}
 
-			iw6_asset->mapEnts = mem->Alloc<IW6::MapEnts>();
+			iw6_asset->mapEnts = mem.allocate<IW6::MapEnts>();
 			iw6_asset->mapEnts->name = asset->mapEnts->name;
 
 			iw6_asset->stageCount = asset->stageCount;
-			iw6_asset->stages = mem->Alloc<IW6::Stage>(iw6_asset->stageCount);
+			iw6_asset->stages = mem.allocate<IW6::Stage>(iw6_asset->stageCount);
 			for (unsigned int i = 0; i < iw6_asset->stageCount; i++)
 			{
 				iw6_asset->stages[i].name = reinterpret_cast<const char*>(asset->stages[i].name);
@@ -267,9 +267,9 @@ namespace ZoneTool::IW5
 			for (unsigned char i = 0; i < 2; i++)
 			{
 				iw6_asset->dynEntCount[i] = asset->dynEntCount[i];
-				iw6_asset->dynEntDefList[i] = mem->Alloc<IW6::DynEntityDef>(iw6_asset->dynEntCount[i]);
+				iw6_asset->dynEntDefList[i] = mem.allocate<IW6::DynEntityDef>(iw6_asset->dynEntCount[i]);
 				iw6_asset->dynEntPoseList[i] = reinterpret_cast<IW6::DynEntityPose*>(asset->dynEntPoseList[i]);
-				iw6_asset->dynEntClientList[i] = mem->Alloc<IW6::DynEntityClient>(iw6_asset->dynEntCount[i]);
+				iw6_asset->dynEntClientList[i] = mem.allocate<IW6::DynEntityClient>(iw6_asset->dynEntCount[i]);
 				iw6_asset->dynEntCollList[i] = reinterpret_cast<IW6::DynEntityColl*>(asset->dynEntCollList[i]);
 				for (unsigned short j = 0; j < iw6_asset->dynEntCount[i]; j++)
 				{
@@ -299,9 +299,9 @@ namespace ZoneTool::IW5
 			return iw6_asset;
 		}
 
-		IW6::clipMap_t* convert(clipMap_t* asset, ZoneMemory* mem)
+		IW6::clipMap_t* convert(clipMap_t* asset, allocator& allocator)
 		{
-			return GenerateIW6ClipMap(asset, mem);
+			return GenerateIW6ClipMap(asset, allocator);
 		}
 	}
 }

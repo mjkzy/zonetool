@@ -7,7 +7,7 @@ namespace ZoneTool
 		class ISound
 		{
 		public:
-			static void dump(snd_alias_list_t* asset, ZoneMemory* mem);
+			static void dump(snd_alias_list_t* asset);
 		};
 	}
 }

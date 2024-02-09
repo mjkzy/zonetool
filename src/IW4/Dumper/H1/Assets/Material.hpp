@@ -2,5 +2,5 @@
 
 namespace ZoneTool::IW4::H1Dumper
 {
-	void dump(Material* asset, ZoneMemory* mem);
+	void dump(Material* asset);
 }

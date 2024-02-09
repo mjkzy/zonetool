@@ -6,10 +6,11 @@
 
 namespace ZoneTool::IW5::IW6Dumper
 {
-	void dump(SndCurve* asset, ZoneMemory* mem)
+	void dump(SndCurve* asset)
 	{
 		// generate IW6 asset
-		auto* iw6_asset = IW6Converter::convert(asset, mem);
+		allocator allocator;
+		auto* iw6_asset = IW6Converter::convert(asset, allocator);
 
 		// dump soundcurve
 		//IW6::ISoundCurve::dump(iw6_asset);

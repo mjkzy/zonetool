@@ -7,10 +7,10 @@ namespace ZoneTool::IW5
 {
 	namespace IW6Converter
 	{
-		IW6::FxWorld* GenerateIW6FxWorld(FxWorld* asset, ZoneMemory* mem)
+		IW6::FxWorld* GenerateIW6FxWorld(FxWorld* asset, allocator& mem)
 		{
 			// allocate IW6 FxWorld structure
-			const auto iw6_asset = mem->Alloc<IW6::FxWorld>();
+			const auto iw6_asset = mem.allocate<IW6::FxWorld>();
 
 			iw6_asset->name = asset->name;
 
@@ -27,7 +27,7 @@ namespace ZoneTool::IW5
 			iw6_asset->glassSys.geoDataCount = asset->glassSys.geoDataCount;
 			iw6_asset->glassSys.initGeoDataCount = asset->glassSys.initGeoDataCount;
 
-			iw6_asset->glassSys.defs = mem->Alloc<IW6::FxGlassDef>(iw6_asset->glassSys.defCount);
+			iw6_asset->glassSys.defs = mem.allocate<IW6::FxGlassDef>(iw6_asset->glassSys.defCount);
 			for (unsigned int i = 0; i < iw6_asset->glassSys.defCount; i++)
 			{
 				iw6_asset->glassSys.defs[i].halfThickness = asset->glassSys.defs[i].halfThickness;
@@ -43,37 +43,37 @@ namespace ZoneTool::IW5
 				iw6_asset->glassSys.defs[i].materialShattered = reinterpret_cast<IW6::Material*>(asset->glassSys.defs[i].materialShattered);
 				iw6_asset->glassSys.defs[i].physPreset = reinterpret_cast<IW6::PhysPreset*>(asset->glassSys.defs[i].physPreset);
 
-				iw6_asset->glassSys.defs[i].pieceBreakEffect = mem->Alloc<IW6::FxEffectDef>();
-				iw6_asset->glassSys.defs[i].pieceBreakEffect->name = mem->StrDup("fx/code/glass_shatter_piece");
+				iw6_asset->glassSys.defs[i].pieceBreakEffect = mem.allocate<IW6::FxEffectDef>();
+				iw6_asset->glassSys.defs[i].pieceBreakEffect->name = mem.duplicate_string("fx/code/glass_shatter_piece");
 
-				iw6_asset->glassSys.defs[i].shatterEffect = mem->Alloc<IW6::FxEffectDef>();
-				iw6_asset->glassSys.defs[i].shatterEffect->name = mem->StrDup("fx/code/glass_shatter_64x64");
+				iw6_asset->glassSys.defs[i].shatterEffect = mem.allocate<IW6::FxEffectDef>();
+				iw6_asset->glassSys.defs[i].shatterEffect->name = mem.duplicate_string("fx/code/glass_shatter_64x64");
 
-				iw6_asset->glassSys.defs[i].shatterSmallEffect = mem->Alloc<IW6::FxEffectDef>();
-				iw6_asset->glassSys.defs[i].shatterSmallEffect->name = mem->StrDup("fx/code/glass_shatter_32x32");
+				iw6_asset->glassSys.defs[i].shatterSmallEffect = mem.allocate<IW6::FxEffectDef>();
+				iw6_asset->glassSys.defs[i].shatterSmallEffect->name = mem.duplicate_string("fx/code/glass_shatter_32x32");
 
 				iw6_asset->glassSys.defs[i].crackDecalEffect = nullptr;
 
-				iw6_asset->glassSys.defs[i].damagedSound = mem->Alloc<IW6::snd_alias_list_t>();
-				iw6_asset->glassSys.defs[i].damagedSound->name = mem->StrDup("glass_pane_shatter");
+				iw6_asset->glassSys.defs[i].damagedSound = mem.allocate<IW6::snd_alias_list_t>();
+				iw6_asset->glassSys.defs[i].damagedSound->name = mem.duplicate_string("glass_pane_shatter");
 
-				iw6_asset->glassSys.defs[i].destroyedSound = mem->Alloc<IW6::snd_alias_list_t>();
-				iw6_asset->glassSys.defs[i].destroyedSound->name = mem->StrDup("glass_pane_blowout");
+				iw6_asset->glassSys.defs[i].destroyedSound = mem.allocate<IW6::snd_alias_list_t>();
+				iw6_asset->glassSys.defs[i].destroyedSound->name = mem.duplicate_string("glass_pane_blowout");
 
-				iw6_asset->glassSys.defs[i].destroyedQuietSound = mem->Alloc<IW6::snd_alias_list_t>();
-				iw6_asset->glassSys.defs[i].destroyedQuietSound->name = mem->StrDup("glass_pane_breakout");
+				iw6_asset->glassSys.defs[i].destroyedQuietSound = mem.allocate<IW6::snd_alias_list_t>();
+				iw6_asset->glassSys.defs[i].destroyedQuietSound->name = mem.duplicate_string("glass_pane_breakout");
 
 				iw6_asset->glassSys.defs[i].numCrackRings = -1;
 				iw6_asset->glassSys.defs[i].isOpaque = 0;
 			}
 
-			iw6_asset->glassSys.piecePlaces = mem->Alloc<IW6::FxGlassPiecePlace>(iw6_asset->glassSys.pieceLimit);
+			iw6_asset->glassSys.piecePlaces = mem.allocate<IW6::FxGlassPiecePlace>(iw6_asset->glassSys.pieceLimit);
 			for (unsigned int i = 0; i < iw6_asset->glassSys.pieceLimit; i++)
 			{
 				memcpy(&iw6_asset->glassSys.piecePlaces[i], &asset->glassSys.piecePlaces[i], sizeof(IW5::FxGlassPiecePlace));
 			}
 
-			iw6_asset->glassSys.pieceStates = mem->Alloc<IW6::FxGlassPieceState>(iw6_asset->glassSys.pieceLimit);
+			iw6_asset->glassSys.pieceStates = mem.allocate<IW6::FxGlassPieceState>(iw6_asset->glassSys.pieceLimit);
 			for (unsigned int i = 0; i < iw6_asset->glassSys.pieceLimit; i++)
 			{
 				memcpy(&iw6_asset->glassSys.pieceStates[i].texCoordOrigin, &asset->glassSys.pieceStates[i].texCoordOrigin, sizeof(float[2]));
@@ -90,7 +90,7 @@ namespace ZoneTool::IW5
 				iw6_asset->glassSys.pieceStates[i].areaX2 = asset->glassSys.pieceStates[i].areaX2;
 			}
 
-			iw6_asset->glassSys.pieceDynamics = mem->Alloc<IW6::FxGlassPieceDynamics>(iw6_asset->glassSys.pieceLimit);
+			iw6_asset->glassSys.pieceDynamics = mem.allocate<IW6::FxGlassPieceDynamics>(iw6_asset->glassSys.pieceLimit);
 			for (unsigned int i = 0; i < iw6_asset->glassSys.pieceLimit; i++)
 			{
 				iw6_asset->glassSys.pieceDynamics[i].fallTime = asset->glassSys.pieceDynamics[i].fallTime;
@@ -100,25 +100,25 @@ namespace ZoneTool::IW5
 				memcpy(&iw6_asset->glassSys.pieceDynamics[i].avel, &asset->glassSys.pieceDynamics[i].avel, sizeof(float[3]));
 			}
 
-			iw6_asset->glassSys.geoData = mem->Alloc<IW6::FxGlassGeometryData>(iw6_asset->glassSys.geoDataLimit);
+			iw6_asset->glassSys.geoData = mem.allocate<IW6::FxGlassGeometryData>(iw6_asset->glassSys.geoDataLimit);
 			for (unsigned int i = 0; i < iw6_asset->glassSys.geoDataLimit; i++)
 			{
 				memcpy(&iw6_asset->glassSys.geoData[i], &asset->glassSys.geoData[i], sizeof(IW5::FxGlassGeometryData));
 			}
 
-			iw6_asset->glassSys.isInUse = mem->Alloc<unsigned int>(iw6_asset->glassSys.pieceWordCount);
+			iw6_asset->glassSys.isInUse = mem.allocate<unsigned int>(iw6_asset->glassSys.pieceWordCount);
 			for (unsigned int i = 0; i < iw6_asset->glassSys.pieceWordCount; i++)
 			{
 				iw6_asset->glassSys.isInUse[i] = asset->glassSys.isInUse[i];
 			}
 
-			iw6_asset->glassSys.cellBits = mem->Alloc<unsigned int>(iw6_asset->glassSys.pieceWordCount * iw6_asset->glassSys.cellCount);
+			iw6_asset->glassSys.cellBits = mem.allocate<unsigned int>(iw6_asset->glassSys.pieceWordCount * iw6_asset->glassSys.cellCount);
 			for (unsigned int i = 0; i < iw6_asset->glassSys.pieceWordCount * iw6_asset->glassSys.cellCount; i++)
 			{
 				iw6_asset->glassSys.cellBits[i] = asset->glassSys.cellBits[i];
 			}
 
-			iw6_asset->glassSys.visData = mem->Alloc<unsigned char>((iw6_asset->glassSys.pieceLimit + 15) & 0xFFFFFFF0);
+			iw6_asset->glassSys.visData = mem.allocate<unsigned char>((iw6_asset->glassSys.pieceLimit + 15) & 0xFFFFFFF0);
 			for (unsigned int i = 0; i < ((iw6_asset->glassSys.pieceLimit + 15) & 0xFFFFFFF0); i++)
 			{
 				iw6_asset->glassSys.visData[i] = asset->glassSys.visData[i];
@@ -126,19 +126,19 @@ namespace ZoneTool::IW5
 
 			iw6_asset->glassSys.linkOrg = reinterpret_cast<float(*)[3]>(asset->glassSys.linkOrg);
 
-			iw6_asset->glassSys.halfThickness = mem->Alloc<float>((iw6_asset->glassSys.pieceLimit + 3) & 0xFFFFFFFC);
+			iw6_asset->glassSys.halfThickness = mem.allocate<float>((iw6_asset->glassSys.pieceLimit + 3) & 0xFFFFFFFC);
 			for (unsigned int i = 0; i < ((iw6_asset->glassSys.pieceLimit + 3) & 0xFFFFFFFC); i++)
 			{
 				iw6_asset->glassSys.halfThickness[i] = asset->glassSys.halfThickness[i];
 			}
 
-			iw6_asset->glassSys.lightingHandles = mem->Alloc<unsigned short>(iw6_asset->glassSys.initPieceCount);
+			iw6_asset->glassSys.lightingHandles = mem.allocate<unsigned short>(iw6_asset->glassSys.initPieceCount);
 			for (unsigned int i = 0; i < iw6_asset->glassSys.initPieceCount; i++)
 			{
 				iw6_asset->glassSys.lightingHandles[i] = asset->glassSys.lightingHandles[i];
 			}
 
-			iw6_asset->glassSys.initPieceStates = mem->Alloc<IW6::FxGlassInitPieceState>(iw6_asset->glassSys.initPieceCount);
+			iw6_asset->glassSys.initPieceStates = mem.allocate<IW6::FxGlassInitPieceState>(iw6_asset->glassSys.initPieceCount);
 			for (unsigned int i = 0; i < iw6_asset->glassSys.initPieceCount; i++)
 			{
 				memcpy(&iw6_asset->glassSys.initPieceStates[i].frame, &asset->glassSys.initPieceStates[i].frame, sizeof(IW5::FxSpatialFrame));
@@ -152,7 +152,7 @@ namespace ZoneTool::IW5
 				iw6_asset->glassSys.initPieceStates[i].fanDataCount = asset->glassSys.initPieceStates[i].fanDataCount;
 			}
 
-			iw6_asset->glassSys.initGeoData = mem->Alloc<IW6::FxGlassGeometryData>(iw6_asset->glassSys.initGeoDataCount);
+			iw6_asset->glassSys.initGeoData = mem.allocate<IW6::FxGlassGeometryData>(iw6_asset->glassSys.initGeoDataCount);
 			for (unsigned int i = 0; i < iw6_asset->glassSys.initGeoDataCount; i++)
 			{
 				memcpy(&iw6_asset->glassSys.initGeoData[i], &asset->glassSys.initGeoData[i], sizeof(IW5::FxGlassGeometryData));
@@ -166,10 +166,10 @@ namespace ZoneTool::IW5
 			return iw6_asset;
 		}
 
-		IW6::FxWorld* convert(FxWorld* asset, ZoneMemory* mem)
+		IW6::FxWorld* convert(FxWorld* asset, allocator& allocator)
 		{
 			// generate IW6 fxworld
-			return GenerateIW6FxWorld(asset, mem);
+			return GenerateIW6FxWorld(asset, allocator);
 		}
 	}
 }

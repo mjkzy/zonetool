@@ -7,6 +7,6 @@ namespace ZoneTool::IW5
 	class IXModel
 	{
 	public:
-		static void dump(XModel* asset, ZoneMemory* mem, const std::function<const char* (uint16_t)>& convertToString = SL_ConvertToString);
+		static void dump(XModel* asset, const std::function<const char* (uint16_t)>& convertToString = SL_ConvertToString);
 	};
 }

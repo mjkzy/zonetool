@@ -7,10 +7,10 @@ namespace ZoneTool::IW5
 {
 	namespace H1Converter
 	{
-		H1::XAnimParts* GenerateH1XAnimParts(XAnimParts* asset, ZoneMemory* mem)
+		H1::XAnimParts* GenerateH1XAnimParts(XAnimParts* asset, allocator& mem)
 		{
 			// allocate H1 XAnimParts structure
-			const auto h1_asset = mem->Alloc<H1::XAnimParts>();
+			const auto h1_asset = mem.allocate<H1::XAnimParts>();
 
 			h1_asset->name = asset->name;
 			h1_asset->dataByteCount = asset->dataByteCount;
@@ -28,7 +28,7 @@ namespace ZoneTool::IW5
 			h1_asset->indexCount = asset->indexCount;
 			h1_asset->framerate = asset->framerate;
 			h1_asset->frequency = asset->frequency;
-			h1_asset->names = mem->Alloc<H1::scr_string_t>(h1_asset->boneCount[9]);
+			h1_asset->names = mem.allocate<H1::scr_string_t>(h1_asset->boneCount[9]);
 			for (auto i = 0; i < h1_asset->boneCount[9]; i++)
 			{
 				h1_asset->names[i] = static_cast<H1::scr_string_t>(asset->names[i]);
@@ -42,7 +42,7 @@ namespace ZoneTool::IW5
 
 			h1_asset->indices.data = reinterpret_cast<void*>(asset->indices.data);
 
-			h1_asset->notify = mem->Alloc<H1::XAnimNotifyInfo>(h1_asset->notifyCount);
+			h1_asset->notify = mem.allocate<H1::XAnimNotifyInfo>(h1_asset->notifyCount);
 			for (auto i = 0; i < asset->notifyCount; i++)
 			{
 				h1_asset->notify[i].name = static_cast<H1::scr_string_t>(asset->notify[i].name);
@@ -51,7 +51,7 @@ namespace ZoneTool::IW5
 
 			if (asset->deltaPart)
 			{
-				h1_asset->deltaPart = mem->Alloc<H1::XAnimDeltaPart>();
+				h1_asset->deltaPart = mem.allocate<H1::XAnimDeltaPart>();
 				if (asset->deltaPart->trans)
 				{
 					auto extra_size = 0;
@@ -68,7 +68,7 @@ namespace ZoneTool::IW5
 						}
 					}
 
-					h1_asset->deltaPart->trans = mem->ManualAlloc<H1::XAnimPartTrans>(sizeof(H1::XAnimPartTrans) + extra_size);
+					h1_asset->deltaPart->trans = mem.manual_allocate<H1::XAnimPartTrans>(sizeof(H1::XAnimPartTrans) + extra_size);
 
 					h1_asset->deltaPart->trans->size = asset->deltaPart->trans->size;
 					h1_asset->deltaPart->trans->smallTrans = static_cast<unsigned short>(asset->deltaPart->trans->smallTrans);
@@ -98,7 +98,7 @@ namespace ZoneTool::IW5
 						{
 							if (asset->deltaPart->trans->smallTrans)
 							{
-								h1_asset->deltaPart->trans->u.frames.frames._1 = mem->Alloc<unsigned char[3]>(asset->deltaPart->trans->size + 1);
+								h1_asset->deltaPart->trans->u.frames.frames._1 = mem.allocate<unsigned char[3]>(asset->deltaPart->trans->size + 1);
 								for (auto i = 0; i < asset->deltaPart->trans->size + 1; i++)
 								{
 									h1_asset->deltaPart->trans->u.frames.frames._1[i][0] = static_cast<unsigned char>(asset->deltaPart->trans->u.frames.frames._1[i][0]);
@@ -108,7 +108,7 @@ namespace ZoneTool::IW5
 							}
 							else
 							{
-								h1_asset->deltaPart->trans->u.frames.frames._2 = mem->Alloc<unsigned short[3]>(asset->deltaPart->trans->size + 1);
+								h1_asset->deltaPart->trans->u.frames.frames._2 = mem.allocate<unsigned short[3]>(asset->deltaPart->trans->size + 1);
 								for (auto i = 0; i < asset->deltaPart->trans->size + 1; i++)
 								{
 									h1_asset->deltaPart->trans->u.frames.frames._2[i][0] = asset->deltaPart->trans->u.frames.frames._2[i][0];
@@ -148,7 +148,7 @@ namespace ZoneTool::IW5
 						extra_size += 4;
 					}
 
-					h1_asset->deltaPart->quat = mem->ManualAlloc<H1::XAnimDeltaPartQuat>(sizeof(H1::XAnimDeltaPartQuat) + extra_size);
+					h1_asset->deltaPart->quat = mem.manual_allocate<H1::XAnimDeltaPartQuat>(sizeof(H1::XAnimDeltaPartQuat) + extra_size);
 					h1_asset->deltaPart->quat->size = asset->deltaPart->quat->size;
 
 					if (asset->deltaPart->quat->size)
@@ -169,7 +169,7 @@ namespace ZoneTool::IW5
 						}
 						if (asset->deltaPart->quat->u.frames.frames)
 						{
-							h1_asset->deltaPart->quat->u.frames.frames = mem->Alloc<short[4]>(asset->deltaPart->quat->size + 1);
+							h1_asset->deltaPart->quat->u.frames.frames = mem.allocate<short[4]>(asset->deltaPart->quat->size + 1);
 							for (auto i = 0; i < asset->deltaPart->quat->size + 1; i++)
 							{
 								h1_asset->deltaPart->quat->u.frames.frames[i][0] = asset->deltaPart->quat->u.frames.frames[i][0];
@@ -190,10 +190,10 @@ namespace ZoneTool::IW5
 			return h1_asset;
 		}
 
-		H1::XAnimParts* convert(XAnimParts* asset, ZoneMemory* mem)
+		H1::XAnimParts* convert(XAnimParts* asset, allocator& allocator)
 		{
 			// generate h1 anims
-			return GenerateH1XAnimParts(asset, mem);
+			return GenerateH1XAnimParts(asset, allocator);
 		}
 	}
 }

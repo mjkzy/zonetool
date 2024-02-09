@@ -119,10 +119,10 @@ namespace ZoneTool::IW5
 			return offset;
 		}
 
-		H1::GfxImage* GenerateH1GfxImage(GfxImage* asset, ZoneMemory* mem)
+		H1::GfxImage* GenerateH1GfxImage(GfxImage* asset, allocator& mem)
 		{
 			// allocate H1 GfxImage structure
-			const auto h1_asset = mem->Alloc<H1::GfxImage>();
+			const auto h1_asset = mem.allocate<H1::GfxImage>();
 
 			h1_asset->name = asset->name;
 			h1_asset->imageFormat = get_d3d_to_dxgi(asset->texture.loadDef->format); //h1_asset->imageFormat = MFMapDX9FormatToDXGIFormat(asset->texture->format);
@@ -148,7 +148,7 @@ namespace ZoneTool::IW5
 
 			if (asset->texture.loadDef->format == D3DFMT_A8R8G8B8 && h1_asset->imageFormat == DXGI_FORMAT_R8G8B8A8_UNORM)
 			{
-				auto* new_pixels = mem->Alloc<unsigned char>(asset->texture.loadDef->resourceSize);
+				auto* new_pixels = mem.allocate<unsigned char>(asset->texture.loadDef->resourceSize);
 				argb_to_rgba(h1_asset->pixelData, asset->texture.loadDef->resourceSize, new_pixels);
 				h1_asset->pixelData = new_pixels;
 			}
@@ -160,10 +160,10 @@ namespace ZoneTool::IW5
 			return h1_asset;
 		}
 
-		H1::GfxImage* convert(GfxImage* asset, ZoneMemory* mem)
+		H1::GfxImage* convert(GfxImage* asset, allocator& allocator)
 		{
 			// generate h1 gfximage
-			return GenerateH1GfxImage(asset, mem);
+			return GenerateH1GfxImage(asset, allocator);
 		}
 	}
 }

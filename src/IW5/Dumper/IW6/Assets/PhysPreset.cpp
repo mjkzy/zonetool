@@ -6,10 +6,11 @@
 
 namespace ZoneTool::IW5::IW6Dumper
 {
-	void dump(PhysPreset* asset, ZoneMemory* mem)
+	void dump(PhysPreset* asset)
 	{
 		// generate IW6 asset
-		//auto* iw6_asset = IW6Converter::convert(asset, mem);
+		//allocator allocator;
+		//auto* iw6_asset = IW6Converter::convert(asset, allocator);
 
 		// dump asset
 		//IW6::IPhysPreset::dump(iw6_asset);

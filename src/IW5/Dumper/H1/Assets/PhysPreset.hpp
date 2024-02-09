@@ -2,5 +2,5 @@
 
 namespace ZoneTool::IW5::H1Dumper
 {
-	void dump(PhysPreset* asset, ZoneMemory* mem);
+	void dump(PhysPreset* asset);
 }

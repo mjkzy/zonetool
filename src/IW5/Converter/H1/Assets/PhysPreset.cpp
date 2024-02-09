@@ -7,9 +7,9 @@ namespace ZoneTool::IW5
 {
 	namespace H1Converter
 	{
-		H1::PhysPreset* GenerateH1Asset(PhysPreset* asset, ZoneMemory* mem)
+		H1::PhysPreset* GenerateH1Asset(PhysPreset* asset, allocator& mem)
 		{
-			auto* h1_asset = mem->Alloc<H1::PhysPreset>();
+			auto* h1_asset = mem.allocate<H1::PhysPreset>();
 			
 			h1_asset->name = asset->name;
 			h1_asset->type = asset->type; // convert?
@@ -35,10 +35,10 @@ namespace ZoneTool::IW5
 			return h1_asset;
 		}
 
-		H1::PhysPreset* convert(PhysPreset* asset, ZoneMemory* mem)
+		H1::PhysPreset* convert(PhysPreset* asset, allocator& allocator)
 		{
 			// generate h1 asset
-			return GenerateH1Asset(asset, mem);
+			return GenerateH1Asset(asset, allocator);
 		}
 	}
 }

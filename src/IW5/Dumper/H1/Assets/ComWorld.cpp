@@ -6,10 +6,11 @@
 
 namespace ZoneTool::IW5::H1Dumper
 {
-	void dump(ComWorld* asset, ZoneMemory* mem)
+	void dump(ComWorld* asset)
 	{
 		// generate h1 comworld
-		auto* h1_asset = H1Converter::convert(asset, mem);
+		allocator allocator;
+		auto* h1_asset = H1Converter::convert(asset, allocator);
 
 		// dump h1 comworld
 		H1::IComWorld::dump(h1_asset);

@@ -1,14 +1,14 @@
 #include "stdafx.hpp"
-#include "H1/Assets/MapEnts.hpp"
 #include "IW5/Assets/MapEnts.hpp"
 
 namespace ZoneTool
 {
 	namespace IW4
 	{
-		void IMapEnts::dump(MapEnts* asset, ZoneMemory* mem)
+		void IMapEnts::dump(MapEnts* asset)
 		{
-			auto* new_asset = mem->Alloc<IW5::MapEnts>();
+			allocator allocator;
+			auto* new_asset = allocator.allocate<IW5::MapEnts>();
 			new_asset->name = asset->name;
 			new_asset->entityString = asset->entityString;
 			new_asset->numEntityChars = asset->numEntityChars;
@@ -16,7 +16,7 @@ namespace ZoneTool
 			new_asset->clientTrigger; // 0
 			memset(&new_asset->clientTrigger, 0, sizeof(IW5::ClientTriggers));
 
-			IW5::IMapEnts::dump(new_asset, mem);
+			IW5::IMapEnts::dump(new_asset);
 		}
 	}
 }

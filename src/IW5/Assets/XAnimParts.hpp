@@ -7,6 +7,6 @@ namespace ZoneTool::IW5
 	class IXAnimParts
 	{
 	public:
-		static void dump(XAnimParts* asset, ZoneMemory* mem, const std::function<const char* (uint16_t)>& convertToString = SL_ConvertToString);
+		static void dump(XAnimParts* asset, const std::function<const char* (uint16_t)>& convertToString = SL_ConvertToString);
 	};
 }

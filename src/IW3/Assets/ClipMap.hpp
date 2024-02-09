@@ -7,7 +7,7 @@ namespace ZoneTool
 		class IClipMap
 		{
 		public:
-			static void dump(clipMap_t* asset, ZoneMemory* mem);
+			static void dump(clipMap_t* asset);
 		};
 	}
 }

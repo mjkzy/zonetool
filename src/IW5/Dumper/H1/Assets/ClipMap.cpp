@@ -8,10 +8,11 @@
 
 namespace ZoneTool::IW5::H1Dumper
 {
-	void dump(clipMap_t* asset, ZoneMemory* mem)
+	void dump(clipMap_t* asset)
 	{
 		// generate h1 clipmap
-		auto* h1_asset = H1Converter::convert(asset, mem);
+		allocator allocator;
+		auto* h1_asset = H1Converter::convert(asset, allocator);
 
 		// dump h1 clipmap
 		H1::IClipMap::dump(h1_asset, SL_ConvertToString);
@@ -31,7 +32,6 @@ namespace ZoneTool::IW5::H1Dumper
 			try
 			{
 				ZONETOOL_INFO("Generating PhysWorld...");
-				allocator allocator;
 				auto* physmap = ZoneTool::H1::physworld_gen::generate_physworld(h1_asset, &allocator);
 				ZONETOOL_INFO("Generated PhysWorld.");
 

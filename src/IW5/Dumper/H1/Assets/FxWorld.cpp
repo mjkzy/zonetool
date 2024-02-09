@@ -6,10 +6,11 @@
 
 namespace ZoneTool::IW5::H1Dumper
 {
-	void dump(FxWorld* asset, ZoneMemory* mem)
+	void dump(FxWorld* asset)
 	{
 		// generate h1 fxworld
-		auto* h1_asset = H1Converter::convert(asset, mem);
+		allocator allocator;
+		auto* h1_asset = H1Converter::convert(asset, allocator);
 
 		// dump h1 fxworld
 		H1::IFxWorld::dump(h1_asset);

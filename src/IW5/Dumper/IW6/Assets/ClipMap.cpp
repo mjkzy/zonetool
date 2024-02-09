@@ -6,10 +6,11 @@
 
 namespace ZoneTool::IW5::IW6Dumper
 {
-	void dump(clipMap_t* asset, ZoneMemory* mem)
+	void dump(clipMap_t* asset)
 	{
 		// generate iw6 clipmap
-		auto* iw6_asset = IW6Converter::convert(asset, mem);
+		allocator allocator;
+		auto* iw6_asset = IW6Converter::convert(asset, allocator);
 
 		// dump iw6 clipmap
 		IW6::IClipMap::dump(iw6_asset, SL_ConvertToString);

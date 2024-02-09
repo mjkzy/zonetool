@@ -7,7 +7,7 @@ namespace ZoneTool
 		class IGfxLightDef
 		{
 		public:
-			static void dump(GfxLightDef* asset, ZoneMemory* mem);
+			static void dump(GfxLightDef* asset);
 		};
 	}
 }

@@ -7,9 +7,9 @@ namespace ZoneTool::IW5
 {
 	namespace IW6Converter
 	{
-		IW6::RawFile* GenerateIW6RawFile(RawFile* asset, ZoneMemory* mem)
+		IW6::RawFile* GenerateIW6RawFile(RawFile* asset, allocator& mem)
 		{
-			auto* iw6_asset = mem->Alloc<IW6::RawFile>();
+			auto* iw6_asset = mem.allocate<IW6::RawFile>();
 			iw6_asset->name = asset->name;
 			iw6_asset->compressedLen = asset->compressedLen;
 			iw6_asset->len = asset->len;
@@ -17,10 +17,10 @@ namespace ZoneTool::IW5
 			return iw6_asset;
 		}
 
-		IW6::RawFile* convert(RawFile* asset, ZoneMemory* mem)
+		IW6::RawFile* convert(RawFile* asset, allocator& allocator)
 		{
 			// generate IW6 rawfile
-			return GenerateIW6RawFile(asset, mem);
+			return GenerateIW6RawFile(asset, allocator);
 		}
 	}
 }

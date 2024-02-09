@@ -4,6 +4,6 @@ namespace ZoneTool::IW5
 {
 	namespace IW6Converter
 	{
-		IW6::GfxWorld* convert(GfxWorld* asset, ZoneMemory* mem);
+		IW6::GfxWorld* convert(GfxWorld* asset, allocator& allocator);
 	}
 }

@@ -16,6 +16,10 @@
 #include "H1/Utils/IO/assetmanager.hpp"
 #include "H1/Structs.hpp"
 
+#include "IW6/Structs.hpp"
+
+#include "IW4/Structs.hpp"
+
 using namespace zonetool;
 
 #include "Json.hpp"

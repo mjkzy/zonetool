@@ -6,10 +6,11 @@
 
 namespace ZoneTool::IW5::H1Dumper
 {
-	void dump(PhysPreset* asset, ZoneMemory* mem)
+	void dump(PhysPreset* asset)
 	{
 		// generate h1 asset
-		auto* h1_asset = H1Converter::convert(asset, mem);
+		allocator allocator;
+		auto* h1_asset = H1Converter::convert(asset, allocator);
 
 		// dump asset
 		H1::IPhysPreset::dump(h1_asset);

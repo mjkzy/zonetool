@@ -7,7 +7,7 @@ namespace ZoneTool
 		class IGameWorldSp
 		{
 		public:
-			static void dump(GameWorldSp* asset, ZoneMemory* mem);
+			static void dump(GameWorldSp* asset);
 		};
 	}
 }

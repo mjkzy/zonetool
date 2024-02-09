@@ -1,21 +1,20 @@
 #include "stdafx.hpp"
-#include "H1/Assets/ComWorld.hpp"
-#include "IW5/Structs.hpp"
-
 #include "IW5/Assets/ComWorld.hpp"
 
 namespace ZoneTool
 {
 	namespace IW4
 	{
-		void IComWorld::dump(ComWorld* asset, ZoneMemory* mem)
+		void IComWorld::dump(ComWorld* asset)
 		{
+			allocator allocator;
+
 			// alloc comworld
-			auto* iw5_comworld = mem->Alloc<IW5::ComWorld>();
+			auto* iw5_comworld = allocator.allocate<IW5::ComWorld>();
 			memcpy(iw5_comworld, asset, sizeof ComWorld);
 
 			// alloc lights
-			iw5_comworld->primaryLights = mem->Alloc<IW5::ComPrimaryLight>(iw5_comworld->primaryLightCount);
+			iw5_comworld->primaryLights = allocator.allocate<IW5::ComPrimaryLight>(iw5_comworld->primaryLightCount);
 			memset(iw5_comworld->primaryLights, 0, sizeof(IW5::ComPrimaryLight) * iw5_comworld->primaryLightCount);
 
 			// copy data
@@ -30,7 +29,7 @@ namespace ZoneTool
 			}
 
 			// dump comworld
-			IW5::IComWorld::dump(iw5_comworld, mem);
+			IW5::IComWorld::dump(iw5_comworld);
 		}
 	}
 }

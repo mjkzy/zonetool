@@ -6,10 +6,11 @@
 
 namespace ZoneTool::IW5::H1Dumper
 {
-	void dump(MapEnts* asset, ZoneMemory* mem)
+	void dump(MapEnts* asset)
 	{
 		// generate h1 mapents
-		auto* iw6_asset = H1Converter::convert(asset, mem);
+		allocator allocator;
+		auto* iw6_asset = H1Converter::convert(asset, allocator);
 
 		// dump h1 mapents
 		H1::IMapEnts::dump(iw6_asset, SL_ConvertToString);

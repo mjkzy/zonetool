@@ -2,5 +2,5 @@
 
 namespace ZoneTool::IW5::H1Dumper
 {
-	void dump(ComWorld* asset, ZoneMemory* mem);
+	void dump(ComWorld* asset);
 }

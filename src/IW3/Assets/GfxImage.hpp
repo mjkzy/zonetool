@@ -7,7 +7,8 @@ namespace ZoneTool
 		class IGfxImage
 		{
 		public:
-			static void dump(GfxImage* asset, ZoneMemory* mem);
+			static IW4::GfxImage* GenerateIW4Image(GfxImage* image, allocator& allocator);
+			static void dump(GfxImage* asset);
 		};
 	}
 }

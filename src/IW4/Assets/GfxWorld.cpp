@@ -1,23 +1,20 @@
 #include "stdafx.hpp"
-#include "H1/Assets/GfxWorld.hpp"
-#include "IW5/Structs.hpp"
-
 #include "IW5/Assets/GfxWorld.hpp"
 
 namespace ZoneTool
 {
 	namespace IW4
 	{
-		void IGfxWorld::dump(GfxWorld* asset, ZoneMemory* mem)
+		IW5::GfxWorld* generate_world(GfxWorld* asset, allocator& mem)
 		{
-			auto* iw5_asset = mem->Alloc<IW5::GfxWorld>();
+			auto* iw5_asset = mem.allocate<IW5::GfxWorld>();
 			memset(iw5_asset, 0, sizeof IW5::GfxWorld);
 
 			// copy struct data
 			memcpy(&iw5_asset->name, &asset->name, Difference(&iw5_asset->cells, &iw5_asset->name));
 
 			// allocate cells
-			iw5_asset->cells = mem->Alloc<IW5::GfxCell>(iw5_asset->dpvsPlanes.cellCount);
+			iw5_asset->cells = mem.allocate<IW5::GfxCell>(iw5_asset->dpvsPlanes.cellCount);
 			memset(iw5_asset->cells, 0, sizeof(IW5::GfxCell) * iw5_asset->dpvsPlanes.cellCount);
 
 			// copy cell data
@@ -35,7 +32,7 @@ namespace ZoneTool
 				Difference(&iw5_asset->fogTypesAllowed + 1, &iw5_asset->lightGrid));
 
 			// fix GfxDrawSurfs
-			iw5_asset->dpvs.surfaceMaterials = mem->Alloc<IW5::GfxDrawSurf>(iw5_asset->surfaceCount);
+			iw5_asset->dpvs.surfaceMaterials = mem.allocate<IW5::GfxDrawSurf>(iw5_asset->surfaceCount);
 			memset(iw5_asset->dpvs.surfaceMaterials, 0, sizeof IW5::GfxDrawSurf * iw5_asset->surfaceCount);
 			for (auto i = 0u; i < iw5_asset->surfaceCount; i++)
 			{
@@ -52,8 +49,16 @@ namespace ZoneTool
 				iw5_asset->dpvs.surfaceMaterials[i].fields.unused = asset->dpvs.surfaceMaterials[i].fields.unused;
 			}
 
+			return iw5_asset;
+		}
+
+		void IGfxWorld::dump(GfxWorld* asset)
+		{
+			allocator allocator;
+			auto* iw5_asset = generate_world(asset, allocator);
+
 			// dump asset
-			IW5::IGfxWorld::dump(iw5_asset, mem);
+			IW5::IGfxWorld::dump(iw5_asset);
 		}
 	}
 }

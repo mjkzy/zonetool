@@ -7,10 +7,10 @@ namespace ZoneTool::IW5
 {
 	namespace IW6Converter
 	{
-		IW6::MapEnts* GenerateIW6MapEnts(MapEnts* asset, ZoneMemory* mem)
+		IW6::MapEnts* GenerateIW6MapEnts(MapEnts* asset, allocator& mem)
 		{
 			// allocate IW6 MapEnts structure
-			const auto iw6_asset = mem->Alloc<IW6::MapEnts>();
+			const auto iw6_asset = mem.allocate<IW6::MapEnts>();
 
 			iw6_asset->name = asset->name;
 
@@ -34,17 +34,17 @@ namespace ZoneTool::IW5
 			iw6_asset->clientTrigger.clientTriggerAabbTree = reinterpret_cast<IW6::ClientTriggerAabbNode*>(asset->clientTrigger.clientTriggerAabbTree);
 			iw6_asset->clientTrigger.triggerStringLength = asset->clientTrigger.triggerStringLength;
 			iw6_asset->clientTrigger.triggerString = asset->clientTrigger.triggerString;
-			iw6_asset->clientTrigger.visionSetTriggers = mem->Alloc<short>(asset->clientTrigger.trigger.count); // todo?
-			iw6_asset->clientTrigger.triggerType = mem->Alloc<char>(asset->clientTrigger.trigger.count);
+			iw6_asset->clientTrigger.visionSetTriggers = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
+			iw6_asset->clientTrigger.triggerType = mem.allocate<char>(asset->clientTrigger.trigger.count);
 			for (auto i = 0; i < asset->clientTrigger.trigger.count; i++)
 			{
 				iw6_asset->clientTrigger.triggerType[i] = asset->clientTrigger.triggerType[i]; // convert?
 			}
 			iw6_asset->clientTrigger.origins = reinterpret_cast<float(*__ptr64)[3]>(asset->clientTrigger.origins);
 			iw6_asset->clientTrigger.scriptDelay = asset->clientTrigger.scriptDelay;
-			iw6_asset->clientTrigger.audioTriggers = mem->Alloc<short>(asset->clientTrigger.trigger.count);
-			iw6_asset->clientTrigger.blendLookup = mem->Alloc<short>(asset->clientTrigger.trigger.count); // todo?
-			iw6_asset->clientTrigger.npcTriggers = mem->Alloc<short>(asset->clientTrigger.trigger.count); // todo?
+			iw6_asset->clientTrigger.audioTriggers = mem.allocate<short>(asset->clientTrigger.trigger.count);
+			iw6_asset->clientTrigger.blendLookup = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
+			iw6_asset->clientTrigger.npcTriggers = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
 
 			iw6_asset->clientTriggerBlend.numClientTriggerBlendNodes = 0;
 			iw6_asset->clientTriggerBlend.blendNodes = nullptr;
@@ -59,10 +59,10 @@ namespace ZoneTool::IW5
 			return iw6_asset;
 		}
 
-		IW6::MapEnts* convert(MapEnts* asset, ZoneMemory* mem)
+		IW6::MapEnts* convert(MapEnts* asset, allocator& allocator)
 		{
 			// generate IW6 mapents
-			return GenerateIW6MapEnts(asset, mem);
+			return GenerateIW6MapEnts(asset, allocator);
 		}
 	}
 }

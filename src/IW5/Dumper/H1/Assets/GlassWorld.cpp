@@ -6,10 +6,11 @@
 
 namespace ZoneTool::IW5::H1Dumper
 {
-	void dump(GlassWorld* asset, ZoneMemory* mem)
+	void dump(GlassWorld* asset)
 	{
 		// generate h1 glassworld
-		auto* h1_asset = H1Converter::convert(asset, mem);
+		allocator allocator;
+		auto* h1_asset = H1Converter::convert(asset, allocator);
 
 		// dump h1 glassworld
 		H1::IGlassWorld::dump(h1_asset);

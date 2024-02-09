@@ -257,7 +257,7 @@ namespace ZoneTool
 #define MATERIAL_DUMP_INFO(entry) \
 	matdata[#entry] = asset->info.entry;
 
-		void dump(Material* asset, ZoneMemory* mem)
+		void dump(Material* asset)
 		{
 			if (asset)
 			{

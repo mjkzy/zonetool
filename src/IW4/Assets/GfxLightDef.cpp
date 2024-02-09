@@ -1,16 +1,14 @@
 #include "stdafx.hpp"
-#include "H1/Assets/GfxLightDef.hpp"
-#include "IW5/Structs.hpp"
-
 #include "IW5/Assets/GfxLightDef.hpp"
 
 namespace ZoneTool
 {
 	namespace IW4
 	{
-		void IGfxLightDef::dump(GfxLightDef* asset, ZoneMemory* mem)
+		void IGfxLightDef::dump(GfxLightDef* asset)
 		{
-			auto iw5_asset = mem->Alloc<IW5::GfxLightDef>();
+			allocator allocator;
+			auto iw5_asset = allocator.allocate<IW5::GfxLightDef>();
 
 			// copy data
 			memcpy(iw5_asset, asset, sizeof GfxLightDef);
@@ -18,7 +16,7 @@ namespace ZoneTool
 			iw5_asset->lmapLookupStart = asset->lmapLookupStart;
 
 			// dump data
-			IW5::IGfxLightDef::dump(iw5_asset, mem);
+			IW5::IGfxLightDef::dump(iw5_asset);
 		}
 	}
 }

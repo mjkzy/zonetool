@@ -6,10 +6,11 @@
 
 namespace ZoneTool::IW5::H1Dumper
 {
-	void dump(SndCurve* asset, ZoneMemory* mem)
+	void dump(SndCurve* asset)
 	{
 		// generate h1 asset
-		auto* h1_asset = H1Converter::convert(asset, mem);
+		allocator allocator;
+		auto* h1_asset = H1Converter::convert(asset, allocator);
 
 		// dump soundcurve
 		H1::ISoundCurve::dump(h1_asset);

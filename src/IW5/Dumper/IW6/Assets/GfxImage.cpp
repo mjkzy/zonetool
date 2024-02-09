@@ -6,7 +6,7 @@
 
 namespace ZoneTool::IW5::IW6Dumper
 {
-	void dump(GfxImage* asset, ZoneMemory* mem)
+	void dump(GfxImage* asset)
 	{
 		std::string name = asset->name;
 
@@ -26,7 +26,8 @@ namespace ZoneTool::IW5::IW6Dumper
 		}
 
 		// generate IW6 gfximage
-		auto* iw6_asset = IW6Converter::convert(asset, mem);
+		allocator allocator;
+		auto* iw6_asset = IW6Converter::convert(asset, allocator);
 
 		// dump IW6 gfximage
 		IW6::IGfxImage::dump(iw6_asset);

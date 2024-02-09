@@ -1,6 +1,4 @@
 #include "stdafx.hpp"
-#include "IW5/Structs.hpp"
-
 #include "IW5/Assets/Sound.hpp"
 
 namespace ZoneTool
@@ -53,15 +51,15 @@ namespace ZoneTool
 			return iw5_conversion_table[snd_channel];
 		}
 
-		void ISound::dump(snd_alias_list_t* asset, ZoneMemory* mem)
+		IW5::snd_alias_list_t* generate_sound(snd_alias_list_t* asset, allocator& mem)
 		{
-			auto* iw5_asset = mem->Alloc<IW5::snd_alias_list_t>();
+			auto* iw5_asset = mem.allocate<IW5::snd_alias_list_t>();
 			memset(iw5_asset, 0, sizeof IW5::snd_alias_list_t);
 
 			iw5_asset->aliasName = asset->name;
 			iw5_asset->count = asset->count;
 
-			iw5_asset->head = mem->Alloc<IW5::snd_alias_t>(iw5_asset->count);
+			iw5_asset->head = mem.allocate<IW5::snd_alias_t>(iw5_asset->count);
 			memset(iw5_asset->head, 0, sizeof(IW5::snd_alias_t) * iw5_asset->count);
 
 			for (auto i = 0; i < iw5_asset->count; i++)
@@ -97,7 +95,15 @@ namespace ZoneTool
 				memcpy(&current_iw5->probability, &current_iw4->probability, 36);
 			}
 
-			IW5::ISound::dump(iw5_asset, mem, filesystem_read_big_file);
+			return iw5_asset;
+		}
+
+		void ISound::dump(snd_alias_list_t* asset)
+		{
+			allocator allocator;
+			auto* iw5_asset = generate_sound(asset, allocator);
+
+			IW5::ISound::dump(iw5_asset, filesystem_read_big_file);
 		}
 	}
 }

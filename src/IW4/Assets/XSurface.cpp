@@ -1,18 +1,16 @@
 #include "stdafx.hpp"
-#include "IW5/Structs.hpp"
-
 #include "IW5/Assets/XSurface.hpp"
 
 namespace ZoneTool
 {
 	namespace IW4
 	{
-		void IXSurface::dump(XModelSurfs* asset, ZoneMemory* mem)
+		IW5::XModelSurfs* generate_surface(XModelSurfs* asset, allocator& mem)
 		{
-			auto* iw5_asset = mem->Alloc<IW5::XModelSurfs>();
+			auto* iw5_asset = mem.allocate<IW5::XModelSurfs>();
 			std::memcpy(iw5_asset, asset, sizeof(IW5::XModelSurfs));
 
-			iw5_asset->surfs = mem->Alloc<IW5::XSurface>(asset->numsurfs);
+			iw5_asset->surfs = mem.allocate<IW5::XSurface>(asset->numsurfs);
 			for (unsigned short i = 0; i < asset->numsurfs; i++)
 			{
 				auto* surf = &asset->surfs[i];
@@ -35,8 +33,16 @@ namespace ZoneTool
 				std::memcpy(&iw5_surf->partBits, &surf->partBits, sizeof(int[6]));
 			}
 
+			return iw5_asset;
+		}
+
+		void IXSurface::dump(XModelSurfs* asset)
+		{
+			allocator allocator;
+			auto* iw5_asset = generate_surface(asset, allocator);
+
 			// dump surfaces
-			IW5::IXSurface::dump(iw5_asset, mem);
+			IW5::IXSurface::dump(iw5_asset);
 		}
 	}
 }

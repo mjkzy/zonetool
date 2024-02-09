@@ -7,7 +7,7 @@ namespace ZoneTool
 		class IXSurface
 		{
 		public:
-			static void dump(XModelSurfs* asset, ZoneMemory* mem);
+			static void dump(XModelSurfs* asset);
 		};
 	}
 }

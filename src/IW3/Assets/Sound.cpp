@@ -1,318 +1,94 @@
 #include "stdafx.hpp"
-#include "H1/Assets/Sound.hpp"
-
-#define STREAMED_TO_LOADED_IW3
-
-namespace
-{
-	std::string remove_extension(const std::string& filename)
-	{
-		size_t lastdot = filename.find_last_of(".");
-		if (lastdot == std::string::npos) return filename;
-		return filename.substr(0, lastdot);
-	};
-}
+#include "IW4/Assets/Sound.hpp"
 
 namespace ZoneTool
 {
 	namespace IW3
 	{
-		H1::SoundDspBus channel_to_dspbus_index[33]
+		IW4::SoundChannel iw4_conversion_table[IW3::SND_CHANNEL_COUNT]
 		{
-			H1::SoundDspBus::SND_DSPBUS_PHYSICS,		//SND_CHANNEL_PHYSICS,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,		//SND_CHANNEL_AUTO,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,		//SND_CHANNEL_AUTO2,
-			H1::SoundDspBus::SND_DSPBUS_ANIMALS,		//SND_CHANNEL_AUTODOG,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,		//SND_CHANNEL_BULLETIMPACT,
-			H1::SoundDspBus::SND_DSPBUS_WHIZBYS,		//SND_CHANNEL_BULLETWHIZBY,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,		//SND_CHANNEL_ELEMENT,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,		//SND_CHANNEL_AUTO2D,
-			H1::SoundDspBus::SND_DSPBUS_VEHICLES,		//SND_CHANNEL_VEHICLE,
-			H1::SoundDspBus::SND_DSPBUS_VEHICLES,		//SND_CHANNEL_VEHICLELIMITED,
-			H1::SoundDspBus::SND_DSPBUS_INTERFACE,		//SND_CHANNEL_MENU,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,		//SND_CHANNEL_BODY,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,		//SND_CHANNEL_BODY2D,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,		//SND_CHANNEL_RELOAD,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,		//SND_CHANNEL_RELOAD2D,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,		//SND_CHANNEL_ITEM,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,		//SND_CHANNEL_EFFECTS1,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,		//SND_CHANNEL_EFFECTS2,
-			H1::SoundDspBus::SND_DSPBUS_WEAPONS,		//SND_CHANNEL_WEAPON,
-			H1::SoundDspBus::SND_DSPBUS_WEAPONS,		//SND_CHANNEL_WEAPON2D,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,		//SND_CHANNEL_NONSHOCK,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,		//SND_CHANNEL_VOICE,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,		//SND_CHANNEL_LOCAL,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,		//SND_CHANNEL_LOCAL2,
-			H1::SoundDspBus::SND_DSPBUS_AMBIENCE,		//SND_CHANNEL_AMBIENT,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,		//SND_CHANNEL_HURT,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,		//SND_CHANNEL_PLAYER1,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,		//SND_CHANNEL_PLAYER2,
-			H1::SoundDspBus::SND_DSPBUS_MUSIC,			//SND_CHANNEL_MUSIC,
-			H1::SoundDspBus::SND_DSPBUS_MUSIC,			//SND_CHANNEL_MUSICNOPAUSE,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,		//SND_CHANNEL_MISSION,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,		//SND_CHANNEL_ANNOUNCER,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,		//SND_CHANNEL_SHELLSHOCK,
+			IW4::SND_CHANNEL_PHYSICS,
+			IW4::SND_CHANNEL_AUTO,
+			IW4::SND_CHANNEL_AUTO2,
+			IW4::SND_CHANNEL_AUTODOG,
+			IW4::SND_CHANNEL_BULLETIMPACT,
+			IW4::SND_CHANNEL_BULLETWHIZBY,
+			IW4::SND_CHANNEL_ELEMENT,
+			IW4::SND_CHANNEL_AUTO2D,
+			IW4::SND_CHANNEL_VEHICLE,
+			IW4::SND_CHANNEL_VEHICLELIMITED,
+			IW4::SND_CHANNEL_MENU,
+			IW4::SND_CHANNEL_BODY,
+			IW4::SND_CHANNEL_BODY2D,
+			IW4::SND_CHANNEL_RELOAD,
+			IW4::SND_CHANNEL_RELOAD2D,
+			IW4::SND_CHANNEL_ITEM,
+			IW4::SND_CHANNEL_EFFECTS1,
+			IW4::SND_CHANNEL_EFFECTS2,
+			IW4::SND_CHANNEL_WEAPON,
+			IW4::SND_CHANNEL_WEAPON2D,
+			IW4::SND_CHANNEL_NONSHOCK,
+			IW4::SND_CHANNEL_VOICE,
+			IW4::SND_CHANNEL_LOCAL,
+			IW4::SND_CHANNEL_LOCAL2,
+			IW4::SND_CHANNEL_AMBIENT,
+			IW4::SND_CHANNEL_HURT,
+			IW4::SND_CHANNEL_PLAYER1,
+			IW4::SND_CHANNEL_PLAYER2,
+			IW4::SND_CHANNEL_MUSIC,
+			IW4::SND_CHANNEL_MUSICNOPAUSE,
+			IW4::SND_CHANNEL_MISSION,
+			IW4::SND_CHANNEL_ANNOUNCER,
+			IW4::SND_CHANNEL_SHELLSHOCK,
 		};
 
-		H1::SoundVolMod channel_to_volmod_index[33]
+		static IW4::SoundChannel channel_to_iw4(IW3::SoundChannel snd_channel)
 		{
-			H1::SoundVolMod::SND_VOLMOD_DEFAULT,				//SND_CHANNEL_PHYSICS,
-			H1::SoundVolMod::SND_VOLMOD_DEFAULT,				//SND_CHANNEL_AUTO,
-			H1::SoundVolMod::SND_VOLMOD_DEFAULT,				//SND_CHANNEL_AUTO2,
-			H1::SoundVolMod::SND_VOLMOD_DEFAULT,				//SND_CHANNEL_AUTODOG,
-			H1::SoundVolMod::SND_VOLMOD_IMPACT_CRITICAL,		//SND_CHANNEL_BULLETIMPACT,
-			H1::SoundVolMod::SND_VOLMOD_BULLET_WHIZBY,			//SND_CHANNEL_BULLETWHIZBY,
-			H1::SoundVolMod::SND_VOLMOD_DEFAULT,				//SND_CHANNEL_ELEMENT,
-			H1::SoundVolMod::SND_VOLMOD_FRONTEND_SFX,			//SND_CHANNEL_AUTO2D,
-			H1::SoundVolMod::SND_VOLMOD_VEHICLE_NPC,			//SND_CHANNEL_VEHICLE,
-			H1::SoundVolMod::SND_VOLMOD_VEHICLE_NPC_SPECIAL,	//SND_CHANNEL_VEHICLELIMITED,
-			H1::SoundVolMod::SND_VOLMOD_HUD,					//SND_CHANNEL_MENU,
-			H1::SoundVolMod::SND_VOLMOD_DEFAULT,				//SND_CHANNEL_BODY,
-			H1::SoundVolMod::SND_VOLMOD_DEFAULT,				//SND_CHANNEL_BODY2D,
-			H1::SoundVolMod::SND_VOLMOD_DEFAULT,				//SND_CHANNEL_RELOAD,
-			H1::SoundVolMod::SND_VOLMOD_DEFAULT,				//SND_CHANNEL_RELOAD2D,
-			H1::SoundVolMod::SND_VOLMOD_DEFAULT,				//SND_CHANNEL_ITEM,
-			H1::SoundVolMod::SND_VOLMOD_DEFAULT,				//SND_CHANNEL_EFFECTS1,
-			H1::SoundVolMod::SND_VOLMOD_DEFAULT,				//SND_CHANNEL_EFFECTS2,
-			H1::SoundVolMod::SND_VOLMOD_DEFAULT,				//SND_CHANNEL_WEAPON,
-			H1::SoundVolMod::SND_VOLMOD_DEFAULT,				//SND_CHANNEL_WEAPON2D,
-			H1::SoundVolMod::SND_VOLMOD_DEFAULT,				//SND_CHANNEL_NONSHOCK,
-			H1::SoundVolMod::SND_VOLMOD_DEFAULT,				//SND_CHANNEL_VOICE,
-			H1::SoundVolMod::SND_VOLMOD_DEFAULT,				//SND_CHANNEL_LOCAL,
-			H1::SoundVolMod::SND_VOLMOD_DEFAULT,				//SND_CHANNEL_LOCAL2,
-			H1::SoundVolMod::SND_VOLMOD_AMB_QUAD,				//SND_CHANNEL_AMBIENT,
-			H1::SoundVolMod::SND_VOLMOD_DEFAULT,				//SND_CHANNEL_HURT,
-			H1::SoundVolMod::SND_VOLMOD_DEFAULT,				//SND_CHANNEL_PLAYER1,
-			H1::SoundVolMod::SND_VOLMOD_DEFAULT,				//SND_CHANNEL_PLAYER2,
-			H1::SoundVolMod::SND_VOLMOD_MUSIC,					//SND_CHANNEL_MUSIC,
-			H1::SoundVolMod::SND_VOLMOD_MUSIC,					//SND_CHANNEL_MUSICNOPAUSE,
-			H1::SoundVolMod::SND_VOLMOD_DEFAULT,				//SND_CHANNEL_MISSION,
-			H1::SoundVolMod::SND_VOLMOD_DEFAULT,				//SND_CHANNEL_ANNOUNCER,
-			H1::SoundVolMod::SND_VOLMOD_DEFAULT,				//SND_CHANNEL_SHELLSHOCK,
-		};
-
-		void GenerateH1SoundAlias(snd_alias_t* alias, H1::snd_alias_t* h1_alias, ZoneMemory* mem)
-		{
-			h1_alias->aliasName = alias->aliasName;
-			h1_alias->subtitle = alias->subtitle;
-			h1_alias->secondaryAliasName = alias->secondaryAliasName;
-			h1_alias->chainAliasName = alias->chainAliasName;
-
-			// todo
-			h1_alias->soundFile;
-			h1_alias->soundFile = mem->Alloc<H1::SoundFile>();
-
-			h1_alias->soundFile->exists = alias->soundFile->exists;
-			h1_alias->soundFile->type = static_cast<H1::snd_alias_type_t>(alias->soundFile->type);
-
-			switch (h1_alias->soundFile->type)
-			{
-			case H1::snd_alias_type_t::SAT_LOADED:
-			{
-				const std::string s_name = alias->soundFile->sound.loadSnd->name;
-				const std::string s_name_no_ext = remove_extension(s_name);
-
-				h1_alias->soundFile->u.loadSnd = mem->Alloc<H1::LoadedSound>();
-				h1_alias->soundFile->u.loadSnd->name = mem->StrDup(s_name_no_ext);
-				break;
-			}
-			case H1::snd_alias_type_t::SAT_STREAMED:
-			{
-#ifdef STREAMED_TO_LOADED_IW3
-				h1_alias->soundFile->type = H1::snd_alias_type_t::SAT_LOADED;
-				const std::string s_dir = alias->soundFile->sound.streamSnd.dir;
-				const std::string s_name = alias->soundFile->sound.streamSnd.name;
-				const auto path = std::filesystem::path(s_dir + "/" + s_name);
-
-				std::string noext_path = remove_extension(path.string());
-
-				h1_alias->soundFile->u.loadSnd = mem->Alloc<H1::LoadedSound>();
-				h1_alias->soundFile->u.loadSnd->name = mem->StrDup(noext_path);
-#else
-				h1_alias->soundFile->u.streamSnd.filename.isLocalized = false;
-				h1_alias->soundFile->u.streamSnd.filename.isStreamed = false;
-				h1_alias->soundFile->u.streamSnd.filename.fileIndex = 0;
-
-				h1_alias->soundFile->u.streamSnd.filename.info.raw.name = alias->soundFile->sound.streamSnd.name;
-				h1_alias->soundFile->u.streamSnd.filename.info.raw.dir = alias->soundFile->sound.streamSnd.dir;
-
-				h1_alias->soundFile->u.streamSnd.totalMsec = 0;
-#endif
-				break;
-			}
-			}
-
-			h1_alias->mixerGroup = nullptr;
-
-			h1_alias->poly = 1;
-			h1_alias->polyGlobal = 174;
-			h1_alias->polyEntityType = 0;
-			h1_alias->polyGlobalType = 0;
-
-			h1_alias->dspBusIndex = 0; // default;
-			h1_alias->priority = 1;
-
-			h1_alias->__pad0;
-
-			h1_alias->volMin = alias->volMin;
-			h1_alias->volMax = alias->volMax;
-			h1_alias->volModIndex = 0; // default
-
-			h1_alias->pitchMin = alias->pitchMin;
-			h1_alias->pitchMax = alias->pitchMax;
-
-			h1_alias->distMin = alias->distMin;
-			h1_alias->distMax = alias->distMax;
-
-			h1_alias->velocityMin = 0.0f;
-
-			h1_alias->masterPriority = 50;
-			h1_alias->masterPercentage = 0.0f;
-
-			h1_alias->slavePercentage = alias->slavePercentage;
-
-			h1_alias->playbackPercentage = 100;
-			h1_alias->probability = alias->probability;
-
-			h1_alias->sndContext = nullptr;
-
-			h1_alias->sequence = alias->sequence;
-			h1_alias->lfePercentage = alias->lfePercentage;
-			h1_alias->centerPercentage = alias->centerPercentage;
-			h1_alias->startDelay = alias->startDelay;
-
-			auto* default_sndcurve = mem->Alloc<H1::SndCurve>();
-			default_sndcurve->name = "$default";
-
-			H1::SndCurve* sndcurve = nullptr;
-			if (alias->volumeFalloffCurve && alias->volumeFalloffCurve->filename != ""s)
-			{
-				sndcurve = mem->Alloc<H1::SndCurve>();
-				sndcurve->filename = alias->volumeFalloffCurve->filename;
-				sndcurve->isDefault = 0;
-				sndcurve->knotCount = alias->volumeFalloffCurve->knotCount;
-				memcpy(sndcurve->knots, alias->volumeFalloffCurve->knots, sizeof(float[16][2]));
-			}
-			else
-			{
-				sndcurve = default_sndcurve;
-			}
-
-			h1_alias->sndCurve = sndcurve;
-			h1_alias->lpfCurve = default_sndcurve;
-			h1_alias->reverbSendCurve = default_sndcurve;
-
-			h1_alias->speakerMap = nullptr;
-			if (alias->speakerMap)
-			{
-				h1_alias->speakerMap = mem->Alloc<H1::SpeakerMap>();
-				h1_alias->speakerMap->isDefault = alias->speakerMap->isDefault;
-				h1_alias->speakerMap->name = alias->speakerMap->name;
-				h1_alias->speakerMap->unknown = 0;
-
-				for (char x = 0; x < 2; x++)
-				{
-					for (char y = 0; y < 2; y++)
-					{
-						h1_alias->speakerMap->channelMaps[x][y].speakerCount = alias->speakerMap->channelMaps[x][y].entryCount;
-						for (char i = 0; i < 6; i++)
-						{
-							h1_alias->speakerMap->channelMaps[x][y].speakers[i].speaker = alias->speakerMap->channelMaps[x][y].speakers[i].speaker;
-							h1_alias->speakerMap->channelMaps[x][y].speakers[i].numLevels = alias->speakerMap->channelMaps[x][y].speakers[i].numLevels;
-							h1_alias->speakerMap->channelMaps[x][y].speakers[i].levels[0] = alias->speakerMap->channelMaps[x][y].speakers[i].levels[0];
-							h1_alias->speakerMap->channelMaps[x][y].speakers[i].levels[1] = alias->speakerMap->channelMaps[x][y].speakers[i].levels[1];
-						}
-					}
-				}
-			}
-
-			h1_alias->envelopMin = alias->envelopMin;
-			h1_alias->envelopMax = alias->envelopMax;
-
-			h1_alias->reverbWetMixOverride = 0.0f;
-			h1_alias->reverbMultiplier = 1.0f;
-			h1_alias->smartPanDistance2d = 0.0f;
-			h1_alias->smartPanDistance3d = 0.0f;
-			h1_alias->smartPanAttenuation3d = 1.0f;
-
-			h1_alias->envelopPercentage = alias->envelopPercentage;
-
-			h1_alias->stereo3dAngle = 0;
-			h1_alias->stereo3dStart = 0.0f;
-			h1_alias->stereo3dEnd = 0.0f;
-
-			h1_alias->allowDoppler = 0;
-			h1_alias->dopplerPreset = nullptr;
-
-			h1_alias->u1 = 4; // always 4?
-			h1_alias->u2 = 0.5011872053146362f; // unk
-
-			// convert flags
-			H1::SoundAliasFlags h1_flags{ 0 };
-			IW3::SoundAliasFlags iw3_flags{ 0 };
-
-			h1_flags.intValue = 0;
-			iw3_flags.intValue = alias->flags;
-
-			const auto get_unk1 = [&](auto type, auto channel)
-			{
-				if (std::string(alias->aliasName).find("_plr") != std::string::npos ||
-					channel == IW3::SoundChannel::SND_CHANNEL_AMBIENT ||
-					channel == IW3::SoundChannel::SND_CHANNEL_AUTO2D ||
-					channel == IW3::SoundChannel::SND_CHANNEL_BODY2D ||
-					channel == IW3::SoundChannel::SND_CHANNEL_RELOAD2D ||
-					channel == IW3::SoundChannel::SND_CHANNEL_WEAPON2D)
-				{
-					return 6u; // local
-				}
-				else
-				{
-					return 4u; // world
-				}
-			};
-
-			// h1 struct may be wrong?
-			h1_flags.packed.looping = iw3_flags.looping;
-			h1_flags.packed.isMaster = iw3_flags.isMaster;
-			h1_flags.packed.isSlave = iw3_flags.isSlave;
-			h1_flags.packed.fullDryLevel = iw3_flags.fullDryLevel;
-			h1_flags.packed.noWetLevel = iw3_flags.noWetLevel;
-			h1_flags.packed.is3d = iw3_flags.unknown1;
-			h1_flags.packed.unk1 = get_unk1(h1_alias->soundFile->type, iw3_flags.channel);
-			h1_flags.packed.type = h1_alias->soundFile->type; //iw3_flags.type;
-			h1_flags.packed.unk2 = 0;
-
-			h1_alias->flags = h1_flags.intValue;
-
-			h1_alias->volModIndex = channel_to_volmod_index[iw3_flags.channel];
-			h1_alias->dspBusIndex = channel_to_dspbus_index[iw3_flags.channel];
+			return iw4_conversion_table[snd_channel];
 		}
 
-		H1::snd_alias_list_t* GenerateH1Sound(snd_alias_list_t* asset, ZoneMemory* mem)
+		IW4::snd_alias_list_t* generate_sound(snd_alias_list_t* asset, allocator& mem)
 		{
-			auto* h1_asset = mem->Alloc<H1::snd_alias_list_t>();
-			h1_asset->aliasName = asset->aliasName;
-			
-			h1_asset->count = asset->count;
-			h1_asset->head = mem->Alloc<H1::snd_alias_t>(h1_asset->count);
-			for (unsigned char i = 0; i < h1_asset->count; i++)
+			const auto iw4_asset = mem.allocate<IW4::snd_alias_list_t>(); // new IW4::snd_alias_list_t;
+			memcpy(iw4_asset, asset, sizeof snd_alias_list_t);
+
+			iw4_asset->head = mem.allocate<IW4::snd_alias_t>(iw4_asset->count);
+			memset(iw4_asset->head, 0, sizeof IW4::snd_alias_t * iw4_asset->count);
+
+			for (auto i = 0; i < asset->count; i++)
 			{
-				GenerateH1SoundAlias(&asset->head[i], &h1_asset->head[i], mem);
+				memcpy(&iw4_asset->head[i], &asset->head[i], 16);
+				memcpy(&iw4_asset->head[i].soundFile, &asset->head[i].soundFile, sizeof snd_alias_t - 16 - 20);
+				memcpy(&iw4_asset->head[i].volumeFalloffCurve, &asset->head[i].volumeFalloffCurve, 20);
+
+				IW3::SoundAliasFlags iw3_flags;
+				iw3_flags.intValue = asset->head[i].flags;
+
+				IW4::SoundAliasFlags iw4_flags;
+				iw4_flags.intValue = 0;
+
+				iw4_flags.looping = iw3_flags.looping;
+				iw4_flags.isMaster = iw3_flags.isMaster;
+				iw4_flags.isSlave = iw3_flags.isSlave;
+				iw4_flags.fullDryLevel = iw3_flags.fullDryLevel;
+				iw4_flags.noWetLevel = iw3_flags.noWetLevel;
+				iw4_flags.unknown1 = iw3_flags.unknown1;
+				iw4_flags.unknown2 = 0;
+				iw4_flags.type = iw3_flags.type;
+				iw4_flags.channel = channel_to_iw4(IW3::SoundChannel(iw3_flags.channel));
+
+				iw4_asset->head[i].flags = iw4_flags.intValue;
 			}
 
-			h1_asset->contextList = nullptr;
-			h1_asset->contextListCount = 0;
-
-			return h1_asset;
+			return iw4_asset;
 		}
 
-		void ISound::dump(snd_alias_list_t* asset, ZoneMemory* mem)
+		void ISound::dump(snd_alias_list_t* asset)
 		{
-			// generate h1 asset
-			auto* h1_asset = GenerateH1Sound(asset, mem);
+			allocator allocator;
+			auto* iw4_asset = generate_sound(asset, allocator);
 
-			// dump lightdef
-			H1::ISound::dump(h1_asset);
+			IW4::ISound::dump(iw4_asset);
 		}
 	}
 }

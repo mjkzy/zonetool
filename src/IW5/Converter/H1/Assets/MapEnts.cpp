@@ -7,10 +7,10 @@ namespace ZoneTool::IW5
 {
 	namespace H1Converter
 	{
-		H1::MapEnts* GenerateH1MapEnts(MapEnts* asset, ZoneMemory* mem)
+		H1::MapEnts* GenerateH1MapEnts(MapEnts* asset, allocator& mem)
 		{
 			// allocate H1 MapEnts structure
-			const auto h1_asset = mem->Alloc<H1::MapEnts>();
+			const auto h1_asset = mem.allocate<H1::MapEnts>();
 
 			h1_asset->name = asset->name;
 
@@ -34,22 +34,22 @@ namespace ZoneTool::IW5
 			h1_asset->clientTrigger.clientTriggerAabbTree = reinterpret_cast<H1::ClientTriggerAabbNode*>(asset->clientTrigger.clientTriggerAabbTree);
 			h1_asset->clientTrigger.triggerStringLength = asset->clientTrigger.triggerStringLength;
 			h1_asset->clientTrigger.triggerString = asset->clientTrigger.triggerString;
-			h1_asset->clientTrigger.visionSetTriggers = mem->Alloc<short>(asset->clientTrigger.trigger.count); // todo?
-			h1_asset->clientTrigger.blendLookup = mem->Alloc<short>(asset->clientTrigger.trigger.count); // todo?
-			h1_asset->clientTrigger.unk1 = mem->Alloc<short>(asset->clientTrigger.trigger.count); // todo?
-			h1_asset->clientTrigger.triggerType = mem->Alloc<short>(asset->clientTrigger.trigger.count); // todo
+			h1_asset->clientTrigger.visionSetTriggers = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
+			h1_asset->clientTrigger.blendLookup = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
+			h1_asset->clientTrigger.unk1 = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
+			h1_asset->clientTrigger.triggerType = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo
 			for (auto i = 0; i < asset->clientTrigger.trigger.count; i++)
 			{
 				h1_asset->clientTrigger.triggerType[i] = asset->clientTrigger.triggerType[i]; // convert?
 			}
 			h1_asset->clientTrigger.origins = reinterpret_cast<float(*__ptr64)[3]>(asset->clientTrigger.origins);
 			h1_asset->clientTrigger.scriptDelay = asset->clientTrigger.scriptDelay;
-			h1_asset->clientTrigger.audioTriggers = mem->Alloc<short>(asset->clientTrigger.trigger.count); // todo?
-			h1_asset->clientTrigger.unk2 = mem->Alloc<short>(asset->clientTrigger.trigger.count); // todo?
-			h1_asset->clientTrigger.unk3 = mem->Alloc<short>(asset->clientTrigger.trigger.count); // todo?
-			h1_asset->clientTrigger.unk4 = mem->Alloc<short>(asset->clientTrigger.trigger.count); // todo?
-			h1_asset->clientTrigger.unk5 = mem->Alloc<short>(asset->clientTrigger.trigger.count); // todo?
-			h1_asset->clientTrigger.unk6 = mem->Alloc<short>(asset->clientTrigger.trigger.count); // todo?
+			h1_asset->clientTrigger.audioTriggers = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
+			h1_asset->clientTrigger.unk2 = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
+			h1_asset->clientTrigger.unk3 = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
+			h1_asset->clientTrigger.unk4 = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
+			h1_asset->clientTrigger.unk5 = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
+			h1_asset->clientTrigger.unk6 = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
 
 			h1_asset->clientTriggerBlend.numClientTriggerBlendNodes = 0;
 			h1_asset->clientTriggerBlend.blendNodes = nullptr;
@@ -64,10 +64,10 @@ namespace ZoneTool::IW5
 			return h1_asset;
 		}
 
-		H1::MapEnts* convert(MapEnts* asset, ZoneMemory* mem)
+		H1::MapEnts* convert(MapEnts* asset, allocator& allocator)
 		{
 			// generate h1 mapents
-			return GenerateH1MapEnts(asset, mem);
+			return GenerateH1MapEnts(asset, allocator);
 		}
 	}
 }

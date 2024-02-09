@@ -119,7 +119,7 @@ namespace ZoneTool::IW5
 			index++;
 		}
 
-		void GenerateIW6XSurface(IW6::XSurface* iw6_asset, XSurface* asset, ZoneMemory* mem)
+		void GenerateIW6XSurface(IW6::XSurface* iw6_asset, XSurface* asset, allocator& mem)
 		{
 			iw6_asset->flags = 0;
 			iw6_asset->flags |= ((asset->flags & IW5::SURF_FLAG_VERTCOL_GREY) != 0) ? IW6::SURF_FLAG_VERTCOL_GREY : 0;
@@ -135,7 +135,7 @@ namespace ZoneTool::IW5
 			memcpy(&iw6_asset->blendVertCounts, &asset->vertInfo.vertCount, sizeof(asset->vertInfo.vertCount));
 			iw6_asset->blendVerts = reinterpret_cast<unsigned short* __ptr64>(asset->vertInfo.vertsBlend);
 
-			iw6_asset->blendVertsTable = mem->Alloc<IW6::BlendVertsUnknown>(asset->vertCount);
+			iw6_asset->blendVertsTable = mem.allocate<IW6::BlendVertsUnknown>(asset->vertCount);
 			GenerateIW6BlendVertsShit(iw6_asset);
 
 			// triIndices
@@ -143,7 +143,7 @@ namespace ZoneTool::IW5
 
 			// verts
 			//iw6_asset->verts0.packedVerts0 = reinterpret_cast<IW6::GfxPackedVertex* __ptr64>(asset->verticies);
-			iw6_asset->verts0.packedVerts0 = mem->Alloc<IW6::GfxPackedVertex>(asset->vertCount);
+			iw6_asset->verts0.packedVerts0 = mem.allocate<IW6::GfxPackedVertex>(asset->vertCount);
 			for (unsigned short i = 0; i < asset->vertCount; i++)
 			{
 				memcpy(&iw6_asset->verts0.packedVerts0[i], &asset->verts0.packedVerts0[i], sizeof(IW5::GfxPackedVertex));
@@ -180,7 +180,7 @@ namespace ZoneTool::IW5
 			}
 
 			// rigidVertLists
-			iw6_asset->rigidVertLists = mem->Alloc<IW6::XRigidVertList>(asset->vertListCount);
+			iw6_asset->rigidVertLists = mem.allocate<IW6::XRigidVertList>(asset->vertListCount);
 			for (int i = 0; i < asset->vertListCount; i++)
 			{
 				iw6_asset->rigidVertLists[i].boneOffset = asset->vertList[i].boneOffset;
@@ -190,14 +190,14 @@ namespace ZoneTool::IW5
 
 				if (asset->vertList[i].collisionTree)
 				{
-					iw6_asset->rigidVertLists[i].collisionTree = mem->Alloc<IW6::XSurfaceCollisionTree>();
+					iw6_asset->rigidVertLists[i].collisionTree = mem.allocate<IW6::XSurfaceCollisionTree>();
 					memcpy(&iw6_asset->rigidVertLists[i].collisionTree->trans, &asset->vertList[i].collisionTree->trans,
 						sizeof(asset->vertList[i].collisionTree->trans));
 					memcpy(&iw6_asset->rigidVertLists[i].collisionTree->scale, &asset->vertList[i].collisionTree->scale,
 						sizeof(asset->vertList[i].collisionTree->scale));
 
 					iw6_asset->rigidVertLists[i].collisionTree->nodeCount = asset->vertList[i].collisionTree->nodeCount;
-					iw6_asset->rigidVertLists[i].collisionTree->nodes = mem->Alloc<IW6::XSurfaceCollisionNode>(
+					iw6_asset->rigidVertLists[i].collisionTree->nodes = mem.allocate<IW6::XSurfaceCollisionNode>(
 						asset->vertList[i].collisionTree->nodeCount);
 					for (int j = 0; j < asset->vertList[i].collisionTree->nodeCount; j++)
 					{
@@ -215,7 +215,7 @@ namespace ZoneTool::IW5
 					}
 
 					iw6_asset->rigidVertLists[i].collisionTree->leafCount = asset->vertList[i].collisionTree->leafCount;
-					iw6_asset->rigidVertLists[i].collisionTree->leafs = mem->Alloc<IW6::XSurfaceCollisionLeaf>(
+					iw6_asset->rigidVertLists[i].collisionTree->leafs = mem.allocate<IW6::XSurfaceCollisionLeaf>(
 						asset->vertList[i].collisionTree->leafCount);
 					for (int j = 0; j < asset->vertList[i].collisionTree->leafCount; j++)
 					{
@@ -229,16 +229,16 @@ namespace ZoneTool::IW5
 			memcpy(&iw6_asset->partBits, &asset->partBits, sizeof(asset->partBits));
 		}
 
-		IW6::XModelSurfs* GenerateIW6XModelSurfs(XModelSurfs* asset, ZoneMemory* mem)
+		IW6::XModelSurfs* GenerateIW6XModelSurfs(XModelSurfs* asset, allocator& mem)
 		{
 			// allocate IW6 XModelSurfs structure
-			const auto iw6_asset = mem->Alloc<IW6::XModelSurfs>();
+			const auto iw6_asset = mem.allocate<IW6::XModelSurfs>();
 
-			iw6_asset->name = mem->StrDup(asset->name);
+			iw6_asset->name = mem.duplicate_string(asset->name);
 			iw6_asset->numsurfs = asset->numsurfs;
 			memcpy(&iw6_asset->partBits, &asset->partBits, sizeof(asset->partBits));
 
-			iw6_asset->surfs = mem->Alloc<IW6::XSurface>(asset->numsurfs);
+			iw6_asset->surfs = mem.allocate<IW6::XSurface>(asset->numsurfs);
 			for (int i = 0; i < asset->numsurfs; i++)
 			{
 				GenerateIW6XSurface(&iw6_asset->surfs[i], &asset->surfs[i], mem);
@@ -247,10 +247,10 @@ namespace ZoneTool::IW5
 			return iw6_asset;
 		}
 
-		IW6::XModelSurfs* convert(XModelSurfs* asset, ZoneMemory* mem)
+		IW6::XModelSurfs* convert(XModelSurfs* asset, allocator& allocator)
 		{
 			// generate IW6 surfaces
-			return GenerateIW6XModelSurfs(asset, mem);
+			return GenerateIW6XModelSurfs(asset, allocator);
 		}
 	}
 }

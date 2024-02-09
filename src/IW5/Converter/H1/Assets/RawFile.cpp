@@ -7,9 +7,9 @@ namespace ZoneTool::IW5
 {
 	namespace H1Converter
 	{
-		H1::RawFile* GenerateH1RawFile(RawFile* asset, ZoneMemory* mem)
+		H1::RawFile* GenerateH1RawFile(RawFile* asset, allocator& mem)
 		{
-			auto* h1_asset = mem->Alloc<H1::RawFile>();
+			auto* h1_asset = mem.allocate<H1::RawFile>();
 			h1_asset->name = asset->name;
 			h1_asset->compressedLen = asset->compressedLen;
 			h1_asset->len = asset->len;
@@ -17,10 +17,10 @@ namespace ZoneTool::IW5
 			return h1_asset;
 		}
 
-		H1::RawFile* convert(RawFile* asset, ZoneMemory* mem)
+		H1::RawFile* convert(RawFile* asset, allocator& allocator)
 		{
 			// generate h1 rawfile
-			return GenerateH1RawFile(asset, mem);
+			return GenerateH1RawFile(asset, allocator);
 		}
 	}
 }

@@ -7,7 +7,7 @@ namespace ZoneTool
 		class IComWorld
 		{
 		public:
-			static void dump(ComWorld* asset, ZoneMemory* mem);
+			static void dump(ComWorld* asset);
 		};
 	}
 }

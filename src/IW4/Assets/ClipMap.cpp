@@ -1,17 +1,13 @@
 #include "stdafx.hpp"
-#include "H1/Assets/ClipMap.hpp"
-#include "IW5/Structs.hpp"
-
 #include "IW5/Assets/ClipMap.hpp"
-#include "H1/Assets/PhysWorld.hpp"
 
 namespace ZoneTool
 {
 	namespace IW4
 	{
-		void IClipMap::dump(clipMap_t* asset, ZoneMemory* mem)
+		IW5::clipMap_t* generate(clipMap_t* asset, allocator& mem)
 		{
-			auto* iw5_clipmap = mem->Alloc<IW5::clipMap_t>();
+			auto* iw5_clipmap = mem.allocate<IW5::clipMap_t>();
 			memset(iw5_clipmap, 0, sizeof IW5::clipMap_t);
 
 			// convert clipmap to IW5 format
@@ -65,7 +61,7 @@ namespace ZoneTool
 
 			// cmodels!
 			iw5_clipmap->numSubModels = asset->numCModels;
-			iw5_clipmap->cmodels = mem->Alloc<IW5::cmodel_t>(iw5_clipmap->numSubModels);
+			iw5_clipmap->cmodels = mem.allocate<IW5::cmodel_t>(iw5_clipmap->numSubModels);
 			memset(iw5_clipmap->cmodels, 0, sizeof(IW5::cmodel_t) * iw5_clipmap->numSubModels);
 
 			for (int i = 0; i < iw5_clipmap->numSubModels; i++)
@@ -96,12 +92,12 @@ namespace ZoneTool
 				{
 					continue;
 				}
-				
-				iw5_clipmap->dynEntDefList[i] = mem->Alloc<IW5::DynEntityDef>(iw5_clipmap->dynEntCount[i]);
-				iw5_clipmap->dynEntPoseList[i] = mem->Alloc<IW5::DynEntityPose>(iw5_clipmap->dynEntCount[i]);
-				iw5_clipmap->dynEntClientList[i] = mem->Alloc<IW5::DynEntityClient>(iw5_clipmap->dynEntCount[i]);
-				iw5_clipmap->dynEntCollList[i] = mem->Alloc<IW5::DynEntityColl>(iw5_clipmap->dynEntCount[i]);
-				
+
+				iw5_clipmap->dynEntDefList[i] = mem.allocate<IW5::DynEntityDef>(iw5_clipmap->dynEntCount[i]);
+				iw5_clipmap->dynEntPoseList[i] = mem.allocate<IW5::DynEntityPose>(iw5_clipmap->dynEntCount[i]);
+				iw5_clipmap->dynEntClientList[i] = mem.allocate<IW5::DynEntityClient>(iw5_clipmap->dynEntCount[i]);
+				iw5_clipmap->dynEntCollList[i] = mem.allocate<IW5::DynEntityColl>(iw5_clipmap->dynEntCount[i]);
+
 				for (int j = 0; j < iw5_clipmap->dynEntCount[i]; j++)
 				{
 					iw5_clipmap->dynEntDefList[i][j].type = (IW5::DynEntityType)asset->dynEntDefList[i][j].type;
@@ -115,18 +111,26 @@ namespace ZoneTool
 					iw5_clipmap->dynEntDefList[i][j].hinge = nullptr;
 					memcpy(&iw5_clipmap->dynEntDefList[i][j].mass, &asset->dynEntDefList[i][j].mass, sizeof(IW5::PhysMass));
 					iw5_clipmap->dynEntDefList[i][j].contents = asset->dynEntDefList[i][j].contents;
-					
+
 					memcpy(&iw5_clipmap->dynEntPoseList[i][j], &asset->dynEntPoseList[i][j], sizeof(IW5::DynEntityPose));
 
 					memcpy(&iw5_clipmap->dynEntClientList[i][j], &asset->dynEntClientList[i][j], sizeof(IW5::DynEntityClient) - sizeof(int));
 					iw5_clipmap->dynEntClientList[i][j].hinge = 0;
-					
+
 					memcpy(&iw5_clipmap->dynEntCollList[i][j], &asset->dynEntCollList[i][j], sizeof(IW5::DynEntityColl));
 				}
 			}
 
+			return iw5_clipmap;
+		}
+
+		void IClipMap::dump(clipMap_t* asset)
+		{
+			allocator allocator;
+			auto* iw5_clipmap = generate(asset, allocator);
+
 			// dump clipmap
-			IW5::IClipMap::dump(iw5_clipmap, mem);
+			IW5::IClipMap::dump(iw5_clipmap);
 		}
 	}
 }

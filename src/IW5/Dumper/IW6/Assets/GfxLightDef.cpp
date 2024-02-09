@@ -6,10 +6,11 @@
 
 namespace ZoneTool::IW5::IW6Dumper
 {
-	void dump(GfxLightDef* asset, ZoneMemory* mem)
+	void dump(GfxLightDef* asset)
 	{
 		// generate IW6 lightdef
-		auto* iw6_asset = IW6Converter::convert(asset, mem);
+		allocator allocator;
+		auto* iw6_asset = IW6Converter::convert(asset, allocator);
 
 		// dump lightdef
 		IW6::IGfxLightDef::dump(iw6_asset);

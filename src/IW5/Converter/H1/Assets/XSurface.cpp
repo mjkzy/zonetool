@@ -119,7 +119,7 @@ namespace ZoneTool::IW5
 			index++;
 		}
 
-		void GenerateH1XSurface(H1::XSurface* h1_asset, XSurface* asset, ZoneMemory* mem)
+		void GenerateH1XSurface(H1::XSurface* h1_asset, XSurface* asset, allocator& mem)
 		{
 			h1_asset->flags = 0;
 			h1_asset->flags |= ((asset->flags & IW5::SURF_FLAG_VERTCOL_GREY) != 0) ? H1::SURF_FLAG_VERTCOL_GREY : 0;
@@ -135,12 +135,12 @@ namespace ZoneTool::IW5
 			memcpy(&h1_asset->blendVertCounts, &asset->vertInfo.vertCount, sizeof(asset->vertInfo.vertCount));
 			h1_asset->blendVerts = reinterpret_cast<unsigned short* __ptr64>(asset->vertInfo.vertsBlend);
 
-			h1_asset->blendVertsTable = mem->Alloc<H1::BlendVertsUnknown>(asset->vertCount);
+			h1_asset->blendVertsTable = mem.allocate<H1::BlendVertsUnknown>(asset->vertCount);
 			GenerateH1BlendVertsShit(h1_asset);
 
 			// triIndices
 			h1_asset->triIndices = reinterpret_cast<H1::Face * __ptr64>(asset->triIndices); // this is draw indices?
-			h1_asset->triIndices2 = mem->Alloc<H1::Face>(asset->triCount); // this is collision indices?
+			h1_asset->triIndices2 = mem.allocate<H1::Face>(asset->triCount); // this is collision indices?
 			for (unsigned short i = 0; i < asset->triCount; i++)
 			{
 				memcpy(&h1_asset->triIndices2[i], &h1_asset->triIndices[i], sizeof(H1::Face));
@@ -148,7 +148,7 @@ namespace ZoneTool::IW5
 
 			// verts
 			//h1_asset->verts0.packedVerts0 = reinterpret_cast<IW6::GfxPackedVertex* __ptr64>(asset->verticies);
-			h1_asset->verts0.packedVerts0 = mem->Alloc<H1::GfxPackedVertex>(asset->vertCount);
+			h1_asset->verts0.packedVerts0 = mem.allocate<H1::GfxPackedVertex>(asset->vertCount);
 			for (unsigned short i = 0; i < asset->vertCount; i++)
 			{
 				memcpy(&h1_asset->verts0.packedVerts0[i], &asset->verts0.packedVerts0[i], sizeof(IW5::GfxPackedVertex));
@@ -185,7 +185,7 @@ namespace ZoneTool::IW5
 			}
 
 			// unknown
-			h1_asset->unknown0 = mem->Alloc<H1::UnknownXSurface0>(asset->vertCount); // related to indices2?
+			h1_asset->unknown0 = mem.allocate<H1::UnknownXSurface0>(asset->vertCount); // related to indices2?
 			for (unsigned short i = 0; i < asset->vertCount; i++)
 			{
 				h1_asset->unknown0[i].xyz[0] = h1_asset->verts0.packedVerts0[i].xyz[0];
@@ -195,7 +195,7 @@ namespace ZoneTool::IW5
 			}
 
 			// rigidVertLists
-			h1_asset->rigidVertLists = mem->Alloc<H1::XRigidVertList>(asset->vertListCount);
+			h1_asset->rigidVertLists = mem.allocate<H1::XRigidVertList>(asset->vertListCount);
 			for (int i = 0; i < asset->vertListCount; i++)
 			{
 				h1_asset->rigidVertLists[i].boneOffset = asset->vertList[i].boneOffset;
@@ -205,14 +205,14 @@ namespace ZoneTool::IW5
 
 				if (asset->vertList[i].collisionTree)
 				{
-					h1_asset->rigidVertLists[i].collisionTree = mem->Alloc<H1::XSurfaceCollisionTree>();
+					h1_asset->rigidVertLists[i].collisionTree = mem.allocate<H1::XSurfaceCollisionTree>();
 					memcpy(&h1_asset->rigidVertLists[i].collisionTree->trans, &asset->vertList[i].collisionTree->trans,
 						sizeof(asset->vertList[i].collisionTree->trans));
 					memcpy(&h1_asset->rigidVertLists[i].collisionTree->scale, &asset->vertList[i].collisionTree->scale,
 						sizeof(asset->vertList[i].collisionTree->scale));
 
 					h1_asset->rigidVertLists[i].collisionTree->nodeCount = asset->vertList[i].collisionTree->nodeCount;
-					h1_asset->rigidVertLists[i].collisionTree->nodes = mem->Alloc<H1::XSurfaceCollisionNode>(
+					h1_asset->rigidVertLists[i].collisionTree->nodes = mem.allocate<H1::XSurfaceCollisionNode>(
 						asset->vertList[i].collisionTree->nodeCount);
 					for (int j = 0; j < asset->vertList[i].collisionTree->nodeCount; j++)
 					{
@@ -230,7 +230,7 @@ namespace ZoneTool::IW5
 					}
 
 					h1_asset->rigidVertLists[i].collisionTree->leafCount = asset->vertList[i].collisionTree->leafCount;
-					h1_asset->rigidVertLists[i].collisionTree->leafs = mem->Alloc<H1::XSurfaceCollisionLeaf>(
+					h1_asset->rigidVertLists[i].collisionTree->leafs = mem.allocate<H1::XSurfaceCollisionLeaf>(
 						asset->vertList[i].collisionTree->leafCount);
 					for (int j = 0; j < asset->vertList[i].collisionTree->leafCount; j++)
 					{
@@ -244,16 +244,16 @@ namespace ZoneTool::IW5
 			memcpy(&h1_asset->partBits, &asset->partBits, sizeof(asset->partBits));
 		}
 
-		H1::XModelSurfs* GenerateH1XModelSurfs(XModelSurfs* asset, ZoneMemory* mem)
+		H1::XModelSurfs* GenerateH1XModelSurfs(XModelSurfs* asset, allocator& mem)
 		{
 			// allocate H1 XModelSurfs structure
-			const auto h1_asset = mem->Alloc<H1::XModelSurfs>();
+			const auto h1_asset = mem.allocate<H1::XModelSurfs>();
 
-			h1_asset->name = mem->StrDup(asset->name);
+			h1_asset->name = mem.duplicate_string(asset->name);
 			h1_asset->numsurfs = asset->numsurfs;
 			memcpy(&h1_asset->partBits, &asset->partBits, sizeof(asset->partBits));
 
-			h1_asset->surfs = mem->Alloc<H1::XSurface>(asset->numsurfs);
+			h1_asset->surfs = mem.allocate<H1::XSurface>(asset->numsurfs);
 			for (int i = 0; i < asset->numsurfs; i++)
 			{
 				GenerateH1XSurface(&h1_asset->surfs[i], &asset->surfs[i], mem);
@@ -262,10 +262,10 @@ namespace ZoneTool::IW5
 			return h1_asset;
 		}
 
-		H1::XModelSurfs* convert(XModelSurfs* asset, ZoneMemory* mem)
+		H1::XModelSurfs* convert(XModelSurfs* asset, allocator& allocator)
 		{
 			// generate h1 surfaces
-			return GenerateH1XModelSurfs(asset, mem);
+			return GenerateH1XModelSurfs(asset, allocator);
 		}
 	}
 }

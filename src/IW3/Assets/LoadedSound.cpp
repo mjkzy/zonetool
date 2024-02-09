@@ -1,11 +1,10 @@
 #include "stdafx.hpp"
-//#include "H1/Assets/LoadedSound.hpp"
 
 namespace ZoneTool
 {
 	namespace IW3
 	{
-		void ILoadedSound::dump(LoadedSound* asset, ZoneMemory* mem)
+		void ILoadedSound::dump(LoadedSound* asset)
 		{
 			if (asset->struct1.waveFormat != 1)
 			{

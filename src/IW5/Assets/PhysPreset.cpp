@@ -5,15 +5,15 @@
 
 namespace ZoneTool::IW5
 {
-	void IPhysPreset::dump(PhysPreset* asset, ZoneMemory* mem)
+	void IPhysPreset::dump(PhysPreset* asset)
 	{
 		if (zonetool::dumping_target == zonetool::dump_target::h1)
 		{
-			return H1Dumper::dump(asset, mem);
+			return H1Dumper::dump(asset);
 		}
 		else if (zonetool::dumping_target == zonetool::dump_target::iw6)
 		{
-			return IW6Dumper::dump(asset, mem);
+			return IW6Dumper::dump(asset);
 		}
 	}
 }

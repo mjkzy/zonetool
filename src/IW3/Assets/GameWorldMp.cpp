@@ -1,30 +1,32 @@
 #include "stdafx.hpp"
-#include "H1/Assets/GlassWorld.hpp"
-#include "H1/Assets/FxWorld.hpp"
+#include "IW4/Assets/GameWorldMp.hpp"
+#include "IW4/Assets/FxWorld.hpp"
 
 namespace ZoneTool
 {
 	namespace IW3
 	{
-		void IGameWorldMp::dump(GameWorldMp* asset, ZoneMemory* mem)
+		void IGameWorldMp::dump(GameWorldMp* asset)
 		{
+			allocator allocator;
+
 			// lol, GameWorldMp contains no data in IW3
-			auto* h1_gameworld = mem->Alloc<H1::GlassWorld>();
-			memset(h1_gameworld, 0, sizeof(H1::GlassWorld));
+			auto* iw4_gameworld = allocator.allocate<IW4::GameWorldMp>();
+			memset(iw4_gameworld, 0, sizeof(IW4::GameWorldMp));
 
-			h1_gameworld->g_glassData = mem->Alloc<H1::G_GlassData>();
-			memset(h1_gameworld->g_glassData, 0, sizeof(H1::G_GlassData));
+			iw4_gameworld->g_glassData = allocator.allocate<IW4::G_GlassData>();
+			memset(iw4_gameworld->g_glassData, 0, sizeof(IW4::G_GlassData));
 
-			h1_gameworld->name = asset->name;
+			iw4_gameworld->name = asset->name;
 
-			H1::IGlassWorld::dump(h1_gameworld);
+			IW4::IGameWorldMp::dump(iw4_gameworld);
 
 			// dump fx_map here too
-			auto* h1_fxworld = mem->Alloc<H1::FxWorld>();
-			memset(h1_fxworld, 0, sizeof(H1::FxWorld));
+			auto* h1_fxworld = allocator.allocate<IW4::FxWorld>();
+			memset(h1_fxworld, 0, sizeof(IW4::FxWorld));
 
 			h1_fxworld->name = asset->name;
-			H1::IFxWorld::dump(h1_fxworld);
+			IW4::IFxWorld::dump(h1_fxworld);
 		}
 	}
 }

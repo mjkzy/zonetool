@@ -6,10 +6,11 @@
 
 namespace ZoneTool::IW5::H1Dumper
 {
-	void dump(FxEffectDef* asset, ZoneMemory* mem)
+	void dump(FxEffectDef* asset)
 	{
 		// generate h1 fx
-		auto* h1_asset = H1Converter::convert(asset, mem);
+		allocator allocator;
+		auto* h1_asset = H1Converter::convert(asset, allocator);
 
 		// dump fx
 		H1::IFxEffectDef::dump(h1_asset);

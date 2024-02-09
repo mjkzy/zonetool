@@ -6,7 +6,7 @@
 
 namespace ZoneTool::IW5::H1Dumper
 {
-	void dump(GfxImage* asset, ZoneMemory* mem)
+	void dump(GfxImage* asset)
 	{
 		std::string name = asset->name;
 
@@ -26,7 +26,8 @@ namespace ZoneTool::IW5::H1Dumper
 		}
 
 		// generate h1 gfximage
-		auto* h1_asset = H1Converter::convert(asset, mem);
+		allocator allocator;
+		auto* h1_asset = H1Converter::convert(asset, allocator);
 
 		// dump h1 gfximage
 		H1::IGfxImage::dump(h1_asset);

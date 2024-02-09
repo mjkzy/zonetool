@@ -4,8 +4,8 @@
 
 namespace ZoneTool::IW5
 {
-	void ILoadedSound::dump(LoadedSound* asset, ZoneMemory* mem)
+	void ILoadedSound::dump(LoadedSound* asset)
 	{
-		Dumper::dump(asset, mem);
+		Dumper::dump(asset);
 	}
 }

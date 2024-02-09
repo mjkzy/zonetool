@@ -4,7 +4,7 @@
 
 namespace ZoneTool::IW5::Dumper
 {
-	void dump(LoadedSound* asset, ZoneMemory* mem)
+	void dump(LoadedSound* asset)
 	{
 		auto sound = asset;
 		auto fp = FileSystem::FileOpen("loaded_sound/"s + asset->name, "wb");

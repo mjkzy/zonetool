@@ -7,10 +7,10 @@ namespace ZoneTool::IW5
 {
 	namespace IW6Converter
 	{
-		IW6::XAnimParts* GenerateIW6XAnimParts(XAnimParts* asset, ZoneMemory* mem)
+		IW6::XAnimParts* GenerateIW6XAnimParts(XAnimParts* asset, allocator& mem)
 		{
 			// allocate IW6 XAnimParts structure
-			const auto iw6_asset = mem->Alloc<IW6::XAnimParts>();
+			const auto iw6_asset = mem.allocate<IW6::XAnimParts>();
 
 			iw6_asset->name = asset->name;
 			iw6_asset->dataByteCount = asset->dataByteCount;
@@ -28,7 +28,7 @@ namespace ZoneTool::IW5
 			iw6_asset->indexCount = asset->indexCount;
 			iw6_asset->framerate = asset->framerate;
 			iw6_asset->frequency = asset->frequency;
-			iw6_asset->names = mem->Alloc<IW6::scr_string_t>(iw6_asset->boneCount[9]);
+			iw6_asset->names = mem.allocate<IW6::scr_string_t>(iw6_asset->boneCount[9]);
 			for (auto i = 0; i < iw6_asset->boneCount[9]; i++)
 			{
 				iw6_asset->names[i] = static_cast<IW6::scr_string_t>(asset->names[i]);
@@ -42,7 +42,7 @@ namespace ZoneTool::IW5
 
 			iw6_asset->indices.data = reinterpret_cast<void*>(asset->indices.data);
 
-			iw6_asset->notify = mem->Alloc<IW6::XAnimNotifyInfo>(iw6_asset->notifyCount);
+			iw6_asset->notify = mem.allocate<IW6::XAnimNotifyInfo>(iw6_asset->notifyCount);
 			for (auto i = 0; i < asset->notifyCount; i++)
 			{
 				iw6_asset->notify[i].name = static_cast<IW6::scr_string_t>(asset->notify[i].name);
@@ -51,7 +51,7 @@ namespace ZoneTool::IW5
 
 			if (asset->deltaPart)
 			{
-				iw6_asset->deltaPart = mem->Alloc<IW6::XAnimDeltaPart>();
+				iw6_asset->deltaPart = mem.allocate<IW6::XAnimDeltaPart>();
 				if (asset->deltaPart->trans)
 				{
 					auto extra_size = 0;
@@ -68,7 +68,7 @@ namespace ZoneTool::IW5
 						}
 					}
 
-					iw6_asset->deltaPart->trans = mem->ManualAlloc<IW6::XAnimPartTrans>(sizeof(IW6::XAnimPartTrans) + extra_size);
+					iw6_asset->deltaPart->trans = mem.manual_allocate<IW6::XAnimPartTrans>(sizeof(IW6::XAnimPartTrans) + extra_size);
 
 					iw6_asset->deltaPart->trans->size = asset->deltaPart->trans->size;
 					iw6_asset->deltaPart->trans->smallTrans = static_cast<unsigned short>(asset->deltaPart->trans->smallTrans);
@@ -98,7 +98,7 @@ namespace ZoneTool::IW5
 						{
 							if (asset->deltaPart->trans->smallTrans)
 							{
-								iw6_asset->deltaPart->trans->u.frames.frames._1 = mem->Alloc<unsigned char[3]>(asset->deltaPart->trans->size + 1);
+								iw6_asset->deltaPart->trans->u.frames.frames._1 = mem.allocate<unsigned char[3]>(asset->deltaPart->trans->size + 1);
 								for (auto i = 0; i < asset->deltaPart->trans->size + 1; i++)
 								{
 									iw6_asset->deltaPart->trans->u.frames.frames._1[i][0] = static_cast<unsigned char>(asset->deltaPart->trans->u.frames.frames._1[i][0]);
@@ -108,7 +108,7 @@ namespace ZoneTool::IW5
 							}
 							else
 							{
-								iw6_asset->deltaPart->trans->u.frames.frames._2 = mem->Alloc<unsigned short[3]>(asset->deltaPart->trans->size + 1);
+								iw6_asset->deltaPart->trans->u.frames.frames._2 = mem.allocate<unsigned short[3]>(asset->deltaPart->trans->size + 1);
 								for (auto i = 0; i < asset->deltaPart->trans->size + 1; i++)
 								{
 									iw6_asset->deltaPart->trans->u.frames.frames._2[i][0] = asset->deltaPart->trans->u.frames.frames._2[i][0];
@@ -148,7 +148,7 @@ namespace ZoneTool::IW5
 						extra_size += 4;
 					}
 
-					iw6_asset->deltaPart->quat = mem->ManualAlloc<IW6::XAnimDeltaPartQuat>(sizeof(IW6::XAnimDeltaPartQuat) + extra_size);
+					iw6_asset->deltaPart->quat = mem.manual_allocate<IW6::XAnimDeltaPartQuat>(sizeof(IW6::XAnimDeltaPartQuat) + extra_size);
 					iw6_asset->deltaPart->quat->size = asset->deltaPart->quat->size;
 
 					if (asset->deltaPart->quat->size)
@@ -169,7 +169,7 @@ namespace ZoneTool::IW5
 						}
 						if (asset->deltaPart->quat->u.frames.frames)
 						{
-							iw6_asset->deltaPart->quat->u.frames.frames = mem->Alloc<short[4]>(asset->deltaPart->quat->size + 1);
+							iw6_asset->deltaPart->quat->u.frames.frames = mem.allocate<short[4]>(asset->deltaPart->quat->size + 1);
 							for (auto i = 0; i < asset->deltaPart->quat->size + 1; i++)
 							{
 								iw6_asset->deltaPart->quat->u.frames.frames[i][0] = asset->deltaPart->quat->u.frames.frames[i][0];
@@ -190,10 +190,10 @@ namespace ZoneTool::IW5
 			return iw6_asset;
 		}
 
-		IW6::XAnimParts* convert(XAnimParts* asset, ZoneMemory* mem)
+		IW6::XAnimParts* convert(XAnimParts* asset, allocator& allocator)
 		{
 			// generate IW6 anims
-			return GenerateIW6XAnimParts(asset, mem);
+			return GenerateIW6XAnimParts(asset, allocator);
 		}
 	}
 }

@@ -171,13 +171,7 @@ namespace ZoneTool
 		
 		void Linker::DB_AddXAsset(XAssetType type, XAssetHeader header)
 		{
-			static std::shared_ptr<ZoneMemory> memory;
 			static std::vector<std::pair<XAssetType, std::string>> referencedAssets;
-			
-			if (!memory)
-			{
-				memory = std::make_shared<ZoneMemory>(1024 * 1024 * 512);		// 512mb
-			}
 
 			// nice meme
 			if (isVerifying)
@@ -190,7 +184,7 @@ char**>(0x00799278)[type]);
 #define DECLARE_ASSET(__TYPE__, __ASSET__) \
 	if (type == __TYPE__) \
 	{ \
-		__ASSET__::dump(header.__TYPE__, memory.get()); \
+		__ASSET__::dump(header.__TYPE__); \
 	}
 
 			// fastfile name

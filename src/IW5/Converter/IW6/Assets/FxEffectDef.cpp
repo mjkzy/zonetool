@@ -152,7 +152,7 @@ namespace ZoneTool::IW5
 			return IW6_flags;
 		}
 
-		void GenerateIW6FxElemDef(IW6::FxElemDef* iw6_elem, FxElemDef* elem, ZoneMemory* mem)
+		void GenerateIW6FxElemDef(IW6::FxElemDef* iw6_elem, FxElemDef* elem, allocator& mem)
 		{
 			iw6_elem->flags = static_cast<IW6::FxElemDefFlags>(convert_elem_flags(elem->flags));
 			iw6_elem->flags2 = 0;
@@ -182,7 +182,7 @@ namespace ZoneTool::IW5
 
 			if (elem->visSamples)
 			{
-				iw6_elem->visSamples = mem->Alloc<IW6::FxElemVisStateSample>(elem->visStateIntervalCount + 1);
+				iw6_elem->visSamples = mem.allocate<IW6::FxElemVisStateSample>(elem->visStateIntervalCount + 1);
 				for (int i = 0; i < elem->visStateIntervalCount + 1; i++)
 				{
 					// base
@@ -209,7 +209,7 @@ namespace ZoneTool::IW5
 
 			if (elem->elemType == FX_ELEM_TYPE_DECAL)
 			{
-				iw6_elem->visuals.markArray = mem->Alloc<IW6::FxElemMarkVisuals>(elem->visualCount);
+				iw6_elem->visuals.markArray = mem.allocate<IW6::FxElemMarkVisuals>(elem->visualCount);
 				for (int i = 0; i < elem->visualCount; i++)
 				{
 					iw6_elem->visuals.markArray[i].materials[0] = reinterpret_cast<IW6::Material*>(elem->visuals.markArray[i].materials[0]); // mc
@@ -219,7 +219,7 @@ namespace ZoneTool::IW5
 			}
 			else if (elem->visualCount > 1)
 			{
-				iw6_elem->visuals.array = mem->Alloc<IW6::FxElemVisuals>(elem->visualCount);
+				iw6_elem->visuals.array = mem.allocate<IW6::FxElemVisuals>(elem->visualCount);
 				for (int i = 0; i < elem->visualCount; i++)
 				{
 					// this is fine
@@ -243,7 +243,7 @@ namespace ZoneTool::IW5
 			switch (elem->elemType)
 			{
 			case FX_ELEM_TYPE_TRAIL:
-				iw6_elem->extended.trailDef = mem->Alloc<IW6::FxTrailDef>();
+				iw6_elem->extended.trailDef = mem.allocate<IW6::FxTrailDef>();
 
 				// check
 				iw6_elem->extended.trailDef->scrollTimeMsec = elem->extended.trailDef->scrollTimeMsec;
@@ -254,7 +254,7 @@ namespace ZoneTool::IW5
 				// pad
 
 				iw6_elem->extended.trailDef->vertCount = elem->extended.trailDef->vertCount;
-				iw6_elem->extended.trailDef->verts = mem->Alloc<IW6::FxTrailVertex>(iw6_elem->extended.trailDef->vertCount);
+				iw6_elem->extended.trailDef->verts = mem.allocate<IW6::FxTrailVertex>(iw6_elem->extended.trailDef->vertCount);
 				for (int i = 0; i < iw6_elem->extended.trailDef->vertCount; i++)
 				{
 					// check
@@ -273,7 +273,7 @@ namespace ZoneTool::IW5
 				break;
 			case FX_ELEM_TYPE_SPOT_LIGHT:
 				// check
-				iw6_elem->extended.spotLightDef = mem->Alloc<IW6::FxSpotLightDef>();
+				iw6_elem->extended.spotLightDef = mem.allocate<IW6::FxSpotLightDef>();
 				if (elem->extended.spotLightDef)
 				{
 					iw6_elem->extended.spotLightDef->fovInnerFraction = elem->extended.spotLightDef->fovInnerFraction;
@@ -302,9 +302,9 @@ namespace ZoneTool::IW5
 			iw6_elem->randomSeed = elem->randomSeed;
 		}
 
-		IW6::FxEffectDef* GenerateIW6FxEffectDef(FxEffectDef* asset, ZoneMemory* mem)
+		IW6::FxEffectDef* GenerateIW6FxEffectDef(FxEffectDef* asset, allocator& mem)
 		{
-			auto* iw6_asset = mem->Alloc<IW6::FxEffectDef>();
+			auto* iw6_asset = mem.allocate<IW6::FxEffectDef>();
 			iw6_asset->name = asset->name;
 
 			iw6_asset->flags = asset->flags; // convert? should be the same...
@@ -320,7 +320,7 @@ namespace ZoneTool::IW5
 			iw6_asset->occlusionQueryScaleRange.base = asset->occlusionQueryScaleRange.base;
 			iw6_asset->occlusionQueryScaleRange.amplitude = asset->occlusionQueryScaleRange.amplitude;
 
-			iw6_asset->elemDefs = mem->Alloc<IW6::FxElemDef>(asset->elemDefCountLooping + asset->elemDefCountOneShot + asset->elemDefCountEmission);
+			iw6_asset->elemDefs = mem.allocate<IW6::FxElemDef>(asset->elemDefCountLooping + asset->elemDefCountOneShot + asset->elemDefCountEmission);
 			for (auto i = 0; i < asset->elemDefCountLooping + asset->elemDefCountOneShot + asset->elemDefCountEmission; i++)
 			{
 				GenerateIW6FxElemDef(&iw6_asset->elemDefs[i], &asset->elemDefs[i], mem);
@@ -329,10 +329,10 @@ namespace ZoneTool::IW5
 			return iw6_asset;
 		}
 
-		IW6::FxEffectDef* convert(FxEffectDef* asset, ZoneMemory* mem)
+		IW6::FxEffectDef* convert(FxEffectDef* asset, allocator& allocator)
 		{
 			// generate IW6 fx
-			return GenerateIW6FxEffectDef(asset, mem);
+			return GenerateIW6FxEffectDef(asset, allocator);
 		}
 	}
 }

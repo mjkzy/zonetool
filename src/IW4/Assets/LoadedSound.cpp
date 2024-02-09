@@ -1,11 +1,10 @@
 #include "stdafx.hpp"
-//#include "H1/Assets/LoadedSound.hpp"
 
 namespace ZoneTool
 {
 	namespace IW4
 	{
-		void ILoadedSound::dump(LoadedSound* asset, ZoneMemory* mem)
+		void ILoadedSound::dump(LoadedSound* asset)
 		{
 			auto sound = asset;
 			auto fp = FileSystem::FileOpen("loaded_sound/"s + asset->name, "wb");

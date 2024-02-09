@@ -6,10 +6,11 @@
 
 namespace ZoneTool::IW5::IW6Dumper
 {
-	void dump(RawFile* asset, ZoneMemory* mem)
+	void dump(RawFile* asset)
 	{
 		// generate IW6 rawfile
-		auto* iw6_asset = IW6Converter::convert(asset, mem);
+		allocator allocator;
+		auto* iw6_asset = IW6Converter::convert(asset, allocator);
 
 		// dump rawfile
 		IW6::IRawFile::dump(iw6_asset);

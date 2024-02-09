@@ -92,13 +92,13 @@ namespace ZoneTool::IW5
 			}
 		}
 
-		void GenerateH1ClipInfo(H1::ClipInfo* info, clipMap_t* asset, ZoneMemory* mem)
+		void GenerateH1ClipInfo(H1::ClipInfo* info, clipMap_t* asset, allocator& mem)
 		{
 			info->planeCount = asset->info.planeCount;
 			REINTERPRET_CAST_SAFE(info->planes, asset->info.planes);
 
 			info->numMaterials = asset->info.numMaterials;
-			info->materials = mem->Alloc<H1::ClipMaterial>(info->numMaterials);
+			info->materials = mem.allocate<H1::ClipMaterial>(info->numMaterials);
 			for (unsigned int i = 0; i < info->numMaterials; i++)
 			{
 				info->materials[i].name = asset->info.materials[i].name;
@@ -107,7 +107,7 @@ namespace ZoneTool::IW5
 			}
 
 			info->bCollisionTree.leafbrushNodesCount = asset->info.leafbrushNodesCount;
-			info->bCollisionTree.leafbrushNodes = mem->Alloc<H1::cLeafBrushNode_s>(info->bCollisionTree.leafbrushNodesCount);
+			info->bCollisionTree.leafbrushNodes = mem.allocate<H1::cLeafBrushNode_s>(info->bCollisionTree.leafbrushNodesCount);
 			for (unsigned int i = 0; i < info->bCollisionTree.leafbrushNodesCount; i++)
 			{
 				info->bCollisionTree.leafbrushNodes[i].axis = asset->info.leafbrushNodes[i].axis;
@@ -131,7 +131,7 @@ namespace ZoneTool::IW5
 			REINTERPRET_CAST_SAFE(info->bCollisionTree.leafbrushes, asset->info.leafbrushes);
 
 			info->pCollisionTree.aabbTreeCount = asset->aabbTreeCount;
-			info->pCollisionTree.aabbTrees = mem->Alloc<H1::CollisionAabbTree>(info->pCollisionTree.aabbTreeCount);
+			info->pCollisionTree.aabbTrees = mem.allocate<H1::CollisionAabbTree>(info->pCollisionTree.aabbTreeCount);
 			for (int i = 0; i < info->pCollisionTree.aabbTreeCount; i++)
 			{
 				std::memcpy(info->pCollisionTree.aabbTrees[i].midPoint, asset->aabbTrees[i].midPoint, sizeof(float[3]));
@@ -150,7 +150,7 @@ namespace ZoneTool::IW5
 			std::unordered_map<cbrushside_t*, H1::cbrushside_t*> mapped_brush_sides;
 
 			info->bCollisionData.numBrushSides = asset->info.numBrushSides;
-			info->bCollisionData.brushSides = mem->Alloc<H1::cbrushside_t>(info->bCollisionData.numBrushSides);
+			info->bCollisionData.brushSides = mem.allocate<H1::cbrushside_t>(info->bCollisionData.numBrushSides);
 			for (unsigned int i = 0; i < info->bCollisionData.numBrushSides; i++)
 			{
 				mapped_brush_sides[&asset->info.brushsides[i]] = &info->bCollisionData.brushSides[i];
@@ -169,7 +169,7 @@ namespace ZoneTool::IW5
 			REINTERPRET_CAST_SAFE(info->bCollisionData.brushEdges, asset->info.brushEdges);
 
 			info->bCollisionData.numBrushes = asset->info.numBrushes;
-			info->bCollisionData.brushes = mem->Alloc<H1::cbrush_t>(asset->info.numBrushes);
+			info->bCollisionData.brushes = mem.allocate<H1::cbrush_t>(asset->info.numBrushes);
 			for (unsigned int i = 0; i < info->bCollisionData.numBrushes; i++)
 			{
 				info->bCollisionData.brushes[i].numsides = asset->info.brushes[i].numsides;
@@ -196,7 +196,7 @@ namespace ZoneTool::IW5
 			info->pCollisionData.borderCount = asset->borderCount;
 			REINTERPRET_CAST_SAFE(info->pCollisionData.borders, asset->borders);
 			info->pCollisionData.partitionCount = asset->partitionCount;
-			info->pCollisionData.partitions = mem->Alloc<H1::CollisionPartition>(info->pCollisionData.partitionCount);
+			info->pCollisionData.partitions = mem.allocate<H1::CollisionPartition>(info->pCollisionData.partitionCount);
 			for (int i = 0; i < info->pCollisionData.partitionCount; i++)
 			{
 				info->pCollisionData.partitions[i].triCount = asset->partitions[i].triCount;
@@ -207,7 +207,7 @@ namespace ZoneTool::IW5
 			}
 
 			info->sCollisionData.numStaticModels = asset->numStaticModels;
-			info->sCollisionData.staticModelList = mem->Alloc<H1::cStaticModel_s>(info->sCollisionData.numStaticModels);
+			info->sCollisionData.staticModelList = mem.allocate<H1::cStaticModel_s>(info->sCollisionData.numStaticModels);
 			for (unsigned int i = 0; i < info->sCollisionData.numStaticModels; i++)
 			{
 				info->sCollisionData.staticModelList[i].xmodel = reinterpret_cast<H1::XModel * __ptr64>(asset->staticModelList[i].xmodel);
@@ -219,10 +219,10 @@ namespace ZoneTool::IW5
 			}
 		}
 
-		H1::clipMap_t* GenerateH1ClipMap(clipMap_t* asset, ZoneMemory* mem)
+		H1::clipMap_t* GenerateH1ClipMap(clipMap_t* asset, allocator& mem)
 		{
 			// allocate H1 clipMap_t structure
-			const auto h1_asset = mem->Alloc<H1::clipMap_t>();
+			const auto h1_asset = mem.allocate<H1::clipMap_t>();
 
 			h1_asset->name = asset->name;
 			h1_asset->isInUse = asset->isInUse;
@@ -231,7 +231,7 @@ namespace ZoneTool::IW5
 			h1_asset->pInfo = &h1_asset->info;
 
 			h1_asset->numNodes = asset->numNodes;
-			h1_asset->nodes = mem->Alloc<H1::cNode_t>(h1_asset->numNodes);
+			h1_asset->nodes = mem.allocate<H1::cNode_t>(h1_asset->numNodes);
 			for (unsigned int i = 0; i < h1_asset->numNodes; i++)
 			{
 				REINTERPRET_CAST_SAFE(h1_asset->nodes[i].plane, asset->nodes[i].plane);
@@ -240,7 +240,7 @@ namespace ZoneTool::IW5
 			}
 
 			h1_asset->numLeafs = asset->numLeafs;
-			h1_asset->leafs = mem->Alloc<H1::cLeaf_t>(h1_asset->numLeafs);
+			h1_asset->leafs = mem.allocate<H1::cLeaf_t>(h1_asset->numLeafs);
 			for (unsigned int i = 0; i < h1_asset->numLeafs; i++)
 			{
 				h1_asset->leafs[i].firstCollAabbIndex = asset->leafs[i].firstCollAabbIndex;
@@ -252,7 +252,7 @@ namespace ZoneTool::IW5
 			}
 
 			h1_asset->numSubModels = asset->numSubModels;
-			h1_asset->cmodels = mem->Alloc<H1::cmodel_t>(h1_asset->numSubModels);
+			h1_asset->cmodels = mem.allocate<H1::cmodel_t>(h1_asset->numSubModels);
 			for (unsigned int i = 0; i < h1_asset->numSubModels; i++)
 			{
 				memcpy(&h1_asset->cmodels[i].bounds, &asset->cmodels[i].bounds, sizeof(IW5::Bounds));
@@ -268,11 +268,11 @@ namespace ZoneTool::IW5
 				h1_asset->cmodels[i].leaf.leafBrushNode = asset->cmodels[i].leaf.leafBrushNode;
 			}
 
-			h1_asset->mapEnts = mem->Alloc<H1::MapEnts>();
+			h1_asset->mapEnts = mem.allocate<H1::MapEnts>();
 			h1_asset->mapEnts->name = asset->mapEnts->name;
 
 			h1_asset->stageCount = asset->stageCount;
-			h1_asset->stages = mem->Alloc<H1::Stage>(h1_asset->stageCount);
+			h1_asset->stages = mem.allocate<H1::Stage>(h1_asset->stageCount);
 			for (unsigned int i = 0; i < h1_asset->stageCount; i++)
 			{
 				h1_asset->stages[i].name = reinterpret_cast<const char* __ptr64>(asset->stages[i].name);
@@ -291,9 +291,9 @@ namespace ZoneTool::IW5
 			for (unsigned char i = 0; i < 2; i++)
 			{
 				h1_asset->dynEntCount[i] = asset->dynEntCount[i];
-				h1_asset->dynEntDefList[i] = mem->Alloc<H1::DynEntityDef>(h1_asset->dynEntCount[i]);
+				h1_asset->dynEntDefList[i] = mem.allocate<H1::DynEntityDef>(h1_asset->dynEntCount[i]);
 				h1_asset->dynEntPoseList[i] = reinterpret_cast<H1::DynEntityPose * __ptr64>(asset->dynEntPoseList[i]); // check
-				h1_asset->dynEntClientList[i] = mem->Alloc<H1::DynEntityClient>(h1_asset->dynEntCount[i]);
+				h1_asset->dynEntClientList[i] = mem.allocate<H1::DynEntityClient>(h1_asset->dynEntCount[i]);
 				h1_asset->dynEntCollList[i] = reinterpret_cast<H1::DynEntityColl * __ptr64>(asset->dynEntCollList[i]);
 				for (unsigned short j = 0; j < h1_asset->dynEntCount[i]; j++)
 				{
@@ -338,10 +338,10 @@ namespace ZoneTool::IW5
 			return h1_asset;
 		}
 
-		H1::clipMap_t* convert(clipMap_t* asset, ZoneMemory* mem)
+		H1::clipMap_t* convert(clipMap_t* asset, allocator& allocator)
 		{
 			// generate h1 clipmap
-			return GenerateH1ClipMap(asset, mem);
+			return GenerateH1ClipMap(asset, allocator);
 		}
 	}
 }

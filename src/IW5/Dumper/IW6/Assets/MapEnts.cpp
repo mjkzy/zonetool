@@ -6,10 +6,11 @@
 
 namespace ZoneTool::IW5::IW6Dumper
 {
-	void dump(MapEnts* asset, ZoneMemory* mem)
+	void dump(MapEnts* asset)
 	{
 		// generate IW6 mapents
-		auto* iw6_asset = IW6Converter::convert(asset, mem);
+		allocator allocator;
+		auto* iw6_asset = IW6Converter::convert(asset, allocator);
 
 		// dump IW6 mapents
 		IW6::IMapEnts::dump(iw6_asset, SL_ConvertToString);

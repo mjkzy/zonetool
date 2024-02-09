@@ -7,9 +7,9 @@ namespace ZoneTool::IW5
 {
 	namespace IW6Converter
 	{
-		IW6::SndCurve* GenerateIW6SoundCurve(SndCurve* asset, ZoneMemory* mem)
+		IW6::SndCurve* GenerateIW6SoundCurve(SndCurve* asset, allocator& mem)
 		{
-			auto* iw6_asset = mem->Alloc<IW6::SndCurve>();
+			auto* iw6_asset = mem.allocate<IW6::SndCurve>();
 
 			iw6_asset->name = asset->filename;
 			iw6_asset->knotCount = asset->knotCount;
@@ -18,10 +18,10 @@ namespace ZoneTool::IW5
 			return iw6_asset;
 		}
 
-		IW6::SndCurve* convert(SndCurve* asset, ZoneMemory* mem)
+		IW6::SndCurve* convert(SndCurve* asset, allocator& allocator)
 		{
 			// generate IW6 asset
-			return GenerateIW6SoundCurve(asset, mem);
+			return GenerateIW6SoundCurve(asset, allocator);
 		}
 	}
 }

@@ -7,15 +7,15 @@ namespace ZoneTool::IW5
 {
 	namespace IW6Converter
 	{
-		IW6::GlassWorld* GenerateIW6GlassWorld(GlassWorld* asset, ZoneMemory* mem)
+		IW6::GlassWorld* GenerateIW6GlassWorld(GlassWorld* asset, allocator& mem)
 		{
 			// allocate IW6 GlassWorld structure
-			const auto iw6_asset = mem->Alloc<IW6::GlassWorld>();
+			const auto iw6_asset = mem.allocate<IW6::GlassWorld>();
 
 			iw6_asset->name = asset->name;
-			iw6_asset->g_glassData = mem->Alloc<IW6::G_GlassData>();
+			iw6_asset->g_glassData = mem.allocate<IW6::G_GlassData>();
 			iw6_asset->g_glassData->pieceCount = asset->g_glassData->pieceCount;
-			iw6_asset->g_glassData->glassPieces = mem->Alloc<IW6::G_GlassPiece>(iw6_asset->g_glassData->pieceCount);
+			iw6_asset->g_glassData->glassPieces = mem.allocate<IW6::G_GlassPiece>(iw6_asset->g_glassData->pieceCount);
 			for (unsigned int i = 0; i < iw6_asset->g_glassData->pieceCount; i++)
 			{
 				iw6_asset->g_glassData->glassPieces[i].damageTaken = asset->g_glassData->glassPieces[i].damageTaken;
@@ -28,7 +28,7 @@ namespace ZoneTool::IW5
 			iw6_asset->g_glassData->damageToWeaken = asset->g_glassData->damageToWeaken;
 			iw6_asset->g_glassData->damageToDestroy = asset->g_glassData->damageToDestroy;
 			iw6_asset->g_glassData->glassNameCount = asset->g_glassData->glassNameCount;
-			iw6_asset->g_glassData->glassNames = mem->Alloc<IW6::G_GlassName>(iw6_asset->g_glassData->glassNameCount);
+			iw6_asset->g_glassData->glassNames = mem.allocate<IW6::G_GlassName>(iw6_asset->g_glassData->glassNameCount);
 			for (unsigned int i = 0; i < iw6_asset->g_glassData->glassNameCount; i++)
 			{
 				iw6_asset->g_glassData->glassNames[i].nameStr = asset->g_glassData->glassNames[i].nameStr;
@@ -41,10 +41,10 @@ namespace ZoneTool::IW5
 			return iw6_asset;
 		}
 
-		IW6::GlassWorld* convert(GlassWorld* asset, ZoneMemory* mem)
+		IW6::GlassWorld* convert(GlassWorld* asset, allocator& allocator)
 		{
 			// generate IW6 glassworld
-			return GenerateIW6GlassWorld(asset, mem);
+			return GenerateIW6GlassWorld(asset, allocator);
 		}
 	}
 }

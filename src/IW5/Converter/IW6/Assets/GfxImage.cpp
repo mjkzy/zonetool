@@ -119,10 +119,10 @@ namespace ZoneTool::IW5
 			return offset;
 		}
 
-		IW6::GfxImage* GenerateIW6GfxImage(GfxImage* asset, ZoneMemory* mem)
+		IW6::GfxImage* GenerateIW6GfxImage(GfxImage* asset, allocator& mem)
 		{
 			// allocate IW6 GfxImage structure
-			const auto iw6_asset = mem->Alloc<IW6::GfxImage>();
+			const auto iw6_asset = mem.allocate<IW6::GfxImage>();
 
 			iw6_asset->name = asset->name;
 			iw6_asset->imageFormat = get_d3d_to_dxgi(asset->texture.loadDef->format); //iw6_asset->imageFormat = MFMapDX9FormatToDXGIFormat(asset->texture->format);
@@ -148,7 +148,7 @@ namespace ZoneTool::IW5
 
 			if (asset->texture.loadDef->format == D3DFMT_A8R8G8B8 && iw6_asset->imageFormat == DXGI_FORMAT_R8G8B8A8_UNORM)
 			{
-				auto* new_pixels = mem->Alloc<unsigned char>(asset->texture.loadDef->resourceSize);
+				auto* new_pixels = mem.allocate<unsigned char>(asset->texture.loadDef->resourceSize);
 				argb_to_rgba(iw6_asset->pixelData, asset->texture.loadDef->resourceSize, new_pixels);
 				iw6_asset->pixelData = new_pixels;
 			}
@@ -160,10 +160,10 @@ namespace ZoneTool::IW5
 			return iw6_asset;
 		}
 
-		IW6::GfxImage* convert(GfxImage* asset, ZoneMemory* mem)
+		IW6::GfxImage* convert(GfxImage* asset, allocator& allocator)
 		{
 			// generate IW6 gfximage
-			return GenerateIW6GfxImage(asset, mem);
+			return GenerateIW6GfxImage(asset, allocator);
 		}
 	}
 }

@@ -6,10 +6,11 @@
 
 namespace ZoneTool::IW5::IW6Dumper
 {
-	void dump(XModelSurfs* asset, ZoneMemory* mem)
+	void dump(XModelSurfs* asset)
 	{
 		// generate IW6 surfaces
-		auto iw6_asset = IW6Converter::convert(asset, mem);
+		allocator allocator;
+		auto iw6_asset = IW6Converter::convert(asset, allocator);
 
 		// dump IW6 surfaces
 		IW6::IXSurface::dump(iw6_asset);

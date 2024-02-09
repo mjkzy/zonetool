@@ -90,10 +90,10 @@ namespace ZoneTool::IW5
 			}
 		}
 
-		H1::XModel* GenerateH1Model(XModel* asset, ZoneMemory* mem)
+		H1::XModel* GenerateH1Model(XModel* asset, allocator& mem)
 		{
 			// allocate H1 XModel structure
-			auto* h1_asset = mem->Alloc<H1::XModel>();
+			auto* h1_asset = mem.allocate<H1::XModel>();
 
 			h1_asset->name = asset->name;
 			h1_asset->numBones = asset->numBones;
@@ -104,7 +104,7 @@ namespace ZoneTool::IW5
 			h1_asset->scale = asset->scale;
 			memcpy(&h1_asset->noScalePartBits, &asset->noScalePartBits, sizeof(asset->noScalePartBits));
 
-			h1_asset->boneNames = mem->Alloc<H1::scr_string_t>(asset->numBones);
+			h1_asset->boneNames = mem.allocate<H1::scr_string_t>(asset->numBones);
 			for (auto i = 0; i < asset->numBones; i++)
 			{
 				h1_asset->boneNames[i] = static_cast<H1::scr_string_t>(asset->boneNames[i]);
@@ -118,13 +118,13 @@ namespace ZoneTool::IW5
 			h1_asset->reactiveMotionParts = nullptr;
 			h1_asset->reactiveMotionTweaks = nullptr;
 
-			h1_asset->materialHandles = mem->Alloc<H1::Material* __ptr64>(asset->numsurfs);
+			h1_asset->materialHandles = mem.allocate<H1::Material* __ptr64>(asset->numsurfs);
 			for (auto i = 0; i < asset->numsurfs; i++)
 			{
 				if (asset->materialHandles[i])
 				{
-					h1_asset->materialHandles[i] = mem->Alloc<H1::Material>();
-					h1_asset->materialHandles[i]->name = mem->StrDup(asset->materialHandles[i]->info.name);
+					h1_asset->materialHandles[i] = mem.allocate<H1::Material>();
+					h1_asset->materialHandles[i]->name = mem.duplicate_string(asset->materialHandles[i]->info.name);
 				}
 			}
 
@@ -139,10 +139,10 @@ namespace ZoneTool::IW5
 				h1_asset->lodInfo[i].dist = asset->lodInfo[i].dist;
 				h1_asset->lodInfo[i].numsurfs = asset->lodInfo[i].numsurfs;
 				h1_asset->lodInfo[i].surfIndex = asset->lodInfo[i].surfIndex;
-				h1_asset->lodInfo[i].modelSurfs = mem->Alloc<H1::XModelSurfs>(asset->lodInfo[i].numsurfs);
+				h1_asset->lodInfo[i].modelSurfs = mem.allocate<H1::XModelSurfs>(asset->lodInfo[i].numsurfs);
 				for (auto j = 0; j < asset->lodInfo[i].numsurfs; j++)
 				{
-					h1_asset->lodInfo[i].modelSurfs[j].name = mem->StrDup(asset->lodInfo[i].modelSurfs[j].name);
+					h1_asset->lodInfo[i].modelSurfs[j].name = mem.duplicate_string(asset->lodInfo[i].modelSurfs[j].name);
 				}
 				memcpy(&h1_asset->lodInfo[i].partBits, &asset->lodInfo[i].partBits, sizeof(asset->lodInfo[i].partBits));
 			}
@@ -154,7 +154,7 @@ namespace ZoneTool::IW5
 			h1_asset->flags = asset->flags;
 
 			h1_asset->numCollSurfs = asset->numCollSurfs;
-			h1_asset->collSurfs = mem->Alloc<H1::XModelCollSurf_s>(asset->numCollSurfs);
+			h1_asset->collSurfs = mem.allocate<H1::XModelCollSurf_s>(asset->numCollSurfs);
 			for (auto i = 0; i < asset->numCollSurfs; i++)
 			{
 				memcpy(&h1_asset->collSurfs[i].bounds, &asset->collSurfs[i].bounds, sizeof(float[2][3]));
@@ -174,18 +174,18 @@ namespace ZoneTool::IW5
 
 			if (asset->physPreset)
 			{
-				h1_asset->physPreset = mem->Alloc<H1::PhysPreset>();
-				h1_asset->physPreset->name = mem->StrDup(asset->physPreset->name);
+				h1_asset->physPreset = mem.allocate<H1::PhysPreset>();
+				h1_asset->physPreset->name = mem.duplicate_string(asset->physPreset->name);
 			}
 
 			if (asset->physCollmap)
 			{
-				h1_asset->physCollmap = mem->Alloc<H1::PhysCollmap>();
-				h1_asset->physCollmap->name = mem->StrDup(asset->physCollmap->name);
+				h1_asset->physCollmap = mem.allocate<H1::PhysCollmap>();
+				h1_asset->physCollmap->name = mem.duplicate_string(asset->physCollmap->name);
 			}
 
 			// idk
-			h1_asset->invHighMipRadius = mem->Alloc<unsigned short>(asset->numsurfs);
+			h1_asset->invHighMipRadius = mem.allocate<unsigned short>(asset->numsurfs);
 			for (unsigned char i = 0; i < asset->numsurfs; i++)
 			{
 				h1_asset->invHighMipRadius[i] = 0xFFFF;
@@ -196,10 +196,10 @@ namespace ZoneTool::IW5
 			return h1_asset;
 		}
 
-		H1::XModel* convert(XModel* asset, ZoneMemory* mem)
+		H1::XModel* convert(XModel* asset, allocator& allocator)
 		{
 			// generate h1 model
-			return GenerateH1Model(asset, mem);
+			return GenerateH1Model(asset, allocator);
 		}
 	}
 }

@@ -7,15 +7,15 @@ namespace ZoneTool::IW5
 {
 	namespace H1Converter
 	{
-		H1::ComWorld* GenerateH1ComWorld(ComWorld* asset, ZoneMemory* mem)
+		H1::ComWorld* GenerateH1ComWorld(ComWorld* asset, allocator& mem)
 		{
 			// allocate H1 ComWorld structure
-			const auto h1_asset = mem->Alloc<H1::ComWorld>();
+			const auto h1_asset = mem.allocate<H1::ComWorld>();
 
 			h1_asset->name = asset->name;
 			h1_asset->isInUse = asset->isInUse;
 			h1_asset->primaryLightCount = asset->primaryLightCount;
-			h1_asset->primaryLights = mem->Alloc<H1::ComPrimaryLight>(h1_asset->primaryLightCount);
+			h1_asset->primaryLights = mem.allocate<H1::ComPrimaryLight>(h1_asset->primaryLightCount);
 			for (unsigned int i = 0; i < h1_asset->primaryLightCount; i++)
 			{
 				h1_asset->primaryLights[i].type = static_cast<H1::GfxLightType>(asset->primaryLights[i].type); // don't think there is a need for converting
@@ -57,7 +57,7 @@ namespace ZoneTool::IW5
 			}
 
 			h1_asset->primaryLightEnvCount = h1_asset->primaryLightCount + 1;
-			h1_asset->primaryLightEnvs = mem->Alloc<H1::ComPrimaryLightEnv>(h1_asset->primaryLightEnvCount);
+			h1_asset->primaryLightEnvs = mem.allocate<H1::ComPrimaryLightEnv>(h1_asset->primaryLightEnvCount);
 			
 			for (unsigned int i = 1; i < h1_asset->primaryLightCount; i++)
 			{
@@ -79,10 +79,10 @@ namespace ZoneTool::IW5
 			return h1_asset;
 		}
 
-		H1::ComWorld* convert(ComWorld* asset, ZoneMemory* mem)
+		H1::ComWorld* convert(ComWorld* asset, allocator& allocator)
 		{
 			// generate h1 comworld
-			return GenerateH1ComWorld(asset, mem);
+			return GenerateH1ComWorld(asset, allocator);
 		}
 	}
 }

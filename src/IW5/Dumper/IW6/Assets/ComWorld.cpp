@@ -6,10 +6,11 @@
 
 namespace ZoneTool::IW5::IW6Dumper
 {
-	void dump(ComWorld* asset, ZoneMemory* mem)
+	void dump(ComWorld* asset)
 	{
 		// generate iw6 comworld
-		auto* iw6_asset = IW6Converter::convert(asset, mem);
+		allocator allocator;
+		auto* iw6_asset = IW6Converter::convert(asset, allocator);
 
 		// dump iw6 comworld
 		IW6::IComWorld::dump(iw6_asset);

@@ -6,10 +6,11 @@
 
 namespace ZoneTool::IW5::H1Dumper
 {
-	void dump(XModelSurfs* asset, ZoneMemory* mem)
+	void dump(XModelSurfs* asset)
 	{
 		// generate h1 surfaces
-		auto h1_asset = H1Converter::convert(asset, mem);
+		allocator allocator;
+		auto h1_asset = H1Converter::convert(asset, allocator);
 
 		// dump h1 surfaces
 		H1::IXSurface::dump(h1_asset);

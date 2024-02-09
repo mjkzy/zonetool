@@ -90,10 +90,10 @@ namespace ZoneTool::IW5
 			}
 		}
 
-		IW6::XModel* GenerateIW6Model(XModel* asset, ZoneMemory* mem)
+		IW6::XModel* GenerateIW6Model(XModel* asset, allocator& mem)
 		{
 			// allocate IW6 XModel structure
-			auto* iw6_asset = mem->Alloc<IW6::XModel>();
+			auto* iw6_asset = mem.allocate<IW6::XModel>();
 
 			iw6_asset->name = asset->name;
 			iw6_asset->numBones = asset->numBones;
@@ -104,7 +104,7 @@ namespace ZoneTool::IW5
 			iw6_asset->scale = asset->scale;
 			memcpy(&iw6_asset->noScalePartBits, &asset->noScalePartBits, sizeof(asset->noScalePartBits));
 
-			iw6_asset->boneNames = mem->Alloc<IW6::scr_string_t>(asset->numBones);
+			iw6_asset->boneNames = mem.allocate<IW6::scr_string_t>(asset->numBones);
 			for (auto i = 0; i < asset->numBones; i++)
 			{
 				iw6_asset->boneNames[i] = static_cast<IW6::scr_string_t>(asset->boneNames[i]);
@@ -117,13 +117,13 @@ namespace ZoneTool::IW5
 			REINTERPRET_CAST_SAFE(iw6_asset->baseMat, asset->baseMat);
 			iw6_asset->reactiveMotionParts = nullptr;
 
-			iw6_asset->materialHandles = mem->Alloc<IW6::Material* __ptr64>(asset->numsurfs);
+			iw6_asset->materialHandles = mem.allocate<IW6::Material* __ptr64>(asset->numsurfs);
 			for (auto i = 0; i < asset->numsurfs; i++)
 			{
 				if (asset->materialHandles[i])
 				{
-					iw6_asset->materialHandles[i] = mem->Alloc<IW6::Material>();
-					iw6_asset->materialHandles[i]->name = mem->StrDup(asset->materialHandles[i]->info.name);
+					iw6_asset->materialHandles[i] = mem.allocate<IW6::Material>();
+					iw6_asset->materialHandles[i]->name = mem.duplicate_string(asset->materialHandles[i]->info.name);
 				}
 			}
 
@@ -138,10 +138,10 @@ namespace ZoneTool::IW5
 				iw6_asset->lodInfo[i].dist = asset->lodInfo[i].dist;
 				iw6_asset->lodInfo[i].numsurfs = asset->lodInfo[i].numsurfs;
 				iw6_asset->lodInfo[i].surfIndex = asset->lodInfo[i].surfIndex;
-				iw6_asset->lodInfo[i].modelSurfs = mem->Alloc<IW6::XModelSurfs>(asset->lodInfo[i].numsurfs);
+				iw6_asset->lodInfo[i].modelSurfs = mem.allocate<IW6::XModelSurfs>(asset->lodInfo[i].numsurfs);
 				for (auto j = 0; j < asset->lodInfo[i].numsurfs; j++)
 				{
-					iw6_asset->lodInfo[i].modelSurfs[j].name = mem->StrDup(asset->lodInfo[i].modelSurfs[j].name);
+					iw6_asset->lodInfo[i].modelSurfs[j].name = mem.duplicate_string(asset->lodInfo[i].modelSurfs[j].name);
 				}
 				memcpy(&iw6_asset->lodInfo[i].partBits, &asset->lodInfo[i].partBits, sizeof(asset->lodInfo[i].partBits));
 			}
@@ -152,7 +152,7 @@ namespace ZoneTool::IW5
 			iw6_asset->flags = asset->flags;
 
 			iw6_asset->numCollSurfs = asset->numCollSurfs;
-			iw6_asset->collSurfs = mem->Alloc<IW6::XModelCollSurf_s>(asset->numCollSurfs);
+			iw6_asset->collSurfs = mem.allocate<IW6::XModelCollSurf_s>(asset->numCollSurfs);
 			for (auto i = 0; i < asset->numCollSurfs; i++)
 			{
 				memcpy(&iw6_asset->collSurfs[i].bounds, &asset->collSurfs[i].bounds, sizeof(float[2][3]));
@@ -172,18 +172,18 @@ namespace ZoneTool::IW5
 
 			if (asset->physPreset)
 			{
-				iw6_asset->physPreset = mem->Alloc<IW6::PhysPreset>();
-				iw6_asset->physPreset->name = mem->StrDup(asset->physPreset->name);
+				iw6_asset->physPreset = mem.allocate<IW6::PhysPreset>();
+				iw6_asset->physPreset->name = mem.duplicate_string(asset->physPreset->name);
 			}
 
 			if (asset->physCollmap)
 			{
-				iw6_asset->physCollmap = mem->Alloc<IW6::PhysCollmap>();
-				iw6_asset->physCollmap->name = mem->StrDup(asset->physCollmap->name);
+				iw6_asset->physCollmap = mem.allocate<IW6::PhysCollmap>();
+				iw6_asset->physCollmap->name = mem.duplicate_string(asset->physCollmap->name);
 			}
 
 			// idk
-			iw6_asset->invHighMipRadius = mem->Alloc<unsigned short>(asset->numsurfs);
+			iw6_asset->invHighMipRadius = mem.allocate<unsigned short>(asset->numsurfs);
 			for (unsigned char i = 0; i < asset->numsurfs; i++)
 			{
 				iw6_asset->invHighMipRadius[i] = 0xFFFF;
@@ -194,10 +194,10 @@ namespace ZoneTool::IW5
 			return iw6_asset;
 		}
 
-		IW6::XModel* convert(XModel* asset, ZoneMemory* mem)
+		IW6::XModel* convert(XModel* asset, allocator& allocator)
 		{
 			// generate IW6 model
-			return GenerateIW6Model(asset, mem);
+			return GenerateIW6Model(asset, allocator);
 		}
 	}
 }

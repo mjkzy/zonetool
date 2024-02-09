@@ -7,7 +7,7 @@ namespace ZoneTool
 		class IXModel
 		{
 		public:
-			static void dump(XModel* asset, ZoneMemory* mem);
+			static void dump(XModel* asset);
 		};
 	}
 }

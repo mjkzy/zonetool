@@ -4,6 +4,6 @@ namespace ZoneTool::IW5
 {
 	namespace H1Converter
 	{
-		H1::PhysPreset* convert(PhysPreset* asset, ZoneMemory* mem);
+		H1::PhysPreset* convert(PhysPreset* asset, allocator& allocator);
 	}
 }
