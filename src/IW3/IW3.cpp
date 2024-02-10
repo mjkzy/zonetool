@@ -142,6 +142,11 @@ namespace ZoneTool
 							HandleAsset(&material_asset);
 						}
 					}
+
+					if (ref.first == XAssetType::image)
+					{
+						continue;
+					}
 					
 					HandleAsset(&asset);
 				}
@@ -375,7 +380,7 @@ namespace ZoneTool
 
         void Linker::dump_zone(const std::string& name, zonetool::dump_target target)
 		{
-			zonetool::dumping_target = zonetool::dump_target::h1; //zonetool::dumping_target = target;
+			zonetool::dumping_target = target;
 
 			isDumping = true;
 			currentDumpingZone = name;

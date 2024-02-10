@@ -21,13 +21,15 @@ namespace ZoneTool
 			iw4_image->delayLoadPixels = true;
 			iw4_image->name = (char*)image->name;
 
+			if (image->texture.loadDef->resourceSize == -1) return iw4_image;
+
 			// alloc texture
 			iw4_image->texture = mem.manual_allocate<IW4::GfxImageLoadDef>(16 + image->texture.loadDef->resourceSize);
 			iw4_image->texture->mipLevels = image->texture.loadDef->levelCount;
 			iw4_image->texture->flags = image->texture.loadDef->flags;
 			iw4_image->texture->format = image->texture.loadDef->format;
 			iw4_image->texture->dataSize = image->texture.loadDef->resourceSize;
-			std::memcpy(iw4_image->texture->texture, image->texture.loadDef->data, image->texture.loadDef->resourceSize);
+			std::memcpy(&iw4_image->texture->texture, image->texture.loadDef->data, image->texture.loadDef->resourceSize);
 
 			return iw4_image;
 		}

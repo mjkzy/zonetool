@@ -30,6 +30,7 @@ function IW5:project()
         }
 
         self:include()
+        IW7:include()
         IW6:include()
         H1:include()
         ZoneUtils:include()
@@ -38,4 +39,6 @@ function IW5:project()
         zlib:include()
 
         --directxtex:link()
+
+        X64:include()
 end

@@ -9,6 +9,12 @@ namespace PackedVec
 	void Vec3UnpackUnitVec(const uint8_t* in, float* out);
 }
 
+namespace self_visibility
+{
+	uint32_t XSurfacePackSelfVisibility(float* packed);
+	void XSurfaceUnpackSelfVisibility(uint32_t src, float* result);
+}
+
 namespace
 {
 	typedef unsigned short ushort;

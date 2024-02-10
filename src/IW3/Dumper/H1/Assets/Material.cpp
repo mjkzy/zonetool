@@ -1,6 +1,5 @@
 #include "stdafx.hpp"
 //#include "H1/Assets/Material.hpp"
-#include "H1/Utils/IO/assetmanager.hpp"
 
 #include "H1/Assets/Techset.hpp"
 

@@ -2,6 +2,7 @@
 
 #include "Dumper/H1/Assets/Material.hpp"
 #include "Dumper/IW6/Assets/Material.hpp"
+#include "Dumper/IW7/Assets/Material.hpp"
 
 namespace ZoneTool::IW3
 {
@@ -14,6 +15,10 @@ namespace ZoneTool::IW3
 		else if (zonetool::dumping_target == zonetool::dump_target::iw6)
 		{
 			return IW6Dumper::dump(asset);
+		}
+		else if (zonetool::dumping_target == zonetool::dump_target::iw7)
+		{
+			return IW7Dumper::dump(asset);
 		}
 	}
 }

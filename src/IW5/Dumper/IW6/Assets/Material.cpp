@@ -2,7 +2,6 @@
 #include "Material.hpp"
 
 //#include "IW6/Assets/Material.hpp"
-#include "H1/Utils/IO/assetmanager.hpp"
 
 namespace ZoneTool
 {

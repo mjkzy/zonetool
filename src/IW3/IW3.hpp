@@ -12,8 +12,10 @@
 #include "Functions.hpp"
 #include "Structs.hpp"
 
-#include "H1/Utils/IO/filesystem.hpp"
-#include "H1/Utils/IO/assetmanager.hpp"
+#include "X64/X64.hpp"
+#include "X64/Utils/IO/filesystem.hpp"
+#include "X64/Utils/IO/assetmanager.hpp"
+
 #include "H1/Structs.hpp"
 
 #include "IW6/Structs.hpp"

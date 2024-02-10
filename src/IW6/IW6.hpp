@@ -2,9 +2,9 @@
 
 #include <ZoneUtils.hpp>
 
-#include "H1/Utils/IO/filesystem.hpp"
-#include "H1/Utils/IO/assetmanager.hpp"
-#include "H1/Structs.hpp"
+#include "X64/X64.hpp"
+#include "X64/Utils/IO/filesystem.hpp"
+#include "X64/Utils/IO/assetmanager.hpp"
 
 #include "json.hpp"
 using json = nlohmann::json;
@@ -23,11 +23,7 @@ using namespace zonetool;
 #include "Assets/GfxWorld.hpp"
 #include "Assets/GlassWorld.hpp"
 #include "Assets/MapEnts.hpp"
-#include "Assets/PhysPreset.hpp"
-#include "Assets/PhysWorld.hpp"
 #include "Assets/RawFile.hpp"
-#include "Assets/Sound.hpp"
-#include "Assets/SoundCurve.hpp"
 #include "Assets/XAnimParts.hpp"
 #include "Assets/XModel.hpp"
 #include "Assets/XSurface.hpp"

@@ -94,7 +94,7 @@ namespace ZoneTool
 			__int16 dimensions[3];
 			int format;
 			int resourceSize;
-			char data[1];
+			unsigned char data[1];
 		};
 
 		union GfxTexture
@@ -107,19 +107,48 @@ namespace ZoneTool
 			void* data;
 		};
 
+		enum TextureSemantic : char
+		{
+			TS_2D = 0x0,
+			TS_FUNCTION = 0x1,
+			TS_COLOR_MAP = 0x2,
+			TS_DETAIL_MAP = 0x3,
+			TS_UNUSED_2 = 0x4,
+			TS_NORMAL_MAP = 0x5,
+			TS_UNUSED_3 = 0x6,
+			TS_UNUSED_4 = 0x7,
+			TS_SPECULAR_MAP = 0x8,
+			TS_UNUSED_5 = 0x9,
+			TS_UNUSED_6 = 0xA,
+			TS_WATER_MAP = 0xB,
+		};
+
+		enum GfxImageCategory : char
+		{
+			IMG_CATEGORY_UNKNOWN = 0x0,
+			IMG_CATEGORY_AUTO_GENERATED = 0x1,
+			IMG_CATEGORY_LIGHTMAP = 0x2,
+			IMG_CATEGORY_LOAD_FROM_FILE = 0x3,
+			IMG_CATEGORY_RAW = 0x4,
+			IMG_CATEGORY_FIRST_UNMANAGED = 0x5,
+			IMG_CATEGORY_WATER = 0x5,
+			IMG_CATEGORY_RENDERTARGET = 0x6,
+			IMG_CATEGORY_TEMP = 0x7,
+		};
+
 		struct GfxImage
 		{
 			MapType mapType;
 			GfxTexture texture;
 			Picmip picmip;
 			bool noPicmip;
-			char semantic;
+			TextureSemantic semantic;
 			char track;
 			CardMemory cardMemory;
 			unsigned __int16 width;
 			unsigned __int16 height;
 			unsigned __int16 depth;
-			char category;
+			GfxImageCategory category;
 			bool delayLoadPixels;
 			const char* name;
 		};
@@ -187,22 +216,6 @@ namespace ZoneTool
 			float amplitude;
 			float codeConstant[4];
 			GfxImage* image;
-		};
-
-		enum IMG_TS : std::uint8_t
-		{
-			TS_2D = 0x0,
-			TS_FUNCTION = 0x1,
-			TS_COLOR_MAP = 0x2,
-			TS_DETAIL_MAP = 0x3,
-			TS_UNUSED_2 = 0x4,
-			TS_NORMAL_MAP = 0x5,
-			TS_UNUSED_3 = 0x6,
-			TS_UNUSED_4 = 0x7,
-			TS_SPECULAR_MAP = 0x8,
-			TS_UNUSED_5 = 0x9,
-			TS_UNUSED_6 = 0xA,
-			TS_WATER_MAP = 0xB,
 		};
 
 		union MaterialTextureDefInfo

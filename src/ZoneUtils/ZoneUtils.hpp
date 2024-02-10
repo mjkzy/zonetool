@@ -141,8 +141,9 @@ namespace zonetool
 {
 	enum dump_target
 	{
+		iw7,
 		iw6,
-		h1
+		h1,
 	};
 	extern dump_target dumping_target;
 }

@@ -1,5 +1,5 @@
 #pragma once
-#include "Structs.hpp"
+#include "H1/Structs.hpp"
 
 namespace ZoneTool::H1
 {

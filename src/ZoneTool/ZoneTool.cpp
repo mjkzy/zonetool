@@ -224,6 +224,12 @@ namespace ZoneTool
 				{
 					target = zonetool::dump_target::iw6;
 				}
+				else if (target_str == "iw7")
+				{
+					target = zonetool::dump_target::iw7;
+				}
+
+				ZONETOOL_INFO("current dump target: %s (%d)", target_str.data(), target);
 			}
 
 			// Load zone

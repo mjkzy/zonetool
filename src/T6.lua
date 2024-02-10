@@ -35,4 +35,6 @@ function T6:project()
         
         zstd:include()
         zlib:include()
+
+        X64:include()
 end

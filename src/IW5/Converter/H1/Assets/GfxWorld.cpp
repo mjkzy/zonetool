@@ -3,8 +3,8 @@
 
 #include "GfxWorld.hpp"
 
-#include "H1/Utils/Umbra/umbra.hpp"
-#include "H1/Utils/Utils.hpp"
+#include "X64/Utils/Umbra/umbra.hpp"
+#include "X64/Utils/Utils.hpp"
 
 namespace ZoneTool::IW5
 {

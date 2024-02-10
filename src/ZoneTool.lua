@@ -35,10 +35,12 @@ function ZoneTool:project()
         IW4:link()
         IW5:link()
         IW6:link()
+        IW7:link()
         T6:link()
         H1:link()
         ZoneUtils:link()
         SteamApi:link()
+        X64:link()
         
         -- ThirdParty
         libtommath:link()

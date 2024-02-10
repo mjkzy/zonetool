@@ -30,9 +30,10 @@ function IW6:project()
         }
 
         self:include()
-        H1:include()
         ZoneUtils:include()
 
         zstd:include()
         zlib:include()
+
+        X64:include()
 end

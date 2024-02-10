@@ -139,11 +139,8 @@ namespace ZoneTool::IW5
 				h1_asset->lodInfo[i].dist = asset->lodInfo[i].dist;
 				h1_asset->lodInfo[i].numsurfs = asset->lodInfo[i].numsurfs;
 				h1_asset->lodInfo[i].surfIndex = asset->lodInfo[i].surfIndex;
-				h1_asset->lodInfo[i].modelSurfs = mem.allocate<H1::XModelSurfs>(asset->lodInfo[i].numsurfs);
-				for (auto j = 0; j < asset->lodInfo[i].numsurfs; j++)
-				{
-					h1_asset->lodInfo[i].modelSurfs[j].name = mem.duplicate_string(asset->lodInfo[i].modelSurfs[j].name);
-				}
+				h1_asset->lodInfo[i].modelSurfs = mem.allocate<H1::XModelSurfs>();
+				h1_asset->lodInfo[i].modelSurfs->name = mem.duplicate_string(asset->lodInfo[i].modelSurfs->name);
 				memcpy(&h1_asset->lodInfo[i].partBits, &asset->lodInfo[i].partBits, sizeof(asset->lodInfo[i].partBits));
 			}
 

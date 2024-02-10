@@ -33,4 +33,6 @@ function IW3:project()
         IW6:include()
         H1:include()
         ZoneUtils:include()
+
+        X64:include()
 end

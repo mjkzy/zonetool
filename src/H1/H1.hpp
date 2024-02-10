@@ -2,8 +2,9 @@
 
 #include <ZoneUtils.hpp>
 
-#include "Utils/IO/filesystem.hpp"
-#include "Utils/IO/assetmanager.hpp"
+#include "X64/X64.hpp"
+#include "X64/Utils/IO/filesystem.hpp"
+#include "X64/Utils/IO/assetmanager.hpp"
 
 #define JSON_DIAGNOSTICS 1
 #include "json.hpp"

@@ -60,8 +60,14 @@ namespace ZoneTool
 				memcpy(xmodel->lods[i].partBits, asset->lodInfo[i].partBits, sizeof(int[4]));
 				memcpy(&xmodel->lods[i].lod, &asset->lodInfo[i].lod, 3);
 
+				if (xmodel->lods[i].numSurfacesInLod > 16)
+				{
+					xmodel->lods[i].numSurfacesInLod = 16;
+					//__debugbreak();
+				}
+
 				// generate ModelSurface object
-				xmodel->lods[i].surfaces = mem.allocate<IW4::XModelSurfs>();;
+				xmodel->lods[i].surfaces = mem.allocate<IW4::XModelSurfs>();
 
 				xmodel->lods[i].surfaces->name = mem.duplicate_string(va("%s_lod%d", xmodel->name, i).data());
 				xmodel->lods[i].surfaces->numsurfs = xmodel->lods[i].numSurfacesInLod;

@@ -106,20 +106,26 @@ workspace "zonetool"
 	-- Projects
 	-- ========================
 
+	include "src/X64.lua"
+
 	include "src/ZoneTool.lua"
 	include "src/ZoneUtils.lua"
 	include "src/IW3.lua"
 	include "src/IW4.lua"
 	include "src/IW5.lua"
 	include "src/IW6.lua"
+	include "src/IW7.lua"
 	include "src/T6.lua"
 	include "src/H1.lua"
 	
+	X64:project()
+
 	ZoneTool:project()
 	ZoneUtils:project()
 	IW3:project()
 	IW4:project()
 	IW5:project()
 	IW6:project()
+	IW7:project()
 	T6:project()
 	H1:project()
