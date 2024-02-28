@@ -12,11 +12,11 @@ namespace ZoneTool::IW5
 		void GenerateIW7XSurface(IW7::XSurface* IW7_asset, XSurface* asset, allocator& mem)
 		{
 			IW7_asset->flags = 0;
-			//IW7_asset->flags |= ((asset->flags & IW5::SURF_FLAG_VERTCOL_GREY) != 0) ? IW7::SURF_FLAG_VERTCOL_GREY : 0;
-			//IW7_asset->flags |= ((asset->flags & IW5::SURF_FLAG_VERTCOL_NONE) != 0) ? IW7::SURF_FLAG_VERTCOL_NONE : 0;
-			////IW7_asset->flags |= ((asset->flags & IW5::SURF_FLAG_QUANTIZED) != 0) ? IW7::SURF_FLAG_QUANTIZED : 0;
-			//IW7_asset->flags |= ((asset->flags & IW5::SURF_FLAG_SKINNED) != 0) ? IW7::SURF_FLAG_SKINNED : 0;
-			IW7_asset->flags = 130; // ?
+			IW7_asset->flags |= ((asset->flags & IW5::SURF_FLAG_VERTCOL_GREY) != 0) ? 0x1 : 0;
+			IW7_asset->flags |= ((asset->flags & IW5::SURF_FLAG_VERTCOL_NONE) != 0) ? 0x2 : 0;
+			//IW7_asset->flags |= ((asset->flags & IW5::SURF_FLAG_QUANTIZED) != 0) ? IW7::SURF_FLAG_QUANTIZED : 0;
+			IW7_asset->flags |= ((asset->flags & IW5::SURF_FLAG_SKINNED) != 0) ? 0x4 : 0;
+			IW7_asset->flags |= 0x80; // SELF_VISIBILITY
 
 			IW7_asset->vertCount = asset->vertCount;
 			IW7_asset->triCount = asset->triCount;
