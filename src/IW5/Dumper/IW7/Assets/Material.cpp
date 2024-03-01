@@ -11,6 +11,7 @@ namespace ZoneTool
 		{
 			{"mc_l_sm_r0c0",					"mo_l_sm_replace_i0c0"},
 			{"mc_l_sm_r0c0s0",					"mo_l_sm_replace_i0c0s0"},
+			{"mc_l_sm_r0c0n0s0",				"mo_l_sm_replace_i0c0s0n0"},
 
 			{"2d",								"2d"},
 		};

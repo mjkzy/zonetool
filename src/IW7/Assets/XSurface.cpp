@@ -98,7 +98,7 @@ namespace ZoneTool::IW7
 				}
 			}
 
-			dump.dump_raw(asset->surfs[i].blendVerts, asset->surfs[i].blendVertCount & 0xFFFFFFFE);
+			dump.dump_raw(asset->surfs[i].blendVerts, asset->surfs[i].blendVertSize & 0xFFFFFFFE);
 
 			dump.dump_raw(asset->surfs[i].lmapUnwrap, 8 * asset->surfs[i].vertCount);
 

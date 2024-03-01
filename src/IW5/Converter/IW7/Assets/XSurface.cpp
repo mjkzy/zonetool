@@ -9,6 +9,67 @@ namespace ZoneTool::IW5
 {
 	namespace IW7Converter
 	{
+		void GenerateIW7BlendVerts(IW5::XSurface* surf_, IW7::XSurface* surf, allocator& mem)
+		{
+			unsigned int size = (2 * surf->blendVertCounts[0]
+				+ 4 * surf->blendVertCounts[1]
+				+ 6 * surf->blendVertCounts[2]
+				+ 8 * surf->blendVertCounts[3]);
+
+			surf->blendVertSize = size * 2;
+			surf->blendVerts = mem.manual_allocate<unsigned short>(surf->blendVertSize);
+
+			unsigned short a = 0;
+			unsigned short b = 0;
+			unsigned short index = 1;
+			for (unsigned short s = 0; s < (surf->blendVertCounts[0]); s++)
+			{
+				surf->blendVerts[a++] = surf_->vertInfo.vertsBlend[b + 0] / 64;
+				surf->blendVerts[a++] = 0;
+
+				b += 1;
+			}
+			index++;
+
+			for (short s = 0; s < (surf->blendVertCounts[1]); s++)
+			{
+				surf->blendVerts[a++] = surf_->vertInfo.vertsBlend[b + 0] / 64;
+				surf->blendVerts[a++] = surf_->vertInfo.vertsBlend[b + 1] / 64;
+				surf->blendVerts[a++] = surf_->vertInfo.vertsBlend[b + 2];
+				surf->blendVerts[a++] = 0;
+				b += 3;
+			}
+			index++;
+
+			for (short s = 0; s < (surf->blendVertCounts[2]); s++)
+			{
+				surf->blendVerts[a++] = surf_->vertInfo.vertsBlend[b + 0] / 64;
+				surf->blendVerts[a++] = surf_->vertInfo.vertsBlend[b + 1] / 64;
+				surf->blendVerts[a++] = surf_->vertInfo.vertsBlend[b + 2];
+				surf->blendVerts[a++] = surf_->vertInfo.vertsBlend[b + 3] / 64;
+				surf->blendVerts[a++] = surf_->vertInfo.vertsBlend[b + 4];
+				surf->blendVerts[a++] = 0;
+				b += 5;
+			}
+			index++;
+
+			for (short s = 0; s < (surf->blendVertCounts[3]); s++)
+			{
+				surf->blendVerts[a++] = surf_->vertInfo.vertsBlend[b + 0] / 64;
+				surf->blendVerts[a++] = surf_->vertInfo.vertsBlend[b + 1] / 64;
+				surf->blendVerts[a++] = surf_->vertInfo.vertsBlend[b + 2];
+				surf->blendVerts[a++] = surf_->vertInfo.vertsBlend[b + 3] / 64;
+				surf->blendVerts[a++] = surf_->vertInfo.vertsBlend[b + 4];
+				surf->blendVerts[a++] = surf_->vertInfo.vertsBlend[b + 5] / 64;
+				surf->blendVerts[a++] = surf_->vertInfo.vertsBlend[b + 6];
+				surf->blendVerts[a++] = 0;
+				b += 7;
+			}
+			index++;
+
+			assert(a == size);
+		}
+
 		void GenerateIW7XSurface(IW7::XSurface* IW7_asset, XSurface* asset, allocator& mem)
 		{
 			IW7_asset->flags = 0;
@@ -24,7 +85,7 @@ namespace ZoneTool::IW5
 
 			// blend verts
 			memcpy(&IW7_asset->blendVertCounts, &asset->vertInfo.vertCount, sizeof(asset->vertInfo.vertCount));
-			IW7_asset->blendVerts = reinterpret_cast<unsigned short* __ptr64>(asset->vertInfo.vertsBlend);
+			GenerateIW7BlendVerts(asset, IW7_asset, mem);
 
 			// triIndices
 			IW7_asset->triIndices = reinterpret_cast<IW7::Face * __ptr64>(asset->triIndices); // this is draw indices?

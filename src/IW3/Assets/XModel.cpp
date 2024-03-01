@@ -63,7 +63,7 @@ namespace ZoneTool
 				if (xmodel->lods[i].numSurfacesInLod > 16)
 				{
 					xmodel->lods[i].numSurfacesInLod = 16;
-					//__debugbreak();
+					ZONETOOL_INFO("XModel %s has more than 16 surfaces in lod %d", asset->name, i);
 				}
 
 				// generate ModelSurface object

@@ -12,6 +12,11 @@ namespace ZoneTool
 			memcpy(iw5_model, asset, sizeof(XModel));
 			iw5_model->quantization = 0;
 
+			for (auto i = 0; i < asset->numLods; i++)
+			{
+				iw5_model->lodInfo[i].modelSurfs = generate_surface(asset->lods[i].surfaces, allocator);
+			}
+
 			// dump model
 			IW5::IXModel::dump(iw5_model, convertToString);
 		}

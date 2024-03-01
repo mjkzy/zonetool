@@ -105,28 +105,19 @@ namespace ZoneTool
 			return new_name;
 		}
 
-#define MATERIAL_DUMP_STRING(entry) \
-	matdata[#entry] = std::string(asset->entry);
-
-#define MATERIAL_DUMP(entry) \
-	matdata[#entry] = asset->entry;
-
-#define MATERIAL_DUMP_INFO(entry) \
-	matdata[#entry] = asset->info.entry;
-
 		void dump(Material* asset)
 		{
 			if (asset)
 			{
-				auto c_name = clean_name(asset->name);
-				auto new_name = IW7::replace_material_prefix(c_name);
+				auto new_name = IW7::replace_material_prefix(asset->name);
+				auto c_name = clean_name(new_name);
 
 				const auto path = "materials\\"s + new_name + ".json"s;
 				auto file = zonetool::filesystem::file(path);
 
 				ordered_json matdata;
 
-				MATERIAL_DUMP_STRING(name);
+				matdata["name"] = new_name;
 
 				std::string iw3_techset;
 				std::string iw7_techset;

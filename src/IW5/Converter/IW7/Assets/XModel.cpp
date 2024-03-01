@@ -94,102 +94,111 @@ namespace ZoneTool::IW5
 		IW7::XModel* GenerateIW7Model(XModel* asset, allocator& mem)
 		{
 			// allocate IW7 XModel structure
-			auto* IW7_asset = mem.allocate<IW7::XModel>();
+			auto* iw7_asset = mem.allocate<IW7::XModel>();
 
-			IW7_asset->name = asset->name;
-			IW7_asset->numBones = asset->numBones;
-			IW7_asset->numRootBones = asset->numRootBones;
-			IW7_asset->numsurfs = asset->numsurfs;
-			IW7_asset->numReactiveMotionParts = 0;
-			IW7_asset->scale = asset->scale;
-			memcpy(&IW7_asset->noScalePartBits, &asset->noScalePartBits, sizeof(asset->noScalePartBits));
+			iw7_asset->name = asset->name;
+			iw7_asset->numBones = asset->numBones;
+			iw7_asset->numRootBones = asset->numRootBones;
+			iw7_asset->numsurfs = asset->numsurfs;
+			iw7_asset->numReactiveMotionParts = 0;
+			iw7_asset->scale = asset->scale;
+			memcpy(&iw7_asset->noScalePartBits, &asset->noScalePartBits, sizeof(asset->noScalePartBits));
 
-			IW7_asset->boneNames = mem.allocate<IW7::scr_string_t>(asset->numBones);
+			iw7_asset->boneNames = mem.allocate<IW7::scr_string_t>(asset->numBones);
 			for (auto i = 0; i < asset->numBones; i++)
 			{
-				IW7_asset->boneNames[i] = static_cast<IW7::scr_string_t>(asset->boneNames[i]);
+				iw7_asset->boneNames[i] = static_cast<IW7::scr_string_t>(asset->boneNames[i]);
 			}
 
-			REINTERPRET_CAST_SAFE(IW7_asset->parentList, asset->parentList);
-			REINTERPRET_CAST_SAFE(IW7_asset->tagAngles, asset->quats);
-			REINTERPRET_CAST_SAFE(IW7_asset->tagPositions, asset->trans);
-			REINTERPRET_CAST_SAFE(IW7_asset->partClassification, asset->partClassification);
-			REINTERPRET_CAST_SAFE(IW7_asset->baseMat, asset->baseMat);
-			IW7_asset->reactiveMotionParts = nullptr;
+			REINTERPRET_CAST_SAFE(iw7_asset->parentList, asset->parentList);
+			REINTERPRET_CAST_SAFE(iw7_asset->tagAngles, asset->quats);
+			REINTERPRET_CAST_SAFE(iw7_asset->tagPositions, asset->trans);
+			REINTERPRET_CAST_SAFE(iw7_asset->partClassification, asset->partClassification);
+			REINTERPRET_CAST_SAFE(iw7_asset->baseMat, asset->baseMat);
+			iw7_asset->reactiveMotionParts = nullptr;
 
-			IW7_asset->materialHandles = mem.allocate<IW7::Material* __ptr64>(asset->numsurfs);
+			iw7_asset->materialHandles = mem.allocate<IW7::Material* __ptr64>(asset->numsurfs);
 			for (auto i = 0; i < asset->numsurfs; i++)
 			{
 				if (asset->materialHandles[i])
 				{
-					IW7_asset->materialHandles[i] = mem.allocate<IW7::Material>();
-					IW7_asset->materialHandles[i]->name = mem.duplicate_string(IW7::replace_material_prefix(asset->materialHandles[i]->info.name));
+					iw7_asset->materialHandles[i] = mem.allocate<IW7::Material>();
+					iw7_asset->materialHandles[i]->name = mem.duplicate_string(IW7::replace_material_prefix(asset->materialHandles[i]->info.name));
 				}
 			}
 
 			for (auto i = 0; i < 6; i++)
 			{
-				IW7_asset->lodInfo[i].dist = 1000000.0f;
+				iw7_asset->lodInfo[i].dist = 1000000.0f;
 			}
 
 			// level of detail data
 			for (auto i = 0; i < asset->numLods; i++)
 			{
-				IW7_asset->lodInfo[i].dist = asset->lodInfo[i].dist;
-				IW7_asset->lodInfo[i].numsurfs = asset->lodInfo[i].numsurfs;
-				IW7_asset->lodInfo[i].surfIndex = asset->lodInfo[i].surfIndex;
-				IW7_asset->lodInfo[i].modelSurfs = mem.allocate<IW7::XModelSurfs>(asset->lodInfo[i].numsurfs);
-				IW7_asset->lodInfo[i].modelSurfs->name = mem.duplicate_string(asset->lodInfo[i].modelSurfs->name);
-				memcpy(&IW7_asset->lodInfo[i].partBits, &asset->lodInfo[i].partBits, sizeof(asset->lodInfo[i].partBits));
+				iw7_asset->lodInfo[i].dist = asset->lodInfo[i].dist;
+				iw7_asset->lodInfo[i].numsurfs = asset->lodInfo[i].numsurfs;
+				iw7_asset->lodInfo[i].surfIndex = asset->lodInfo[i].surfIndex;
+				iw7_asset->lodInfo[i].modelSurfs = mem.allocate<IW7::XModelSurfs>(asset->lodInfo[i].numsurfs);
+				iw7_asset->lodInfo[i].modelSurfs->name = mem.duplicate_string(asset->lodInfo[i].modelSurfs->name);
+				memcpy(&iw7_asset->lodInfo[i].partBits, &asset->lodInfo[i].partBits, sizeof(asset->lodInfo[i].partBits));
 			}
 
-			IW7_asset->unknown01 = asset->maxLoadedLod; //IW7_asset->maxLoadedLod = asset->maxLoadedLod;
-			IW7_asset->numLods = asset->numLods;
-			IW7_asset->collLod = asset->collLod;
-			IW7_asset->flags = asset->flags;
+			iw7_asset->maxLoadedLod = asset->maxLoadedLod;
+			iw7_asset->numLods = asset->numLods;
+			iw7_asset->collLod = asset->collLod;
+			iw7_asset->flags = asset->flags;
 
-			IW7_asset->numCollSurfs = asset->numCollSurfs;
-			IW7_asset->collSurfs = mem.allocate<IW7::XModelCollSurf_s>(asset->numCollSurfs);
+			iw7_asset->numCollSurfs = asset->numCollSurfs;
+			iw7_asset->collSurfs = mem.allocate<IW7::XModelCollSurf_s>(asset->numCollSurfs);
 			for (auto i = 0; i < asset->numCollSurfs; i++)
 			{
-				memcpy(&IW7_asset->collSurfs[i].bounds, &asset->collSurfs[i].bounds, sizeof(float[2][3]));
+				memcpy(&iw7_asset->collSurfs[i].bounds, &asset->collSurfs[i].bounds, sizeof(float[2][3]));
 
-				IW7_asset->collSurfs[i].boneIdx = asset->collSurfs[i].boneIdx;
-				IW7_asset->collSurfs[i].contents = asset->collSurfs[i].contents;
-				IW7_asset->collSurfs[i].surfFlags = 0;//convert_surf_flags(asset->collSurfs[i].surfFlags);
+				iw7_asset->collSurfs[i].boneIdx = asset->collSurfs[i].boneIdx;
+				iw7_asset->collSurfs[i].contents = asset->collSurfs[i].contents;
+				iw7_asset->collSurfs[i].surfFlags = 0;//convert_surf_flags(asset->collSurfs[i].surfFlags);
 			}
 
-			IW7_asset->contents = asset->contents;
+			iw7_asset->contents = asset->contents;
 
-			REINTERPRET_CAST_SAFE(IW7_asset->boneInfo, asset->boneInfo);
+			REINTERPRET_CAST_SAFE(iw7_asset->boneInfo, asset->boneInfo);
 
-			IW7_asset->radius = asset->radius;
-			memcpy(&IW7_asset->bounds, &asset->bounds, sizeof(asset->bounds));
-			IW7_asset->memUsage = asset->memUsage;
+			iw7_asset->radius = asset->radius;
+			memcpy(&iw7_asset->bounds, &asset->bounds, sizeof(asset->bounds));
+			iw7_asset->memUsage = asset->memUsage;
 
 			if (asset->physPreset)
 			{
-				//IW7_asset->physAsset = mem.allocate<IW7::PhysicsAsset>();
-				//IW7_asset->physAsset->name = mem.duplicate_string(asset->physPreset->name);
+				//iw7_asset->physAsset = mem.allocate<IW7::PhysicsAsset>();
+				//iw7_asset->physAsset->name = mem.duplicate_string(asset->physPreset->name);
 			}
 
 			if (asset->physCollmap)
 			{
 				// ?
-				//IW7_asset->physFxShape = mem.allocate<IW7::PhysicsFXShape>();
-				//IW7_asset->physFxShape->name = mem.duplicate_string(asset->physCollmap->name);
+				//iw7_asset->physFxShape = mem.allocate<IW7::PhysicsFXShape>();
+				//iw7_asset->physFxShape->name = mem.duplicate_string(asset->physCollmap->name);
 			}
 
 			// idk
-			IW7_asset->invHighMipRadius = mem.allocate<unsigned short>(asset->numsurfs);
+			iw7_asset->invHighMipRadius = mem.allocate<unsigned short>(asset->numsurfs);
 			for (unsigned char i = 0; i < asset->numsurfs; i++)
 			{
-				IW7_asset->invHighMipRadius[i] = 0xFFFF;
+				iw7_asset->invHighMipRadius[i] = 0xFFFF;
 			}
 
-			//IW7_asset->quantization = 0.0f;
+			//iw7_asset->quantization = 0.0f;
 
-			return IW7_asset;
+			iw7_asset->unknown01 = iw7_asset->numLods && ((asset->lodInfo[0].modelSurfs[0].surfs[0].flags & IW5::SURF_FLAG_SKINNED) != 0) ? 1 : 0; // lodramptype?
+			iw7_asset->shadowCutoffLod = 6;
+			iw7_asset->characterCollBoundsType = 1; // CharCollBoundsType_Human
+
+			iw7_asset->unknownIndex = 0xFF;
+			iw7_asset->unk = 0xFF;
+
+			iw7_asset->flags = 0x40;
+
+			return iw7_asset;
 		}
 
 		IW7::XModel* convert(XModel* asset, allocator& allocator)

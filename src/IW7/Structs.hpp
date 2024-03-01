@@ -874,10 +874,10 @@ namespace ZoneTool::IW7
 		unsigned short flags;
 		unsigned short vertCount;
 		unsigned short triCount;
-		char rigidVertListCount;
+		unsigned char rigidVertListCount;
 		char subdivLevelCount;
 		short blendVertCounts[8];
-		int blendVertCount;
+		int blendVertSize;
 		char __pad0[4];
 		GfxVertexUnion0 verts0;
 		Face PTR64 triIndices;
@@ -1004,7 +1004,7 @@ namespace ZoneTool::IW7
 		const char PTR64 name;
 		char unused01;
 		unsigned char unknown01;
-		char unused02;
+		char maxLoadedLod;
 		unsigned char numLods;
 		unsigned char collLod;
 		unsigned char shadowCutoffLod;
@@ -1055,7 +1055,7 @@ namespace ZoneTool::IW7
 		unsigned char unknownVec3Count;
 		char unk_04[6]; // unknown data
 		vec3_t PTR64 unknownVec3;
-		char unk;
+		unsigned char unk;
 		unsigned char unknown04Count;
 		char unk_05[6]; // unknown data
 		unk_1453E14D8 PTR64 unknown04;
