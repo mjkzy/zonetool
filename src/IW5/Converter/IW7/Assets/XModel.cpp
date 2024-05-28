@@ -138,7 +138,7 @@ namespace ZoneTool::IW5
 				iw7_asset->lodInfo[i].dist = asset->lodInfo[i].dist;
 				iw7_asset->lodInfo[i].numsurfs = asset->lodInfo[i].numsurfs;
 				iw7_asset->lodInfo[i].surfIndex = asset->lodInfo[i].surfIndex;
-				iw7_asset->lodInfo[i].modelSurfs = mem.allocate<IW7::XModelSurfs>(asset->lodInfo[i].numsurfs);
+				iw7_asset->lodInfo[i].modelSurfs = mem.allocate<IW7::XModelSurfs>();
 				iw7_asset->lodInfo[i].modelSurfs->name = mem.duplicate_string(asset->lodInfo[i].modelSurfs->name);
 				memcpy(&iw7_asset->lodInfo[i].partBits, &asset->lodInfo[i].partBits, sizeof(asset->lodInfo[i].partBits));
 			}
@@ -189,14 +189,14 @@ namespace ZoneTool::IW5
 
 			//iw7_asset->quantization = 0.0f;
 
-			iw7_asset->unknown01 = iw7_asset->numLods && ((asset->lodInfo[0].modelSurfs[0].surfs[0].flags & IW5::SURF_FLAG_SKINNED) != 0) ? 1 : 0; // lodramptype?
+			iw7_asset->hasLods = asset->numLods ? 1 : 0;
 			iw7_asset->shadowCutoffLod = 6;
 			iw7_asset->characterCollBoundsType = 1; // CharCollBoundsType_Human
 
 			iw7_asset->unknownIndex = 0xFF;
-			iw7_asset->unk = 0xFF;
+			iw7_asset->unknownIndex2 = 0xFF;
 
-			iw7_asset->flags = 0x40;
+			//iw7_asset->flags |= 0x40;
 
 			return iw7_asset;
 		}

@@ -16,12 +16,15 @@ namespace ZoneTool::IW5
 				+ 6 * surf->blendVertCounts[2]
 				+ 8 * surf->blendVertCounts[3]);
 
-			surf->blendVertSize = size * 2;
+			if (!size) return;
+
+			surf->blendVertSize = size * sizeof(unsigned short);
 			surf->blendVerts = mem.manual_allocate<unsigned short>(surf->blendVertSize);
+
+			assert(surf->blendVertSize % 2 == 0);
 
 			unsigned short a = 0;
 			unsigned short b = 0;
-			unsigned short index = 1;
 			for (unsigned short s = 0; s < (surf->blendVertCounts[0]); s++)
 			{
 				surf->blendVerts[a++] = surf_->vertInfo.vertsBlend[b + 0] / 64;
@@ -29,7 +32,6 @@ namespace ZoneTool::IW5
 
 				b += 1;
 			}
-			index++;
 
 			for (short s = 0; s < (surf->blendVertCounts[1]); s++)
 			{
@@ -39,7 +41,6 @@ namespace ZoneTool::IW5
 				surf->blendVerts[a++] = 0;
 				b += 3;
 			}
-			index++;
 
 			for (short s = 0; s < (surf->blendVertCounts[2]); s++)
 			{
@@ -51,7 +52,6 @@ namespace ZoneTool::IW5
 				surf->blendVerts[a++] = 0;
 				b += 5;
 			}
-			index++;
 
 			for (short s = 0; s < (surf->blendVertCounts[3]); s++)
 			{
@@ -65,7 +65,6 @@ namespace ZoneTool::IW5
 				surf->blendVerts[a++] = 0;
 				b += 7;
 			}
-			index++;
 
 			assert(a == size);
 		}
@@ -73,11 +72,10 @@ namespace ZoneTool::IW5
 		void GenerateIW7XSurface(IW7::XSurface* IW7_asset, XSurface* asset, allocator& mem)
 		{
 			IW7_asset->flags = 0;
-			IW7_asset->flags |= ((asset->flags & IW5::SURF_FLAG_VERTCOL_GREY) != 0) ? 0x1 : 0;
-			IW7_asset->flags |= ((asset->flags & IW5::SURF_FLAG_VERTCOL_NONE) != 0) ? 0x2 : 0;
-			//IW7_asset->flags |= ((asset->flags & IW5::SURF_FLAG_QUANTIZED) != 0) ? IW7::SURF_FLAG_QUANTIZED : 0;
-			IW7_asset->flags |= ((asset->flags & IW5::SURF_FLAG_SKINNED) != 0) ? 0x4 : 0;
-			IW7_asset->flags |= 0x80; // SELF_VISIBILITY
+			IW7_asset->flags |= ((asset->flags & IW5::SURF_FLAG_VERTCOL_GREY) != 0) ? IW7::SURF_FLAG_VERTCOL_GREY : 0;
+			IW7_asset->flags |= ((asset->flags & IW5::SURF_FLAG_VERTCOL_NONE) != 0) ? IW7::SURF_FLAG_VERTCOL_NONE : 0;
+			IW7_asset->flags |= ((asset->flags & IW5::SURF_FLAG_SKINNED) != 0) ? IW7::SURF_FLAG_SKINNED : 0;
+			IW7_asset->flags |= IW7::SURF_FLAG_SELF_VISIBILITY;
 
 			IW7_asset->vertCount = asset->vertCount;
 			IW7_asset->triCount = asset->triCount;
@@ -88,7 +86,7 @@ namespace ZoneTool::IW5
 			GenerateIW7BlendVerts(asset, IW7_asset, mem);
 
 			// triIndices
-			IW7_asset->triIndices = reinterpret_cast<IW7::Face * __ptr64>(asset->triIndices); // this is draw indices?
+			IW7_asset->triIndices = reinterpret_cast<IW7::Face * __ptr64>(asset->triIndices);
 
 			// verts
 			//IW7_asset->verts0.packedVerts0 = reinterpret_cast<IW7::GfxPackedVertex* __ptr64>(asset->verticies);
