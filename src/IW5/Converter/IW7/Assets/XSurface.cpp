@@ -33,7 +33,7 @@ namespace ZoneTool::IW5
 				b += 1;
 			}
 
-			for (short s = 0; s < (surf->blendVertCounts[1]); s++)
+			for (unsigned short s = 0; s < (surf->blendVertCounts[1]); s++)
 			{
 				surf->blendVerts[a++] = surf_->vertInfo.vertsBlend[b + 0] / 64;
 				surf->blendVerts[a++] = surf_->vertInfo.vertsBlend[b + 1] / 64;
@@ -42,7 +42,7 @@ namespace ZoneTool::IW5
 				b += 3;
 			}
 
-			for (short s = 0; s < (surf->blendVertCounts[2]); s++)
+			for (unsigned short s = 0; s < (surf->blendVertCounts[2]); s++)
 			{
 				surf->blendVerts[a++] = surf_->vertInfo.vertsBlend[b + 0] / 64;
 				surf->blendVerts[a++] = surf_->vertInfo.vertsBlend[b + 1] / 64;
@@ -53,7 +53,7 @@ namespace ZoneTool::IW5
 				b += 5;
 			}
 
-			for (short s = 0; s < (surf->blendVertCounts[3]); s++)
+			for (unsigned short s = 0; s < (surf->blendVertCounts[3]); s++)
 			{
 				surf->blendVerts[a++] = surf_->vertInfo.vertsBlend[b + 0] / 64;
 				surf->blendVerts[a++] = surf_->vertInfo.vertsBlend[b + 1] / 64;
@@ -89,7 +89,6 @@ namespace ZoneTool::IW5
 			IW7_asset->triIndices = reinterpret_cast<IW7::Face * __ptr64>(asset->triIndices);
 
 			// verts
-			//IW7_asset->verts0.packedVerts0 = reinterpret_cast<IW7::GfxPackedVertex* __ptr64>(asset->verticies);
 			IW7_asset->verts0.packedVerts0 = mem.allocate<IW7::GfxPackedVertex>(asset->vertCount);
 			for (unsigned short i = 0; i < asset->vertCount; i++)
 			{
@@ -127,7 +126,7 @@ namespace ZoneTool::IW5
 			IW7_asset->rigidVertLists = mem.allocate<IW7::XRigidVertList>(asset->vertListCount);
 			for (int i = 0; i < asset->vertListCount; i++)
 			{
-				IW7_asset->rigidVertLists[i].boneOffset = asset->vertList[i].boneOffset;
+				IW7_asset->rigidVertLists[i].boneOffsetIndex = asset->vertList[i].boneOffset >> 6; // R_MarkFragments_AnimatedXModel
 				IW7_asset->rigidVertLists[i].vertCount = asset->vertList[i].vertCount;
 				IW7_asset->rigidVertLists[i].triOffset = asset->vertList[i].triOffset;
 				IW7_asset->rigidVertLists[i].triCount = asset->vertList[i].triCount;
