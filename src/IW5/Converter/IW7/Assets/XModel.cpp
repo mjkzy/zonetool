@@ -10,85 +10,85 @@ namespace ZoneTool::IW5
 	{
 		namespace
 		{
-			/*IW7::CSurfaceFlags surf_flags_conversion_table[31]
+			IW7::SurfaceFlags surf_flags_conversion_table[31]
 			{
-				IW7::SURF_FLAG_DEFAULT,
-				IW7::SURF_FLAG_BARK,
-				IW7::SURF_FLAG_BRICK,
-				IW7::SURF_FLAG_CARPET,
-				IW7::SURF_FLAG_CLOTH,
-				IW7::SURF_FLAG_CONCRETE,
-				IW7::SURF_FLAG_DIRT,
-				IW7::SURF_FLAG_FLESH,
-				IW7::SURF_FLAG_FOLIAGE,
-				IW7::SURF_FLAG_GLASS,
-				IW7::SURF_FLAG_GRASS,
-				IW7::SURF_FLAG_GRAVEL,
-				IW7::SURF_FLAG_ICE,
-				IW7::SURF_FLAG_METAL,
-				IW7::SURF_FLAG_MUD,
-				IW7::SURF_FLAG_PAPER,
-				IW7::SURF_FLAG_PLASTER,
-				IW7::SURF_FLAG_ROCK,
-				IW7::SURF_FLAG_SAND,
-				IW7::SURF_FLAG_SNOW,
-				IW7::SURF_FLAG_WATER,
-				IW7::SURF_FLAG_WOOD,
-				IW7::SURF_FLAG_ASPHALT,
-				IW7::SURF_FLAG_CERAMIC,
-				IW7::SURF_FLAG_PLASTIC,
-				IW7::SURF_FLAG_RUBBER,
-				IW7::SURF_FLAG_CUSHION,
-				IW7::SURF_FLAG_FRUIT,
-				IW7::SURF_FLAG_PAINTEDMETAL,
-				IW7::SURF_FLAG_RIOTSHIELD,
-				IW7::SURF_FLAG_SLUSH,
-			}; IW5::CSurfaceFlags;*/
+				IW7::SurfaceFlags::SURFACE_FLAG_NONE,
+				IW7::SurfaceFlags::SURFACE_FLAG_BARK,
+				IW7::SurfaceFlags::SURFACE_FLAG_BRICK,
+				IW7::SurfaceFlags::SURFACE_FLAG_CARPET_SOLID,
+				IW7::SurfaceFlags::SURFACE_FLAG_CLOTH,
+				IW7::SurfaceFlags::SURFACE_FLAG_CONCRETE_DRY,
+				IW7::SurfaceFlags::SURFACE_FLAG_DIRT,
+				IW7::SurfaceFlags::SURFACE_FLAG_FLESH,
+				IW7::SurfaceFlags::SURFACE_FLAG_FOLIAGE_DRY,
+				IW7::SurfaceFlags::SURFACE_FLAG_GLASS_PANE,
+				IW7::SurfaceFlags::SURFACE_FLAG_GRASS_SHORT,
+				IW7::SurfaceFlags::SURFACE_FLAG_GRAVEL,
+				IW7::SurfaceFlags::SURFACE_FLAG_ICE_SOLID,
+				IW7::SurfaceFlags::SURFACE_FLAG_METAL_THICK,
+				IW7::SurfaceFlags::SURFACE_FLAG_MUD,
+				IW7::SurfaceFlags::SURFACE_FLAG_PAPER,
+				IW7::SurfaceFlags::SURFACE_FLAG_PLASTER,
+				IW7::SurfaceFlags::SURFACE_FLAG_ROCK,
+				IW7::SurfaceFlags::SURFACE_FLAG_SAND,
+				IW7::SurfaceFlags::SURFACE_FLAG_SNOW,
+				IW7::SurfaceFlags::SURFACE_FLAG_WATER,
+				IW7::SurfaceFlags::SURFACE_FLAG_WOOD_SOLID,
+				IW7::SurfaceFlags::SURFACE_FLAG_ASPHALT_DRY,
+				IW7::SurfaceFlags::SURFACE_FLAG_CERAMIC,
+				IW7::SurfaceFlags::SURFACE_FLAG_PLASTIC,
+				IW7::SurfaceFlags::SURFACE_FLAG_RUBBER,
+				IW7::SurfaceFlags::SURFACE_FLAG_CUSHION,
+				IW7::SurfaceFlags::SURFACE_FLAG_FRUIT,
+				IW7::SurfaceFlags::SURFACE_FLAG_METAL_PAINTED,
+				IW7::SurfaceFlags::SURFACE_FLAG_RIOTSHIELD,
+				IW7::SurfaceFlags::SURFACE_FLAG_SLUSH,
+			}; IW5::CSurfaceFlags;
 
-			/*int convert_surf_flags(int flags)
+			int convert_surf_flags(int flags)
 			{
 				int IW7_flags = surf_flags_conversion_table[flags >> 20];
-				auto convert = [&](IW5::CSurfaceFlags a, IW7::CSurfaceFlags b)
+				auto convert = [&](IW5::CSurfaceFlags a, IW7::SurfaceFlags b)
 				{
 					IW7_flags |= ((flags & a) == a) ? b : 0;
 				};
-				convert(IW5::CSurfaceFlags::SURF_FLAG_OPAQUEGLASS, IW7::CSurfaceFlags::SURF_FLAG_DEFAULT);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_CLIPMISSILE, IW7::CSurfaceFlags::SURF_FLAG_CLIPMISSILE);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_AI_NOSIGHT, IW7::CSurfaceFlags::SURF_FLAG_AI_NOSIGHT);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_CLIPSHOT, IW7::CSurfaceFlags::SURF_FLAG_CLIPSHOT);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_PLAYERCLIP, IW7::CSurfaceFlags::SURF_FLAG_PLAYERCLIP);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_MONSTERCLIP, IW7::CSurfaceFlags::SURF_FLAG_MONSTERCLIP);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_AICLIPALLOWDEATH, IW7::CSurfaceFlags::SURF_FLAG_AICLIPALLOWDEATH);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_VEHICLECLIP, IW7::CSurfaceFlags::SURF_FLAG_VEHICLECLIP);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_ITEMCLIP, IW7::CSurfaceFlags::SURF_FLAG_ITEMCLIP);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_NODROP, IW7::CSurfaceFlags::SURF_FLAG_NODROP);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_NONSOLID, IW7::CSurfaceFlags::SURF_FLAG_NONSOLID);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_DETAIL, IW7::CSurfaceFlags::SURF_FLAG_DETAIL);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_STRUCTURAL, IW7::CSurfaceFlags::SURF_FLAG_STRUCTURAL);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_PORTAL, IW7::CSurfaceFlags::SURF_FLAG_PORTAL);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_CANSHOOTCLIP, IW7::CSurfaceFlags::SURF_FLAG_CANSHOOTCLIP);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_ORIGIN, IW7::CSurfaceFlags::SURF_FLAG_ORIGIN);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_SKY, IW7::CSurfaceFlags::SURF_FLAG_SKY);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_NOCASTSHADOW, IW7::CSurfaceFlags::SURF_FLAG_NOCASTSHADOW);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_PHYSICSGEOM, IW7::CSurfaceFlags::SURF_FLAG_PHYSICSGEOM);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_LIGHTPORTAL, IW7::CSurfaceFlags::SURF_FLAG_LIGHTPORTAL);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_OUTDOORBOUNDS, IW7::CSurfaceFlags::SURF_FLAG_OUTDOORBOUNDS);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_SLICK, IW7::CSurfaceFlags::SURF_FLAG_SLICK);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_NOIMPACT, IW7::CSurfaceFlags::SURF_FLAG_NOIMPACT);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_NOMARKS, IW7::CSurfaceFlags::SURF_FLAG_NOMARKS);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_NOPENETRATE, IW7::CSurfaceFlags::SURF_FLAG_NOPENETRATE);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_LADDER, IW7::CSurfaceFlags::SURF_FLAG_LADDER);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_NODAMAGE, IW7::CSurfaceFlags::SURF_FLAG_NODAMAGE);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_MANTLEON, IW7::CSurfaceFlags::SURF_FLAG_MANTLEON);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_MANTLEOVER, IW7::CSurfaceFlags::SURF_FLAG_MANTLEOVER);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_STAIRS, IW7::CSurfaceFlags::SURF_FLAG_STAIRS);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_SOFT, IW7::CSurfaceFlags::SURF_FLAG_SOFT);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_NOSTEPS, IW7::CSurfaceFlags::SURF_FLAG_NOSTEPS);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_NODRAW, IW7::CSurfaceFlags::SURF_FLAG_NODRAW);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_NOLIGHTMAP, IW7::CSurfaceFlags::SURF_FLAG_NOLIGHTMAP);
-				convert(IW5::CSurfaceFlags::SURF_FLAG_NODLIGHT, IW7::CSurfaceFlags::SURF_FLAG_NODLIGHT);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_OPAQUEGLASS, IW7::SurfaceFlags::SURFACE_FLAG_OPAQUEGLASS);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_CLIPMISSILE, IW7::SurfaceFlags::SURFACE_FLAG_CLIPMISSILE);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_AI_NOSIGHT, IW7::SurfaceFlags::SURFACE_FLAG_AI_NOSIGHT);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_CLIPSHOT, IW7::SurfaceFlags::SURFACE_FLAG_CLIPSHOT);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_PLAYERCLIP, IW7::SurfaceFlags::SURFACE_FLAG_PLAYERCLIP);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_MONSTERCLIP, IW7::SurfaceFlags::SURFACE_FLAG_MONSTERCLIP);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_AICLIPALLOWDEATH, IW7::SurfaceFlags::SURFACE_FLAG_AICLIPALLOWDEATH);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_VEHICLECLIP, IW7::SurfaceFlags::SURFACE_FLAG_VEHICLECLIP);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_ITEMCLIP, IW7::SurfaceFlags::SURFACE_FLAG_ITEMCLIP);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_NODROP, IW7::SurfaceFlags::SURFACE_FLAG_NODROP);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_NONSOLID, IW7::SurfaceFlags::SURFACE_FLAG_NONSOLID);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_DETAIL, IW7::SurfaceFlags::SURFACE_FLAG_DETAIL);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_STRUCTURAL, IW7::SurfaceFlags::SURFACE_FLAG_STRUCTURAL);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_PORTAL, IW7::SurfaceFlags::SURFACE_FLAG_PORTAL);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_CANSHOOTCLIP, IW7::SurfaceFlags::SURFACE_FLAG_CANSHOOTCLIP);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_ORIGIN, IW7::SurfaceFlags::SURFACE_FLAG_ORIGIN);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_SKY, IW7::SurfaceFlags::SURFACE_FLAG_SKY);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_NOCASTSHADOW, IW7::SurfaceFlags::SURFACE_FLAG_NOCASTSHADOW);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_PHYSICSGEOM, IW7::SurfaceFlags::SURFACE_FLAG_PHYSICSGEOM);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_LIGHTPORTAL, IW7::SurfaceFlags::SURFACE_FLAG_LIGHTPORTAL);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_OUTDOORBOUNDS, IW7::SurfaceFlags::SURFACE_FLAG_OUTDOORBOUNDS);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_SLICK, IW7::SurfaceFlags::SURFACE_FLAG_SLICK);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_NOIMPACT, IW7::SurfaceFlags::SURFACE_FLAG_NOIMPACT);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_NOMARKS, IW7::SurfaceFlags::SURFACE_FLAG_NOMARKS);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_NOPENETRATE, IW7::SurfaceFlags::SURFACE_FLAG_NOPENETRATE);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_LADDER, IW7::SurfaceFlags::SURFACE_FLAG_LADDER);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_NODAMAGE, IW7::SurfaceFlags::SURFACE_FLAG_NODAMAGE);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_MANTLEON, IW7::SurfaceFlags::SURFACE_FLAG_MANTLEON);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_MANTLEOVER, IW7::SurfaceFlags::SURFACE_FLAG_MANTLEOVER);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_STAIRS, IW7::SurfaceFlags::SURFACE_FLAG_STAIRS);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_SOFT, IW7::SurfaceFlags::SURFACE_FLAG_SOFT);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_NOSTEPS, IW7::SurfaceFlags::SURFACE_FLAG_NOSTEPS);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_NODRAW, IW7::SurfaceFlags::SURFACE_FLAG_NODRAW);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_NOLIGHTMAP, IW7::SurfaceFlags::SURFACE_FLAG_NOLIGHTMAP);
+				convert(IW5::CSurfaceFlags::SURF_FLAG_NODLIGHT, IW7::SurfaceFlags::SURFACE_FLAG_NODLIGHT);
 				return IW7_flags;
-			}*/
+			}
 		}
 
 		IW7::XModel* GenerateIW7Model(XModel* asset, allocator& mem)
@@ -156,7 +156,7 @@ namespace ZoneTool::IW5
 
 				iw7_asset->collSurfs[i].boneIdx = asset->collSurfs[i].boneIdx;
 				iw7_asset->collSurfs[i].contents = asset->collSurfs[i].contents;
-				iw7_asset->collSurfs[i].surfFlags = 0;//convert_surf_flags(asset->collSurfs[i].surfFlags);
+				iw7_asset->collSurfs[i].surfFlags = convert_surf_flags(asset->collSurfs[i].surfFlags);
 			}
 
 			iw7_asset->contents = asset->contents;

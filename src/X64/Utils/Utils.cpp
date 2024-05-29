@@ -88,10 +88,10 @@ namespace self_visibility
 	// Packing function
 	uint32_t XSurfacePackSelfVisibility(float* packed)
 	{
-		return (uint32_t)(float)((float)(fminf(fmaxf((float)(*packed + 1.0) * 0.5, 0.0), 1.0) * 511.0) + 0.5) |
-			(((((int)(float)((float)(fminf(fmaxf(packed[2], 0.0), 1.0) * 127.0) + 0.5) |
-				((int)(float)((float)(fminf(fmaxf(packed[3], 0.0), 1.0) * 127.0) + 0.5) << 7)) << 9) |
-				(unsigned int)(int)(float)((float)(fminf(fmaxf((float)(packed[1] + 1.0) * 0.5, 0.0), 1.0) * 511.0) + 0.5)) << 9);
+		return (uint32_t)(float)((float)(fminf(fmaxf((float)(*packed + 1.0f) * 0.5f, 0.0f), 1.0f) * 511.0f) + 0.5f) |
+			(((((int)(float)((float)(fminf(fmaxf(packed[2], 0.0f), 1.0f) * 127.0f) + 0.5f) |
+				((int)(float)((float)(fminf(fmaxf(packed[3], 0.0f), 1.0f) * 127.0f) + 0.5f) << 7)) << 9) |
+				(unsigned int)(int)(float)((float)(fminf(fmaxf((float)(packed[1] + 1.0f) * 0.5f, 0.0f), 1.0f) * 511.0f) + 0.5f)) << 9);
 	}
 
 	// Unpacking function

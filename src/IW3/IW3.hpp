@@ -30,17 +30,6 @@ using ordered_json = nlohmann::ordered_json;
 
 namespace bounds
 {
-	static auto compute(float* mins, float* maxs)
-	{
-		float bounds[2][3]{ 0 };
-		for (int i = 0; i < 3; ++i)
-		{
-			bounds[1][i] = (maxs[i] - mins[i]) / 2;
-			bounds[0][i] = bounds[1][i] + mins[i];
-		}
-		return bounds;
-	}
-
 	static void compute(float* mins, float* maxs, float(*dest)[3])
 	{
 		for (int i = 0; i < 3; ++i)
