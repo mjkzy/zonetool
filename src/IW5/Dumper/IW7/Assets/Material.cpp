@@ -9,20 +9,30 @@ namespace ZoneTool
 	{
 		std::unordered_map<std::string, std::string> mapped_techsets =
 		{
-			{"mc_l_sm_r0c0",					"mo_l_sm_replace_i0c0"},
-			{"mc_l_sm_r0c0s0",					"mo_l_sm_replace_i0c0s0"},
-			{"mc_l_sm_r0c0n0s0",				"mo_l_sm_replace_i0c0s0n0"},
+			{"mc_l_sm_r0c0",							"mo_l_sm_replace_i0c0"},
+			{"mc_l_sm_r0c0s0",							"mo_l_sm_replace_i0c0s0"},
+			{"mc_l_sm_r0c0n0s0",						"mo_l_sm_replace_i0c0s0n0"},
 
-			{"2d",								"2d"},
+			{"2d",										"2d"},
+
+			{"effect",									"eq_effect_blend_lin_ndw_nocast"},
+			{"effect_zfeather_add",						"eq_effect_zfeather_add_lin_ct_ndw_nocast"},
+			{"effect_zfeather_add_nofog_eyeoffset",		"eq_effect_zfeather_add_lin_nofog_eyeoffset_ndw_nocast"},
+			{"effect_zfeather_add_nofog",				"eq_effect_zfeather_add_lin_nofog_ndw_nocast"},
+
+			{"distortion_scale",						"eq_distortion_scale"},
+			{"distortion_scale_zfeather",				"eq_distortion_scale_zfeather"},
 		};
 
 		enum MaterialType : std::uint8_t
 		{
 			MTL_TYPE_DEFAULT = 0x0, // ""
+			MTL_TYPE_M = 1, // "m"
 			MTL_TYPE_MO = 23, // "mo"
 			MTL_TYPE_MCO = 24, // "mco"
 			MTL_TYPE_W = 68, // "w"
 			MTL_TYPE_WC = 69, // "wc"
+			MTL_TYPE_EQ = 73, // "eq"
 		};
 
 		std::unordered_map<std::string, std::string> material_prefixes[] =
@@ -31,11 +41,11 @@ namespace ZoneTool
 			{"me", "mo"},
 			{"mc", "mo"},
 			{"w", "w"},
-			{"wc", "wc"},
-			{"gfx", "ev"}},
+			{"wc", "wc"}}
 		};
 
-		std::string replace_material_prefix(const std::string& name)
+		std::unordered_map<std::string, std::string> prefix_cache;
+		std::string replace_material_prefix(const std::string& name, std::string opt)
 		{
 			for (auto& prefix_map : material_prefixes)
 			{
@@ -52,10 +62,16 @@ namespace ZoneTool
 					}
 				}
 			}
+			if (prefix_cache.contains(name) || opt.size() && (opt.find("effect") != std::string::npos || opt.find("dist") != std::string::npos))
+			{
+				auto replaced = "eq"s + "/"s + name;
+				prefix_cache.insert(std::make_pair(name, replaced));
+				return replaced;
+			}
 			return name;
 		}
 
-		std::uint8_t get_material_type_from_name(const std::string& name)
+		std::uint8_t get_material_type_from_name(const std::string& name, std::string opt)
 		{
 			auto prefix_idx = name.find("/");
 			if (prefix_idx != std::string::npos && prefix_idx)
@@ -81,12 +97,18 @@ namespace ZoneTool
 				{
 					return IW7::MTL_TYPE_WC;
 				}
-				else if (prefix != "gfx")
+				else
 				{
 					ZONETOOL_WARNING("Unknown material type for prefix \"%s\" (material: %s)", prefix.data(), name.data());
 				}
 			}
-			return H1::MTL_TYPE_DEFAULT;
+
+			if (opt.size() && (opt.find("effect") != std::string::npos || opt.find("dist") != std::string::npos))
+			{
+				return IW7::MTL_TYPE_EQ;
+			}
+
+			return IW7::MTL_TYPE_DEFAULT;
 		}
 
 		IW7::TextureSemantic surf_flags_conversion_table[13]

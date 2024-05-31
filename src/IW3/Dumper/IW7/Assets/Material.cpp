@@ -28,8 +28,44 @@ namespace ZoneTool
 
 			std::unordered_map<std::uint8_t, std::uint8_t> mapped_sortkeys =
 			{
-				{4, 2},
-				{43, 41},
+				{0, 36},	// Distortion
+							// Opaque water (never used)
+							// Boat hull (never used)
+				{3, 0},		// Opaque ambient
+				{4, 2},		// Opaque
+				{5, 0},		// Sky
+				{6, 0},		// Skybox sun/moon
+				{7, 0},		// Clouds
+				{8, 0},		// Horizon
+				{9, 0},		// Decal bottom 1
+				{10, 0},	// Decal bottom 2
+				{11, 0},	// Decal bottom 3
+				{12, 0},	// Decal static
+				{13, 0},	// Decal mid 1
+				{14, 0},	// Decal mid 2
+				{15, 0},	// Decal mid 3
+				{24, 0},	// Weapon Impact
+				{29, 0},	// Decal top 1
+				{30, 0},	// Decal top 2
+				{31, 0},	// Decal top 3
+				{32, 0},	// Multiplicative
+				{33, 0},	// Banner/ Curtain
+				{34, 0},	// Hair
+				{35, 0},	// Underwater
+				{36, 0},	// Transparent water
+				{37, 0},	// Corona (wild guess)
+				{38, 0},	// Window inside
+				{39, 0},	// Window outside
+				{40, 0},	// Before effects 1 (wild guess)
+				{41, 0},	// Before effects 2 (wild guess)
+				{42, 0},	// Before effects 3 (extremely wild guess)
+				{43, 41},	// Blend / additive => to a decal layer
+				{48, 35},	// Effect auto sort!
+				{51, 0},	// FX Top
+				{56, 0},	// AE Bottom
+				{57, 0},	// AE Middle
+				{58, 0},	// AE top
+				{59, 0}		// Viewmodel effect
 			};
 
 			std::unordered_map<std::string, std::uint8_t> mapped_sortkeys_by_techset =
@@ -49,7 +85,7 @@ namespace ZoneTool
 					return mapped_sortkeys[sortkey];
 				}
 
-				//ZONETOOL_ERROR("Could not find mapped IW7 sortkey for sortkey: %d (material: %s)", sortkey, matname.data());
+				ZONETOOL_ERROR("Could not find mapped IW7 sortkey for sortkey: %d (material: %s)", sortkey, matname.data());
 
 				return sortkey;
 			}
@@ -57,7 +93,7 @@ namespace ZoneTool
 			std::unordered_map<std::uint8_t, std::uint8_t> mapped_camera_regions =
 			{
 				{IW3::CAMERA_REGION_LIT, 0},
-				//{IW3::CAMERA_REGION_DECAL, IW7::CAMERA_REGION_LIT_TRANS},
+				{IW3::CAMERA_REGION_DECAL, 1},
 				{IW3::CAMERA_REGION_EMISSIVE, 4},
 				{IW3::CAMERA_REGION_NONE, 4},
 			};
@@ -109,7 +145,7 @@ namespace ZoneTool
 		{
 			if (asset)
 			{
-				auto new_name = IW7::replace_material_prefix(asset->name);
+				auto new_name = IW7::replace_material_prefix(asset->name, asset->techniqueSet ? asset->techniqueSet->name : "");
 				auto c_name = clean_name(new_name);
 
 				const auto path = "materials\\"s + new_name + ".json"s;
@@ -117,7 +153,7 @@ namespace ZoneTool
 
 				ordered_json matdata;
 
-				matdata["name"] = new_name;
+				//matdata["name"] = new_name;
 
 				std::string iw3_techset;
 				std::string iw7_techset;
@@ -149,9 +185,9 @@ namespace ZoneTool
 				matdata["surfaceTypeBits"] = asset->surfaceTypeBits; // convert
 				// hashIndex;
 
-				//matdata["stateFlags"] = asset->stateFlags; // convert
+				matdata["stateFlags"] = asset->stateFlags; // convert
 				matdata["cameraRegion"] = IW7::get_IW7_camera_region(asset->cameraRegion, asset->name, iw7_techset);
-				matdata["materialType"] = IW7::get_material_type_from_name(asset->name);
+				matdata["materialType"] = IW7::get_material_type_from_name(asset->name, asset->techniqueSet ? asset->techniqueSet->name : "");
 				matdata["assetFlags"] = 0;//IW7::MTL_ASSETFLAG_NONE;
 
 				ordered_json constant_table;
@@ -229,6 +265,12 @@ namespace ZoneTool
 				if (iw7_techset.find("s0") != std::string::npos)
 				{
 					CONSTANT_TABLE_ADD_IF_NOT_FOUND("reflectionRa", 3344177073, 8096.0f, 0.0f, 0.0f, 0.0f);
+				}
+
+				if (iw7_techset.find("_lin") != std::string::npos)
+				{
+					CONSTANT_TABLE_ADD_IF_NOT_FOUND("textureAtlas", 1128936273, 
+						static_cast<float>(asset->textureAtlasColumnCount), static_cast<float>(asset->textureAtlasRowCount), 1.0f, 1.0f);
 				}
 
 				matdata["constantTable"] = constant_table;
