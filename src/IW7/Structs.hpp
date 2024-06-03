@@ -7830,17 +7830,14 @@ namespace ZoneTool::IW7
 		PARTICLE_STATE_DEF_FLAG_PLAYER_FACING = 0x80000, // c
 		PARTICLE_STATE_DEF_FLAG_PLAYER_FACING_LOCK_UP_VECTOR = 0x100000, // c
 		PARTICLE_STATE_DEF_FLAG_USE_OCCLUSION_QUERY = 0x200000, // c
-
 		PARTICLE_STATE_DEF_FLAG_HAS_COLOR = 0x400000,
 		PARTICLE_STATE_DEF_FLAG_HAS_RAY_CAST_PHYSICS = 0x800000,
-		PARTICLE_STATE_DEF_FLAG_0x1000000 = 0x1000000,
-
-		PARTICLE_STATE_DEF_FLAG_HAS_EMISSIVE_CURVE = 0x2000000, // c
-		PARTICLE_STATE_DEF_FLAG_HAS_INTENSITY_CURVE = 0x4000000,
-		PARTICLE_STATE_DEF_FLAG_USE_VECTOR_FIELDS = 0x8000000,
-		PARTICLE_STATE_DEF_FLAG_INHERIT_PARENT_VELOCITY = 0x10000000,
-		PARTICLE_STATE_DEF_FLAG_DRAW_WITH_VIEW_MODEL = 0x20000000,
-		PARTICLE_STATE_DEF_FLAG_PLAY_SOUNDS = 0x40000000,
+		PARTICLE_STATE_DEF_FLAG_HAS_EMISSIVE_CURVE = 0x1000000,
+		PARTICLE_STATE_DEF_FLAG_HAS_INTENSITY_CURVE = 0x2000000,
+		PARTICLE_STATE_DEF_FLAG_USE_VECTOR_FIELDS = 0x4000000,
+		PARTICLE_STATE_DEF_FLAG_INHERIT_PARENT_VELOCITY = 0x8000000,
+		PARTICLE_STATE_DEF_FLAG_DRAW_WITH_VIEW_MODEL = 0x10000000,
+		PARTICLE_STATE_DEF_FLAG_PLAY_SOUNDS = 0x20000000,
 		PARTICLE_STATE_DEF_FLAG_HAS_CAMERA_OFFSET_POSITION_ONLY = 0x40000000, // c
 		PARTICLE_STATE_DEF_FLAG_ON_IMPACT_USE_SURFACE_TYPE = 0x80000000,
 		PARTICLE_STATE_DEF_FLAG_IS_SPRITE = 0x100000000, // c
@@ -8181,14 +8178,14 @@ namespace ZoneTool::IW7
 	struct ParticleModuleInitLightOmni : ParticleModule
 	{
 		ParticleLinkedAssetListDef m_linkedAssetList;
-		float m_fovOuter;
-		float m_fovInner;
-		float m_bulbRadius;
-		float m_bulbLength;
+		float m_tonemappingScaleFactor;
+		float m_intensityIR;
 		bool m_disableVolumetric;
-		bool m_disableShadowMap;
-		bool m_disableDynamicShadows;
-		bool m_scriptScale;
+		unsigned char m_exponent;
+		char __pad0[2];
+		float m_shadowSoftness;
+		float m_shadowBias;
+		float m_shadowArea;
 	}; assert_sizeof(ParticleModuleInitLightOmni, 48);
 
 	struct ParticleModuleInitLightSpot : ParticleModule
@@ -8197,21 +8194,19 @@ namespace ZoneTool::IW7
 		float m_fovInner;
 		float m_bulbRadius;
 		float m_bulbLength;
-		float m_distanceFalloff;
-		//float m_fovCollimation;
 		float m_brightness;
+		float unk1;
 		float m_intensityUV;
 		float m_intensityIR;
-		//float m_intensityHeat;
+		float m_shadowNearPlane;
+		float m_toneMappingScaleFactor;
 		float m_shadowSoftness;
 		float m_shadowBias;
 		float m_shadowArea;
-		float m_shadowNearPlane;
-		float m_toneMappingScaleFactor;
 		bool m_disableVolumetric;
 		bool m_disableShadowMap;
 		bool m_disableDynamicShadows;
-		bool m_scriptScale;
+		bool m_exponent;
 		ParticleLinkedAssetListDef m_linkedAssetList;
 	}; assert_sizeof(ParticleModuleInitLightSpot, 80);
 	assert_offsetof(ParticleModuleInitLightSpot, m_linkedAssetList, 64);
@@ -9001,22 +8996,23 @@ namespace ZoneTool::IW7
 	{
 		FX_ELEM_TYPE_SPRITE_BILLBOARD = 0,
 		FX_ELEM_TYPE_SPRITE_ORIENTED = 1,
-		FX_ELEM_TYPE_SPRITE_ROTATED = 2,
-		FX_ELEM_TYPE_TAIL = 3,
-		FX_ELEM_TYPE_LINE = 4,
-		FX_ELEM_TYPE_TRAIL = 5,
-		FX_ELEM_TYPE_FLARE = 6,
-		FX_ELEM_TYPE_PARTICLE_SIM_ANIMATION = 7,
-		FX_ELEM_TYPE_CLOUD = 8,
-		FX_ELEM_TYPE_SPARK_CLOUD = 9,
-		FX_ELEM_TYPE_SPARK_FOUNTAIN = 10,
-		FX_ELEM_TYPE_MODEL = 11,
-		FX_ELEM_TYPE_OMNI_LIGHT = 12,
-		FX_ELEM_TYPE_SPOT_LIGHT = 13,
-		FX_ELEM_TYPE_SOUND = 14,
-		FX_ELEM_TYPE_DECAL = 15,
-		FX_ELEM_TYPE_RUNNER = 16,
-		FX_ELEM_TYPE_VECTORFIELD = 17,
+		FX_ELEM_TYPE_TAIL = 2,
+		FX_ELEM_TYPE_TRAIL = 3,
+		FX_ELEM_TYPE_FLARE = 4,
+		FX_ELEM_TYPE_PARTICLE_SIM_ANIMATION = 5,
+		FX_ELEM_TYPE_CLOUD = 6,
+		FX_ELEM_TYPE_SPARK_CLOUD = 7,
+		FX_ELEM_TYPE_SPARK_FOUNTAIN = 8,
+		FX_ELEM_TYPE_MODEL = 9,
+		FX_ELEM_TYPE_OMNI_LIGHT = 10,
+		FX_ELEM_TYPE_SPOT_LIGHT = 11,
+		FX_ELEM_TYPE_SOUND = 12,
+		FX_ELEM_TYPE_DECAL = 13,
+		FX_ELEM_TYPE_RUNNER = 14,
+		FX_ELEM_TYPE_VECTORFIELD = 15,
+		FX_ELEM_TYPE_COUNT = 16,
+		FX_ELEM_TYPE_LAST_SPRITE = FX_ELEM_TYPE_PARTICLE_SIM_ANIMATION,
+		FX_ELEM_TYPE_LAST_DRAWN = FX_ELEM_TYPE_SPOT_LIGHT,
 	};
 
 	enum FxElemDefFlags : std::uint32_t
@@ -9108,8 +9104,8 @@ namespace ZoneTool::IW7
 		unsigned char useItemClip;
 		unsigned char fadeInfo;
 		int randomSeed;
-		float litMaxColorChangePerSec;
-		float litUnlitBlendFactor;
+		float litUnlitBlendFactor; // FX_EvaluateVisualState_DoLighting
+		float pad;
 	}; assert_sizeof(FxElemDef, 304);
 	assert_offsetof(FxElemDef, elemType, 182);
 	assert_offsetof(FxElemDef, visualCount, 183);

@@ -171,9 +171,19 @@ namespace ZoneTool::IW5
 				iw7_elem->visuals.markArray = mem.allocate<IW7::FxElemMarkVisuals>(elem->visualCount);
 				for (int i = 0; i < elem->visualCount; i++)
 				{
-					iw7_elem->visuals.markArray[i].materials[0] = reinterpret_cast<IW7::Material*>(elem->visuals.markArray[i].materials[0]); // mc
-					iw7_elem->visuals.markArray[i].materials[1] = reinterpret_cast<IW7::Material*>(elem->visuals.markArray[i].materials[1]); // wc
-					iw7_elem->visuals.markArray[i].materials[2] = reinterpret_cast<IW7::Material*>(elem->visuals.markArray[i].materials[1]); // wc displacement
+					if (elem->visuals.markArray[i].materials[0])
+					{
+						iw7_elem->visuals.markArray[i].materials[0] = mem.manual_allocate<IW7::Material>(8);
+						iw7_elem->visuals.markArray[i].materials[0]->name = mem.duplicate_string(IW7::replace_material_prefix(elem->visuals.markArray[i].materials[0]->name)); // mc
+					}
+					if (elem->visuals.markArray[i].materials[1])
+					{
+						iw7_elem->visuals.markArray[i].materials[1] = mem.manual_allocate<IW7::Material>(8);
+						iw7_elem->visuals.markArray[i].materials[1]->name = mem.duplicate_string(IW7::replace_material_prefix(elem->visuals.markArray[i].materials[1]->name)); // wc
+
+						iw7_elem->visuals.markArray[i].materials[2] = mem.manual_allocate<IW7::Material>(8);
+						iw7_elem->visuals.markArray[i].materials[2]->name = mem.duplicate_string(IW7::replace_material_prefix(elem->visuals.markArray[i].materials[1]->name)); // wc displacement
+					}
 				}
 			}
 			else if (elem->visualCount > 1)
@@ -183,12 +193,36 @@ namespace ZoneTool::IW5
 				{
 					// this is fine
 					iw7_elem->visuals.array[i].anonymous = elem->visuals.array[i].anonymous;
+
+					if (elem->elemType == FX_ELEM_TYPE_SPRITE_BILLBOARD
+						|| elem->elemType == FX_ELEM_TYPE_SPRITE_ORIENTED
+						|| elem->elemType == FX_ELEM_TYPE_TAIL
+						|| elem->elemType == FX_ELEM_TYPE_TRAIL
+						|| elem->elemType == FX_ELEM_TYPE_CLOUD
+						|| elem->elemType == FX_ELEM_TYPE_SPARKCLOUD
+						|| elem->elemType == FX_ELEM_TYPE_SPARKFOUNTAIN)
+					{
+						iw7_elem->visuals.array[i].material = mem.manual_allocate<IW7::Material>(8);
+						iw7_elem->visuals.array[i].material->name = mem.duplicate_string(IW7::replace_material_prefix(elem->visuals.array[i].material->name));
+					}
 				}
 			}
 			else if (elem->visualCount)
 			{
 				// this is fine
 				iw7_elem->visuals.instance.anonymous = elem->visuals.instance.anonymous;
+
+				if (elem->elemType == FX_ELEM_TYPE_SPRITE_BILLBOARD 
+					|| elem->elemType == FX_ELEM_TYPE_SPRITE_ORIENTED
+					|| elem->elemType == FX_ELEM_TYPE_TAIL
+					|| elem->elemType == FX_ELEM_TYPE_TRAIL
+					|| elem->elemType == FX_ELEM_TYPE_CLOUD
+					|| elem->elemType == FX_ELEM_TYPE_SPARKCLOUD
+					|| elem->elemType == FX_ELEM_TYPE_SPARKFOUNTAIN)
+				{
+					iw7_elem->visuals.instance.material = mem.manual_allocate<IW7::Material>(8);
+					iw7_elem->visuals.instance.material->name = mem.duplicate_string(IW7::replace_material_prefix(elem->visuals.instance.material->name));
+				}
 			}
 
 			memcpy(&iw7_elem->collBounds, &elem->collBounds, sizeof(float[3][2]));
@@ -204,34 +238,28 @@ namespace ZoneTool::IW5
 			case FX_ELEM_TYPE_TRAIL:
 				iw7_elem->extended.trailDef = mem.allocate<IW7::FxTrailDef>();
 
-				// check
 				iw7_elem->extended.trailDef->scrollTimeMsec = elem->extended.trailDef->scrollTimeMsec;
 				iw7_elem->extended.trailDef->repeatDist = elem->extended.trailDef->repeatDist;
 				iw7_elem->extended.trailDef->invSplitDist = elem->extended.trailDef->invSplitDist;
 				iw7_elem->extended.trailDef->invSplitArcDist = elem->extended.trailDef->invSplitArcDist;
 				iw7_elem->extended.trailDef->invSplitTime = elem->extended.trailDef->invSplitTime;
-				// pad
 
 				iw7_elem->extended.trailDef->vertCount = elem->extended.trailDef->vertCount;
 				iw7_elem->extended.trailDef->verts = mem.allocate<IW7::FxTrailVertex>(iw7_elem->extended.trailDef->vertCount);
 				for (int i = 0; i < iw7_elem->extended.trailDef->vertCount; i++)
 				{
-					// check
 					memcpy(&iw7_elem->extended.trailDef->verts[i].pos, &elem->extended.trailDef->verts[i].pos, sizeof(float[2]));
 					memcpy(&iw7_elem->extended.trailDef->verts[i].normal, &elem->extended.trailDef->verts[i].normal, sizeof(float[2]));
 					memcpy(&iw7_elem->extended.trailDef->verts[i].texCoord, &elem->extended.trailDef->verts[i].texCoord, sizeof(float[2]));
-					// pad
 				}
 
 				iw7_elem->extended.trailDef->indCount = elem->extended.trailDef->indCount;
 				REINTERPRET_CAST_SAFE(iw7_elem->extended.trailDef->inds, elem->extended.trailDef->inds);
 				break;
 			case FX_ELEM_TYPE_SPARKFOUNTAIN:
-				// check
 				REINTERPRET_CAST_SAFE(iw7_elem->extended.sparkFountainDef, elem->extended.sparkFountainDef);
 				break;
 			case FX_ELEM_TYPE_SPOT_LIGHT:
-				// check
 				iw7_elem->extended.spotLightDef = mem.allocate<IW7::FxSpotLightDef>();
 				if (elem->extended.spotLightDef)
 				{
@@ -241,24 +269,20 @@ namespace ZoneTool::IW5
 					iw7_elem->extended.spotLightDef->brightness = elem->extended.spotLightDef->brightness;
 					iw7_elem->extended.spotLightDef->maxLength = elem->extended.spotLightDef->maxLength;
 					iw7_elem->extended.spotLightDef->exponent = elem->extended.spotLightDef->exponent;
-					// pad
 				}
-				break;
-			case FX_ELEM_TYPE_OMNI_LIGHT:
-				iw7_elem->extended.unknownDef = elem->extended.unknownDef;
-				// todo?
 				break;
 			default:
 				iw7_elem->extended.unknownDef = elem->extended.unknownDef;
 				break;
 			}
 
-			// check:
 			iw7_elem->sortOrder = elem->sortOrder;
 			iw7_elem->lightingFrac = elem->lightingFrac;
 			iw7_elem->useItemClip = elem->useItemClip;
 			iw7_elem->fadeInfo = elem->fadeInfo;
 			iw7_elem->randomSeed = elem->randomSeed;
+
+			iw7_elem->litUnlitBlendFactor = 1.0f;
 		}
 
 		IW7::FxEffectDef* GenerateIW7FxEffectDef(FxEffectDef* asset, allocator& mem)

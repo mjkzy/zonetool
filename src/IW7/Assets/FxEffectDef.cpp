@@ -20,7 +20,7 @@ namespace ZoneTool::IW7
 			dump->dump_asset(vis->particleSimAnimation);
 			break;
 		default:
-			if (def->elemType - 12 <= 1u)
+			if (def->elemType - 10 <= 1u)
 			{
 				if (def->elemType == FX_ELEM_TYPE_SPOT_LIGHT)
 				{

@@ -31,41 +31,41 @@ namespace ZoneTool
 				{0, 36},	// Distortion
 							// Opaque water (never used)
 							// Boat hull (never used)
-				{3, 0},		// Opaque ambient
+				//{3, 0},		// Opaque ambient
 				{4, 2},		// Opaque
-				{5, 0},		// Sky
-				{6, 0},		// Skybox sun/moon
-				{7, 0},		// Clouds
-				{8, 0},		// Horizon
-				{9, 0},		// Decal bottom 1
-				{10, 0},	// Decal bottom 2
-				{11, 0},	// Decal bottom 3
-				{12, 0},	// Decal static
-				{13, 0},	// Decal mid 1
-				{14, 0},	// Decal mid 2
-				{15, 0},	// Decal mid 3
-				{24, 0},	// Weapon Impact
-				{29, 0},	// Decal top 1
-				{30, 0},	// Decal top 2
-				{31, 0},	// Decal top 3
-				{32, 0},	// Multiplicative
-				{33, 0},	// Banner/ Curtain
-				{34, 0},	// Hair
-				{35, 0},	// Underwater
-				{36, 0},	// Transparent water
-				{37, 0},	// Corona (wild guess)
-				{38, 0},	// Window inside
-				{39, 0},	// Window outside
-				{40, 0},	// Before effects 1 (wild guess)
-				{41, 0},	// Before effects 2 (wild guess)
-				{42, 0},	// Before effects 3 (extremely wild guess)
+				//{5, 0},		// Sky
+				//{6, 0},		// Skybox sun/moon
+				//{7, 0},		// Clouds
+				//{8, 0},		// Horizon
+				//{9, 0},		// Decal bottom 1
+				//{10, 0},	// Decal bottom 2
+				//{11, 0},	// Decal bottom 3
+				//{12, 0},	// Decal static
+				//{13, 0},	// Decal mid 1
+				//{14, 0},	// Decal mid 2
+				//{15, 0},	// Decal mid 3
+				//{24, 0},	// Weapon Impact
+				//{29, 0},	// Decal top 1
+				//{30, 0},	// Decal top 2
+				//{31, 0},	// Decal top 3
+				//{32, 0},	// Multiplicative
+				//{33, 0},	// Banner/ Curtain
+				//{34, 0},	// Hair
+				//{35, 0},	// Underwater
+				//{36, 0},	// Transparent water
+				//{37, 0},	// Corona (wild guess)
+				//{38, 0},	// Window inside
+				//{39, 0},	// Window outside
+				//{40, 0},	// Before effects 1 (wild guess)
+				//{41, 0},	// Before effects 2 (wild guess)
+				//{42, 0},	// Before effects 3 (extremely wild guess)
 				{43, 41},	// Blend / additive => to a decal layer
 				{48, 35},	// Effect auto sort!
-				{51, 0},	// FX Top
-				{56, 0},	// AE Bottom
-				{57, 0},	// AE Middle
-				{58, 0},	// AE top
-				{59, 0}		// Viewmodel effect
+				//{51, 0},	// FX Top
+				//{56, 0},	// AE Bottom
+				//{57, 0},	// AE Middle
+				//{58, 0},	// AE top
+				//{59, 0}		// Viewmodel effect
 			};
 
 			std::unordered_map<std::string, std::uint8_t> mapped_sortkeys_by_techset =
@@ -239,10 +239,6 @@ namespace ZoneTool
 							break; \
 						} \
 					} \
-					if (table_idx == 0) \
-					{ \
-						table_idx = static_cast<unsigned int>(constant_table.size()); \
-					} \
 					ordered_json table; \
 					table["name"] = CONST_NAME; \
 					table["nameHash"] = CONST_HASH; \
@@ -264,12 +260,12 @@ namespace ZoneTool
 
 				if (iw7_techset.find("s0") != std::string::npos)
 				{
-					CONSTANT_TABLE_ADD_IF_NOT_FOUND("reflectionRa", 3344177073, 8096.0f, 0.0f, 0.0f, 0.0f);
+					CONSTANT_TABLE_ADD_IF_NOT_FOUND("reflectionRa", 3344177073u, 8096.0f, 0.0f, 0.0f, 0.0f);
 				}
-
+				constexpr auto bigger = 1128936273 > 3054254906;
 				if (iw7_techset.find("_lin") != std::string::npos)
 				{
-					CONSTANT_TABLE_ADD_IF_NOT_FOUND("textureAtlas", 1128936273, 
+					CONSTANT_TABLE_ADD_IF_NOT_FOUND("textureAtlas", 1128936273u, 
 						static_cast<float>(asset->textureAtlasColumnCount), static_cast<float>(asset->textureAtlasRowCount), 1.0f, 1.0f);
 				}
 
