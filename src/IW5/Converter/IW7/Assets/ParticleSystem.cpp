@@ -107,6 +107,309 @@ namespace ZoneTool::IW5
 			return IW7::PARTICLE_ELEMENT_TYPE_BILLBOARD_SPRITE;
 		}
 
+		namespace xoxor4d
+		{
+			enum SizeCurveType
+			{
+				Width = 0,
+				Height = 1,
+			};
+
+			enum VelocityScaleType
+			{
+				Local,
+				World,
+			};
+
+			enum VelocityDirectionType
+			{
+				Forward,
+				Right,
+				Up,
+			};
+
+			enum CurveSampleValueType
+			{
+				Base,
+				Amplitude,
+			};
+
+			class MinMaxCurveSample
+			{
+			public:
+				CurveSampleValueType MinType{};
+				int MinIndex{};
+				float MinComp{ FLT_MAX };
+
+				CurveSampleValueType MaxType{};
+				int MaxIndex{};
+				float MaxComp{ -FLT_MAX };
+
+				float GetAbsMax()
+				{
+					auto max = MaxComp;
+					auto abs = std::abs(MinComp);
+
+					if (abs > max)
+					{
+						max = abs;
+					}
+
+					return max;
+				}
+			};
+
+			void GetMinMaxForSample(MinMaxCurveSample& sample, float compBase, float compAmpl, int index)
+			{
+				// min base
+				if (compBase < sample.MinComp)
+				{
+					sample.MinIndex = index;
+					sample.MinType = CurveSampleValueType::Base;
+					sample.MinComp = compBase;
+				}
+
+				// max base
+				if (compBase > sample.MaxComp)
+				{
+					sample.MaxIndex = index;
+					sample.MaxType = CurveSampleValueType::Base;
+					sample.MaxComp = compBase;
+				}
+
+				// min amplitude
+				if (compAmpl < sample.MinComp)
+				{
+					sample.MinIndex = index;
+					sample.MinType = CurveSampleValueType::Amplitude;
+					sample.MinComp = compAmpl;
+				}
+
+				// max amplitude
+				if (compAmpl > sample.MaxComp)
+				{
+					sample.MaxIndex = index;
+					sample.MaxType = CurveSampleValueType::Amplitude;
+					sample.MaxComp = compAmpl;
+				}
+			}
+
+			float GetVelocityScale(VelocityScaleType type, VelocityDirectionType dir, MinMaxCurveSample& mmSample, float scalar)
+			{
+				auto min = mmSample.MinComp;
+				auto max = mmSample.MaxComp;
+
+				if (min != 0 || max != 0)
+				{
+					auto abs = std::abs(min);
+					auto idx = mmSample.MinIndex;
+					auto kind = mmSample.MinType;
+
+					if (max > abs)
+					{
+						abs = max;
+						idx = mmSample.MaxIndex;
+						kind = mmSample.MaxType;
+					}
+
+					return abs / scalar * 2.0f;
+				}
+
+				return 0.0f;
+			}
+
+			float GetVelocityTotalDeltaValue(VelocityScaleType type, VelocityDirectionType dir, CurveSampleValueType kind, FxElemVelStateSample* samples, int index)
+			{
+				switch (type)
+				{
+				case VelocityScaleType::Local:
+					switch (dir)
+					{
+					case VelocityDirectionType::Forward:
+						switch (kind)
+						{
+						case CurveSampleValueType::Base: return samples[index].local.totalDelta.base[0];
+						case CurveSampleValueType::Amplitude: return samples[index].local.totalDelta.amplitude[0];
+						} break;
+
+					case VelocityDirectionType::Right:
+						switch (kind)
+						{
+						case CurveSampleValueType::Base: return samples[index].local.totalDelta.base[1];
+						case CurveSampleValueType::Amplitude: return samples[index].local.totalDelta.amplitude[1];
+						} break;
+
+					case VelocityDirectionType::Up:
+						switch (kind)
+						{
+						case CurveSampleValueType::Base: return samples[index].local.totalDelta.base[2];
+						case CurveSampleValueType::Amplitude: return samples[index].local.totalDelta.amplitude[2];
+						} break;
+					}
+					break;
+
+				case VelocityScaleType::World:
+					switch (dir)
+					{
+					case VelocityDirectionType::Forward:
+						switch (kind)
+						{
+						case CurveSampleValueType::Base: return samples[index].world.totalDelta.base[0];
+						case CurveSampleValueType::Amplitude: return samples[index].world.totalDelta.amplitude[0];
+						} break;
+
+					case VelocityDirectionType::Right:
+						switch (kind)
+						{
+						case CurveSampleValueType::Base: return samples[index].world.totalDelta.base[1];
+						case CurveSampleValueType::Amplitude: return samples[index].world.totalDelta.amplitude[1];
+						} break;
+
+					case VelocityDirectionType::Up:
+						switch (kind)
+						{
+						case CurveSampleValueType::Base: return samples[index].world.totalDelta.base[2];
+						case CurveSampleValueType::Amplitude: return samples[index].world.totalDelta.amplitude[2];
+						} break;
+					}
+					break;
+				}
+
+				return 0.0f;
+			}
+
+			float GetVelocityValue(VelocityScaleType type, VelocityDirectionType dir, CurveSampleValueType kind, FxElemVelStateSample* samples, int index)
+			{
+				switch (type)
+				{
+				case VelocityScaleType::Local:
+					switch (dir)
+					{
+					case VelocityDirectionType::Forward:
+						switch (kind)
+						{
+						case CurveSampleValueType::Base: return samples[index].local.velocity.base[0];
+						case CurveSampleValueType::Amplitude: return samples[index].local.velocity.amplitude[0];
+						} break;
+
+					case VelocityDirectionType::Right:
+						switch (kind)
+						{
+						case CurveSampleValueType::Base: return samples[index].local.velocity.base[1];
+						case CurveSampleValueType::Amplitude: return samples[index].local.velocity.amplitude[1];
+						} break;
+
+					case VelocityDirectionType::Up:
+						switch (kind)
+						{
+						case CurveSampleValueType::Base: return samples[index].local.velocity.base[2];
+						case CurveSampleValueType::Amplitude: return samples[index].local.velocity.amplitude[2];
+						} break;
+					}
+					break;
+
+				case VelocityScaleType::World:
+					switch (dir)
+					{
+					case VelocityDirectionType::Forward:
+						switch (kind)
+						{
+						case CurveSampleValueType::Base: return samples[index].world.velocity.base[0];
+						case CurveSampleValueType::Amplitude: return samples[index].world.velocity.amplitude[0];
+						} break;
+
+					case VelocityDirectionType::Right:
+						switch (kind)
+						{
+						case CurveSampleValueType::Base: return samples[index].world.velocity.base[1];
+						case CurveSampleValueType::Amplitude: return samples[index].world.velocity.amplitude[1];
+						} break;
+
+					case VelocityDirectionType::Up:
+						switch (kind)
+						{
+						case CurveSampleValueType::Base: return samples[index].world.velocity.base[2];
+						case CurveSampleValueType::Amplitude: return samples[index].world.velocity.amplitude[2];
+						} break;
+					}
+					break;
+				}
+
+				return 0.0f;
+			}
+
+			void GetLargestVelocitySampleValue(VelocityScaleType type, VelocityDirectionType dir, FxElemVelStateSample* velSamples, int index, MinMaxCurveSample& mmSample)
+			{
+				auto velBase = GetVelocityValue(type, dir, CurveSampleValueType::Base, velSamples, index);
+				auto velAmp = GetVelocityValue(type, dir, CurveSampleValueType::Amplitude, velSamples, index);
+
+				auto deltaBase = GetVelocityTotalDeltaValue(type, dir, CurveSampleValueType::Base, velSamples, index);
+				auto deltaAmp = GetVelocityTotalDeltaValue(type, dir, CurveSampleValueType::Amplitude, velSamples, index);
+
+				// min base
+				if (velBase < mmSample.MinComp)
+				{
+					mmSample.MinIndex = index;
+					mmSample.MinType = CurveSampleValueType::Base;
+					mmSample.MinComp = velBase;
+				}
+
+				// max base
+				if (velBase > mmSample.MaxComp)
+				{
+					mmSample.MaxIndex = index;
+					mmSample.MaxType = CurveSampleValueType::Base;
+					mmSample.MaxComp = velBase;
+				}
+
+				// min amplitude
+				if (velAmp < mmSample.MinComp)
+				{
+					mmSample.MinIndex = index;
+					mmSample.MinType = CurveSampleValueType::Amplitude;
+					mmSample.MinComp = velAmp;
+				}
+
+				// max amplitude
+				if (velAmp > mmSample.MaxComp)
+				{
+					mmSample.MaxIndex = index;
+					mmSample.MaxType = CurveSampleValueType::Amplitude;
+					mmSample.MaxComp = velAmp;
+				}
+			}
+
+			void CalculateVelocityScales(float& lForward, float& lRight, float& lUp, float& wForward, float& wRight, float& wUp,
+				FxElemVelStateSample* velSamples, unsigned int velSamplesCount, float sampleScalar)
+			{
+				MinMaxCurveSample localForward{};
+				MinMaxCurveSample localRight{};
+				MinMaxCurveSample localUp{};
+
+				MinMaxCurveSample worldForward{};
+				MinMaxCurveSample worldRight{};
+				MinMaxCurveSample worldUp{};
+
+				for (auto s = 0; s < velSamplesCount; s++)
+				{
+					GetLargestVelocitySampleValue(VelocityScaleType::Local, VelocityDirectionType::Forward, velSamples, s, localForward);
+					GetLargestVelocitySampleValue(VelocityScaleType::Local, VelocityDirectionType::Right, velSamples, s, localRight);
+					GetLargestVelocitySampleValue(VelocityScaleType::Local, VelocityDirectionType::Up, velSamples, s, localUp);
+					GetLargestVelocitySampleValue(VelocityScaleType::World, VelocityDirectionType::Forward, velSamples, s, worldForward);
+					GetLargestVelocitySampleValue(VelocityScaleType::World, VelocityDirectionType::Right, velSamples, s, worldRight);
+					GetLargestVelocitySampleValue(VelocityScaleType::World, VelocityDirectionType::Up, velSamples, s, worldUp);
+				}
+
+				lForward = GetVelocityScale(VelocityScaleType::Local, VelocityDirectionType::Forward, localForward, sampleScalar);
+				lRight = GetVelocityScale(VelocityScaleType::Local, VelocityDirectionType::Right, localRight, sampleScalar);
+				lUp = GetVelocityScale(VelocityScaleType::Local, VelocityDirectionType::Up, localUp, sampleScalar);
+
+				wForward = GetVelocityScale(VelocityScaleType::World, VelocityDirectionType::Forward, worldForward, sampleScalar);
+				wRight = GetVelocityScale(VelocityScaleType::World, VelocityDirectionType::Right, worldRight, sampleScalar);
+				wUp = GetVelocityScale(VelocityScaleType::World, VelocityDirectionType::Up, worldUp, sampleScalar);
+			}
+		}
+
 		void calculate_inv_time_delta(IW7::ParticleCurveDef* curves, unsigned int curves_count)
 		{
 			for (auto i = 0u; i < curves_count; i++)
@@ -125,19 +428,47 @@ namespace ZoneTool::IW5
 			}
 		}
 
-		// I'm not sure how exactly time is interpreted in FxEffectDefs, so i will assume the visualStateIntervalCount is made in a way that makes sense?
-		void calculate_time(FxElemDef* elem, IW7::ParticleCurveDef* curves, unsigned int curves_count)
+		void fixup_randomization_flags(IW7::ParticleCurveDef& curve_base, IW7::ParticleCurveDef& curve_ampl, unsigned int* flags)
 		{
-			float time = 0.0f;
-			for (auto i = 0u; i < curves_count; i++)
+			if (curve_base.numControlPoints != curve_ampl.numControlPoints || curve_base.scale != curve_ampl.scale)
 			{
-				assert(curves[i].numControlPoints > 0);
-				float step = 1.0f / (curves[i].numControlPoints - 1);
-				for (auto j = 0u; j < curves[i].numControlPoints; j++)
+				return;
+			}
+
+			assert(curve_base.numControlPoints == curve_ampl.numControlPoints);
+
+			const auto num = curve_base.numControlPoints;
+			for (auto i = 0u; i < num; i++)
+			{
+				if (curve_base.controlPoints[i].value != curve_ampl.controlPoints[i].value)
 				{
-					curves[i].controlPoints[j].time = j * step;
+					*flags |= IW7::PARTICLE_MODULE_FLAG_RANDOMIZE_BETWEEN_CURVES;
 				}
 			}
+		}
+
+		void set_default_size_values(IW7::ParticleCurveDef& curve)
+		{
+			curve.scale = 1.0f;
+			assert(curve.numControlPoints == 2);
+
+			curve.controlPoints[0].time = 0.0f;
+			curve.controlPoints[0].value = 1.0f;
+
+			curve.controlPoints[1].time = 1.0f;
+			curve.controlPoints[1].value = 0.0f;
+		}
+
+		void set_default_velocity_values(IW7::ParticleCurveDef& curve)
+		{
+			curve.scale = 0.0f;
+			assert(curve.numControlPoints == 2);
+
+			curve.controlPoints[0].time = 0.0f;
+			curve.controlPoints[0].value = 0.0f;
+
+			curve.controlPoints[1].time = 1.0f;
+			curve.controlPoints[1].value = 0.0f;
 		}
 
 		void generate_color_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
@@ -154,39 +485,55 @@ namespace ZoneTool::IW5
 			moduleData.m_flags = 0;
 
 			moduleData.firstCurve = false;
-			moduleData.m_modulateColorByAlpha = false;
+			moduleData.m_modulateColorByAlpha = false; // editorflag
+
+			auto sampleCount = elem->visStateIntervalCount + 1;
+			auto sampleSize = 1.0f / (sampleCount - 1);
+
+			if (!sampleCount)
+			{
+				__debugbreak();
+			}
 
 			for (auto i = 0; i < 8; i++)
 			{
-				moduleData.m_curves[i].numControlPoints = elem->visStateIntervalCount + 1;
-				moduleData.m_curves[i].controlPoints = allocator.allocate<IW7::ParticleCurveControlPointDef>(elem->visStateIntervalCount + 1);
+				moduleData.m_curves[i].numControlPoints = sampleCount;
+				moduleData.m_curves[i].controlPoints = allocator.allocate<IW7::ParticleCurveControlPointDef>(sampleCount);
 
 				moduleData.m_curves[i].scale = 1.0f;
 			}
 
-			// bgra->rgba
-			for (auto i = 0; i < elem->visStateIntervalCount + 1; i++)
+			// bgra->rgba?
+			for (auto i = 0; i < sampleCount; i++)
 			{
-				// could be wrong
+				float base_color[4];
+				Byte4::Byte4UnpackRgba(base_color, elem->visSamples[i].base.color);
 
-				moduleData.m_curves[0].controlPoints[i].value = static_cast<int>(elem->visSamples[i].base.color[2]) / 255.0f;
-				moduleData.m_curves[1].controlPoints[i].value = static_cast<int>(elem->visSamples[i].base.color[1]) / 255.0f;
-				moduleData.m_curves[2].controlPoints[i].value = static_cast<int>(elem->visSamples[i].base.color[0]) / 255.0f;
-				moduleData.m_curves[3].controlPoints[i].value = static_cast<int>(elem->visSamples[i].base.color[3]) / 255.0f;
+				moduleData.m_curves[0].controlPoints[i].value = base_color[2];
+				moduleData.m_curves[1].controlPoints[i].value = base_color[1];
+				moduleData.m_curves[2].controlPoints[i].value = base_color[0];
+				moduleData.m_curves[3].controlPoints[i].value = base_color[3];
 
-				moduleData.m_curves[4].controlPoints[i].value = static_cast<int>(elem->visSamples[i].amplitude.color[2]) / 255.0f;
-				moduleData.m_curves[5].controlPoints[i].value = static_cast<int>(elem->visSamples[i].amplitude.color[1]) / 255.0f;
-				moduleData.m_curves[6].controlPoints[i].value = static_cast<int>(elem->visSamples[i].amplitude.color[0]) / 255.0f;
-				moduleData.m_curves[7].controlPoints[i].value = static_cast<int>(elem->visSamples[i].amplitude.color[3]) / 255.0f;
+				float ampl_color[4];
+				Byte4::Byte4UnpackRgba(ampl_color, elem->visSamples[i].amplitude.color);
 
-				//moduleData.m_curves[4].controlPoints[i].value = moduleData.m_curves[0].controlPoints[i].value + moduleData.m_curves[4].controlPoints[i].value;
-				//moduleData.m_curves[5].controlPoints[i].value = moduleData.m_curves[1].controlPoints[i].value + moduleData.m_curves[5].controlPoints[i].value;
-				//moduleData.m_curves[6].controlPoints[i].value = moduleData.m_curves[2].controlPoints[i].value + moduleData.m_curves[6].controlPoints[i].value;
-				//moduleData.m_curves[7].controlPoints[i].value = moduleData.m_curves[3].controlPoints[i].value + moduleData.m_curves[7].controlPoints[i].value;
+				moduleData.m_curves[4].controlPoints[i].value = ampl_color[2];
+				moduleData.m_curves[5].controlPoints[i].value = ampl_color[1];
+				moduleData.m_curves[6].controlPoints[i].value = ampl_color[0];
+				moduleData.m_curves[7].controlPoints[i].value = ampl_color[3];
+
+				for (auto j = 0; j < 8; j++)
+				{
+					moduleData.m_curves[j].controlPoints[i].time = sampleSize * i;
+				}
 			}
 
-			calculate_time(elem, moduleData.m_curves, GetModuleNumCurves(module.moduleType));
 			calculate_inv_time_delta(moduleData.m_curves, GetModuleNumCurves(module.moduleType));
+
+			fixup_randomization_flags(moduleData.m_curves[0], moduleData.m_curves[4], &moduleData.m_flags);
+			fixup_randomization_flags(moduleData.m_curves[1], moduleData.m_curves[5], &moduleData.m_flags);
+			fixup_randomization_flags(moduleData.m_curves[2], moduleData.m_curves[6], &moduleData.m_flags);
+			fixup_randomization_flags(moduleData.m_curves[3], moduleData.m_curves[7], &moduleData.m_flags);
 
 			emitterdata_flags |= IW7::USE_COLOR;
 			state_flags |= IW7::PARTICLE_STATE_DEF_FLAG_HAS_COLOR;
@@ -209,37 +556,192 @@ namespace ZoneTool::IW5
 
 			moduleData.firstCurve = false;
 
-			for (auto i = 0; i < 6; i++)
+			float widthScale = 0.0f;
+			float heightScale = 0.0f;
+			float scaleScale = 0.0f;
+
 			{
-				moduleData.m_curves[i].numControlPoints = elem->visStateIntervalCount + 1;
-				moduleData.m_curves[i].controlPoints = allocator.allocate<IW7::ParticleCurveControlPointDef>(elem->visStateIntervalCount + 1);
+				// #
+				// size curve brah (width height)
+				// => curve scale = max * 2
+				// => key values = key * 2 / scale
+				xoxor4d::MinMaxCurveSample width{};
+				xoxor4d::MinMaxCurveSample height{};
+
+				// find largest value (pos and neg)
+				for (auto s = 0; s < elem->visStateIntervalCount + 1; s++)
+				{
+					auto widthBase = elem->visSamples[s].base.size[0];
+					auto widthAmpl = elem->visSamples[s].amplitude.size[0];
+
+					auto heightBase = elem->visSamples[s].base.size[1];
+					auto heightAmpl = elem->visSamples[s].amplitude.size[1];
+
+					GetMinMaxForSample(width, widthBase, widthAmpl, s);
+					GetMinMaxForSample(height, heightBase, heightAmpl, s);
+				}
+
+				widthScale = width.GetAbsMax() * 2.0f;
+				heightScale = height.GetAbsMax() * 2.0f;
 			}
 
-			for (auto i = 0; i < elem->visStateIntervalCount + 1; i++)
 			{
-				// could be wrong
+				// #
+				// scale curve bree (model & clouds)
+				// => curve scale = max
+				// => key values = key / scale
+				xoxor4d::MinMaxCurveSample scale{};
 
-				moduleData.m_curves[0].scale = std::roundf(elem->visSamples[i].base.size[0]);
-				moduleData.m_curves[0].controlPoints[i].value = 1.0f;
+				// find largest value (pos and neg)
+				for (auto s = 0; s < elem->visStateIntervalCount + 1; s++)
+				{
+					auto scaleBase = elem->visSamples[s].base.scale;
+					auto scaleAmpl = elem->visSamples[s].amplitude.scale;
 
-				moduleData.m_curves[1].scale = std::roundf(elem->visSamples[i].base.size[0] + elem->visSamples[i].amplitude.size[0]);
-				moduleData.m_curves[1].controlPoints[i].value = 1.0f;
+					xoxor4d::GetMinMaxForSample(scale, scaleBase, scaleAmpl, s);
+				}
+
+				scaleScale = scale.GetAbsMax() * 2.0f;
+			}
+
+			if (!widthScale && !heightScale && !scaleScale)
+			{
+				return;
+			}
+
+			enum module_size_curve_e
+			{
+				width0,
+				height0,
+				scale0,
+				width1,
+				height1,
+				scale1,
+			};
+
+			auto sampleCount = elem->visStateIntervalCount + 1;
+			auto sampleSize = 1.0f / (sampleCount - 1);
+			
+			if (widthScale)
+			{
+				moduleData.m_curves[module_size_curve_e::width0].scale = widthScale;
+				moduleData.m_curves[module_size_curve_e::width1].scale = widthScale;
+
+				moduleData.m_curves[module_size_curve_e::width0].numControlPoints = sampleCount;
+				moduleData.m_curves[module_size_curve_e::width0].controlPoints =
+					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[module_size_curve_e::width0].numControlPoints);
+
+				moduleData.m_curves[module_size_curve_e::width1].numControlPoints = sampleCount;
+				moduleData.m_curves[module_size_curve_e::width1].controlPoints =
+					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[module_size_curve_e::width1].numControlPoints);
+			}
+			else
+			{
+				moduleData.m_curves[module_size_curve_e::width0].numControlPoints = 2;
+				moduleData.m_curves[module_size_curve_e::width0].controlPoints =
+					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[module_size_curve_e::width0].numControlPoints);
+
+				moduleData.m_curves[module_size_curve_e::width1].numControlPoints = 2;
+				moduleData.m_curves[module_size_curve_e::width1].controlPoints =
+					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[module_size_curve_e::width1].numControlPoints);
+
+				set_default_size_values(moduleData.m_curves[module_size_curve_e::width0]);
+				set_default_size_values(moduleData.m_curves[module_size_curve_e::width1]);
 				
-				moduleData.m_curves[2].scale = 0.0f;
-				moduleData.m_curves[2].controlPoints[i].value = 0.0f;
-
-				moduleData.m_curves[3].scale = std::roundf(elem->visSamples[i].base.size[1]);
-				moduleData.m_curves[3].controlPoints[i].value = 1.0f;
-
-				moduleData.m_curves[4].scale = std::roundf(elem->visSamples[i].base.size[1] + elem->visSamples[i].amplitude.size[1]);
-				moduleData.m_curves[4].controlPoints[i].value = 1.0f;
-
-				moduleData.m_curves[5].scale = 0.0f;
-				moduleData.m_curves[5].controlPoints[i].value = 0.0f;
 			}
 
-			calculate_time(elem, moduleData.m_curves, GetModuleNumCurves(module.moduleType));
+			if (heightScale)
+			{
+				moduleData.m_curves[module_size_curve_e::height0].scale = heightScale;
+				moduleData.m_curves[module_size_curve_e::height1].scale = heightScale;
+
+				moduleData.m_curves[module_size_curve_e::height0].numControlPoints = sampleCount;
+				moduleData.m_curves[module_size_curve_e::height0].controlPoints =
+					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[module_size_curve_e::height0].numControlPoints);
+
+				moduleData.m_curves[module_size_curve_e::height1].numControlPoints = sampleCount;
+				moduleData.m_curves[module_size_curve_e::height1].controlPoints =
+					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[module_size_curve_e::height1].numControlPoints);
+			}
+			else
+			{
+				moduleData.m_curves[module_size_curve_e::height0].numControlPoints = 2;
+				moduleData.m_curves[module_size_curve_e::height0].controlPoints =
+					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[module_size_curve_e::height0].numControlPoints);
+
+				moduleData.m_curves[module_size_curve_e::height1].numControlPoints = 2;
+				moduleData.m_curves[module_size_curve_e::height1].controlPoints =
+					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[module_size_curve_e::height1].numControlPoints);
+
+				set_default_size_values(moduleData.m_curves[module_size_curve_e::height0]);
+				set_default_size_values(moduleData.m_curves[module_size_curve_e::height1]);
+			}
+
+			if (scaleScale)
+			{
+				moduleData.m_curves[module_size_curve_e::scale0].scale = scaleScale;
+				moduleData.m_curves[module_size_curve_e::scale1].scale = scaleScale;
+
+				moduleData.m_curves[module_size_curve_e::scale0].numControlPoints = sampleCount;
+				moduleData.m_curves[module_size_curve_e::scale0].controlPoints =
+					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[module_size_curve_e::scale0].numControlPoints);
+
+				moduleData.m_curves[module_size_curve_e::scale1].numControlPoints = sampleCount;
+				moduleData.m_curves[module_size_curve_e::scale1].controlPoints =
+					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[module_size_curve_e::scale1].numControlPoints);
+			}
+			else
+			{
+				moduleData.m_curves[module_size_curve_e::scale0].numControlPoints = 2;
+				moduleData.m_curves[module_size_curve_e::scale0].controlPoints =
+					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[module_size_curve_e::scale0].numControlPoints);
+
+				moduleData.m_curves[module_size_curve_e::scale1].numControlPoints = 2;
+				moduleData.m_curves[module_size_curve_e::scale1].controlPoints =
+					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[module_size_curve_e::scale1].numControlPoints);
+
+				set_default_size_values(moduleData.m_curves[module_size_curve_e::scale0]);
+				set_default_size_values(moduleData.m_curves[module_size_curve_e::scale1]);
+			}
+
+			for (auto i = 0; i < sampleCount; i++)
+			{
+				if (widthScale)
+				{
+					moduleData.m_curves[module_size_curve_e::width0].controlPoints[i].time = sampleSize * i;
+					moduleData.m_curves[module_size_curve_e::width0].controlPoints[i].value = elem->visSamples[i].base.size[xoxor4d::SizeCurveType::Width] * 2.0f / widthScale;
+
+					moduleData.m_curves[module_size_curve_e::width1].controlPoints[i].time = sampleSize * i;
+					moduleData.m_curves[module_size_curve_e::width1].controlPoints[i].value = elem->visSamples[i].amplitude.size[xoxor4d::SizeCurveType::Width] * 2.0f / widthScale;
+					moduleData.m_curves[module_size_curve_e::width1].controlPoints[i].value += moduleData.m_curves[module_size_curve_e::width0].controlPoints[i].value;
+				}
+
+				if (heightScale)
+				{
+					moduleData.m_curves[module_size_curve_e::height0].controlPoints[i].time = sampleSize * i;
+					moduleData.m_curves[module_size_curve_e::height0].controlPoints[i].value = elem->visSamples[i].base.size[xoxor4d::SizeCurveType::Height] * 2.0f / heightScale;
+
+					moduleData.m_curves[module_size_curve_e::height1].controlPoints[i].time = sampleSize * i;
+					moduleData.m_curves[module_size_curve_e::height1].controlPoints[i].value = elem->visSamples[i].amplitude.size[xoxor4d::SizeCurveType::Height] * 2.0f / heightScale;
+					moduleData.m_curves[module_size_curve_e::height1].controlPoints[i].value += moduleData.m_curves[module_size_curve_e::height0].controlPoints[i].value;
+				}
+
+				if (scaleScale)
+				{
+					moduleData.m_curves[module_size_curve_e::scale0].controlPoints[i].time = sampleSize * i;
+					moduleData.m_curves[module_size_curve_e::scale0].controlPoints[i].value = elem->visSamples[i].base.scale / scaleScale;
+
+					moduleData.m_curves[module_size_curve_e::scale1].controlPoints[i].time = sampleSize * i;
+					moduleData.m_curves[module_size_curve_e::scale1].controlPoints[i].value = elem->visSamples[i].amplitude.scale / scaleScale;
+					moduleData.m_curves[module_size_curve_e::scale1].controlPoints[i].value += moduleData.m_curves[module_size_curve_e::scale0].controlPoints[i].value;
+				}
+			}
+
 			calculate_inv_time_delta(moduleData.m_curves, GetModuleNumCurves(module.moduleType));
+
+			fixup_randomization_flags(moduleData.m_curves[module_size_curve_e::width0], moduleData.m_curves[module_size_curve_e::width1], &moduleData.m_flags);
+			fixup_randomization_flags(moduleData.m_curves[module_size_curve_e::height0], moduleData.m_curves[module_size_curve_e::height1], &moduleData.m_flags);
+			fixup_randomization_flags(moduleData.m_curves[module_size_curve_e::scale0], moduleData.m_curves[module_size_curve_e::scale1], &moduleData.m_flags);
 
 			emitterdata_flags |= IW7::USE_SIZE;
 
@@ -261,34 +763,126 @@ namespace ZoneTool::IW5
 
 			module.moduleData.rotationGraph.m_useRotationRate = false; // not sure
 
+			auto visSamplesCount = elem->visStateIntervalCount + 1;
+			float rotationScale = 0.0f;
+
+			// #
+			// rotation bruh
+			// => curve scale = largest :: getting the largest delta rotation (incl. abs(most negative))
+			// => curve scale = (largest / 0.017453292f) * (sampleCount - 1) * 1000 * 2
+			// => key values = (value / 0.017453292f) * ((sampleCount - 1) * 1000) / scale
+
+			{
+				xoxor4d::MinMaxCurveSample rotation{};
+
+				// find largest value (pos and neg)
+				for (auto s = 0; s < visSamplesCount; s++)
+				{
+					auto rotBase = elem->visSamples[s].base.rotationDelta;
+					auto rotAmpl = elem->visSamples[s].amplitude.rotationDelta;
+
+					xoxor4d::GetMinMaxForSample(rotation, rotBase, rotAmpl, s);
+				}
+
+				// ... would take avarage here (needed?)
+				// const float rotationScale = (edElemDef->rotationScale * 0.017453292f) / (elemDef->visStateIntervalCount * 1000.0f);
+				rotationScale = rotation.GetAbsMax() / 0.017453292f * (visSamplesCount - 1) * 1000.0f * 2.0f;
+			}
+
+			if (!rotationScale)
+			{
+				return;
+			}
+
+			auto sampleSize = 1.0f / (visSamplesCount - 1);
+			auto sampleScalar = (visSamplesCount - 1) * 1000.0f;
+
 			for (auto i = 0; i < 2; i++)
 			{
-				moduleData.m_curves[i].numControlPoints = elem->visStateIntervalCount + 1;
-				moduleData.m_curves[i].controlPoints = allocator.allocate<IW7::ParticleCurveControlPointDef>(elem->visStateIntervalCount + 1);
+				moduleData.m_curves[i].numControlPoints = visSamplesCount;
+				moduleData.m_curves[i].controlPoints = allocator.allocate<IW7::ParticleCurveControlPointDef>(visSamplesCount);
+
+				moduleData.m_curves[i].scale = rotationScale;
 			}
 
-			for (auto i = 0; i < elem->visStateIntervalCount + 1; i++)
+			for (auto i = 0; i < visSamplesCount; i++)
 			{
-				// could be wrong
-
-				moduleData.m_curves[0].controlPoints[i].value = elem->visSamples[i].base.rotationTotal;
-				moduleData.m_curves[1].controlPoints[i].value = elem->visSamples[i].amplitude.rotationTotal;
-
-				moduleData.m_curves[0].scale = elem->visSamples[i].base.scale;
-				moduleData.m_curves[1].scale = elem->visSamples[i].amplitude.scale;
+				auto keyValue = elem->visSamples[i].base.rotationDelta / 0.017453292f * sampleScalar / rotationScale;
+				moduleData.m_curves[0].controlPoints[i].value = keyValue;
+				moduleData.m_curves[0].controlPoints[i].time = sampleSize * i;
+				
+				auto baseVel = elem->visSamples[i].base.rotationDelta / 0.017453292f * sampleScalar / rotationScale;
+				auto amplVel = elem->visSamples[i].amplitude.rotationDelta / 0.017453292f * sampleScalar / rotationScale;
+				moduleData.m_curves[1].controlPoints[i].value = baseVel + amplVel;
+				moduleData.m_curves[1].controlPoints[i].time = sampleSize * i;
 			}
 
-			calculate_time(elem, moduleData.m_curves, GetModuleNumCurves(module.moduleType));
 			calculate_inv_time_delta(moduleData.m_curves, GetModuleNumCurves(module.moduleType));
+
+			fixup_randomization_flags(moduleData.m_curves[0], moduleData.m_curves[1], &moduleData.m_flags);
 
 			state_flags |= IW7::PARTICLE_STATE_DEF_FLAG_HAS_ROTATION_1D_CURVE;
 
 			modules.push_back(module);
 		}
 
+		void generate_init_relative_velocity_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
+		{
+			IW7::ParticleModuleDef module{};
+			module.moduleType = IW7::PARTICLE_MODULE_INIT_RELATIVE_VELOCITY;
+			auto& moduleData = module.moduleData.initRelativeVelocity;
+			moduleData.type = module.moduleType;
+			moduleData.m_flags = 0;
+
+			{
+				auto sampleCount = elem->velIntervalCount + 1;
+				auto sampleScalar = 1.0f / ((sampleCount - 1) * 1000.0f);
+
+				auto lForwardScale = 0.0f;
+				auto lRightScale = 0.0f;
+				auto lUpScale = 0.0f;
+
+				auto wForwardScale = 0.0f;
+				auto wRightScale = 0.0f;
+				auto wUpScale = 0.0f;
+
+				xoxor4d::CalculateVelocityScales(lForwardScale, lRightScale, lUpScale,
+					wForwardScale, wRightScale, wUpScale,
+					elem->velSamples, sampleCount, sampleScalar);
+
+				if (!lForwardScale && !lRightScale && !lUpScale && !wForwardScale && !wRightScale && !wUpScale)
+				{
+					return;
+				}
+			}
+
+			switch (elem->flags & FX_ELEM_RUN_MASK)
+			{
+			case FX_ELEM_RUN_RELATIVE_TO_WORLD:
+				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_WORLD;
+				break;
+			case FX_ELEM_RUN_RELATIVE_TO_SPAWN:
+				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_LOCAL;
+				break;
+			case FX_ELEM_RUN_RELATIVE_TO_EFFECT:
+				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_RELATIVE_TO_EFFECT_ORIGIN;
+				break;
+			case FX_ELEM_RUN_RELATIVE_TO_OFFSET:
+				//moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_LOCAL; // idk
+				//break;
+			default:
+				__debugbreak();
+				break;
+			}
+
+			moduleData.m_useBoltInfo = false;
+
+			modules.push_back(module);
+		}
+
 		void generate_velocity_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
 		{
-			if (!elem->velSamples || elem->velIntervalCount < 2)
+			if (!elem->velSamples)
 			{
 				return;
 			}
@@ -309,53 +903,150 @@ namespace ZoneTool::IW5
 			moduleData.m_velocityEnd.v[2] = 0.0f;
 			moduleData.m_velocityEnd.v[3] = 0.0f;
 
-			for (auto i = 0; i < 6; i++)
+			auto sampleCount = elem->velIntervalCount + 1;
+			auto sampleSize = 1.0f / (sampleCount - 1);
+			auto sampleScalar = 1.0f / ((sampleCount - 1) * 1000.0f);
+
+			auto lForwardScale = 0.0f;
+			auto lRightScale = 0.0f;
+			auto lUpScale = 0.0f;
+
+			auto wForwardScale = 0.0f;
+			auto wRightScale = 0.0f;
+			auto wUpScale = 0.0f;
+
+			xoxor4d::CalculateVelocityScales(lForwardScale, lRightScale, lUpScale,
+				wForwardScale, wRightScale, wUpScale,
+				elem->velSamples, sampleCount, sampleScalar);
+
+			if (!lForwardScale && !lRightScale && !lUpScale && !wForwardScale && !wRightScale && !wUpScale)
 			{
-				moduleData.m_curves[i].numControlPoints = elem->velIntervalCount + 1;
-				moduleData.m_curves[i].controlPoints = allocator.allocate<IW7::ParticleCurveControlPointDef>(elem->velIntervalCount + 1);
+				return;
 			}
 
 			const bool local = (elem->flags & FX_ELEM_HAS_VELOCITY_GRAPH_LOCAL) != 0;
 			const bool world = (elem->flags & FX_ELEM_HAS_VELOCITY_GRAPH_WORLD) != 0;
 			assert(local != world);
-
 			moduleData.m_flags |= world ? IW7::PARTICLE_MODULE_FLAG_USE_WORLD_SPACE : 0;
 
-			for (auto i = 0; i < elem->velIntervalCount + 1; i++)
+			enum module_velocity_curve_e
 			{
-				// could be wrong
+				forward0,
+				right0,
+				up0,
+				forward1,
+				right1,
+				up1,
+			};
 
-				moduleData.m_curves[0].controlPoints[i].value =
-					local ? elem->velSamples[i].local.velocity.base[0] : elem->velSamples[i].world.velocity.base[0];
-				moduleData.m_curves[1].controlPoints[i].value =
-					local ? elem->velSamples[i].local.velocity.base[1] : elem->velSamples[i].world.velocity.base[1];
-				moduleData.m_curves[2].controlPoints[i].value =
-					local ? elem->velSamples[i].local.velocity.base[2] : elem->velSamples[i].world.velocity.base[2];
-
-				moduleData.m_curves[3].controlPoints[i].value = moduleData.m_curves[0].controlPoints[i].value;
-				moduleData.m_curves[4].controlPoints[i].value = moduleData.m_curves[1].controlPoints[i].value;
-				moduleData.m_curves[5].controlPoints[i].value = moduleData.m_curves[2].controlPoints[i].value;
-
-				moduleData.m_curves[3].controlPoints[i].value +=
-					local ? elem->velSamples[i].local.velocity.amplitude[0] : elem->velSamples[i].world.velocity.amplitude[0];
-				moduleData.m_curves[4].controlPoints[i].value +=
-					local ? elem->velSamples[i].local.velocity.amplitude[1] : elem->velSamples[i].world.velocity.amplitude[1];
-				moduleData.m_curves[5].controlPoints[i].value +=
-					local ? elem->velSamples[i].local.velocity.amplitude[2] : elem->velSamples[i].world.velocity.amplitude[2];
-
-				for (auto j = 0; j < 6; j++)
+			const auto allocate = [&](module_velocity_curve_e type, unsigned int num)
+			{
+				moduleData.m_curves[type].numControlPoints = num;
+				moduleData.m_curves[type].controlPoints = allocator.allocate<IW7::ParticleCurveControlPointDef>(num);
+				if (num == 2)
 				{
-					moduleData.m_curves[j].scale = 1.0f; // IDK
+					set_default_velocity_values(moduleData.m_curves[type]);
 				}
+			};
+
+			const auto do_alloc = [&](module_velocity_curve_e type, float scale)
+			{
+				if (scale)
+				{
+					allocate(type, sampleCount);
+					moduleData.m_curves[type].scale = scale;
+				}
+				else
+				{
+					allocate(type, 2);
+				}
+			};
+
+			if (local)
+			{
+				do_alloc(module_velocity_curve_e::forward0, lForwardScale);
+				do_alloc(module_velocity_curve_e::right0, lRightScale);
+				do_alloc(module_velocity_curve_e::up0, lUpScale);
+				do_alloc(module_velocity_curve_e::forward1, lForwardScale);
+				do_alloc(module_velocity_curve_e::right1, lRightScale);
+				do_alloc(module_velocity_curve_e::up1, lUpScale);
+			}
+			else if (world)
+			{
+				do_alloc(module_velocity_curve_e::forward0, wForwardScale);
+				do_alloc(module_velocity_curve_e::right0, wRightScale);
+				do_alloc(module_velocity_curve_e::up0, wUpScale);
+				do_alloc(module_velocity_curve_e::forward1, wForwardScale);
+				do_alloc(module_velocity_curve_e::right1, wRightScale);
+				do_alloc(module_velocity_curve_e::up1, wUpScale);
+			}
+			else
+			{
+				__debugbreak();
 			}
 
-			calculate_time(elem, moduleData.m_curves, GetModuleNumCurves(module.moduleType));
+			for (auto i = 0; i < sampleCount; i++)
+			{
+				const auto set_base = [&](module_velocity_curve_e curve_type, xoxor4d::VelocityDirectionType dir, float lScale, float wScale)
+				{
+					const auto stype = local ? xoxor4d::VelocityScaleType::Local : xoxor4d::VelocityScaleType::World;
+					const auto scale = local ? lScale : wScale;
+
+					if (!scale) return;
+
+					auto baseVel = xoxor4d::GetVelocityValue(stype,  dir, xoxor4d::CurveSampleValueType::Base, elem->velSamples, i) / sampleScalar / scale;
+					moduleData.m_curves[curve_type].controlPoints[i].value = baseVel;
+
+					moduleData.m_curves[curve_type].controlPoints[i].time = sampleSize * i;
+				};
+
+				const auto set_ampl = [&](module_velocity_curve_e curve_type, xoxor4d::VelocityDirectionType dir, float lScale, float wScale)
+				{
+					const auto stype = local ? xoxor4d::VelocityScaleType::Local : xoxor4d::VelocityScaleType::World;
+					const auto scale = local ? lScale : wScale;
+
+					if (!scale) return;
+
+					auto baseVel = xoxor4d::GetVelocityValue(stype, dir, xoxor4d::CurveSampleValueType::Base, elem->velSamples, i) / sampleScalar / scale;
+					auto amplVel = xoxor4d::GetVelocityValue(stype, dir, xoxor4d::CurveSampleValueType::Amplitude, elem->velSamples, i) / sampleScalar / scale;
+					moduleData.m_curves[curve_type].controlPoints[i].value = baseVel + amplVel;
+
+					moduleData.m_curves[curve_type].controlPoints[i].time = sampleSize * i;
+				};
+
+				set_base(module_velocity_curve_e::forward0, xoxor4d::VelocityDirectionType::Forward, lForwardScale, wForwardScale);
+				set_base(module_velocity_curve_e::right0, xoxor4d::VelocityDirectionType::Right, lRightScale, wRightScale);
+				set_base(module_velocity_curve_e::up0, xoxor4d::VelocityDirectionType::Up, lUpScale, wUpScale);
+
+				set_ampl(module_velocity_curve_e::forward1, xoxor4d::VelocityDirectionType::Forward, lForwardScale, wForwardScale);
+				set_ampl(module_velocity_curve_e::right1, xoxor4d::VelocityDirectionType::Right, lRightScale, wRightScale);
+				set_ampl(module_velocity_curve_e::up1, xoxor4d::VelocityDirectionType::Up, lUpScale, wUpScale);
+			}
+
 			calculate_inv_time_delta(moduleData.m_curves, GetModuleNumCurves(module.moduleType));
 
-			state_flags |= (elem->flags & FX_ELEM_HAS_VELOCITY_GRAPH_LOCAL) != 0 ? IW7::PARTICLE_STATE_DEF_FLAG_HAS_VELOCITY_CURVE_LOCAL : 0;
-			state_flags |= (elem->flags & FX_ELEM_HAS_VELOCITY_GRAPH_WORLD) != 0 ? IW7::PARTICLE_STATE_DEF_FLAG_HAS_VELOCITY_CURVE_WORLD : 0;
+			fixup_randomization_flags(moduleData.m_curves[module_velocity_curve_e::forward0], moduleData.m_curves[module_velocity_curve_e::forward1], &moduleData.m_flags);
+			fixup_randomization_flags(moduleData.m_curves[module_velocity_curve_e::right0], moduleData.m_curves[module_velocity_curve_e::right1], &moduleData.m_flags);
+			fixup_randomization_flags(moduleData.m_curves[module_velocity_curve_e::up0], moduleData.m_curves[module_velocity_curve_e::up1], &moduleData.m_flags);
+
+			state_flags |= local != 0 ? IW7::PARTICLE_STATE_DEF_FLAG_HAS_VELOCITY_CURVE_LOCAL : 0;
+			state_flags |= world != 0 ? IW7::PARTICLE_STATE_DEF_FLAG_HAS_VELOCITY_CURVE_WORLD : 0;
 
 			emitterdata_flags |= IW7::USE_VELOCITY;
+
+			modules.push_back(module);
+		}
+
+		void generate_gravity_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
+		{
+			IW7::ParticleModuleDef module{};
+			module.moduleType = IW7::PARTICLE_MODULE_GRAVITY;
+			auto& moduleData = module.moduleData.gravity;
+			moduleData.type = module.moduleType;
+			moduleData.m_flags = 0;
+
+			moduleData.m_gravityPercentage.min = elem->gravity.base;
+			moduleData.m_gravityPercentage.max = elem->gravity.base + elem->gravity.amplitude;
 
 			modules.push_back(module);
 		}
@@ -381,7 +1072,6 @@ namespace ZoneTool::IW5
 			moduleData.m_curves->controlPoints[1].time = 0.5f;
 			moduleData.m_curves->controlPoints[2].time = 1.0f;
 
-			calculate_time(elem, moduleData.m_curves, GetModuleNumCurves(module.moduleType));
 			calculate_inv_time_delta(moduleData.m_curves, GetModuleNumCurves(module.moduleType));
 
 			//emitterdata_flags |= IW7::USE_SPAWN_POS;
@@ -429,6 +1119,44 @@ namespace ZoneTool::IW5
 			moduleData.m_velocityMax.v[1] = 0.0f;
 			moduleData.m_velocityMax.v[2] = 0.0f;
 			moduleData.m_velocityMax.v[3] = 0.0f;
+
+			modules.push_back(module);
+		}
+
+		void generate_init_rotation3d_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
+		{
+			if (elem->spawnAngles[0].base == 0.0f && elem->spawnAngles[1].base == 0.0f && elem->spawnAngles[2].base == 0.0f)
+			{
+				return;
+			}
+
+			IW7::ParticleModuleDef module{};
+			module.moduleType = IW7::PARTICLE_MODULE_INIT_ROTATION_3D;
+			auto& moduleData = module.moduleData.initRotation3D;
+			moduleData.type = module.moduleType;
+			moduleData.m_flags = 0;
+
+			// idk if correct
+
+			moduleData.m_rotationRateMin.v[0] = elem->angularVelocity[0].base;
+			moduleData.m_rotationRateMin.v[1] = elem->angularVelocity[1].base;
+			moduleData.m_rotationRateMin.v[2] = elem->angularVelocity[2].base;
+			moduleData.m_rotationRateMin.v[3] = 0.0f;
+			moduleData.m_rotationRateMax.v[0] = elem->angularVelocity[0].base + elem->angularVelocity[0].amplitude;
+			moduleData.m_rotationRateMax.v[1] = elem->angularVelocity[1].base + elem->angularVelocity[0].amplitude;
+			moduleData.m_rotationRateMax.v[2] = elem->angularVelocity[2].base + elem->angularVelocity[0].amplitude;
+			moduleData.m_rotationRateMax.v[3] = 0.0f;
+
+			moduleData.m_rotationAngleMin.v[0] = elem->spawnAngles[0].base;
+			moduleData.m_rotationAngleMin.v[1] = elem->spawnAngles[1].base;
+			moduleData.m_rotationAngleMin.v[2] = elem->spawnAngles[2].base;
+			moduleData.m_rotationAngleMin.v[3] = 0.0f;
+			moduleData.m_rotationAngleMax.v[0] = elem->spawnAngles[0].base + elem->spawnAngles[0].amplitude;
+			moduleData.m_rotationAngleMax.v[1] = elem->spawnAngles[1].base + elem->spawnAngles[1].amplitude;
+			moduleData.m_rotationAngleMax.v[2] = elem->spawnAngles[2].base + elem->spawnAngles[2].amplitude;
+			moduleData.m_rotationAngleMax.v[3] = 0.0f;
+
+			state_flags |= IW7::PARTICLE_STATE_DEF_FLAG_HAS_ROTATION_3D_INIT;
 
 			modules.push_back(module);
 		}
@@ -582,6 +1310,7 @@ namespace ZoneTool::IW5
 		{
 			if (elem->elemType != FX_ELEM_TYPE_SPRITE_BILLBOARD && elem->elemType != FX_ELEM_TYPE_SPRITE_ORIENTED)
 			{
+				system_flags |= IW7::PARTICLE_SYSTEM_DEF_FLAG_HAS_NON_SPRITES; // add this here i guess..
 				return;
 			}
 
@@ -671,6 +1400,33 @@ namespace ZoneTool::IW5
 			modules.push_back(module);
 		}
 
+		void generate_init_spawn_shape_sphere_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
+		{
+			if (elem->elemType != FX_ELEM_TYPE_MODEL)
+			{
+				return;
+			}
+
+			IW7::ParticleModuleDef module{};
+			module.moduleType = IW7::PARTICLE_MODULE_INIT_SPAWN_SHAPE_SPHERE;
+			auto& moduleData = module.moduleData.initSpawnShapeSphere;
+			moduleData.type = module.moduleType;
+			moduleData.m_flags = 0;
+
+			moduleData.m_axisFlags = 0x3F;
+			moduleData.m_spawnFlags = 0;
+			moduleData.m_normalAxis = 0;
+			moduleData.m_spawnType = 0;
+			moduleData.m_volumeCubeRoot = 0.0f;
+
+			moduleData.m_radius.min = 0.0f;
+			moduleData.m_radius.max = 0.0f;
+
+			state_flags |= IW7::PARTICLE_STATE_DEF_FLAG_HAS_SPAWN_SHAPE;
+
+			modules.push_back(module);
+		}
+
 		void generate_init_spawn_shape_box_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
 		{
 			if (elem->elemType != FX_ELEM_TYPE_SPRITE_BILLBOARD && elem->elemType != FX_ELEM_TYPE_SPRITE_ORIENTED)
@@ -684,9 +1440,14 @@ namespace ZoneTool::IW5
 			moduleData.type = module.moduleType;
 			moduleData.m_flags = 0;
 
-			// im so done
-			//module.moduleData.initSpawnShapeBox.m_dimensionsMin.v[0] = 300.f;
-			//module.moduleData.initSpawnShapeBox.m_dimensionsMax.v[0] = 300.f;
+			moduleData.m_axisFlags = 0x3F;
+			moduleData.m_spawnFlags = 0;
+			moduleData.m_normalAxis = 0;
+			moduleData.m_spawnType = 0;
+			moduleData.m_volumeCubeRoot = 0.0f;
+
+			module.moduleData.initSpawnShapeBox.m_dimensionsMin.v[0] = 0.0f;
+			module.moduleData.initSpawnShapeBox.m_dimensionsMax.v[0] = 0.0f;
 
 			state_flags |= IW7::PARTICLE_STATE_DEF_FLAG_HAS_SPAWN_SHAPE;
 
@@ -724,7 +1485,7 @@ namespace ZoneTool::IW5
 				{
 					for (auto i = 0; i < elem->visualCount; i++)
 					{
-						if (elem->visuals.array[i].lightDef)
+						if (elem->visuals.array[i].lightDef && *elem->visuals.array[i].lightDef->name)
 						{
 							moduleData.m_linkedAssetList.assetList[i].lightDef = allocator.manual_allocate<IW7::GfxLightDef>(8);
 							moduleData.m_linkedAssetList.assetList[i].lightDef->name = allocator.duplicate_string(elem->visuals.array[i].lightDef->name);
@@ -736,7 +1497,7 @@ namespace ZoneTool::IW5
 				}
 				else
 				{
-					if (elem->visuals.instance.lightDef)
+					if (elem->visuals.instance.lightDef && *elem->visuals.instance.lightDef->name)
 					{
 						moduleData.m_linkedAssetList.assetList[0].lightDef = allocator.manual_allocate<IW7::GfxLightDef>(8);
 						moduleData.m_linkedAssetList.assetList[0].lightDef->name = allocator.duplicate_string(elem->visuals.instance.lightDef->name);
@@ -789,7 +1550,7 @@ namespace ZoneTool::IW5
 				{
 					for (auto i = 0; i < elem->visualCount; i++)
 					{
-						if (elem->visuals.array[i].lightDef)
+						if (elem->visuals.array[i].lightDef && *elem->visuals.array[i].lightDef->name)
 						{
 							moduleData.m_linkedAssetList.assetList[i].lightDef = allocator.manual_allocate<IW7::GfxLightDef>(8);
 							moduleData.m_linkedAssetList.assetList[i].lightDef->name = allocator.duplicate_string(elem->visuals.array[i].lightDef->name);
@@ -801,7 +1562,7 @@ namespace ZoneTool::IW5
 				}
 				else
 				{
-					if (elem->visuals.instance.lightDef)
+					if (elem->visuals.instance.lightDef && *elem->visuals.instance.lightDef->name)
 					{
 						moduleData.m_linkedAssetList.assetList[0].lightDef = allocator.manual_allocate<IW7::GfxLightDef>(8);
 						moduleData.m_linkedAssetList.assetList[0].lightDef->name = allocator.duplicate_string(elem->visuals.instance.lightDef->name);
@@ -847,7 +1608,7 @@ namespace ZoneTool::IW5
 
 			modules.push_back(module);
 		}
-		
+
 		IW7::ParticleSystemDef* convert(FxEffectDef* asset, allocator& allocator)
 		{
 			auto* iw7_asset = allocator.allocate<IW7::ParticleSystemDef>();
@@ -878,6 +1639,8 @@ namespace ZoneTool::IW5
 				{
 					emitter->particleSpawnRate.min = elem->spawn.looping.intervalMsec / 1000.0f;
 					emitter->particleSpawnRate.max = emitter->particleSpawnRate.min;
+					emitter->particleBurstCount.min = elem->spawn.looping.count;
+					emitter->particleBurstCount.max = emitter->particleBurstCount.min;
 				}
 				else
 				{
@@ -901,7 +1664,7 @@ namespace ZoneTool::IW5
 				//emitter->emitterDelay.max = elem->spawnDelayMsec.base / 1000.0f + elem->spawnDelayMsec.amplitude / 1000.0f;
 
 				emitter->spawnRangeSq.min = 0.0f;
-				emitter->spawnRangeSq.max = 2108304.0f;
+				emitter->spawnRangeSq.max = 0.0f;
 
 				emitter->fadeOutMaxDistance = elem->fadeOutRange.base + elem->fadeOutRange.amplitude;
 
@@ -942,6 +1705,8 @@ namespace ZoneTool::IW5
 					generate_init_spawn_module(elem, allocator, init_modules);
 					generate_init_attributes_module(elem, allocator, init_modules);
 					generate_init_rotation_module(elem, allocator, init_modules);
+					generate_init_rotation3d_module(elem, allocator, init_modules);
+					generate_init_relative_velocity_module(elem, allocator, init_modules);
 					generate_init_atlas_module(elem, allocator, init_modules);
 
 					generate_init_material_module(elem, allocator, init_modules);
@@ -950,6 +1715,7 @@ namespace ZoneTool::IW5
 					generate_init_model_module(elem, allocator, init_modules);
 					generate_init_sprite_module(elem, allocator, init_modules);
 					generate_init_spawn_shape_box_module(elem, allocator, init_modules);
+					generate_init_spawn_shape_sphere_module(elem, allocator, init_modules);
 					generate_init_omni_light_module(elem, allocator, init_modules);
 					generate_init_spot_light_module(elem, allocator, init_modules);
 					generate_init_geo_trail_module(elem, allocator, init_modules);
@@ -970,9 +1736,10 @@ namespace ZoneTool::IW5
 					std::vector<IW7::ParticleModuleDef> update_modules{};
 					generate_color_module(elem, allocator, update_modules);
 					generate_size_module(elem, allocator, update_modules);
-					//generate_rotation_module(elem, allocator, update_modules);
-					////generate_position_module(elem, allocator, update_modules);
+					generate_rotation_module(elem, allocator, update_modules);
+					//generate_position_module(elem, allocator, update_modules);
 					generate_velocity_module(elem, allocator, update_modules);
+					generate_gravity_module(elem, allocator, update_modules);
 
 					if (update_modules.size())
 					{

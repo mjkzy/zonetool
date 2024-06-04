@@ -3,6 +3,17 @@
 
 #include <immintrin.h>
 
+namespace Byte4
+{
+	void Byte4UnpackRgba(float* result, unsigned char* arr)
+	{
+		result[0] = arr[0] * 0.003921568859368563f;
+		result[1] = arr[1] * 0.003921568859368563f;
+		result[2] = arr[2] * 0.003921568859368563f;
+		result[3] = arr[3] * 0.003921568859368563f;
+	}
+}
+
 namespace PackedVec
 {
 #define _BYTE  uint8_t

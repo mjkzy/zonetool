@@ -119,6 +119,15 @@ namespace ZoneTool
 
 				return camera_region;
 			}
+
+			std::int32_t get_render_flags_by_techset(std::string IW7_techset)
+			{
+				if (IW7_techset.starts_with("eq_"))
+				{
+					return 1;
+				}
+				return 0;
+			}
 		}
 	}
 
@@ -175,7 +184,7 @@ namespace ZoneTool
 				matdata["gameFlags"] = asset->gameFlags; // convert
 				matdata["unkFlags"] = 0; // idk
 				matdata["sortKey"] = IW7::get_IW7_sortkey(asset->sortKey, asset->name, iw7_techset);
-				matdata["renderFlags"] = 0; // idk
+				matdata["renderFlags"] = IW7::get_render_flags_by_techset(iw7_techset); // idk
 
 				matdata["textureAtlasRowCount"] = asset->textureAtlasRowCount;
 				matdata["textureAtlasColumnCount"] = asset->textureAtlasColumnCount;
@@ -262,7 +271,6 @@ namespace ZoneTool
 				{
 					CONSTANT_TABLE_ADD_IF_NOT_FOUND("reflectionRa", 3344177073u, 8096.0f, 0.0f, 0.0f, 0.0f);
 				}
-				constexpr auto bigger = 1128936273 > 3054254906;
 				if (iw7_techset.find("_lin") != std::string::npos)
 				{
 					CONSTANT_TABLE_ADD_IF_NOT_FOUND("textureAtlas", 1128936273u, 

@@ -8319,10 +8319,10 @@ namespace ZoneTool::IW7
 
 	struct ParticleModuleInitSpawnShape : ParticleModule
 	{
-		char m_axisFlags[1];
-		char m_spawnFlags[1];
-		char m_normalAxis[1];
-		char m_spawnType[1];
+		char m_axisFlags;
+		char m_spawnFlags;
+		char m_normalAxis;
+		char m_spawnType;
 		float m_volumeCubeRoot;
 		//float4 m_calculationOffset;
 		float4 m_offset;
@@ -8342,8 +8342,8 @@ namespace ZoneTool::IW7
 		bool m_rotateCalculatedOffset;
 		float m_halfHeight;
 		ParticleFloatRange m_radius;
+		float4 unk;
 		float4 m_directionQuat;
-		unsigned int m_pad[4];
 	}; assert_sizeof(ParticleModuleInitSpawnShapeCylinder, 80);
 
 	struct ParticleModuleInitSpawnShapeEllipsoid : ParticleModuleInitSpawnShape
