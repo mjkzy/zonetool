@@ -16,6 +16,7 @@ namespace ZoneTool
 			{"2d",										"2d"},
 
 			{"effect",									"eq_effect_blend_lin_ndw_nocast"},
+			{"effect_nofog",							"eq_effect_blend_lin_nofog_ndw_nocast"},
 			{"effect_zfeather_add",						"eq_effect_zfeather_add_lin_ct_ndw_nocast"},
 			{"effect_zfeather_add_nofog_eyeoffset",		"eq_effect_zfeather_add_lin_nofog_eyeoffset_ndw_nocast"},
 			{"effect_zfeather_add_nofog",				"eq_effect_zfeather_add_lin_nofog_ndw_nocast"},

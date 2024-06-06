@@ -506,21 +506,35 @@ namespace ZoneTool::IW5
 			// bgra->rgba?
 			for (auto i = 0; i < sampleCount; i++)
 			{
-				float base_color[4];
-				Byte4::Byte4UnpackRgba(base_color, elem->visSamples[i].base.color);
+				[[maybe_unused]] float base_color[4] = {
+				elem->visSamples[i].base.color[0] / 255.0f,
+				elem->visSamples[i].base.color[1] / 255.0f,
+				elem->visSamples[i].base.color[2] / 255.0f,
+				elem->visSamples[i].base.color[3] / 255.0f,
+				};
 
-				moduleData.m_curves[0].controlPoints[i].value = base_color[2];
-				moduleData.m_curves[1].controlPoints[i].value = base_color[1];
-				moduleData.m_curves[2].controlPoints[i].value = base_color[0];
-				moduleData.m_curves[3].controlPoints[i].value = base_color[3];
+				float base_color_unpacked[4]{};
+				Byte4::Byte4UnpackRgba(base_color_unpacked, elem->visSamples[i].base.color);
 
-				float ampl_color[4];
-				Byte4::Byte4UnpackRgba(ampl_color, elem->visSamples[i].amplitude.color);
+				moduleData.m_curves[0].controlPoints[i].value = base_color_unpacked[2];
+				moduleData.m_curves[1].controlPoints[i].value = base_color_unpacked[1];
+				moduleData.m_curves[2].controlPoints[i].value = base_color_unpacked[0];
+				moduleData.m_curves[3].controlPoints[i].value = base_color_unpacked[3];
 
-				moduleData.m_curves[4].controlPoints[i].value = ampl_color[2];
-				moduleData.m_curves[5].controlPoints[i].value = ampl_color[1];
-				moduleData.m_curves[6].controlPoints[i].value = ampl_color[0];
-				moduleData.m_curves[7].controlPoints[i].value = ampl_color[3];
+				[[maybe_unused]] float ampl_color[4] = {
+				elem->visSamples[i].amplitude.color[0] / 255.0f,
+				elem->visSamples[i].amplitude.color[1] / 255.0f,
+				elem->visSamples[i].amplitude.color[2] / 255.0f,
+				elem->visSamples[i].amplitude.color[3] / 255.0f,
+				};
+
+				float ampl_color_unpacked[4]{};
+				Byte4::Byte4UnpackRgba(ampl_color_unpacked, elem->visSamples[i].amplitude.color);
+
+				moduleData.m_curves[4].controlPoints[i].value = ampl_color_unpacked[2];
+				moduleData.m_curves[5].controlPoints[i].value = ampl_color_unpacked[1];
+				moduleData.m_curves[6].controlPoints[i].value = ampl_color_unpacked[0];
+				moduleData.m_curves[7].controlPoints[i].value = ampl_color_unpacked[3];
 
 				for (auto j = 0; j < 8; j++)
 				{
@@ -609,139 +623,169 @@ namespace ZoneTool::IW5
 				return;
 			}
 
-			enum module_size_curve_e
+			if ((widthScale && heightScale) && scaleScale)
 			{
-				width0,
-				height0,
-				scale0,
-				width1,
-				height1,
-				scale1,
-			};
+				__debugbreak();
+			}
+
+			int width_index0 = -1;
+			int width_index1 = -1;
+
+			int height_index0 = -1;
+			int height_index1 = -1;
+
+			int scale_index0 = -1;
+			int scale_index1 = -1;
+
+			{
+				int index = 0;
+
+				if (widthScale) width_index0 = index++;
+				if (heightScale) height_index0 = index++;
+				if (scaleScale) scale_index0 = index++;
+
+				if (!widthScale) width_index0 = index++;
+				if (!heightScale) height_index0 = index++;
+				if (!scaleScale) scale_index0 = index++;
+
+				width_index1 = width_index0 + 3;
+				height_index1 = height_index0 + 3;
+				scale_index1 = scale_index0 + 3;
+			}
 
 			auto sampleCount = elem->visStateIntervalCount + 1;
 			auto sampleSize = 1.0f / (sampleCount - 1);
 			
 			if (widthScale)
 			{
-				moduleData.m_curves[module_size_curve_e::width0].scale = widthScale;
-				moduleData.m_curves[module_size_curve_e::width1].scale = widthScale;
+				moduleData.m_curves[width_index0].scale = widthScale;
+				moduleData.m_curves[width_index1].scale = widthScale;
 
-				moduleData.m_curves[module_size_curve_e::width0].numControlPoints = sampleCount;
-				moduleData.m_curves[module_size_curve_e::width0].controlPoints =
-					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[module_size_curve_e::width0].numControlPoints);
+				moduleData.m_curves[width_index0].numControlPoints = sampleCount;
+				moduleData.m_curves[width_index0].controlPoints =
+					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[width_index0].numControlPoints);
 
-				moduleData.m_curves[module_size_curve_e::width1].numControlPoints = sampleCount;
-				moduleData.m_curves[module_size_curve_e::width1].controlPoints =
-					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[module_size_curve_e::width1].numControlPoints);
+				moduleData.m_curves[width_index1].numControlPoints = sampleCount;
+				moduleData.m_curves[width_index1].controlPoints =
+					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[width_index1].numControlPoints);
 			}
 			else
 			{
-				moduleData.m_curves[module_size_curve_e::width0].numControlPoints = 2;
-				moduleData.m_curves[module_size_curve_e::width0].controlPoints =
-					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[module_size_curve_e::width0].numControlPoints);
+				moduleData.m_curves[width_index0].numControlPoints = 2;
+				moduleData.m_curves[width_index0].controlPoints =
+					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[width_index0].numControlPoints);
 
-				moduleData.m_curves[module_size_curve_e::width1].numControlPoints = 2;
-				moduleData.m_curves[module_size_curve_e::width1].controlPoints =
-					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[module_size_curve_e::width1].numControlPoints);
+				moduleData.m_curves[width_index1].numControlPoints = 2;
+				moduleData.m_curves[width_index1].controlPoints =
+					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[width_index1].numControlPoints);
 
-				set_default_size_values(moduleData.m_curves[module_size_curve_e::width0]);
-				set_default_size_values(moduleData.m_curves[module_size_curve_e::width1]);
-				
+				set_default_size_values(moduleData.m_curves[width_index0]);
+				set_default_size_values(moduleData.m_curves[width_index1]);
 			}
 
 			if (heightScale)
 			{
-				moduleData.m_curves[module_size_curve_e::height0].scale = heightScale;
-				moduleData.m_curves[module_size_curve_e::height1].scale = heightScale;
+				moduleData.m_curves[height_index0].scale = heightScale;
+				moduleData.m_curves[height_index1].scale = heightScale;
 
-				moduleData.m_curves[module_size_curve_e::height0].numControlPoints = sampleCount;
-				moduleData.m_curves[module_size_curve_e::height0].controlPoints =
-					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[module_size_curve_e::height0].numControlPoints);
+				moduleData.m_curves[height_index0].numControlPoints = sampleCount;
+				moduleData.m_curves[height_index0].controlPoints =
+					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[height_index0].numControlPoints);
 
-				moduleData.m_curves[module_size_curve_e::height1].numControlPoints = sampleCount;
-				moduleData.m_curves[module_size_curve_e::height1].controlPoints =
-					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[module_size_curve_e::height1].numControlPoints);
+				moduleData.m_curves[height_index1].numControlPoints = sampleCount;
+				moduleData.m_curves[height_index1].controlPoints =
+					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[height_index1].numControlPoints);
 			}
 			else
 			{
-				moduleData.m_curves[module_size_curve_e::height0].numControlPoints = 2;
-				moduleData.m_curves[module_size_curve_e::height0].controlPoints =
-					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[module_size_curve_e::height0].numControlPoints);
+				moduleData.m_curves[height_index0].numControlPoints = 2;
+				moduleData.m_curves[height_index0].controlPoints =
+					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[height_index0].numControlPoints);
 
-				moduleData.m_curves[module_size_curve_e::height1].numControlPoints = 2;
-				moduleData.m_curves[module_size_curve_e::height1].controlPoints =
-					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[module_size_curve_e::height1].numControlPoints);
+				moduleData.m_curves[height_index1].numControlPoints = 2;
+				moduleData.m_curves[height_index1].controlPoints =
+					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[height_index1].numControlPoints);
 
-				set_default_size_values(moduleData.m_curves[module_size_curve_e::height0]);
-				set_default_size_values(moduleData.m_curves[module_size_curve_e::height1]);
+				set_default_size_values(moduleData.m_curves[height_index0]);
+				set_default_size_values(moduleData.m_curves[height_index1]);
 			}
 
 			if (scaleScale)
 			{
-				moduleData.m_curves[module_size_curve_e::scale0].scale = scaleScale;
-				moduleData.m_curves[module_size_curve_e::scale1].scale = scaleScale;
+				moduleData.m_curves[scale_index0].scale = scaleScale;
+				moduleData.m_curves[scale_index1].scale = scaleScale;
 
-				moduleData.m_curves[module_size_curve_e::scale0].numControlPoints = sampleCount;
-				moduleData.m_curves[module_size_curve_e::scale0].controlPoints =
-					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[module_size_curve_e::scale0].numControlPoints);
+				moduleData.m_curves[scale_index0].numControlPoints = sampleCount;
+				moduleData.m_curves[scale_index0].controlPoints =
+					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[scale_index0].numControlPoints);
 
-				moduleData.m_curves[module_size_curve_e::scale1].numControlPoints = sampleCount;
-				moduleData.m_curves[module_size_curve_e::scale1].controlPoints =
-					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[module_size_curve_e::scale1].numControlPoints);
+				moduleData.m_curves[scale_index1].numControlPoints = sampleCount;
+				moduleData.m_curves[scale_index1].controlPoints =
+					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[scale_index1].numControlPoints);
 			}
 			else
 			{
-				moduleData.m_curves[module_size_curve_e::scale0].numControlPoints = 2;
-				moduleData.m_curves[module_size_curve_e::scale0].controlPoints =
-					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[module_size_curve_e::scale0].numControlPoints);
+				moduleData.m_curves[scale_index0].numControlPoints = 2;
+				moduleData.m_curves[scale_index0].controlPoints =
+					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[scale_index0].numControlPoints);
 
-				moduleData.m_curves[module_size_curve_e::scale1].numControlPoints = 2;
-				moduleData.m_curves[module_size_curve_e::scale1].controlPoints =
-					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[module_size_curve_e::scale1].numControlPoints);
+				moduleData.m_curves[scale_index1].numControlPoints = 2;
+				moduleData.m_curves[scale_index1].controlPoints =
+					allocator.allocate<IW7::ParticleCurveControlPointDef>(moduleData.m_curves[scale_index1].numControlPoints);
 
-				set_default_size_values(moduleData.m_curves[module_size_curve_e::scale0]);
-				set_default_size_values(moduleData.m_curves[module_size_curve_e::scale1]);
+				set_default_size_values(moduleData.m_curves[scale_index0]);
+				set_default_size_values(moduleData.m_curves[scale_index1]);
 			}
 
 			for (auto i = 0; i < sampleCount; i++)
 			{
 				if (widthScale)
 				{
-					moduleData.m_curves[module_size_curve_e::width0].controlPoints[i].time = sampleSize * i;
-					moduleData.m_curves[module_size_curve_e::width0].controlPoints[i].value = elem->visSamples[i].base.size[xoxor4d::SizeCurveType::Width] * 2.0f / widthScale;
+					moduleData.m_curves[width_index0].controlPoints[i].time = sampleSize * i;
+					moduleData.m_curves[width_index0].controlPoints[i].value = elem->visSamples[i].base.size[xoxor4d::SizeCurveType::Width] / widthScale;
 
-					moduleData.m_curves[module_size_curve_e::width1].controlPoints[i].time = sampleSize * i;
-					moduleData.m_curves[module_size_curve_e::width1].controlPoints[i].value = elem->visSamples[i].amplitude.size[xoxor4d::SizeCurveType::Width] * 2.0f / widthScale;
-					moduleData.m_curves[module_size_curve_e::width1].controlPoints[i].value += moduleData.m_curves[module_size_curve_e::width0].controlPoints[i].value;
+					moduleData.m_curves[width_index1].controlPoints[i].time = sampleSize * i;
+					moduleData.m_curves[width_index1].controlPoints[i].value = elem->visSamples[i].amplitude.size[xoxor4d::SizeCurveType::Width] / widthScale;
+					moduleData.m_curves[width_index1].controlPoints[i].value += moduleData.m_curves[width_index0].controlPoints[i].value;
 				}
 
 				if (heightScale)
 				{
-					moduleData.m_curves[module_size_curve_e::height0].controlPoints[i].time = sampleSize * i;
-					moduleData.m_curves[module_size_curve_e::height0].controlPoints[i].value = elem->visSamples[i].base.size[xoxor4d::SizeCurveType::Height] * 2.0f / heightScale;
+					moduleData.m_curves[height_index0].controlPoints[i].time = sampleSize * i;
+					moduleData.m_curves[height_index0].controlPoints[i].value = elem->visSamples[i].base.size[xoxor4d::SizeCurveType::Height] / heightScale;
 
-					moduleData.m_curves[module_size_curve_e::height1].controlPoints[i].time = sampleSize * i;
-					moduleData.m_curves[module_size_curve_e::height1].controlPoints[i].value = elem->visSamples[i].amplitude.size[xoxor4d::SizeCurveType::Height] * 2.0f / heightScale;
-					moduleData.m_curves[module_size_curve_e::height1].controlPoints[i].value += moduleData.m_curves[module_size_curve_e::height0].controlPoints[i].value;
+					moduleData.m_curves[height_index1].controlPoints[i].time = sampleSize * i;
+					moduleData.m_curves[height_index1].controlPoints[i].value = elem->visSamples[i].amplitude.size[xoxor4d::SizeCurveType::Height] / heightScale;
+					moduleData.m_curves[height_index1].controlPoints[i].value += moduleData.m_curves[height_index0].controlPoints[i].value;
 				}
 
 				if (scaleScale)
 				{
-					moduleData.m_curves[module_size_curve_e::scale0].controlPoints[i].time = sampleSize * i;
-					moduleData.m_curves[module_size_curve_e::scale0].controlPoints[i].value = elem->visSamples[i].base.scale / scaleScale;
+					moduleData.m_curves[scale_index0].controlPoints[i].time = sampleSize * i;
+					moduleData.m_curves[scale_index0].controlPoints[i].value = elem->visSamples[i].base.scale / scaleScale;
 
-					moduleData.m_curves[module_size_curve_e::scale1].controlPoints[i].time = sampleSize * i;
-					moduleData.m_curves[module_size_curve_e::scale1].controlPoints[i].value = elem->visSamples[i].amplitude.scale / scaleScale;
-					moduleData.m_curves[module_size_curve_e::scale1].controlPoints[i].value += moduleData.m_curves[module_size_curve_e::scale0].controlPoints[i].value;
+					moduleData.m_curves[scale_index1].controlPoints[i].time = sampleSize * i;
+					moduleData.m_curves[scale_index1].controlPoints[i].value = elem->visSamples[i].amplitude.scale / scaleScale;
+					moduleData.m_curves[scale_index1].controlPoints[i].value += moduleData.m_curves[scale_index0].controlPoints[i].value;
 				}
 			}
 
 			calculate_inv_time_delta(moduleData.m_curves, GetModuleNumCurves(module.moduleType));
 
-			fixup_randomization_flags(moduleData.m_curves[module_size_curve_e::width0], moduleData.m_curves[module_size_curve_e::width1], &moduleData.m_flags);
-			fixup_randomization_flags(moduleData.m_curves[module_size_curve_e::height0], moduleData.m_curves[module_size_curve_e::height1], &moduleData.m_flags);
-			fixup_randomization_flags(moduleData.m_curves[module_size_curve_e::scale0], moduleData.m_curves[module_size_curve_e::scale1], &moduleData.m_flags);
+			if (widthScale)
+			{
+				fixup_randomization_flags(moduleData.m_curves[width_index0], moduleData.m_curves[width_index1], &moduleData.m_flags);
+			}
+			if (heightScale)
+			{
+				fixup_randomization_flags(moduleData.m_curves[height_index0], moduleData.m_curves[height_index1], &moduleData.m_flags);
+			}
+			if (scaleScale)
+			{
+				fixup_randomization_flags(moduleData.m_curves[scale_index0], moduleData.m_curves[scale_index1], &moduleData.m_flags);
+			}
+
+			state_flags |= IW7::PARTICLE_STATE_DEF_FLAG_HAS_SIZE_CURVE;
 
 			emitterdata_flags |= IW7::USE_SIZE;
 
@@ -772,7 +816,7 @@ namespace ZoneTool::IW5
 			// => curve scale = (largest / 0.017453292f) * (sampleCount - 1) * 1000 * 2
 			// => key values = (value / 0.017453292f) * ((sampleCount - 1) * 1000) / scale
 
-			{
+			//{
 				xoxor4d::MinMaxCurveSample rotation{};
 
 				// find largest value (pos and neg)
@@ -787,7 +831,7 @@ namespace ZoneTool::IW5
 				// ... would take avarage here (needed?)
 				// const float rotationScale = (edElemDef->rotationScale * 0.017453292f) / (elemDef->visStateIntervalCount * 1000.0f);
 				rotationScale = rotation.GetAbsMax() / 0.017453292f * (visSamplesCount - 1) * 1000.0f * 2.0f;
-			}
+			//}
 
 			if (!rotationScale)
 			{
@@ -802,7 +846,7 @@ namespace ZoneTool::IW5
 				moduleData.m_curves[i].numControlPoints = visSamplesCount;
 				moduleData.m_curves[i].controlPoints = allocator.allocate<IW7::ParticleCurveControlPointDef>(visSamplesCount);
 
-				moduleData.m_curves[i].scale = rotationScale;
+				moduleData.m_curves[i].scale = rotation.GetAbsMax() * (visSamplesCount - 1) * 1000.0f * 2.0f;
 			}
 
 			for (auto i = 0; i < visSamplesCount; i++)
@@ -828,33 +872,13 @@ namespace ZoneTool::IW5
 
 		void generate_init_relative_velocity_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
 		{
+			if ((elem->flags & FX_ELEM_RUN_RELATIVE_TO_EFFECT) != 0) return;
+
 			IW7::ParticleModuleDef module{};
 			module.moduleType = IW7::PARTICLE_MODULE_INIT_RELATIVE_VELOCITY;
 			auto& moduleData = module.moduleData.initRelativeVelocity;
 			moduleData.type = module.moduleType;
 			moduleData.m_flags = 0;
-
-			{
-				auto sampleCount = elem->velIntervalCount + 1;
-				auto sampleScalar = 1.0f / ((sampleCount - 1) * 1000.0f);
-
-				auto lForwardScale = 0.0f;
-				auto lRightScale = 0.0f;
-				auto lUpScale = 0.0f;
-
-				auto wForwardScale = 0.0f;
-				auto wRightScale = 0.0f;
-				auto wUpScale = 0.0f;
-
-				xoxor4d::CalculateVelocityScales(lForwardScale, lRightScale, lUpScale,
-					wForwardScale, wRightScale, wUpScale,
-					elem->velSamples, sampleCount, sampleScalar);
-
-				if (!lForwardScale && !lRightScale && !lUpScale && !wForwardScale && !wRightScale && !wUpScale)
-				{
-					return;
-				}
-			}
 
 			switch (elem->flags & FX_ELEM_RUN_MASK)
 			{
@@ -862,10 +886,10 @@ namespace ZoneTool::IW5
 				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_WORLD;
 				break;
 			case FX_ELEM_RUN_RELATIVE_TO_SPAWN:
-				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_LOCAL;
+				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_RELATIVE_TO_EFFECT_ORIGIN;
 				break;
 			case FX_ELEM_RUN_RELATIVE_TO_EFFECT:
-				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_RELATIVE_TO_EFFECT_ORIGIN;
+				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_LOCAL;
 				break;
 			case FX_ELEM_RUN_RELATIVE_TO_OFFSET:
 				//moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_LOCAL; // idk
@@ -1039,6 +1063,11 @@ namespace ZoneTool::IW5
 
 		void generate_gravity_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
 		{
+			if (elem->gravity.base == 0.0f && elem->gravity.amplitude == 0.0f)
+			{
+				return;
+			}
+
 			IW7::ParticleModuleDef module{};
 			module.moduleType = IW7::PARTICLE_MODULE_GRAVITY;
 			auto& moduleData = module.moduleData.gravity;
@@ -1047,6 +1076,70 @@ namespace ZoneTool::IW5
 
 			moduleData.m_gravityPercentage.min = elem->gravity.base;
 			moduleData.m_gravityPercentage.max = elem->gravity.base + elem->gravity.amplitude;
+
+			modules.push_back(module);
+		}
+
+		void generate_position_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
+		{
+			if (elem->spawnOrigin[0].base == 0.0f && elem->spawnOrigin[0].amplitude == 0.0f &&
+				elem->spawnOrigin[0].base == 0.0f && elem->spawnOrigin[0].amplitude == 0.0f &&
+				elem->spawnOrigin[0].base == 0.0f && elem->spawnOrigin[0].amplitude == 0.0f)
+			{
+				return;
+			}
+
+			IW7::ParticleModuleDef module{};
+			module.moduleType = IW7::PARTICLE_MODULE_POSITION_GRAPH;
+			auto& moduleData = module.moduleData.positionGraph;
+			moduleData.type = module.moduleType;
+			moduleData.m_flags = 0;
+
+			/*for (auto i = 0; i < 6; i++)
+			{
+				moduleData.m_curves[i].scale = 1.0f;
+
+				moduleData.m_curves[i].numControlPoints = 2;
+				moduleData.m_curves[i].controlPoints = allocator.allocate<IW7::ParticleCurveControlPointDef>(2);
+			}
+
+			moduleData.m_curves[0].controlPoints[0].value = elem->spawnOrigin[0].base;
+			moduleData.m_curves[1].controlPoints[0].value = elem->spawnOrigin[1].base;
+			moduleData.m_curves[2].controlPoints[0].value = elem->spawnOrigin[2].base;
+
+			moduleData.m_curves[3].controlPoints[0].value = elem->spawnOrigin[0].base + elem->spawnOrigin[0].amplitude;
+			moduleData.m_curves[4].controlPoints[0].value = elem->spawnOrigin[1].base + elem->spawnOrigin[1].amplitude;
+			moduleData.m_curves[5].controlPoints[0].value = elem->spawnOrigin[2].base + elem->spawnOrigin[2].amplitude;
+
+			moduleData.m_curves[0].controlPoints[1].value = elem->spawnOrigin[0].base;
+			moduleData.m_curves[1].controlPoints[1].value = elem->spawnOrigin[1].base;
+			moduleData.m_curves[2].controlPoints[1].value = elem->spawnOrigin[2].base;
+
+			moduleData.m_curves[3].controlPoints[1].value = elem->spawnOrigin[0].base + elem->spawnOrigin[0].amplitude;
+			moduleData.m_curves[4].controlPoints[1].value = elem->spawnOrigin[1].base + elem->spawnOrigin[1].amplitude;
+			moduleData.m_curves[5].controlPoints[1].value = elem->spawnOrigin[2].base + elem->spawnOrigin[2].amplitude;
+
+			moduleData.m_curves[0].controlPoints[0].time = 0.0f;
+			moduleData.m_curves[1].controlPoints[0].time = 0.0f;
+			moduleData.m_curves[2].controlPoints[0].time = 0.0f;
+			moduleData.m_curves[3].controlPoints[0].time = 0.0f;
+			moduleData.m_curves[4].controlPoints[0].time = 0.0f;
+			moduleData.m_curves[5].controlPoints[0].time = 0.0f;
+
+			moduleData.m_curves[0].controlPoints[1].time = 1.0f;
+			moduleData.m_curves[1].controlPoints[1].time = 1.0f;
+			moduleData.m_curves[2].controlPoints[1].time = 1.0f;
+			moduleData.m_curves[3].controlPoints[1].time = 1.0f;
+			moduleData.m_curves[4].controlPoints[1].time = 1.0f;
+			moduleData.m_curves[5].controlPoints[1].time = 1.0f;
+
+			calculate_inv_time_delta(moduleData.m_curves, GetModuleNumCurves(module.moduleType));
+
+			fixup_randomization_flags(moduleData.m_curves[0], moduleData.m_curves[3], &moduleData.m_flags);
+			fixup_randomization_flags(moduleData.m_curves[1], moduleData.m_curves[4], &moduleData.m_flags);
+			fixup_randomization_flags(moduleData.m_curves[2], moduleData.m_curves[5], &moduleData.m_flags);
+
+			state_flags |= IW7::PARTICLE_STATE_DEF_FLAG_HAS_POSITION_CURVE;*/
 
 			modules.push_back(module);
 		}
@@ -1093,23 +1186,23 @@ namespace ZoneTool::IW5
 			moduleData.type = module.moduleType;
 			moduleData.m_flags = 0;
 
-			moduleData.m_sizeMin.v[0] = 10.0f;
-			moduleData.m_sizeMin.v[1] = 10.0f;
-			moduleData.m_sizeMin.v[2] = 10.0f;
+			moduleData.m_sizeMin.v[0] = 0.0f;
+			moduleData.m_sizeMin.v[1] = 0.0f;
+			moduleData.m_sizeMin.v[2] = 0.0f;
 			moduleData.m_sizeMin.v[3] = 0.0f;
-			moduleData.m_sizeMax.v[0] = 10.0f;
-			moduleData.m_sizeMax.v[1] = 10.0f;
-			moduleData.m_sizeMax.v[2] = 10.0f;
+			moduleData.m_sizeMax.v[0] = 0.0f;
+			moduleData.m_sizeMax.v[1] = 0.0f;
+			moduleData.m_sizeMax.v[2] = 0.0f;
 			moduleData.m_sizeMax.v[3] = 0.0f;
 
-			moduleData.m_colorMin.v[0] = 1.0f;
-			moduleData.m_colorMin.v[1] = 1.0f;
-			moduleData.m_colorMin.v[2] = 1.0f;
-			moduleData.m_colorMin.v[3] = 1.0f;
-			moduleData.m_colorMax.v[0] = 1.0f;
-			moduleData.m_colorMax.v[1] = 1.0f;
-			moduleData.m_colorMax.v[2] = 1.0f;
-			moduleData.m_colorMax.v[3] = 1.0f;
+			moduleData.m_colorMin.v[0] = 0.0f;
+			moduleData.m_colorMin.v[1] = 0.0f;
+			moduleData.m_colorMin.v[2] = 0.0f;
+			moduleData.m_colorMin.v[3] = 0.0f;
+			moduleData.m_colorMax.v[0] = 0.0f;
+			moduleData.m_colorMax.v[1] = 0.0f;
+			moduleData.m_colorMax.v[2] = 0.0f;
+			moduleData.m_colorMax.v[3] = 0.0f;
 
 			moduleData.m_velocityMin.v[0] = 0.0f;
 			moduleData.m_velocityMin.v[1] = 0.0f;
@@ -1143,8 +1236,8 @@ namespace ZoneTool::IW5
 			moduleData.m_rotationRateMin.v[2] = elem->angularVelocity[2].base;
 			moduleData.m_rotationRateMin.v[3] = 0.0f;
 			moduleData.m_rotationRateMax.v[0] = elem->angularVelocity[0].base + elem->angularVelocity[0].amplitude;
-			moduleData.m_rotationRateMax.v[1] = elem->angularVelocity[1].base + elem->angularVelocity[0].amplitude;
-			moduleData.m_rotationRateMax.v[2] = elem->angularVelocity[2].base + elem->angularVelocity[0].amplitude;
+			moduleData.m_rotationRateMax.v[1] = elem->angularVelocity[1].base + elem->angularVelocity[1].amplitude;
+			moduleData.m_rotationRateMax.v[2] = elem->angularVelocity[2].base + elem->angularVelocity[2].amplitude;
 			moduleData.m_rotationRateMax.v[3] = 0.0f;
 
 			moduleData.m_rotationAngleMin.v[0] = elem->spawnAngles[0].base;
@@ -1157,6 +1250,9 @@ namespace ZoneTool::IW5
 			moduleData.m_rotationAngleMax.v[3] = 0.0f;
 
 			state_flags |= IW7::PARTICLE_STATE_DEF_FLAG_HAS_ROTATION_3D_INIT;
+
+			emitterdata_flags |= IW7::USE_ROTATION_ANGLE;
+			emitterdata_flags |= IW7::USE_ROTATION_RATE;
 
 			modules.push_back(module);
 		}
@@ -1191,7 +1287,7 @@ namespace ZoneTool::IW5
 
 		void generate_init_atlas_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
 		{
-			if (elem->atlas.behavior == 0 && elem->atlas.index == 0 && elem->atlas.loopCount == 0)
+			if (elem->atlas.behavior == 0 && elem->atlas.index == 0 && elem->atlas.loopCount <= 1)
 			{
 				return;
 			}
@@ -1308,7 +1404,7 @@ namespace ZoneTool::IW5
 
 		void generate_init_material_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
 		{
-			if (elem->elemType != FX_ELEM_TYPE_SPRITE_BILLBOARD && elem->elemType != FX_ELEM_TYPE_SPRITE_ORIENTED)
+			if (elem->elemType != FX_ELEM_TYPE_SPRITE_BILLBOARD && elem->elemType != FX_ELEM_TYPE_SPRITE_ORIENTED && elem->elemType != FX_ELEM_TYPE_TRAIL)
 			{
 				system_flags |= IW7::PARTICLE_SYSTEM_DEF_FLAG_HAS_NON_SPRITES; // add this here i guess..
 				return;
@@ -1355,7 +1451,7 @@ namespace ZoneTool::IW5
 			modules.push_back(module);
 		}
 
-		void generate_init_sprite_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
+		void generate_init_oriented_sprite_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
 		{
 			if (elem->elemType != FX_ELEM_TYPE_SPRITE_ORIENTED)
 			{
@@ -1368,10 +1464,10 @@ namespace ZoneTool::IW5
 			moduleData.type = module.moduleType;
 			moduleData.m_flags = 0;
 
-			moduleData.m_orientationQuat.v[0] = 0.0f;
-			moduleData.m_orientationQuat.v[1] = 0.0f;
-			moduleData.m_orientationQuat.v[2] = 0.0f;
-			moduleData.m_orientationQuat.v[3] = 0.0f;
+			moduleData.m_orientationQuat.v[0] = 0.4999999701976776f;
+			moduleData.m_orientationQuat.v[1] = 0.4999999701976776f;
+			moduleData.m_orientationQuat.v[2] = 0.4999999701976776f;
+			moduleData.m_orientationQuat.v[3] = 0.4999999701976776f;
 
 			modules.push_back(module);
 		}
@@ -1413,14 +1509,27 @@ namespace ZoneTool::IW5
 			moduleData.type = module.moduleType;
 			moduleData.m_flags = 0;
 
-			moduleData.m_axisFlags = 0x3F;
+			if ((elem->flags & FX_ELEM_RUN_MASK) == FX_ELEM_RUN_RELATIVE_TO_WORLD)
+			{
+				moduleData.m_flags |= IW7::PARTICLE_MODULE_FLAG_USE_WORLD_SPACE;
+			}
+
+			moduleData.m_axisFlags = IW7::PARTICLE_MODULE_AXES_FLAG_ALL;
 			moduleData.m_spawnFlags = 0;
 			moduleData.m_normalAxis = 0;
 			moduleData.m_spawnType = 0;
 			moduleData.m_volumeCubeRoot = 0.0f;
 
-			moduleData.m_radius.min = 0.0f;
-			moduleData.m_radius.max = 0.0f;
+			moduleData.m_radius.min = 1.0f;
+			moduleData.m_radius.max = 1.0f;
+
+			//moduleData.m_offset.v[0] = elem->spawnOrigin[0].base;
+			//moduleData.m_offset.v[1] = elem->spawnOrigin[1].base;
+			//moduleData.m_offset.v[2] = elem->spawnOrigin[2].base;
+
+			//moduleData.m_offset2.v[0] = elem->spawnOrigin[0].base + elem->spawnOrigin[0].amplitude;
+			//moduleData.m_offset2.v[1] = elem->spawnOrigin[1].base + elem->spawnOrigin[1].amplitude;
+			//moduleData.m_offset2.v[2] = elem->spawnOrigin[2].base + elem->spawnOrigin[2].amplitude;
 
 			state_flags |= IW7::PARTICLE_STATE_DEF_FLAG_HAS_SPAWN_SHAPE;
 
@@ -1429,7 +1538,9 @@ namespace ZoneTool::IW5
 
 		void generate_init_spawn_shape_box_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
 		{
-			if (elem->elemType != FX_ELEM_TYPE_SPRITE_BILLBOARD && elem->elemType != FX_ELEM_TYPE_SPRITE_ORIENTED)
+			if (elem->elemType != FX_ELEM_TYPE_SPRITE_BILLBOARD && 
+				elem->elemType != FX_ELEM_TYPE_SPRITE_ORIENTED && 
+				elem->elemType != FX_ELEM_TYPE_TRAIL)
 			{
 				return;
 			}
@@ -1440,14 +1551,21 @@ namespace ZoneTool::IW5
 			moduleData.type = module.moduleType;
 			moduleData.m_flags = 0;
 
-			moduleData.m_axisFlags = 0x3F;
+			moduleData.m_axisFlags = IW7::PARTICLE_MODULE_AXES_FLAG_ALL;
 			moduleData.m_spawnFlags = 0;
 			moduleData.m_normalAxis = 0;
 			moduleData.m_spawnType = 0;
 			moduleData.m_volumeCubeRoot = 0.0f;
 
 			module.moduleData.initSpawnShapeBox.m_dimensionsMin.v[0] = 0.0f;
+			module.moduleData.initSpawnShapeBox.m_dimensionsMin.v[1] = 0.0f;
+			module.moduleData.initSpawnShapeBox.m_dimensionsMin.v[2] = 0.0f;
+			module.moduleData.initSpawnShapeBox.m_dimensionsMin.v[3] = 0.0f;
+
 			module.moduleData.initSpawnShapeBox.m_dimensionsMax.v[0] = 0.0f;
+			module.moduleData.initSpawnShapeBox.m_dimensionsMax.v[1] = 0.0f;
+			module.moduleData.initSpawnShapeBox.m_dimensionsMax.v[2] = 0.0f;
+			module.moduleData.initSpawnShapeBox.m_dimensionsMax.v[3] = 0.0f;
 
 			state_flags |= IW7::PARTICLE_STATE_DEF_FLAG_HAS_SPAWN_SHAPE;
 
@@ -1589,17 +1707,17 @@ namespace ZoneTool::IW5
 			moduleData.type = module.moduleType;
 			moduleData.m_flags = 0;
 
-			moduleData.m_numPointsMax = 0xFFFF; // fixme?
-			moduleData.m_splitDistance = elem->extended.trailDef->invSplitDist; // correct?
-			moduleData.m_splitAngle = elem->extended.trailDef->invSplitArcDist; // correct?
+			moduleData.m_numPointsMax = 16;
+			moduleData.m_splitDistance = 100.0f;
+			moduleData.m_splitAngle = 0.0f;
 			moduleData.m_centerOffset = 0.0f;
-			moduleData.m_numSheets = 0;
+			moduleData.m_numSheets = 1;
 			moduleData.m_fadeInDistance = 0.0f;
 			moduleData.m_fadeOutDistance = 0.0f;
-			moduleData.m_tileDistance = 0.0f;
+			moduleData.m_tileDistance = static_cast<float>(elem->extended.trailDef->repeatDist);
 			moduleData.m_tileOffset.min = 0.0f;
-			moduleData.m_tileOffset.max = 0.0f;
-			moduleData.m_scrollTime = elem->extended.trailDef->scrollTimeMsec / 1000.f;
+			moduleData.m_tileOffset.max = -25.0f;
+			moduleData.m_scrollTime = 0.0f; //elem->extended.trailDef->scrollTimeMsec / 1000.f;
 			moduleData.m_useLocalVelocity = false;
 			moduleData.m_useVerticalTexture = false;
 			moduleData.m_cameraFacing = false;
@@ -1641,6 +1759,8 @@ namespace ZoneTool::IW5
 					emitter->particleSpawnRate.max = emitter->particleSpawnRate.min;
 					emitter->particleBurstCount.min = elem->spawn.looping.count;
 					emitter->particleBurstCount.max = emitter->particleBurstCount.min;
+
+					emitter_flags |= IW7::PARTICLE_EMITTER_DEF_FLAG_LOOP_INFINITE_PARTICLES;
 				}
 				else
 				{
@@ -1666,7 +1786,7 @@ namespace ZoneTool::IW5
 				emitter->spawnRangeSq.min = 0.0f;
 				emitter->spawnRangeSq.max = 0.0f;
 
-				emitter->fadeOutMaxDistance = elem->fadeOutRange.base + elem->fadeOutRange.amplitude;
+				//emitter->fadeOutMaxDistance = elem->fadeOutRange.base + elem->fadeOutRange.amplitude;
 
 				emitter->spawnFrustumCullRadius = elem->spawnFrustumCullRadius;
 				emitter->randomSeed = elem->randomSeed;
@@ -1710,10 +1830,10 @@ namespace ZoneTool::IW5
 					generate_init_atlas_module(elem, allocator, init_modules);
 
 					generate_init_material_module(elem, allocator, init_modules);
-					generate_init_mirror_texture_module(elem, allocator, init_modules);
+					//generate_init_mirror_texture_module(elem, allocator, init_modules);
 					generate_init_decal_module(elem, allocator, init_modules);
 					generate_init_model_module(elem, allocator, init_modules);
-					generate_init_sprite_module(elem, allocator, init_modules);
+					generate_init_oriented_sprite_module(elem, allocator, init_modules);
 					generate_init_spawn_shape_box_module(elem, allocator, init_modules);
 					generate_init_spawn_shape_sphere_module(elem, allocator, init_modules);
 					generate_init_omni_light_module(elem, allocator, init_modules);
@@ -1737,9 +1857,9 @@ namespace ZoneTool::IW5
 					generate_color_module(elem, allocator, update_modules);
 					generate_size_module(elem, allocator, update_modules);
 					generate_rotation_module(elem, allocator, update_modules);
-					//generate_position_module(elem, allocator, update_modules);
 					generate_velocity_module(elem, allocator, update_modules);
 					generate_gravity_module(elem, allocator, update_modules);
+					//generate_position_module(elem, allocator, update_modules);
 
 					if (update_modules.size())
 					{
@@ -1752,7 +1872,7 @@ namespace ZoneTool::IW5
 					}
 				}
 
-				emitter->m_dataFlags = (IW7::ParticleDataFlags)0x42C80000; //emitter->m_dataFlags |= (IW7::ParticleDataFlags)emitterdata_flags;
+				emitter->m_dataFlags |= (IW7::ParticleDataFlags)emitterdata_flags; //0x42C80000
 				emitter->flags |= emitter_flags;
 
 				state->flags |= state_flags;
@@ -1773,6 +1893,9 @@ namespace ZoneTool::IW5
 			iw7_asset->updateFrustumCullRadius = -1.0f;
 
 			iw7_asset->sunDistance = 100000.000f;
+
+			iw7_asset->preRollMSec = 0; // spawnTime delay
+			asset->msecLoopingLife;
 
 			iw7_asset->editorPosition.v[0] = 0.0f;
 			iw7_asset->editorPosition.v[1] = 0.0f;

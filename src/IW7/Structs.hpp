@@ -8317,6 +8317,31 @@ namespace ZoneTool::IW7
 		ParticleCurveDef m_curves[1];
 	}; assert_sizeof(ParticleModuleInitSpawn, 32);
 
+	enum ParticleModuleAxesFlags
+	{
+		PARTICLE_MODULE_AXES_FLAG_POS_X = 0x1,
+		PARTICLE_MODULE_AXES_FLAG_NEG_X = 0x2,
+		PARTICLE_MODULE_AXES_FLAG_POS_Y = 0x4,
+		PARTICLE_MODULE_AXES_FLAG_NEG_Y = 0x8,
+		PARTICLE_MODULE_AXES_FLAG_POS_Z = 0x10,
+		PARTICLE_MODULE_AXES_FLAG_NEG_Z = 0x20,
+		PARTICLE_MODULE_AXES_FLAG_ALL_X = 0x3,
+		PARTICLE_MODULE_AXES_FLAG_ALL_Y = 0xC,
+		PARTICLE_MODULE_AXES_FLAG_ALL_Z = 0x30,
+		PARTICLE_MODULE_AXES_FLAG_ALL_POS = 0x15,
+		PARTICLE_MODULE_AXES_FLAG_ALL_NEG = 0x2A,
+		PARTICLE_MODULE_AXES_FLAG_ALL = 0x3F,
+	};
+
+	enum ParticleSpawnFlags
+	{
+		PARTICLE_SPAWN_ONLY_ON_SURFACE = 0x1,
+		PARTICLE_SPAWN_USE_CURVE_VALUES = 0x2,
+		PARTICLE_SPAWN_USE_MODIFIER_SCALE = 0x4,
+		PARTICLE_SPAWN_IS_DETERMINISTIC = 0x8,
+		PARTICLE_SPAWN_UNIFORM = 0x10,
+	};
+
 	struct ParticleModuleInitSpawnShape : ParticleModule
 	{
 		char m_axisFlags;
@@ -8365,7 +8390,7 @@ namespace ZoneTool::IW7
 		unsigned int m_numMeshAssets;
 		ParticleLinkedAssetListDef m_linkedAssetList;
 		ParticleSpawnMeshAssetDef PTR64 m_meshAssetData;
-		unsigned int m_pad[3];
+		unsigned int m_pad[4];
 	}; assert_sizeof(ParticleModuleInitSpawnShapeMesh, 80);
 	assert_offsetof(ParticleModuleInitSpawnShapeMesh, m_numMeshAssets, 32);
 
@@ -8373,7 +8398,7 @@ namespace ZoneTool::IW7
 	{
 		unsigned int m_pad[2];
 		ParticleFloatRange m_radius;
-		unsigned int m_pad2[4];
+		float4 m_offset2;
 	}; assert_sizeof(ParticleModuleInitSpawnShapeSphere, 64);
 
 	struct ParticleModuleInitTail : ParticleModule

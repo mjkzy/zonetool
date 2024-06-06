@@ -385,6 +385,11 @@ namespace ZoneTool
 			isDumping = true;
 			currentDumpingZone = name;
 			load_zone(name);
+
+			while (isDumping)
+			{
+				Sleep(1);
+			}
 		}
 
 		void Linker::verify_zone(const std::string& name)

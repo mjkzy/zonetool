@@ -122,11 +122,14 @@ namespace ZoneTool
 
 			std::int32_t get_render_flags_by_techset(std::string IW7_techset)
 			{
+				std::int32_t flags = 0;
+
 				if (IW7_techset.starts_with("eq_"))
 				{
-					return 1;
+					flags |= 0x1;
 				}
-				return 0;
+
+				return flags;
 			}
 		}
 	}
