@@ -8068,11 +8068,9 @@ namespace ZoneTool::IW7
 
 	struct ParticleModuleInitAtlas : ParticleModule
 	{
+		int m_playRate;
 		int m_startFrame;
 		int m_loopCount;
-		int unk;
-		//bool m_randomIndex;
-		//bool m_playOverLife;
 	}; assert_sizeof(ParticleModuleInitAtlas, 20);
 
 	struct ParticleModuleInitAttributes : ParticleModule
@@ -8869,6 +8867,16 @@ namespace ZoneTool::IW7
 	{
 		FxSpawnDefLooping looping;
 		FxSpawnDefOneShot oneShot;
+	};
+
+	enum FXElemAtlasBehavior : std::uint8_t
+	{
+		FX_ATLAS_START_FIXED = 0x0,
+		FX_ATLAS_START_RANDOM = 0x1,
+		FX_ATLAS_START_INDEXED = 0x2,
+		FX_ATLAS_START_MASK = 0x3,
+		FX_ATLAS_PLAY_OVER_LIFE = 0x4,
+		FX_ATLAS_LOOP_ONLY_N_TIMES = 0x8,
 	};
 
 	struct FxElemAtlas

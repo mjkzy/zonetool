@@ -7,6 +7,25 @@ namespace ZoneTool::IW5
 {
 	namespace IW7Converter
 	{
+		namespace
+		{
+			float Vec2Normalize(float* a1) 
+			{
+				float y = a1[1];
+				float x = a1[0];
+				float length = std::sqrt(x * x + y * y);
+
+				// Avoid division by zero by setting a minimum length
+				float divisor = (length < 1e-6) ? 1.0f : length;
+				float inverse_length = 1.0f / divisor;
+
+				a1[0] = x * inverse_length;
+				a1[1] = y * inverse_length;
+
+				return length;
+			}
+		}
+
 		DEFINE_ENUM_FLAG_OPERATORS(IW7::ParticleDataFlags)
 
 		__int64 system_flags;
@@ -449,14 +468,14 @@ namespace ZoneTool::IW5
 
 		void set_default_size_values(IW7::ParticleCurveDef& curve)
 		{
-			curve.scale = 1.0f;
+			curve.scale = 0.0f;
 			assert(curve.numControlPoints == 2);
 
 			curve.controlPoints[0].time = 0.0f;
 			curve.controlPoints[0].value = 1.0f;
 
 			curve.controlPoints[1].time = 1.0f;
-			curve.controlPoints[1].value = 0.0f;
+			curve.controlPoints[1].value = 1.0f;
 		}
 
 		void set_default_velocity_values(IW7::ParticleCurveDef& curve)
@@ -805,7 +824,7 @@ namespace ZoneTool::IW5
 			moduleData.type = module.moduleType;
 			moduleData.m_flags = 0;
 
-			module.moduleData.rotationGraph.m_useRotationRate = false; // not sure
+			moduleData.m_useRotationRate = true;
 
 			auto visSamplesCount = elem->visStateIntervalCount + 1;
 			float rotationScale = 0.0f;
@@ -830,7 +849,7 @@ namespace ZoneTool::IW5
 
 				// ... would take avarage here (needed?)
 				// const float rotationScale = (edElemDef->rotationScale * 0.017453292f) / (elemDef->visStateIntervalCount * 1000.0f);
-				rotationScale = rotation.GetAbsMax() / 0.017453292f * (visSamplesCount - 1) * 1000.0f * 2.0f;
+				rotationScale = rotation.GetAbsMax() * (visSamplesCount - 1) * 1000.0f * 2.0f;
 			//}
 
 			if (!rotationScale)
@@ -846,17 +865,17 @@ namespace ZoneTool::IW5
 				moduleData.m_curves[i].numControlPoints = visSamplesCount;
 				moduleData.m_curves[i].controlPoints = allocator.allocate<IW7::ParticleCurveControlPointDef>(visSamplesCount);
 
-				moduleData.m_curves[i].scale = rotation.GetAbsMax() * (visSamplesCount - 1) * 1000.0f * 2.0f;
+				moduleData.m_curves[i].scale = rotationScale;
 			}
 
 			for (auto i = 0; i < visSamplesCount; i++)
 			{
-				auto keyValue = elem->visSamples[i].base.rotationDelta / 0.017453292f * sampleScalar / rotationScale;
+				auto keyValue = elem->visSamples[i].base.rotationDelta * sampleScalar / rotationScale;
 				moduleData.m_curves[0].controlPoints[i].value = keyValue;
 				moduleData.m_curves[0].controlPoints[i].time = sampleSize * i;
 				
-				auto baseVel = elem->visSamples[i].base.rotationDelta / 0.017453292f * sampleScalar / rotationScale;
-				auto amplVel = elem->visSamples[i].amplitude.rotationDelta / 0.017453292f * sampleScalar / rotationScale;
+				auto baseVel = elem->visSamples[i].base.rotationDelta * sampleScalar / rotationScale;
+				auto amplVel = elem->visSamples[i].amplitude.rotationDelta * sampleScalar / rotationScale;
 				moduleData.m_curves[1].controlPoints[i].value = baseVel + amplVel;
 				moduleData.m_curves[1].controlPoints[i].time = sampleSize * i;
 			}
@@ -872,7 +891,7 @@ namespace ZoneTool::IW5
 
 		void generate_init_relative_velocity_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
 		{
-			if ((elem->flags & FX_ELEM_RUN_RELATIVE_TO_EFFECT) != 0) return;
+			//if ((elem->flags & FX_ELEM_RUN_RELATIVE_TO_EFFECT) != 0) return;
 
 			IW7::ParticleModuleDef module{};
 			module.moduleType = IW7::PARTICLE_MODULE_INIT_RELATIVE_VELOCITY;
@@ -880,26 +899,36 @@ namespace ZoneTool::IW5
 			moduleData.type = module.moduleType;
 			moduleData.m_flags = 0;
 
+			moduleData.m_useBoltInfo = false;
+
 			switch (elem->flags & FX_ELEM_RUN_MASK)
 			{
 			case FX_ELEM_RUN_RELATIVE_TO_WORLD:
-				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_WORLD;
+				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_WORLD_WITH_BOLT_INFO;
+				moduleData.m_useBoltInfo = true;
 				break;
 			case FX_ELEM_RUN_RELATIVE_TO_SPAWN:
-				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_RELATIVE_TO_EFFECT_ORIGIN;
+				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_LOCAL_WITH_BOLT_INFO;
+				moduleData.m_useBoltInfo = true;
 				break;
 			case FX_ELEM_RUN_RELATIVE_TO_EFFECT:
-				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_LOCAL;
+				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_RELATIVE_TO_EFFECT_ORIGIN_WITH_BOLT_INFO;
+				moduleData.m_useBoltInfo = true;
 				break;
 			case FX_ELEM_RUN_RELATIVE_TO_OFFSET:
-				//moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_LOCAL; // idk
-				//break;
+				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_RELATIVE_TO_EFFECT_ORIGIN; // idk
+				moduleData.m_useBoltInfo = false;
+				break;
 			default:
 				__debugbreak();
 				break;
 			}
 
-			moduleData.m_useBoltInfo = false;
+			if (elem->elemType == FX_ELEM_TYPE_TRAIL)
+			{
+				//moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_LOCAL_WITH_BOLT_INFO;
+				//moduleData.m_useBoltInfo = true;
+			}
 
 			modules.push_back(module);
 		}
@@ -909,6 +938,11 @@ namespace ZoneTool::IW5
 			if (!elem->velSamples)
 			{
 				return;
+			}
+
+			if (elem->elemType == FX_ELEM_TYPE_TAIL)
+			{
+				return; // this is currently not supported, since it has both local and world vel?
 			}
 
 			IW7::ParticleModuleDef module{};
@@ -1082,66 +1116,13 @@ namespace ZoneTool::IW5
 
 		void generate_position_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
 		{
-			if (elem->spawnOrigin[0].base == 0.0f && elem->spawnOrigin[0].amplitude == 0.0f &&
-				elem->spawnOrigin[0].base == 0.0f && elem->spawnOrigin[0].amplitude == 0.0f &&
-				elem->spawnOrigin[0].base == 0.0f && elem->spawnOrigin[0].amplitude == 0.0f)
-			{
-				return;
-			}
-
-			IW7::ParticleModuleDef module{};
+			/*IW7::ParticleModuleDef module{};
 			module.moduleType = IW7::PARTICLE_MODULE_POSITION_GRAPH;
 			auto& moduleData = module.moduleData.positionGraph;
 			moduleData.type = module.moduleType;
 			moduleData.m_flags = 0;
 
-			/*for (auto i = 0; i < 6; i++)
-			{
-				moduleData.m_curves[i].scale = 1.0f;
-
-				moduleData.m_curves[i].numControlPoints = 2;
-				moduleData.m_curves[i].controlPoints = allocator.allocate<IW7::ParticleCurveControlPointDef>(2);
-			}
-
-			moduleData.m_curves[0].controlPoints[0].value = elem->spawnOrigin[0].base;
-			moduleData.m_curves[1].controlPoints[0].value = elem->spawnOrigin[1].base;
-			moduleData.m_curves[2].controlPoints[0].value = elem->spawnOrigin[2].base;
-
-			moduleData.m_curves[3].controlPoints[0].value = elem->spawnOrigin[0].base + elem->spawnOrigin[0].amplitude;
-			moduleData.m_curves[4].controlPoints[0].value = elem->spawnOrigin[1].base + elem->spawnOrigin[1].amplitude;
-			moduleData.m_curves[5].controlPoints[0].value = elem->spawnOrigin[2].base + elem->spawnOrigin[2].amplitude;
-
-			moduleData.m_curves[0].controlPoints[1].value = elem->spawnOrigin[0].base;
-			moduleData.m_curves[1].controlPoints[1].value = elem->spawnOrigin[1].base;
-			moduleData.m_curves[2].controlPoints[1].value = elem->spawnOrigin[2].base;
-
-			moduleData.m_curves[3].controlPoints[1].value = elem->spawnOrigin[0].base + elem->spawnOrigin[0].amplitude;
-			moduleData.m_curves[4].controlPoints[1].value = elem->spawnOrigin[1].base + elem->spawnOrigin[1].amplitude;
-			moduleData.m_curves[5].controlPoints[1].value = elem->spawnOrigin[2].base + elem->spawnOrigin[2].amplitude;
-
-			moduleData.m_curves[0].controlPoints[0].time = 0.0f;
-			moduleData.m_curves[1].controlPoints[0].time = 0.0f;
-			moduleData.m_curves[2].controlPoints[0].time = 0.0f;
-			moduleData.m_curves[3].controlPoints[0].time = 0.0f;
-			moduleData.m_curves[4].controlPoints[0].time = 0.0f;
-			moduleData.m_curves[5].controlPoints[0].time = 0.0f;
-
-			moduleData.m_curves[0].controlPoints[1].time = 1.0f;
-			moduleData.m_curves[1].controlPoints[1].time = 1.0f;
-			moduleData.m_curves[2].controlPoints[1].time = 1.0f;
-			moduleData.m_curves[3].controlPoints[1].time = 1.0f;
-			moduleData.m_curves[4].controlPoints[1].time = 1.0f;
-			moduleData.m_curves[5].controlPoints[1].time = 1.0f;
-
-			calculate_inv_time_delta(moduleData.m_curves, GetModuleNumCurves(module.moduleType));
-
-			fixup_randomization_flags(moduleData.m_curves[0], moduleData.m_curves[3], &moduleData.m_flags);
-			fixup_randomization_flags(moduleData.m_curves[1], moduleData.m_curves[4], &moduleData.m_flags);
-			fixup_randomization_flags(moduleData.m_curves[2], moduleData.m_curves[5], &moduleData.m_flags);
-
-			state_flags |= IW7::PARTICLE_STATE_DEF_FLAG_HAS_POSITION_CURVE;*/
-
-			modules.push_back(module);
+			modules.push_back(module);*/
 		}
 
 		void generate_init_spawn_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
@@ -1162,23 +1143,20 @@ namespace ZoneTool::IW5
 			moduleData.m_curves->controlPoints[2].value = 0.0f;
 
 			moduleData.m_curves->controlPoints[0].time = 0.0f;
-			moduleData.m_curves->controlPoints[1].time = 0.5f;
+			moduleData.m_curves->controlPoints[1].time = 0.75f;
 			moduleData.m_curves->controlPoints[2].time = 1.0f;
 
 			calculate_inv_time_delta(moduleData.m_curves, GetModuleNumCurves(module.moduleType));
-
-			//emitterdata_flags |= IW7::USE_SPAWN_POS;
-			//emitterdata_flags |= IW7::USE_SPAWN_QUAT;
 
 			modules.push_back(module);
 		}
 
 		void generate_init_attributes_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
 		{
-			//if (1)
-			//{
-			//	return;
-			//}
+			if (elem->elemType == FX_ELEM_TYPE_TAIL)
+			{
+				//return;
+			}
 
 			IW7::ParticleModuleDef module{};
 			module.moduleType = IW7::PARTICLE_MODULE_INIT_ATTRIBUTES;
@@ -1186,23 +1164,23 @@ namespace ZoneTool::IW5
 			moduleData.type = module.moduleType;
 			moduleData.m_flags = 0;
 
-			moduleData.m_sizeMin.v[0] = 0.0f;
-			moduleData.m_sizeMin.v[1] = 0.0f;
-			moduleData.m_sizeMin.v[2] = 0.0f;
+			moduleData.m_sizeMin.v[0] = 10.0f;
+			moduleData.m_sizeMin.v[1] = 10.0f;
+			moduleData.m_sizeMin.v[2] = 10.0f;
 			moduleData.m_sizeMin.v[3] = 0.0f;
-			moduleData.m_sizeMax.v[0] = 0.0f;
-			moduleData.m_sizeMax.v[1] = 0.0f;
-			moduleData.m_sizeMax.v[2] = 0.0f;
+			moduleData.m_sizeMax.v[0] = 10.0f;
+			moduleData.m_sizeMax.v[1] = 10.0f;
+			moduleData.m_sizeMax.v[2] = 10.0f;
 			moduleData.m_sizeMax.v[3] = 0.0f;
 
-			moduleData.m_colorMin.v[0] = 0.0f;
-			moduleData.m_colorMin.v[1] = 0.0f;
-			moduleData.m_colorMin.v[2] = 0.0f;
-			moduleData.m_colorMin.v[3] = 0.0f;
-			moduleData.m_colorMax.v[0] = 0.0f;
-			moduleData.m_colorMax.v[1] = 0.0f;
-			moduleData.m_colorMax.v[2] = 0.0f;
-			moduleData.m_colorMax.v[3] = 0.0f;
+			moduleData.m_colorMin.v[0] = 1.0f;
+			moduleData.m_colorMin.v[1] = 1.0f;
+			moduleData.m_colorMin.v[2] = 1.0f;
+			moduleData.m_colorMin.v[3] = 1.0f;
+			moduleData.m_colorMax.v[0] = 1.0f;
+			moduleData.m_colorMax.v[1] = 1.0f;
+			moduleData.m_colorMax.v[2] = 1.0f;
+			moduleData.m_colorMax.v[3] = 1.0f;
 
 			moduleData.m_velocityMin.v[0] = 0.0f;
 			moduleData.m_velocityMin.v[1] = 0.0f;
@@ -1270,7 +1248,6 @@ namespace ZoneTool::IW5
 			moduleData.type = module.moduleType;
 			moduleData.m_flags = 0;
 
-			// idk
 			moduleData.m_rotationAngle.min = elem->initialRotation.base;
 			moduleData.m_rotationAngle.max = elem->initialRotation.base + elem->initialRotation.amplitude;
 
@@ -1287,9 +1264,18 @@ namespace ZoneTool::IW5
 
 		void generate_init_atlas_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
 		{
-			if (elem->atlas.behavior == 0 && elem->atlas.index == 0 && elem->atlas.loopCount <= 1)
+			if (elem->elemType != FX_ELEM_TYPE_SPRITE_BILLBOARD && 
+				elem->elemType != FX_ELEM_TYPE_SPRITE_ORIENTED && 
+				elem->elemType != FX_ELEM_TYPE_TAIL && 
+				elem->elemType != FX_ELEM_TYPE_TRAIL &&
+				elem->elemType != FX_ELEM_TYPE_CLOUD)
 			{
 				return;
+			}
+
+			if (elem->atlas.fps == 0.0f || elem->atlas.entryCount - 1 == 0 || elem->atlas.loopCount == 0)
+			{
+				//return;
 			}
 
 			IW7::ParticleModuleDef module{};
@@ -1298,7 +1284,14 @@ namespace ZoneTool::IW5
 			moduleData.type = module.moduleType;
 			moduleData.m_flags = 0;
 
-			module.moduleData.initAtlas.unk = -1; // ?
+			module.moduleData.initAtlas.m_playRate = elem->atlas.fps;
+			module.moduleData.initAtlas.m_startFrame = elem->atlas.entryCount - 1;
+			module.moduleData.initAtlas.m_loopCount = elem->atlas.loopCount;
+
+			if (elem->atlas.loopCount == 0xFF)
+			{
+				__debugbreak();
+			}
 
 			modules.push_back(module);
 		}
@@ -1319,7 +1312,7 @@ namespace ZoneTool::IW5
 			moduleData.m_fadeInTime = static_cast<short>(elem->fadeInRange.base); // idk
 			moduleData.m_fadeOutTime = static_cast<short>(elem->fadeOutRange.base); // idk
 			moduleData.m_stoppableFadeOutTime = 0;
-			moduleData.m_lerpWaitTime = 0;
+			moduleData.m_lerpWaitTime = 1280;
 			moduleData.m_lerpColor.v[0] = 1.0f;
 			moduleData.m_lerpColor.v[1] = 1.0f;
 			moduleData.m_lerpColor.v[2] = 1.0f;
@@ -1402,9 +1395,49 @@ namespace ZoneTool::IW5
 			modules.push_back(module);
 		}
 
+		void generate_init_runner_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
+		{
+			if (elem->elemType != FX_ELEM_TYPE_RUNNER)
+			{
+				return;
+			}
+
+			IW7::ParticleModuleDef module{};
+			module.moduleType = IW7::PARTICLE_MODULE_INIT_RUNNER;
+			auto& moduleData = module.moduleData.initRunner;
+			moduleData.type = module.moduleType;
+			moduleData.m_flags = 0;
+
+			if (elem->visualCount)
+			{
+				moduleData.m_linkedAssetList.numAssets = elem->visualCount;
+				moduleData.m_linkedAssetList.assetList = allocator.allocate<IW7::ParticleLinkedAssetDef>(moduleData.m_linkedAssetList.numAssets);
+
+				if (elem->visualCount > 1)
+				{
+					for (int idx = 0; idx < moduleData.m_linkedAssetList.numAssets; idx++)
+					{
+						moduleData.m_linkedAssetList.assetList[idx].particleSystem = reinterpret_cast<IW7::ParticleSystemDef*>(elem->visuals.array[idx].effectDef.handle);
+					}
+				}
+				else
+				{
+					moduleData.m_linkedAssetList.assetList[0].particleSystem = reinterpret_cast<IW7::ParticleSystemDef*>(elem->visuals.instance.effectDef.handle);
+				}
+
+				//moduleData.m_flags |= IW7::PARTICLE_MODULE_FLAG_HAS_ASSETS;
+			}
+			else
+			{
+				return;
+			}
+
+			modules.push_back(module);
+		}
+
 		void generate_init_material_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
 		{
-			if (elem->elemType != FX_ELEM_TYPE_SPRITE_BILLBOARD && elem->elemType != FX_ELEM_TYPE_SPRITE_ORIENTED && elem->elemType != FX_ELEM_TYPE_TRAIL)
+			if (elem->elemType != FX_ELEM_TYPE_SPRITE_BILLBOARD && elem->elemType != FX_ELEM_TYPE_SPRITE_ORIENTED && elem->elemType != FX_ELEM_TYPE_TAIL && elem->elemType != FX_ELEM_TYPE_TRAIL)
 			{
 				system_flags |= IW7::PARTICLE_SYSTEM_DEF_FLAG_HAS_NON_SPRITES; // add this here i guess..
 				return;
@@ -1444,7 +1477,6 @@ namespace ZoneTool::IW5
 				return;
 			}
 
-			state_flags |= IW7::PARTICLE_STATE_DEF_FLAG_0x400; // dunno
 			state_flags |= IW7::PARTICLE_STATE_DEF_FLAG_IS_SPRITE;
 			system_flags |= IW7::PARTICLE_SYSTEM_DEF_FLAG_HAS_SPRITES;
 
@@ -1496,20 +1528,84 @@ namespace ZoneTool::IW5
 			modules.push_back(module);
 		}
 
-		void generate_init_spawn_shape_sphere_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
+		void generate_init_spawn_shape_cylinder_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
 		{
-			if (elem->elemType != FX_ELEM_TYPE_MODEL)
+			if ((elem->flags & FX_ELEM_SPAWN_OFFSET_CYLINDER) == 0)
 			{
 				return;
 			}
 
+			IW7::ParticleModuleDef module{};
+			module.moduleType = IW7::PARTICLE_MODULE_INIT_SPAWN_SHAPE_CYLINDER;
+			auto& moduleData = module.moduleData.initSpawnShapeCylinder;
+			moduleData.type = module.moduleType;
+			moduleData.m_flags = 0;
+
+			moduleData.m_axisFlags = IW7::PARTICLE_MODULE_AXES_FLAG_ALL;
+			moduleData.m_spawnFlags = 0;
+			moduleData.m_normalAxis = 0;
+			moduleData.m_spawnType = 0;
+			moduleData.m_volumeCubeRoot = 0.0f;
+
+			moduleData.m_hasRotation = true;
+			moduleData.m_rotateCalculatedOffset = false;
+
+			moduleData.m_directionQuat.v[0] = 0.0f;
+			moduleData.m_directionQuat.v[1] = 0.7071067690849304f;
+			moduleData.m_directionQuat.v[2] = 0.0f;
+			moduleData.m_directionQuat.v[3] = 0.7071067690849304f;
+
+			moduleData.m_radius.min = elem->spawnOffsetRadius.base;
+			moduleData.m_radius.min = elem->spawnOffsetRadius.base + elem->spawnOffsetRadius.amplitude;
+
+			// idk where to put this
+			// spawnOffsetHeight
+
+			moduleData.m_flags |= IW7::PARTICLE_MODULE_FLAG_DISABLED;
+
+			state_flags |= IW7::PARTICLE_STATE_DEF_FLAG_HAS_SPAWN_SHAPE;
+
+			modules.push_back(module);
+		}
+
+		void generate_init_spawn_shape_sphere_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
+		{
+			if ((elem->flags & FX_ELEM_SPAWN_OFFSET_SPHERE) == 0)
+			{
+				return;
+			}
+			
 			IW7::ParticleModuleDef module{};
 			module.moduleType = IW7::PARTICLE_MODULE_INIT_SPAWN_SHAPE_SPHERE;
 			auto& moduleData = module.moduleData.initSpawnShapeSphere;
 			moduleData.type = module.moduleType;
 			moduleData.m_flags = 0;
 
-			if ((elem->flags & FX_ELEM_RUN_MASK) == FX_ELEM_RUN_RELATIVE_TO_WORLD)
+			moduleData.m_axisFlags = IW7::PARTICLE_MODULE_AXES_FLAG_ALL;
+			moduleData.m_spawnFlags = 0;
+			moduleData.m_normalAxis = 0;
+			moduleData.m_spawnType = 0;
+			moduleData.m_volumeCubeRoot = 0.0f;
+
+			moduleData.m_radius.min = elem->spawnOffsetRadius.base;
+			moduleData.m_radius.min = elem->spawnOffsetRadius.base + elem->spawnOffsetRadius.amplitude;
+
+			moduleData.m_flags |= IW7::PARTICLE_MODULE_FLAG_DISABLED;
+
+			state_flags |= IW7::PARTICLE_STATE_DEF_FLAG_HAS_SPAWN_SHAPE;
+
+			modules.push_back(module);
+		}
+
+		void generate_init_spawn_shape_box_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
+		{
+			IW7::ParticleModuleDef module{};
+			module.moduleType = IW7::PARTICLE_MODULE_INIT_SPAWN_SHAPE_BOX;
+			auto& moduleData = module.moduleData.initSpawnShapeBox;
+			moduleData.type = module.moduleType;
+			moduleData.m_flags = 0;
+
+			if ((elem->flags & FX_ELEM_RUN_MASK) == FX_ELEM_RUN_RELATIVE_TO_WORLD/* && elem->elemType != FX_ELEM_TYPE_TRAIL*/)
 			{
 				moduleData.m_flags |= IW7::PARTICLE_MODULE_FLAG_USE_WORLD_SPACE;
 			}
@@ -1520,52 +1616,17 @@ namespace ZoneTool::IW5
 			moduleData.m_spawnType = 0;
 			moduleData.m_volumeCubeRoot = 0.0f;
 
-			moduleData.m_radius.min = 1.0f;
-			moduleData.m_radius.max = 1.0f;
-
-			//moduleData.m_offset.v[0] = elem->spawnOrigin[0].base;
-			//moduleData.m_offset.v[1] = elem->spawnOrigin[1].base;
-			//moduleData.m_offset.v[2] = elem->spawnOrigin[2].base;
-
-			//moduleData.m_offset2.v[0] = elem->spawnOrigin[0].base + elem->spawnOrigin[0].amplitude;
-			//moduleData.m_offset2.v[1] = elem->spawnOrigin[1].base + elem->spawnOrigin[1].amplitude;
-			//moduleData.m_offset2.v[2] = elem->spawnOrigin[2].base + elem->spawnOrigin[2].amplitude;
-
-			state_flags |= IW7::PARTICLE_STATE_DEF_FLAG_HAS_SPAWN_SHAPE;
-
-			modules.push_back(module);
-		}
-
-		void generate_init_spawn_shape_box_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
-		{
-			if (elem->elemType != FX_ELEM_TYPE_SPRITE_BILLBOARD && 
-				elem->elemType != FX_ELEM_TYPE_SPRITE_ORIENTED && 
-				elem->elemType != FX_ELEM_TYPE_TRAIL)
-			{
-				return;
-			}
-
-			IW7::ParticleModuleDef module{};
-			module.moduleType = IW7::PARTICLE_MODULE_INIT_SPAWN_SHAPE_BOX;
-			auto& moduleData = module.moduleData.initSpawnShapeBox;
-			moduleData.type = module.moduleType;
-			moduleData.m_flags = 0;
-
-			moduleData.m_axisFlags = IW7::PARTICLE_MODULE_AXES_FLAG_ALL;
-			moduleData.m_spawnFlags = 0;
-			moduleData.m_normalAxis = 0;
-			moduleData.m_spawnType = 0;
-			moduleData.m_volumeCubeRoot = 0.0f;
-
-			module.moduleData.initSpawnShapeBox.m_dimensionsMin.v[0] = 0.0f;
-			module.moduleData.initSpawnShapeBox.m_dimensionsMin.v[1] = 0.0f;
-			module.moduleData.initSpawnShapeBox.m_dimensionsMin.v[2] = 0.0f;
+			module.moduleData.initSpawnShapeBox.m_dimensionsMin.v[0] = elem->spawnOrigin[0].base;
+			module.moduleData.initSpawnShapeBox.m_dimensionsMin.v[1] = elem->spawnOrigin[1].base;
+			module.moduleData.initSpawnShapeBox.m_dimensionsMin.v[2] = elem->spawnOrigin[2].base;
 			module.moduleData.initSpawnShapeBox.m_dimensionsMin.v[3] = 0.0f;
 
-			module.moduleData.initSpawnShapeBox.m_dimensionsMax.v[0] = 0.0f;
-			module.moduleData.initSpawnShapeBox.m_dimensionsMax.v[1] = 0.0f;
-			module.moduleData.initSpawnShapeBox.m_dimensionsMax.v[2] = 0.0f;
+			module.moduleData.initSpawnShapeBox.m_dimensionsMax.v[0] = elem->spawnOrigin[0].base + elem->spawnOrigin[0].amplitude;
+			module.moduleData.initSpawnShapeBox.m_dimensionsMax.v[1] = elem->spawnOrigin[1].base + elem->spawnOrigin[1].amplitude;
+			module.moduleData.initSpawnShapeBox.m_dimensionsMax.v[2] = elem->spawnOrigin[2].base + elem->spawnOrigin[2].amplitude;
 			module.moduleData.initSpawnShapeBox.m_dimensionsMax.v[3] = 0.0f;
+
+			emitterdata_flags |= IW7::USE_SPAWN_POS;
 
 			state_flags |= IW7::PARTICLE_STATE_DEF_FLAG_HAS_SPAWN_SHAPE;
 
@@ -1694,6 +1755,28 @@ namespace ZoneTool::IW5
 			modules.push_back(module);
 		}
 
+		void generate_init_tail_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
+		{
+			if (elem->elemType != FX_ELEM_TYPE_TAIL)
+			{
+				return;
+			}
+
+			IW7::ParticleModuleDef module{};
+			module.moduleType = IW7::PARTICLE_MODULE_INIT_TAIL;
+			auto& moduleData = module.moduleData.initTail;
+			moduleData.type = module.moduleType;
+			moduleData.m_flags = 0;
+
+			moduleData.m_averagePastVelocities = 0;
+			moduleData.m_maxParentSpeed = 0;
+			moduleData.m_tailLeading = true;
+			moduleData.m_scaleWithVelocity = false;
+			moduleData.m_rotateAroundPivot = false;
+
+			modules.push_back(module);
+		}
+
 		void generate_init_geo_trail_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
 		{
 			if (elem->elemType != FX_ELEM_TYPE_TRAIL)
@@ -1753,14 +1836,44 @@ namespace ZoneTool::IW5
 				emitter->m_dataFlags = IW7::USE_NONE;
 				emitterdata_flags = 0;
 
+				emitter->particleSpawnRate.min = 5.0f;
+				emitter->particleSpawnRate.max = 5.0f;
+
+				emitter->particleBurstCount.min = 1;
+				emitter->particleBurstCount.max = 1;
+
+				emitter->emitterLife.min = 0.0f;
+				emitter->emitterLife.max = 0.0f;
+
+				emitter->emitterDelay.min = 0.0f;
+				emitter->emitterDelay.max = 0.0f;
+
 				if (looping)
 				{
-					emitter->particleSpawnRate.min = elem->spawn.looping.intervalMsec / 1000.0f;
-					emitter->particleSpawnRate.max = emitter->particleSpawnRate.min;
-					emitter->particleBurstCount.min = elem->spawn.looping.count;
-					emitter->particleBurstCount.max = emitter->particleBurstCount.min;
+					// forever
+					if (emitter->particleCountMax == 0x7FFFFFFF)
+					{
+						emitter->particleSpawnRate.min = static_cast<float>(elem->spawn.looping.intervalMsec);
+						emitter->particleSpawnRate.max = static_cast<float>(elem->spawn.looping.intervalMsec);
 
-					emitter_flags |= IW7::PARTICLE_EMITTER_DEF_FLAG_LOOP_INFINITE_PARTICLES;
+						emitter->particleCountMax = 1;
+						emitter_flags |= IW7::PARTICLE_EMITTER_DEF_FLAG_INFINITE_PARTICLE_LIFE;
+					}
+					else
+					{
+						auto intervalMsec = static_cast<float>(elem->spawn.looping.intervalMsec);
+						IW7::ParticleFloatRange intervalMsecRange{ intervalMsec, intervalMsec };
+
+						auto scalar = Vec2Normalize(reinterpret_cast<float*>(&intervalMsecRange));
+
+						emitter->particleSpawnRate.min = scalar;
+						emitter->particleSpawnRate.max = scalar;
+
+						emitter->emitterLife.min = intervalMsecRange.min / scalar;
+						emitter->emitterLife.max = intervalMsecRange.max / scalar;
+
+						emitter->particleCountMax = elem->spawn.looping.count;
+					}
 				}
 				else
 				{
@@ -1777,14 +1890,10 @@ namespace ZoneTool::IW5
 				emitter->particleDelay.min = elem->spawnDelayMsec.base / 1000.0f;
 				emitter->particleDelay.max = elem->spawnDelayMsec.base / 1000.0f + elem->spawnDelayMsec.amplitude / 1000.0f;
 
-				//emitter->emitterLife.min = elem->lifeSpanMsec.base / 1000.0f;
-				//emitter->emitterLife.max = elem->lifeSpanMsec.base / 1000.0f + elem->lifeSpanMsec.amplitude / 1000.0f;
-
-				//emitter->emitterLife.min = elem->spawnDelayMsec.base / 1000.0f;
-				//emitter->emitterDelay.max = elem->spawnDelayMsec.base / 1000.0f + elem->spawnDelayMsec.amplitude / 1000.0f;
-
-				emitter->spawnRangeSq.min = 0.0f;
-				emitter->spawnRangeSq.max = 0.0f;
+				emitter->spawnRangeSq.min = elem->spawnRange.base;
+				emitter->spawnRangeSq.max = elem->spawnRange.base + elem->spawnRange.amplitude;
+				emitter->spawnRangeSq.min *= emitter->spawnRangeSq.min;
+				emitter->spawnRangeSq.max *= emitter->spawnRangeSq.max;
 
 				//emitter->fadeOutMaxDistance = elem->fadeOutRange.base + elem->fadeOutRange.amplitude;
 
@@ -1824,22 +1933,23 @@ namespace ZoneTool::IW5
 					std::vector<IW7::ParticleModuleDef> init_modules{};
 					generate_init_spawn_module(elem, allocator, init_modules);
 					generate_init_attributes_module(elem, allocator, init_modules);
-					generate_init_rotation_module(elem, allocator, init_modules);
-					generate_init_rotation3d_module(elem, allocator, init_modules);
-					generate_init_relative_velocity_module(elem, allocator, init_modules);
-					generate_init_atlas_module(elem, allocator, init_modules);
-
-					generate_init_material_module(elem, allocator, init_modules);
-					//generate_init_mirror_texture_module(elem, allocator, init_modules);
-					generate_init_decal_module(elem, allocator, init_modules);
-					generate_init_model_module(elem, allocator, init_modules);
-					generate_init_oriented_sprite_module(elem, allocator, init_modules);
-					generate_init_spawn_shape_box_module(elem, allocator, init_modules);
-					generate_init_spawn_shape_sphere_module(elem, allocator, init_modules);
+					generate_init_tail_module(elem, allocator, init_modules);
+					generate_init_geo_trail_module(elem, allocator, init_modules);
 					generate_init_omni_light_module(elem, allocator, init_modules);
 					generate_init_spot_light_module(elem, allocator, init_modules);
-					generate_init_geo_trail_module(elem, allocator, init_modules);
-
+					generate_init_model_module(elem, allocator, init_modules);
+					generate_init_runner_module(elem, allocator, init_modules);
+					generate_init_decal_module(elem, allocator, init_modules);
+					generate_init_oriented_sprite_module(elem, allocator, init_modules);
+					generate_init_material_module(elem, allocator, init_modules);
+					generate_init_atlas_module(elem, allocator, init_modules);
+					generate_init_relative_velocity_module(elem, allocator, init_modules);
+					generate_init_rotation_module(elem, allocator, init_modules);
+					generate_init_rotation3d_module(elem, allocator, init_modules);
+					generate_init_spawn_shape_box_module(elem, allocator, init_modules);
+					generate_init_spawn_shape_sphere_module(elem, allocator, init_modules);
+					//generate_init_mirror_texture_module(elem, allocator, init_modules);
+					
 					if (init_modules.size())
 					{
 						state->moduleGroupDefs[IW7::PARTICLE_MODULE_GROUP_INIT].numModules = init_modules.size();
@@ -1872,14 +1982,15 @@ namespace ZoneTool::IW5
 					}
 				}
 
-				emitter->m_dataFlags |= (IW7::ParticleDataFlags)emitterdata_flags; //0x42C80000
+				emitter->m_dataFlags = (IW7::ParticleDataFlags)0x42C80000; 
+				//emitter->m_dataFlags |= (IW7::ParticleDataFlags)emitterdata_flags;
 				emitter->flags |= emitter_flags;
 
 				state->flags |= state_flags;
 			}
 
 			system_flags |= IW7::PARTICLE_SYSTEM_DEF_FLAG_KILL_STOPPED_INFINITE_EFFECTS;
-			system_flags |= IW7::PARTICLE_SYSTEM_DEF_FLAG_CANNOT_PRE_ROLL; // not sure what this is
+			//system_flags |= IW7::PARTICLE_SYSTEM_DEF_FLAG_CANNOT_PRE_ROLL; // not sure what this is
 
 			iw7_asset->flags |= system_flags;
 
