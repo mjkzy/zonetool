@@ -204,8 +204,8 @@ namespace ZoneTool::IW7
 
 	enum FxCombinedType : std::uint8_t
 	{
-		FX_COMBINED_DEFAULT,
-		FX_COMBINED_PARTICLE_SYSTEM,
+		FX_COMBINED_FX,
+		FX_COMBINED_VFX,
 	};
 
 	struct FxCombinedDef

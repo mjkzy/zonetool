@@ -70,7 +70,8 @@ namespace ZoneTool
 
 			std::unordered_map<std::string, std::uint8_t> mapped_sortkeys_by_techset =
 			{
-				
+				{"mc_shadowcaster_atest", 2},
+				{"wc_shadowcaster", 2},
 			};
 
 			std::uint8_t get_IW7_sortkey(std::uint8_t sortkey, std::string matname, std::string IW7_techset)
@@ -100,7 +101,8 @@ namespace ZoneTool
 
 			std::unordered_map<std::string, std::uint8_t> mapped_camera_regions_by_techset =
 			{
-				
+				{"mc_shadowcaster_atest", 11},
+				{"wc_shadowcaster", 11},
 			};
 
 			std::uint8_t get_IW7_camera_region(std::uint8_t camera_region, std::string matname, std::string IW7_techset)
@@ -120,9 +122,20 @@ namespace ZoneTool
 				return camera_region;
 			}
 
+			std::unordered_map<std::string, std::uint8_t> mapped_render_flags_by_techset =
+			{
+				{"mc_shadowcaster_atest", 0x2},
+				{"wc_shadowcaster", 0x2},
+			};
+
 			std::int32_t get_render_flags_by_techset(std::string IW7_techset)
 			{
 				std::int32_t flags = 0;
+
+				if (mapped_render_flags_by_techset.find(IW7_techset) != mapped_render_flags_by_techset.end())
+				{
+					flags |= mapped_render_flags_by_techset[IW7_techset];
+				}
 
 				if (IW7_techset.starts_with("eq_"))
 				{
@@ -184,6 +197,8 @@ namespace ZoneTool
 					matdata["techniqueSet->name"] = iw7_techset;
 				}
 
+				IW7::prefix_cache[asset->name].clear();
+
 				matdata["gameFlags"] = asset->gameFlags; // convert
 				matdata["unkFlags"] = 0; // idk
 				matdata["sortKey"] = IW7::get_IW7_sortkey(asset->sortKey, asset->name, iw7_techset);
@@ -199,7 +214,7 @@ namespace ZoneTool
 
 				matdata["stateFlags"] = asset->stateFlags; // convert
 				matdata["cameraRegion"] = IW7::get_IW7_camera_region(asset->cameraRegion, asset->name, iw7_techset);
-				matdata["materialType"] = IW7::get_material_type_from_name(asset->name, asset->techniqueSet ? asset->techniqueSet->name : "");
+				matdata["materialType"] = IW7::get_material_type_from_technique(asset->techniqueSet ? asset->techniqueSet->name : "");
 				matdata["assetFlags"] = 0;//IW7::MTL_ASSETFLAG_NONE;
 
 				ordered_json constant_table;

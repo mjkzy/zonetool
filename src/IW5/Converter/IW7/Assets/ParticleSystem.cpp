@@ -24,6 +24,20 @@ namespace ZoneTool::IW5
 
 				return length;
 			}
+
+			// Function to round a number based on a specified number of decimal places
+			float round2(float num, int decimalPlaces = 3) 
+			{
+				float scale = std::pow(10.0f, decimalPlaces); // Calculate the scaling factor
+				float scaled = num * scale;                  // Scale the number
+				float rounded_scaled = std::round(scaled);   // Round the scaled number
+				float final_result = rounded_scaled / scale; // Scale back to original range
+
+				// Now round the final result to the nearest integer
+				float rounded = std::round(final_result);
+
+				return rounded;
+			}
 		}
 
 		DEFINE_ENUM_FLAG_OPERATORS(IW7::ParticleDataFlags)
@@ -557,7 +571,7 @@ namespace ZoneTool::IW5
 
 				for (auto j = 0; j < 8; j++)
 				{
-					moduleData.m_curves[j].controlPoints[i].time = sampleSize * i;
+					moduleData.m_curves[j].controlPoints[i].time = round2(sampleSize * i);
 				}
 			}
 
@@ -640,11 +654,6 @@ namespace ZoneTool::IW5
 			if (!widthScale && !heightScale && !scaleScale)
 			{
 				return;
-			}
-
-			if ((widthScale && heightScale) && scaleScale)
-			{
-				__debugbreak();
 			}
 
 			int width_index0 = -1;
@@ -760,30 +769,30 @@ namespace ZoneTool::IW5
 			{
 				if (widthScale)
 				{
-					moduleData.m_curves[width_index0].controlPoints[i].time = sampleSize * i;
+					moduleData.m_curves[width_index0].controlPoints[i].time = round2(sampleSize * i);
 					moduleData.m_curves[width_index0].controlPoints[i].value = elem->visSamples[i].base.size[xoxor4d::SizeCurveType::Width] / widthScale;
 
-					moduleData.m_curves[width_index1].controlPoints[i].time = sampleSize * i;
+					moduleData.m_curves[width_index1].controlPoints[i].time = round2(sampleSize * i);
 					moduleData.m_curves[width_index1].controlPoints[i].value = elem->visSamples[i].amplitude.size[xoxor4d::SizeCurveType::Width] / widthScale;
 					moduleData.m_curves[width_index1].controlPoints[i].value += moduleData.m_curves[width_index0].controlPoints[i].value;
 				}
 
 				if (heightScale)
 				{
-					moduleData.m_curves[height_index0].controlPoints[i].time = sampleSize * i;
+					moduleData.m_curves[height_index0].controlPoints[i].time = round2(sampleSize * i);
 					moduleData.m_curves[height_index0].controlPoints[i].value = elem->visSamples[i].base.size[xoxor4d::SizeCurveType::Height] / heightScale;
 
-					moduleData.m_curves[height_index1].controlPoints[i].time = sampleSize * i;
+					moduleData.m_curves[height_index1].controlPoints[i].time = round2(sampleSize * i);
 					moduleData.m_curves[height_index1].controlPoints[i].value = elem->visSamples[i].amplitude.size[xoxor4d::SizeCurveType::Height] / heightScale;
 					moduleData.m_curves[height_index1].controlPoints[i].value += moduleData.m_curves[height_index0].controlPoints[i].value;
 				}
 
 				if (scaleScale)
 				{
-					moduleData.m_curves[scale_index0].controlPoints[i].time = sampleSize * i;
+					moduleData.m_curves[scale_index0].controlPoints[i].time = round2(sampleSize * i);
 					moduleData.m_curves[scale_index0].controlPoints[i].value = elem->visSamples[i].base.scale / scaleScale;
 
-					moduleData.m_curves[scale_index1].controlPoints[i].time = sampleSize * i;
+					moduleData.m_curves[scale_index1].controlPoints[i].time = round2(sampleSize * i);
 					moduleData.m_curves[scale_index1].controlPoints[i].value = elem->visSamples[i].amplitude.scale / scaleScale;
 					moduleData.m_curves[scale_index1].controlPoints[i].value += moduleData.m_curves[scale_index0].controlPoints[i].value;
 				}
@@ -872,12 +881,12 @@ namespace ZoneTool::IW5
 			{
 				auto keyValue = elem->visSamples[i].base.rotationDelta * sampleScalar / rotationScale;
 				moduleData.m_curves[0].controlPoints[i].value = keyValue;
-				moduleData.m_curves[0].controlPoints[i].time = sampleSize * i;
+				moduleData.m_curves[0].controlPoints[i].time = round2(sampleSize * i);
 				
 				auto baseVel = elem->visSamples[i].base.rotationDelta * sampleScalar / rotationScale;
 				auto amplVel = elem->visSamples[i].amplitude.rotationDelta * sampleScalar / rotationScale;
 				moduleData.m_curves[1].controlPoints[i].value = baseVel + amplVel;
-				moduleData.m_curves[1].controlPoints[i].time = sampleSize * i;
+				moduleData.m_curves[1].controlPoints[i].time = round2(sampleSize * i);
 			}
 
 			calculate_inv_time_delta(moduleData.m_curves, GetModuleNumCurves(module.moduleType));
@@ -984,7 +993,13 @@ namespace ZoneTool::IW5
 
 			const bool local = (elem->flags & FX_ELEM_HAS_VELOCITY_GRAPH_LOCAL) != 0;
 			const bool world = (elem->flags & FX_ELEM_HAS_VELOCITY_GRAPH_WORLD) != 0;
-			assert(local != world);
+			
+			if (local && world)
+			{
+				// i don't know how to do this
+				return;
+			}
+
 			moduleData.m_flags |= world ? IW7::PARTICLE_MODULE_FLAG_USE_WORLD_SPACE : 0;
 
 			enum module_velocity_curve_e
@@ -1055,7 +1070,7 @@ namespace ZoneTool::IW5
 					auto baseVel = xoxor4d::GetVelocityValue(stype,  dir, xoxor4d::CurveSampleValueType::Base, elem->velSamples, i) / sampleScalar / scale;
 					moduleData.m_curves[curve_type].controlPoints[i].value = baseVel;
 
-					moduleData.m_curves[curve_type].controlPoints[i].time = sampleSize * i;
+					moduleData.m_curves[curve_type].controlPoints[i].time = round2(sampleSize * i);
 				};
 
 				const auto set_ampl = [&](module_velocity_curve_e curve_type, xoxor4d::VelocityDirectionType dir, float lScale, float wScale)
@@ -1069,7 +1084,7 @@ namespace ZoneTool::IW5
 					auto amplVel = xoxor4d::GetVelocityValue(stype, dir, xoxor4d::CurveSampleValueType::Amplitude, elem->velSamples, i) / sampleScalar / scale;
 					moduleData.m_curves[curve_type].controlPoints[i].value = baseVel + amplVel;
 
-					moduleData.m_curves[curve_type].controlPoints[i].time = sampleSize * i;
+					moduleData.m_curves[curve_type].controlPoints[i].time = round2(sampleSize * i);
 				};
 
 				set_base(module_velocity_curve_e::forward0, xoxor4d::VelocityDirectionType::Forward, lForwardScale, wForwardScale);
@@ -1851,7 +1866,7 @@ namespace ZoneTool::IW5
 				if (looping)
 				{
 					// forever
-					if (emitter->particleCountMax == 0x7FFFFFFF)
+					if (elem->spawn.looping.count == 0x7FFFFFFF)
 					{
 						emitter->particleSpawnRate.min = static_cast<float>(elem->spawn.looping.intervalMsec);
 						emitter->particleSpawnRate.max = static_cast<float>(elem->spawn.looping.intervalMsec);

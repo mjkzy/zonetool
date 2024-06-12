@@ -36,77 +36,66 @@ namespace ZoneTool
 			MTL_TYPE_EQ = 73, // "eq"
 		};
 
-		std::unordered_map<std::string, std::string> material_prefixes[] =
+		std::string prefixes[] =
 		{
-			{{"m", "mo"},
-			{"me", "mo"},
-			{"mc", "mo"},
-			{"w", "w"},
-			{"wc", "wc"}}
+			"mo",
+			"eq",
+		};
+
+		std::unordered_map<std::string, std::uint8_t> prefixes_types =
+		{
+			{"mo", MTL_TYPE_MO},
+			{"eq", MTL_TYPE_EQ},
 		};
 
 		std::unordered_map<std::string, std::string> prefix_cache;
-		std::string replace_material_prefix(const std::string& name, std::string opt)
+		std::string replace_material_prefix(const std::string& name, std::string technique)
 		{
-			for (auto& prefix_map : material_prefixes)
+			if (prefix_cache.contains(name))
 			{
-				for (auto& pair : prefix_map)
+				return prefix_cache[name];
+			}
+
+			if (!technique.empty() && mapped_techsets.find(technique) != mapped_techsets.end())
+			{
+				std::string new_tech = mapped_techsets[technique];
+				for (auto& prefix : prefixes)
 				{
-					auto prefix = pair.first + "/";
-					auto replacement = pair.second + "/";
-					
-					if (name.starts_with(prefix))
+					if (new_tech.starts_with(prefix + "_"))
 					{
+						auto offset_end = name.find("/");
+						if (offset_end == std::string::npos)
+						{
+							offset_end = 0;
+						}
+
+						const auto replacement = prefix + "/";
+
 						std::string replaced = name;
-						replaced.replace(0, prefix.length(), replacement);
-						return replaced;
+						replaced.replace(0, offset_end, replacement);
+						prefix_cache.insert(std::make_pair(name, replaced));
 					}
 				}
 			}
-			if (prefix_cache.contains(name) || opt.size() && (opt.find("effect") != std::string::npos || opt.find("dist") != std::string::npos))
-			{
-				auto replaced = "eq"s + "/"s + name;
-				prefix_cache.insert(std::make_pair(name, replaced));
-				return replaced;
-			}
+
 			return name;
 		}
 
-		std::uint8_t get_material_type_from_name(const std::string& name, std::string opt)
+		std::uint8_t get_material_type_from_technique(std::string technique)
 		{
-			auto prefix_idx = name.find("/");
-			if (prefix_idx != std::string::npos && prefix_idx)
+			if (!technique.empty() && mapped_techsets.find(technique) != mapped_techsets.end())
 			{
-				std::string prefix = std::string(name.begin(), name.begin() + prefix_idx);
-				if (prefix == "m")
+				std::string new_tech = mapped_techsets[technique];
+				for (auto& prefix_pair : prefixes_types)
 				{
-					return IW7::MTL_TYPE_MO;
-				}
-				else if (prefix == "me")
-				{
-					return IW7::MTL_TYPE_MO;
-				}
-				else if (prefix == "mc")
-				{
-					return IW7::MTL_TYPE_MO;
-				}
-				else if (prefix == "w")
-				{
-					return IW7::MTL_TYPE_W;
-				}
-				else if (prefix == "wc")
-				{
-					return IW7::MTL_TYPE_WC;
-				}
-				else
-				{
-					ZONETOOL_WARNING("Unknown material type for prefix \"%s\" (material: %s)", prefix.data(), name.data());
-				}
-			}
+					const auto& prefix = prefix_pair.first;
+					const auto type = prefix_pair.second;
 
-			if (opt.size() && (opt.find("effect") != std::string::npos || opt.find("dist") != std::string::npos))
-			{
-				return IW7::MTL_TYPE_EQ;
+					if (prefix_pair.first.starts_with(prefix + "_"))
+					{
+						return type;
+					}
+				}
 			}
 
 			return IW7::MTL_TYPE_DEFAULT;
