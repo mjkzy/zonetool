@@ -3,43 +3,13 @@
 
 #include "ParticleSystem.hpp"
 
+#include "IW3/Structs.hpp"
+#include "IW3/Dumper/IW7/Assets/Material.hpp"
+
 namespace ZoneTool::IW5
 {
 	namespace IW7Converter
 	{
-		namespace
-		{
-			float Vec2Normalize(float* a1) 
-			{
-				float y = a1[1];
-				float x = a1[0];
-				float length = std::sqrt(x * x + y * y);
-
-				// Avoid division by zero by setting a minimum length
-				float divisor = (length < 1e-6) ? 1.0f : length;
-				float inverse_length = 1.0f / divisor;
-
-				a1[0] = x * inverse_length;
-				a1[1] = y * inverse_length;
-
-				return length;
-			}
-
-			// Function to round a number based on a specified number of decimal places
-			float round2(float num, int decimalPlaces = 3) 
-			{
-				float scale = std::pow(10.0f, decimalPlaces); // Calculate the scaling factor
-				float scaled = num * scale;                  // Scale the number
-				float rounded_scaled = std::round(scaled);   // Round the scaled number
-				float final_result = rounded_scaled / scale; // Scale back to original range
-
-				// Now round the final result to the nearest integer
-				float rounded = std::round(final_result);
-
-				return rounded;
-			}
-		}
-
 		DEFINE_ENUM_FLAG_OPERATORS(IW7::ParticleDataFlags)
 
 		__int64 system_flags;
@@ -449,7 +419,7 @@ namespace ZoneTool::IW5
 			{
 				assert(curves[i].numControlPoints > 0);
 				assert(curves[i].controlPoints[0].time == 0.0f);
-				assert(curves[i].controlPoints[curves[i].numControlPoints - 1].time == 1.0f);
+				//assert(curves[i].controlPoints[curves[i].numControlPoints - 1].time == 1.0f);
 
 				float prev_time = 0.0f;
 
@@ -502,6 +472,20 @@ namespace ZoneTool::IW5
 
 			curve.controlPoints[1].time = 1.0f;
 			curve.controlPoints[1].value = 0.0f;
+		}
+
+		void fixup_geotrail_material(FxElemDef* def, Material* material)
+		{
+			if (def->elemType != FX_ELEM_TYPE_TRAIL) return;
+
+			if (get_linker_mode() == linker_mode::iw3)
+			{
+				IW3::IW7Dumper::dump(reinterpret_cast<ZoneTool::IW3::Material*>(material), true);
+			}
+			else
+			{
+				ZONETOOL_WARNING("Material %s for GEO TRAIL needs manual fixup (eq->ev)...", material->name);
+			}
 		}
 
 		void generate_color_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
@@ -571,7 +555,7 @@ namespace ZoneTool::IW5
 
 				for (auto j = 0; j < 8; j++)
 				{
-					moduleData.m_curves[j].controlPoints[i].time = round2(sampleSize * i);
+					moduleData.m_curves[j].controlPoints[i].time = sampleSize * i;
 				}
 			}
 
@@ -769,30 +753,30 @@ namespace ZoneTool::IW5
 			{
 				if (widthScale)
 				{
-					moduleData.m_curves[width_index0].controlPoints[i].time = round2(sampleSize * i);
+					moduleData.m_curves[width_index0].controlPoints[i].time = sampleSize * i;
 					moduleData.m_curves[width_index0].controlPoints[i].value = elem->visSamples[i].base.size[xoxor4d::SizeCurveType::Width] / widthScale;
 
-					moduleData.m_curves[width_index1].controlPoints[i].time = round2(sampleSize * i);
+					moduleData.m_curves[width_index1].controlPoints[i].time = sampleSize * i;
 					moduleData.m_curves[width_index1].controlPoints[i].value = elem->visSamples[i].amplitude.size[xoxor4d::SizeCurveType::Width] / widthScale;
 					moduleData.m_curves[width_index1].controlPoints[i].value += moduleData.m_curves[width_index0].controlPoints[i].value;
 				}
 
 				if (heightScale)
 				{
-					moduleData.m_curves[height_index0].controlPoints[i].time = round2(sampleSize * i);
+					moduleData.m_curves[height_index0].controlPoints[i].time = sampleSize * i;
 					moduleData.m_curves[height_index0].controlPoints[i].value = elem->visSamples[i].base.size[xoxor4d::SizeCurveType::Height] / heightScale;
 
-					moduleData.m_curves[height_index1].controlPoints[i].time = round2(sampleSize * i);
+					moduleData.m_curves[height_index1].controlPoints[i].time = sampleSize * i;
 					moduleData.m_curves[height_index1].controlPoints[i].value = elem->visSamples[i].amplitude.size[xoxor4d::SizeCurveType::Height] / heightScale;
 					moduleData.m_curves[height_index1].controlPoints[i].value += moduleData.m_curves[height_index0].controlPoints[i].value;
 				}
 
 				if (scaleScale)
 				{
-					moduleData.m_curves[scale_index0].controlPoints[i].time = round2(sampleSize * i);
+					moduleData.m_curves[scale_index0].controlPoints[i].time = sampleSize * i;
 					moduleData.m_curves[scale_index0].controlPoints[i].value = elem->visSamples[i].base.scale / scaleScale;
 
-					moduleData.m_curves[scale_index1].controlPoints[i].time = round2(sampleSize * i);
+					moduleData.m_curves[scale_index1].controlPoints[i].time = sampleSize * i;
 					moduleData.m_curves[scale_index1].controlPoints[i].value = elem->visSamples[i].amplitude.scale / scaleScale;
 					moduleData.m_curves[scale_index1].controlPoints[i].value += moduleData.m_curves[scale_index0].controlPoints[i].value;
 				}
@@ -881,12 +865,12 @@ namespace ZoneTool::IW5
 			{
 				auto keyValue = elem->visSamples[i].base.rotationDelta * sampleScalar / rotationScale;
 				moduleData.m_curves[0].controlPoints[i].value = keyValue;
-				moduleData.m_curves[0].controlPoints[i].time = round2(sampleSize * i);
+				moduleData.m_curves[0].controlPoints[i].time = sampleSize * i;
 				
 				auto baseVel = elem->visSamples[i].base.rotationDelta * sampleScalar / rotationScale;
 				auto amplVel = elem->visSamples[i].amplitude.rotationDelta * sampleScalar / rotationScale;
 				moduleData.m_curves[1].controlPoints[i].value = baseVel + amplVel;
-				moduleData.m_curves[1].controlPoints[i].time = round2(sampleSize * i);
+				moduleData.m_curves[1].controlPoints[i].time = sampleSize * i;
 			}
 
 			calculate_inv_time_delta(moduleData.m_curves, GetModuleNumCurves(module.moduleType));
@@ -913,16 +897,16 @@ namespace ZoneTool::IW5
 			switch (elem->flags & FX_ELEM_RUN_MASK)
 			{
 			case FX_ELEM_RUN_RELATIVE_TO_WORLD:
-				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_WORLD_WITH_BOLT_INFO;
-				moduleData.m_useBoltInfo = true;
+				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_WORLD;
+				moduleData.m_useBoltInfo = false;
 				break;
 			case FX_ELEM_RUN_RELATIVE_TO_SPAWN:
-				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_LOCAL_WITH_BOLT_INFO;
-				moduleData.m_useBoltInfo = true;
+				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_LOCAL;
+				moduleData.m_useBoltInfo = false;
 				break;
 			case FX_ELEM_RUN_RELATIVE_TO_EFFECT:
-				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_RELATIVE_TO_EFFECT_ORIGIN_WITH_BOLT_INFO;
-				moduleData.m_useBoltInfo = true;
+				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_RELATIVE_TO_EFFECT_ORIGIN;
+				moduleData.m_useBoltInfo = false;
 				break;
 			case FX_ELEM_RUN_RELATIVE_TO_OFFSET:
 				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_RELATIVE_TO_EFFECT_ORIGIN; // idk
@@ -935,8 +919,8 @@ namespace ZoneTool::IW5
 
 			if (elem->elemType == FX_ELEM_TYPE_TRAIL)
 			{
-				//moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_LOCAL_WITH_BOLT_INFO;
-				//moduleData.m_useBoltInfo = true;
+				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_LOCAL_WITH_BOLT_INFO;
+				moduleData.m_useBoltInfo = true;
 			}
 
 			modules.push_back(module);
@@ -1070,7 +1054,7 @@ namespace ZoneTool::IW5
 					auto baseVel = xoxor4d::GetVelocityValue(stype,  dir, xoxor4d::CurveSampleValueType::Base, elem->velSamples, i) / sampleScalar / scale;
 					moduleData.m_curves[curve_type].controlPoints[i].value = baseVel;
 
-					moduleData.m_curves[curve_type].controlPoints[i].time = round2(sampleSize * i);
+					moduleData.m_curves[curve_type].controlPoints[i].time = sampleSize * i;
 				};
 
 				const auto set_ampl = [&](module_velocity_curve_e curve_type, xoxor4d::VelocityDirectionType dir, float lScale, float wScale)
@@ -1084,7 +1068,7 @@ namespace ZoneTool::IW5
 					auto amplVel = xoxor4d::GetVelocityValue(stype, dir, xoxor4d::CurveSampleValueType::Amplitude, elem->velSamples, i) / sampleScalar / scale;
 					moduleData.m_curves[curve_type].controlPoints[i].value = baseVel + amplVel;
 
-					moduleData.m_curves[curve_type].controlPoints[i].time = round2(sampleSize * i);
+					moduleData.m_curves[curve_type].controlPoints[i].time = sampleSize * i;
 				};
 
 				set_base(module_velocity_curve_e::forward0, xoxor4d::VelocityDirectionType::Forward, lForwardScale, wForwardScale);
@@ -1104,6 +1088,9 @@ namespace ZoneTool::IW5
 
 			state_flags |= local != 0 ? IW7::PARTICLE_STATE_DEF_FLAG_HAS_VELOCITY_CURVE_LOCAL : 0;
 			state_flags |= world != 0 ? IW7::PARTICLE_STATE_DEF_FLAG_HAS_VELOCITY_CURVE_WORLD : 0;
+
+			state_flags |= local != 0 ? IW7::PARTICLE_STATE_DEF_FLAG_HAS_VELOCITY_CURVE_LOCAL2 : 0;
+			state_flags |= world != 0 ? IW7::PARTICLE_STATE_DEF_FLAG_HAS_VELOCITY_CURVE_WORLD2 : 0;
 
 			emitterdata_flags |= IW7::USE_VELOCITY;
 
@@ -1178,6 +1165,9 @@ namespace ZoneTool::IW5
 			auto& moduleData = module.moduleData.initAttributes;
 			moduleData.type = module.moduleType;
 			moduleData.m_flags = 0;
+
+			moduleData.m_useNonUniformInterpolationForColor = false;
+			moduleData.m_useNonUniformInterpolationForSize = (elem->flags & FX_ELEM_NONUNIFORM_SCALE) != 0;
 
 			moduleData.m_sizeMin.v[0] = 10.0f;
 			moduleData.m_sizeMin.v[1] = 10.0f;
@@ -1473,6 +1463,8 @@ namespace ZoneTool::IW5
 				{
 					for (int idx = 0; idx < moduleData.m_linkedAssetList.numAssets; idx++)
 					{
+						fixup_geotrail_material(elem, elem->visuals.array[idx].material);
+
 						moduleData.m_linkedAssetList.assetList[idx].material = allocator.manual_allocate<IW7::Material>(8);
 						moduleData.m_linkedAssetList.assetList[idx].material->name = allocator.duplicate_string(
 							IW7::replace_material_prefix(elem->visuals.array[idx].material->name));
@@ -1480,6 +1472,8 @@ namespace ZoneTool::IW5
 				}
 				else
 				{
+					fixup_geotrail_material(elem, elem->visuals.instance.material);
+
 					moduleData.m_linkedAssetList.assetList[0].material = allocator.manual_allocate<IW7::Material>(8);
 					moduleData.m_linkedAssetList.assetList[0].material->name = allocator.duplicate_string(
 						IW7::replace_material_prefix(elem->visuals.instance.material->name));
@@ -1511,10 +1505,28 @@ namespace ZoneTool::IW5
 			moduleData.type = module.moduleType;
 			moduleData.m_flags = 0;
 
-			moduleData.m_orientationQuat.v[0] = 0.4999999701976776f;
-			moduleData.m_orientationQuat.v[1] = 0.4999999701976776f;
-			moduleData.m_orientationQuat.v[2] = 0.4999999701976776f;
-			moduleData.m_orientationQuat.v[3] = 0.4999999701976776f;
+			moduleData.m_orientationQuat.v[0] = 0.5f;
+			moduleData.m_orientationQuat.v[1] = 0.5f;
+			moduleData.m_orientationQuat.v[2] = 0.5f;
+			moduleData.m_orientationQuat.v[3] = 0.5f;
+
+			switch (elem->flags & FX_ELEM_RUN_MASK)
+			{
+			case FX_ELEM_RUN_RELATIVE_TO_WORLD:
+				
+				break;
+			case FX_ELEM_RUN_RELATIVE_TO_SPAWN:
+				// not sure whats up with this
+				moduleData.m_orientationQuat.v[1] *= -1.0f;
+				moduleData.m_orientationQuat.v[2] *= -1.0f;
+				break;
+			case FX_ELEM_RUN_RELATIVE_TO_EFFECT:
+				
+				break;
+			case FX_ELEM_RUN_RELATIVE_TO_OFFSET:
+				
+				break;
+			}
 
 			modules.push_back(module);
 		}
@@ -1620,7 +1632,7 @@ namespace ZoneTool::IW5
 			moduleData.type = module.moduleType;
 			moduleData.m_flags = 0;
 
-			if ((elem->flags & FX_ELEM_RUN_MASK) == FX_ELEM_RUN_RELATIVE_TO_WORLD/* && elem->elemType != FX_ELEM_TYPE_TRAIL*/)
+			if ((elem->flags & FX_ELEM_RUN_MASK) == FX_ELEM_RUN_RELATIVE_TO_WORLD && elem->elemType != FX_ELEM_TYPE_TRAIL)
 			{
 				moduleData.m_flags |= IW7::PARTICLE_MODULE_FLAG_USE_WORLD_SPACE;
 			}
@@ -1805,17 +1817,17 @@ namespace ZoneTool::IW5
 			moduleData.type = module.moduleType;
 			moduleData.m_flags = 0;
 
-			moduleData.m_numPointsMax = 16;
-			moduleData.m_splitDistance = 100.0f;
+			moduleData.m_numPointsMax = 16; // default value
+			moduleData.m_splitDistance = static_cast<float>(elem->extended.trailDef->repeatDist);
 			moduleData.m_splitAngle = 0.0f;
 			moduleData.m_centerOffset = 0.0f;
-			moduleData.m_numSheets = 1;
+			moduleData.m_numSheets = 2; // 1 sheet = horizontal, 2 sheets = horizontal + vertical
 			moduleData.m_fadeInDistance = 0.0f;
 			moduleData.m_fadeOutDistance = 0.0f;
 			moduleData.m_tileDistance = static_cast<float>(elem->extended.trailDef->repeatDist);
 			moduleData.m_tileOffset.min = 0.0f;
-			moduleData.m_tileOffset.max = -25.0f;
-			moduleData.m_scrollTime = 0.0f; //elem->extended.trailDef->scrollTimeMsec / 1000.f;
+			moduleData.m_tileOffset.max = 0.0f;
+			moduleData.m_scrollTime = elem->extended.trailDef->scrollTimeMsec / 1000.f; // doesn't seem to do anything
 			moduleData.m_useLocalVelocity = false;
 			moduleData.m_useVerticalTexture = false;
 			moduleData.m_cameraFacing = false;
@@ -1876,16 +1888,17 @@ namespace ZoneTool::IW5
 					}
 					else
 					{
-						auto intervalMsec = static_cast<float>(elem->spawn.looping.intervalMsec);
-						IW7::ParticleFloatRange intervalMsecRange{ intervalMsec, intervalMsec };
+						int interval = elem->spawn.looping.intervalMsec;
+						int particle_count = elem->spawn.looping.count;
 
-						auto scalar = Vec2Normalize(reinterpret_cast<float*>(&intervalMsecRange));
+						float emitter_life = (particle_count * interval) / 1000.0f;
+						float spawn_rate = particle_count / emitter_life;
 
-						emitter->particleSpawnRate.min = scalar;
-						emitter->particleSpawnRate.max = scalar;
+						emitter->particleSpawnRate.min = spawn_rate;
+						emitter->particleSpawnRate.max = spawn_rate;
 
-						emitter->emitterLife.min = intervalMsecRange.min / scalar;
-						emitter->emitterLife.max = intervalMsecRange.max / scalar;
+						emitter->emitterLife.min = emitter_life;
+						emitter->emitterLife.max = emitter_life;
 
 						emitter->particleCountMax = elem->spawn.looping.count;
 					}

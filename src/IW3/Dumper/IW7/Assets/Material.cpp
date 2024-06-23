@@ -14,16 +14,21 @@ namespace ZoneTool
 	{
 		namespace
 		{
-			std::string get_IW7_techset(std::string name, std::string matname, bool* result)
+			std::string get_IW7_techset(std::string name, std::string matname, bool* result, bool effect_vertlit = false)
 			{
-				if (mapped_techsets.find(name) == mapped_techsets.end())
-				{
-					ZONETOOL_ERROR("Could not find mapped IW7 techset for IW5 techset \"%s\" (material: %s)", name.data(), matname.data());
-					*result = false;
-					return "2d";
-				}
+				auto iw7_techset = get_mapped_techset(name, effect_vertlit);
+
 				*result = true;
-				return mapped_techsets[name];
+				if (name != "2d" && iw7_techset == "2d")
+				{
+					ZONETOOL_ERROR("Could not find mapped IW7 techset for techset \"%s\" (material: %s)%s", 
+						name.data(), 
+						matname.data(), 
+						effect_vertlit ? " (EFFECT_VERTLIT)" : "");
+					*result = false;
+				}
+
+				return iw7_techset;
 			}
 
 			std::unordered_map<std::uint8_t, std::uint8_t> mapped_sortkeys =
@@ -137,7 +142,7 @@ namespace ZoneTool
 					flags |= mapped_render_flags_by_techset[IW7_techset];
 				}
 
-				if (IW7_techset.starts_with("eq_"))
+				if (IW7_techset.starts_with("eq_") || IW7_techset.starts_with("ev_"))
 				{
 					flags |= 0x1;
 				}
@@ -166,11 +171,11 @@ namespace ZoneTool
 			return new_name;
 		}
 
-		void dump(Material* asset)
+		void dump(Material* asset, bool geotrail)
 		{
 			if (asset)
 			{
-				auto new_name = IW7::replace_material_prefix(asset->name, asset->techniqueSet ? asset->techniqueSet->name : "");
+				auto new_name = IW7::replace_material_prefix(asset->name, asset->techniqueSet ? asset->techniqueSet->name : "", geotrail);
 				auto c_name = clean_name(new_name);
 
 				const auto path = "materials\\"s + new_name + ".json"s;
@@ -187,7 +192,7 @@ namespace ZoneTool
 					iw3_techset = asset->techniqueSet->name;
 
 					bool result = false;
-					iw7_techset = IW7::get_IW7_techset(iw3_techset, asset->name, &result);
+					iw7_techset = IW7::get_IW7_techset(iw3_techset, asset->name, &result, geotrail);
 					if (!result)
 					{
 						matdata["techniqueSet->original"] = iw3_techset;
@@ -196,8 +201,6 @@ namespace ZoneTool
 					}
 					matdata["techniqueSet->name"] = iw7_techset;
 				}
-
-				IW7::prefix_cache[asset->name].clear();
 
 				matdata["gameFlags"] = asset->gameFlags; // convert
 				matdata["unkFlags"] = 0; // idk
@@ -214,7 +217,7 @@ namespace ZoneTool
 
 				matdata["stateFlags"] = asset->stateFlags; // convert
 				matdata["cameraRegion"] = IW7::get_IW7_camera_region(asset->cameraRegion, asset->name, iw7_techset);
-				matdata["materialType"] = IW7::get_material_type_from_technique(asset->techniqueSet ? asset->techniqueSet->name : "");
+				matdata["materialType"] = IW7::get_material_type_from_techset(iw7_techset);
 				matdata["assetFlags"] = 0;//IW7::MTL_ASSETFLAG_NONE;
 
 				ordered_json constant_table;

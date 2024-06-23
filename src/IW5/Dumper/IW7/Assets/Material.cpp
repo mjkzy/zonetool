@@ -3,6 +3,17 @@
 
 //#include "IW7/Assets/Material.hpp"
 
+//r0 - replace
+//c0 - color map
+//no - normal map
+//s0 - specular map
+//p0 - parallax
+//a0 - Add
+//b0 - Blend
+//d0 - Detail
+//t0 - transparent ? (means that its replace + alpha test >= 128 meaning either full / no transparency per pixel)
+//q0 - (don't know the word, it's a detail map for normals)
+
 namespace ZoneTool
 {
 	namespace IW7
@@ -25,40 +36,56 @@ namespace ZoneTool
 			{"distortion_scale_zfeather",				"eq_distortion_scale_zfeather"},
 		};
 
+		std::unordered_map<std::string, std::string> mapped_techsets_effect_vertlit =
+		{
+			{"effect",									"ev_effect_blend_lin_ct_ndw_nocast"},
+		};
+
 		enum MaterialType : std::uint8_t
 		{
 			MTL_TYPE_DEFAULT = 0x0, // ""
-			MTL_TYPE_M = 1, // "m"
-			MTL_TYPE_MO = 23, // "mo"
-			MTL_TYPE_MCO = 24, // "mco"
-			MTL_TYPE_W = 68, // "w"
-			MTL_TYPE_WC = 69, // "wc"
-			MTL_TYPE_EQ = 73, // "eq"
+			MTL_TYPE_MODEL = 1, // "m"
+			MTL_TYPE_MODEL_SELFVIS = 23, // "mo"
+			MTL_TYPE_MODEL_VERTCOL_SELFVIS = 24, // "mco"
+			MTL_TYPE_WORLD = 68, // "w"
+			MTL_TYPE_WORLD_VERTCOL = 69, // "wc"
+			MTL_TYPE_EFFECT_LMAP = 71, // "el"
+			MTL_TYPE_EFFECT_VERTLIT = 72, // "ev"
+			MTL_TYPE_EFFECT_QUAD = 73, // "eq"
 		};
 
 		std::string prefixes[] =
 		{
 			"mo",
+			"ev",
 			"eq",
 		};
 
-		std::unordered_map<std::string, std::uint8_t> prefixes_types =
+		std::uint8_t prefixes_types[] =
 		{
-			{"mo", MTL_TYPE_MO},
-			{"eq", MTL_TYPE_EQ},
+			MTL_TYPE_MODEL_SELFVIS,
+			MTL_TYPE_EFFECT_VERTLIT,
+			MTL_TYPE_EFFECT_QUAD,
 		};
 
-		std::unordered_map<std::string, std::string> prefix_cache;
-		std::string replace_material_prefix(const std::string& name, std::string technique)
+		std::string get_mapped_techset(const std::string& techset, bool effect_vertlit)
 		{
-			if (prefix_cache.contains(name))
+			auto& map = effect_vertlit ? mapped_techsets_effect_vertlit : mapped_techsets;
+			if (map.find(techset) == map.end())
 			{
-				return prefix_cache[name];
+				return "2d";
 			}
+			return map[techset];
+		}
 
-			if (!technique.empty() && mapped_techsets.find(technique) != mapped_techsets.end())
+		std::unordered_map<std::string, std::string> prefix_cache;
+		std::string replace_material_prefix(const std::string& name, std::string techset, bool effect_vertlit)
+		{
+			auto& map = effect_vertlit ? mapped_techsets_effect_vertlit : mapped_techsets;
+
+			if (!techset.empty() && map.find(techset) != map.end())
 			{
-				std::string new_tech = mapped_techsets[technique];
+				std::string new_tech = map[techset];
 				for (auto& prefix : prefixes)
 				{
 					if (new_tech.starts_with(prefix + "_"))
@@ -73,25 +100,30 @@ namespace ZoneTool
 
 						std::string replaced = name;
 						replaced.replace(0, offset_end, replacement);
-						prefix_cache.insert(std::make_pair(name, replaced));
+						prefix_cache[name] = replaced;
+						return replaced;
 					}
 				}
+			}
+
+			if (prefix_cache.contains(name))
+			{
+				return prefix_cache[name];
 			}
 
 			return name;
 		}
 
-		std::uint8_t get_material_type_from_technique(std::string technique)
+		std::uint8_t get_material_type_from_techset(std::string techset) // iw7_techset
 		{
-			if (!technique.empty() && mapped_techsets.find(technique) != mapped_techsets.end())
+			if (!techset.empty())
 			{
-				std::string new_tech = mapped_techsets[technique];
-				for (auto& prefix_pair : prefixes_types)
+				for (auto prefix_idx = 0; prefix_idx < std::size(prefixes); prefix_idx++)
 				{
-					const auto& prefix = prefix_pair.first;
-					const auto type = prefix_pair.second;
+					const auto prefix = prefixes[prefix_idx];
+					const auto type = prefixes_types[prefix_idx];
 
-					if (prefix_pair.first.starts_with(prefix + "_"))
+					if (techset.starts_with(prefix + "_"))
 					{
 						return type;
 					}
