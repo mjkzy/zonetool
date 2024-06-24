@@ -1318,20 +1318,16 @@ namespace ZoneTool::IW7
 
 			DUMP_FIELD(gravityOptions);
 
-			DUMP_FIELD_ARR(groupIDs, 1);
+			DUMP_FIELD_ARR(groupIDs, 4);
 
-			DUMP_FIELD(emitByDistanceDensity.min);
-			DUMP_FIELD(emitByDistanceDensity.max);
-
-			DUMP_FIELD(soloInstanceMax);
-			DUMP_FIELD(instanceAction);
+			DUMP_FIELD(unk1);
+			DUMP_FIELD(unk2);
 
 			DUMP_FIELD(particleSpawnShapeRange.min);
 			DUMP_FIELD(particleSpawnShapeRange.max);
 
 			DUMP_FIELD_ARR(pad, 1);
 
-			DUMP_FIELD(m_dataFlags);
 			DUMP_FIELD(flags);
 
 			for (auto i = 0; i < asset->numStates; i++)

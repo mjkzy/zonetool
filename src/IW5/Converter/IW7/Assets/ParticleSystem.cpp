@@ -10,12 +10,9 @@ namespace ZoneTool::IW5
 {
 	namespace IW7Converter
 	{
-		DEFINE_ENUM_FLAG_OPERATORS(IW7::ParticleDataFlags)
-
 		__int64 system_flags;
 		__int64 state_flags;
 		__int64 emitter_flags;
-		__int64 emitterdata_flags;
 
 		int GetModuleNumCurves(IW7::ParticleModuleType moduleType)
 		{
@@ -464,7 +461,7 @@ namespace ZoneTool::IW5
 
 		void set_default_velocity_values(IW7::ParticleCurveDef& curve)
 		{
-			curve.scale = 0.0f;
+			curve.scale = 1.0f;
 			assert(curve.numControlPoints == 2);
 
 			curve.controlPoints[0].time = 0.0f;
@@ -566,7 +563,6 @@ namespace ZoneTool::IW5
 			fixup_randomization_flags(moduleData.m_curves[2], moduleData.m_curves[6], &moduleData.m_flags);
 			fixup_randomization_flags(moduleData.m_curves[3], moduleData.m_curves[7], &moduleData.m_flags);
 
-			emitterdata_flags |= IW7::USE_COLOR;
 			state_flags |= IW7::PARTICLE_STATE_DEF_FLAG_HAS_COLOR;
 
 			modules.push_back(module);
@@ -799,8 +795,6 @@ namespace ZoneTool::IW5
 
 			state_flags |= IW7::PARTICLE_STATE_DEF_FLAG_HAS_SIZE_CURVE;
 
-			emitterdata_flags |= IW7::USE_SIZE;
-
 			modules.push_back(module);
 		}
 
@@ -901,11 +895,11 @@ namespace ZoneTool::IW5
 				moduleData.m_useBoltInfo = false;
 				break;
 			case FX_ELEM_RUN_RELATIVE_TO_SPAWN:
-				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_LOCAL;
+				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_LOCAL; // PARTICLE_RELATIVE_VELOCITY_TYPE_RELATIVE_TO_EFFECT_ORIGIN is just FUCKED?!
 				moduleData.m_useBoltInfo = false;
 				break;
 			case FX_ELEM_RUN_RELATIVE_TO_EFFECT:
-				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_RELATIVE_TO_EFFECT_ORIGIN;
+				moduleData.m_velocityType = IW7::PARTICLE_RELATIVE_VELOCITY_TYPE_LOCAL;
 				moduleData.m_useBoltInfo = false;
 				break;
 			case FX_ELEM_RUN_RELATIVE_TO_OFFSET:
@@ -1086,13 +1080,14 @@ namespace ZoneTool::IW5
 			fixup_randomization_flags(moduleData.m_curves[module_velocity_curve_e::right0], moduleData.m_curves[module_velocity_curve_e::right1], &moduleData.m_flags);
 			fixup_randomization_flags(moduleData.m_curves[module_velocity_curve_e::up0], moduleData.m_curves[module_velocity_curve_e::up1], &moduleData.m_flags);
 
-			state_flags |= local != 0 ? IW7::PARTICLE_STATE_DEF_FLAG_HAS_VELOCITY_CURVE_LOCAL : 0;
-			state_flags |= world != 0 ? IW7::PARTICLE_STATE_DEF_FLAG_HAS_VELOCITY_CURVE_WORLD : 0;
+			state_flags |= local != 0 ? 0x100 : 0;
+			state_flags |= world != 0 ? 0x200 : 0;
 
-			state_flags |= local != 0 ? IW7::PARTICLE_STATE_DEF_FLAG_HAS_VELOCITY_CURVE_LOCAL2 : 0;
-			state_flags |= world != 0 ? IW7::PARTICLE_STATE_DEF_FLAG_HAS_VELOCITY_CURVE_WORLD2 : 0;
+			//state_flags |= local != 0 ? IW7::PARTICLE_STATE_DEF_FLAG_HAS_VELOCITY_CURVE_LOCAL1 : 0;
+			//state_flags |= local != 0 ? IW7::PARTICLE_STATE_DEF_FLAG_HAS_VELOCITY_CURVE_LOCAL2 : 0;
 
-			emitterdata_flags |= IW7::USE_VELOCITY;
+			//state_flags |= world != 0 ? IW7::PARTICLE_STATE_DEF_FLAG_HAS_VELOCITY_CURVE_WORLD1 : 0;
+			//state_flags |= world != 0 ? IW7::PARTICLE_STATE_DEF_FLAG_HAS_VELOCITY_CURVE_WORLD2 : 0;
 
 			modules.push_back(module);
 		}
@@ -1234,9 +1229,6 @@ namespace ZoneTool::IW5
 
 			state_flags |= IW7::PARTICLE_STATE_DEF_FLAG_HAS_ROTATION_3D_INIT;
 
-			emitterdata_flags |= IW7::USE_ROTATION_ANGLE;
-			emitterdata_flags |= IW7::USE_ROTATION_RATE;
-
 			modules.push_back(module);
 		}
 
@@ -1260,9 +1252,6 @@ namespace ZoneTool::IW5
 			moduleData.m_rotationRate.max = 0.0f;
 
 			state_flags |= IW7::PARTICLE_STATE_DEF_FLAG_HAS_ROTATION_1D_INIT;
-
-			emitterdata_flags |= IW7::USE_ROTATION_ANGLE;
-			//emitterdata_flags |= IW7::USE_ROTATION_RATE;
 
 			modules.push_back(module);
 		}
@@ -1516,7 +1505,7 @@ namespace ZoneTool::IW5
 				
 				break;
 			case FX_ELEM_RUN_RELATIVE_TO_SPAWN:
-				// not sure whats up with this
+				// alrighttt
 				moduleData.m_orientationQuat.v[1] *= -1.0f;
 				moduleData.m_orientationQuat.v[2] *= -1.0f;
 				break;
@@ -1652,8 +1641,6 @@ namespace ZoneTool::IW5
 			module.moduleData.initSpawnShapeBox.m_dimensionsMax.v[1] = elem->spawnOrigin[1].base + elem->spawnOrigin[1].amplitude;
 			module.moduleData.initSpawnShapeBox.m_dimensionsMax.v[2] = elem->spawnOrigin[2].base + elem->spawnOrigin[2].amplitude;
 			module.moduleData.initSpawnShapeBox.m_dimensionsMax.v[3] = 0.0f;
-
-			emitterdata_flags |= IW7::USE_SPAWN_POS;
 
 			state_flags |= IW7::PARTICLE_STATE_DEF_FLAG_HAS_SPAWN_SHAPE;
 
@@ -1837,6 +1824,87 @@ namespace ZoneTool::IW5
 			modules.push_back(module);
 		}
 
+		int test_module_index;
+
+		void generate_death_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
+		{
+			if (!elem->effectOnDeath.handle)
+			{
+				return;
+			}
+
+			IW7::ParticleModuleDef module{};
+			module.moduleType = IW7::PARTICLE_MODULE_TEST_DEATH;
+			auto& moduleData = module.moduleData.testDeath;
+			moduleData.type = module.moduleType;
+			moduleData.m_flags = 0;
+
+			moduleData.m_moduleIndex = test_module_index++;
+
+			moduleData.m_eventHandlerData.m_kill = false;
+
+			moduleData.m_eventHandlerData.m_linkedAssetList.numAssets = 1;
+			moduleData.m_eventHandlerData.m_linkedAssetList.assetList = allocator.allocate<IW7::ParticleLinkedAssetDef>();
+			moduleData.m_eventHandlerData.m_linkedAssetList.assetList->particleSystem = allocator.manual_allocate<IW7::ParticleSystemDef>(8);
+			moduleData.m_eventHandlerData.m_linkedAssetList.assetList->particleSystem->name = allocator.duplicate_string(elem->effectOnDeath.handle->name);
+
+			modules.push_back(module);
+		}
+
+		void generate_impact_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
+		{
+			if (!elem->effectOnImpact.handle)
+			{
+				return;
+			}
+
+			IW7::ParticleModuleDef module{};
+			module.moduleType = IW7::PARTICLE_MODULE_TEST_IMPACT;
+			auto& moduleData = module.moduleData.testDeath;
+			moduleData.type = module.moduleType;
+			moduleData.m_flags = 0;
+
+			moduleData.m_moduleIndex = test_module_index++;
+
+			moduleData.m_eventHandlerData.m_kill = true;
+
+			moduleData.m_eventHandlerData.m_linkedAssetList.numAssets = 1;
+			moduleData.m_eventHandlerData.m_linkedAssetList.assetList = allocator.allocate<IW7::ParticleLinkedAssetDef>();
+			moduleData.m_eventHandlerData.m_linkedAssetList.assetList->particleSystem = allocator.manual_allocate<IW7::ParticleSystemDef>(8);
+			moduleData.m_eventHandlerData.m_linkedAssetList.assetList->particleSystem->name = allocator.duplicate_string(elem->effectOnImpact.handle->name);
+
+			state_flags |= IW7::PARTICLE_STATE_DEF_FLAG_HANDLE_ON_IMPACT;
+
+			modules.push_back(module);
+		}
+
+		void generate_emission_module(FxElemDef* elem, allocator& allocator, std::vector<IW7::ParticleModuleDef>& modules)
+		{
+			if (!elem->effectEmitted.handle)
+			{
+				return;
+			}
+
+			IW7::ParticleModuleDef module{};
+			module.moduleType = IW7::PARTICLE_MODULE_TEST_BIRTH;
+			auto& moduleData = module.moduleData.testBirth;
+			moduleData.type = module.moduleType;
+			moduleData.m_flags = 0;
+
+			moduleData.m_moduleIndex = test_module_index++;
+
+			moduleData.m_eventHandlerData.m_kill = false;
+
+			moduleData.m_eventHandlerData.m_linkedAssetList.numAssets = 1;
+			moduleData.m_eventHandlerData.m_linkedAssetList.assetList = allocator.allocate<IW7::ParticleLinkedAssetDef>();
+			moduleData.m_eventHandlerData.m_linkedAssetList.assetList->particleSystem = allocator.manual_allocate<IW7::ParticleSystemDef>(8);
+			moduleData.m_eventHandlerData.m_linkedAssetList.assetList->particleSystem->name = allocator.duplicate_string(elem->effectEmitted.handle->name);
+
+			state_flags |= IW7::PARTICLE_STATE_DEF_FLAG_HAS_CHILD_EFFECTS;
+
+			modules.push_back(module);
+		}
+
 		IW7::ParticleSystemDef* convert(FxEffectDef* asset, allocator& allocator)
 		{
 			auto* iw7_asset = allocator.allocate<IW7::ParticleSystemDef>();
@@ -1851,17 +1919,17 @@ namespace ZoneTool::IW5
 			{
 				const bool looping = emitter_index < asset->elemDefCountLooping;
 				const bool one_shot = !looping && emitter_index < asset->elemDefCountOneShot;
+				const bool emission = !looping && !one_shot && emitter_index < asset->elemDefCountEmission;
 
 				auto* emitter = &iw7_asset->emitterDefs[emitter_index];
 
 				int elem_index = emitter_index;
 				auto* elem = &asset->elemDefs[elem_index];
 
+				if (emission) __debugbreak();
+
 				emitter->flags = 0;
 				emitter_flags = 0;
-
-				emitter->m_dataFlags = IW7::USE_NONE;
-				emitterdata_flags = 0;
 
 				emitter->particleSpawnRate.min = 5.0f;
 				emitter->particleSpawnRate.max = 5.0f;
@@ -1928,15 +1996,16 @@ namespace ZoneTool::IW5
 				emitter->spawnFrustumCullRadius = elem->spawnFrustumCullRadius;
 				emitter->randomSeed = elem->randomSeed;
 
-				//emitter->particleSpawnShapeRange.min = elem->spawnRange.base;
-				//emitter->particleSpawnShapeRange.max = elem->spawnRange.base + elem->spawnRange.amplitude;
+				emitter->particleSpawnShapeRange.min = 0.0f; // idk (never used)
+				emitter->particleSpawnShapeRange.max = 0.0f; // idk (never used)
 
-				emitter->groupIDs[0] = 0;
+				emitter->groupIDs[0] = 0; // idk
+				emitter->groupIDs[1] = 0; // idk
+				emitter->groupIDs[2] = 0; // idk
+				emitter->groupIDs[3] = 0; // idk
 
-				if (emitter->randomSeed)
-				{
-					emitter->m_dataFlags |= IW7::USE_RANDOM_SEED;
-				}
+				emitter->unk1 = 0; // idk
+				emitter->unk2 = 100.0f; // idk
 
 				emitter_flags |= (elem->flags & FX_ELEM_DRAW_PAST_FOG) != 0 ? IW7::PARTICLE_EMITTER_DEF_FLAG_DRAW_PAST_FOG : 0;
 
@@ -2010,8 +2079,26 @@ namespace ZoneTool::IW5
 					}
 				}
 
-				emitter->m_dataFlags = (IW7::ParticleDataFlags)0x42C80000; 
-				//emitter->m_dataFlags |= (IW7::ParticleDataFlags)emitterdata_flags;
+				// generate test modules
+				{
+					test_module_index = 0;
+
+					std::vector<IW7::ParticleModuleDef> test_modules{};
+					generate_death_module(elem, allocator, test_modules);
+					generate_impact_module(elem, allocator, test_modules);
+					generate_emission_module(elem, allocator, test_modules);
+
+					if (test_modules.size())
+					{
+						state->moduleGroupDefs[IW7::PARTICLE_MODULE_GROUP_TEST].numModules = test_modules.size();
+						state->moduleGroupDefs[IW7::PARTICLE_MODULE_GROUP_TEST].moduleDefs = allocator.allocate<IW7::ParticleModuleDef>(state->moduleGroupDefs[IW7::PARTICLE_MODULE_GROUP_TEST].numModules);
+						for (auto i = 0; i < state->moduleGroupDefs[IW7::PARTICLE_MODULE_GROUP_TEST].numModules; i++)
+						{
+							memcpy(&state->moduleGroupDefs[IW7::PARTICLE_MODULE_GROUP_TEST].moduleDefs[i], &test_modules[i], sizeof(IW7::ParticleModuleDef));
+						}
+					}
+				}
+
 				emitter->flags |= emitter_flags;
 
 				state->flags |= state_flags;
