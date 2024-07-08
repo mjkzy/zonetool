@@ -147,7 +147,7 @@ namespace ZoneTool::S1
 		bool perSurfaceSndAlias;
 	}; assert_sizeof(PhysPreset, 0x60);
 	assert_offsetof(PhysPreset, sndAliasPrefix, 40);
-	
+
 	struct dmMeshNode_array_t
 	{
 		union
@@ -1048,7 +1048,42 @@ namespace ZoneTool::S1
 
 	enum MaterialWorldVertexFormat : std::int32_t
 	{
-		
+		MTL_WORLDVERT_T1 = 0,
+		MTL_WORLDVERT_T2N1 = 1,
+		MTL_WORLDVERT_T2N2 = 2,
+		MTL_WORLDVERT_T3N1 = 3,
+		MTL_WORLDVERT_T3N2 = 4,
+		MTL_WORLDVERT_T3N3 = 5,
+		MTL_WORLDVERT_T4N1 = 6,
+		MTL_WORLDVERT_T4N2 = 7,
+		MTL_WORLDVERT_T4N3 = 8,
+		MTL_WORLDVERT_T4N4 = 9,
+		MTL_WORLDVERT_T5N1 = 10,
+		MTL_WORLDVERT_T5N2 = 11,
+		MTL_WORLDVERT_T5N3 = 12,
+		MTL_WORLDVERT_T5N4 = 13,
+		MTL_WORLDVERT_T5N5 = 14,
+		MTL_WORLDVERT_T6N1 = 15,
+		MTL_WORLDVERT_T6N2 = 16,
+		MTL_WORLDVERT_T6N3 = 17,
+		MTL_WORLDVERT_T6N4 = 18,
+		MTL_WORLDVERT_T6N5 = 19,
+		MTL_WORLDVERT_T7N1 = 20,
+		MTL_WORLDVERT_T7N2 = 21,
+		MTL_WORLDVERT_T7N3 = 22,
+		MTL_WORLDVERT_T7N4 = 23,
+		MTL_WORLDVERT_T7N5 = 24,
+		MTL_WORLDVERT_T8N1 = 25,
+		MTL_WORLDVERT_T8N2 = 26,
+		MTL_WORLDVERT_T8N3 = 27,
+		MTL_WORLDVERT_T8N4 = 28,
+		MTL_WORLDVERT_T8N5 = 29,
+		MTL_WORLDVERT_T9N1 = 30,
+		MTL_WORLDVERT_T9N2 = 31,
+		MTL_WORLDVERT_T9N3 = 32,
+		MTL_WORLDVERT_T9N4 = 33,
+		MTL_WORLDVERT_T9N5 = 34,
+		MTL_WORLDVERT_COUNT = 35,
 	};
 
 	enum MaterialVertexDeclType : std::int32_t
@@ -1062,12 +1097,12 @@ namespace ZoneTool::S1
 
 	enum MaterialStreamRoutingSource : std::int32_t
 	{
-		
+
 	};
 
 	enum MaterialStreamRoutingDestination : std::int32_t
 	{
-		
+
 	};
 
 	struct GfxComputeShaderLoadDef
@@ -1472,7 +1507,7 @@ namespace ZoneTool::S1
 
 	enum GfxCameraRegionType : std::uint8_t
 	{
-		
+
 	};
 
 	enum MaterialType : std::uint8_t
@@ -2166,7 +2201,7 @@ namespace ZoneTool::S1
 
 	enum clientTriggerType_t : std::int32_t
 	{
-		
+
 	};
 
 	struct ClientTriggers
@@ -2502,6 +2537,14 @@ namespace ZoneTool::S1
 		GfxColorFloat PTR64 colorTable;
 	};
 
+	enum FxEffectDefFlags : std::uint32_t
+	{
+		FX_EFFECT_NEEDS_LIGHTING_AT_SPAWN = 0x1,
+		FX_EFFECT_NEEDS_LIGHTING_PER_FRAME_AT_ORIGIN = 0x2,
+		FX_EFFECT_RECEIVES_DYNAMIC_LIGHTING_PER_FRAME_AT_ORIGIN = 0x4,
+		FX_EFFECT_USE_VECTORFIELDS = 0x8,
+	};
+
 	enum FxElemType : std::uint8_t
 	{
 		FX_ELEM_TYPE_SPRITE_BILLBOARD = 0,
@@ -2560,9 +2603,9 @@ namespace ZoneTool::S1
 		FX_ELEM_USE_OCCLUSION_QUERY = 0x10000,
 		FX_ELEM_NODRAW_IN_THERMAL_VIEW = 0x20000,
 		FX_ELEM_THERMAL_MASK = 0x22000,
-		FX_ELEM_SPAWN_IMPACT_FX_WITH_SURFACE_NAME = 0x40000,
-		FX_ELEM_RECEIVE_DYNAMIC_LIGHT = 0x80000,
-		FX_ELEM_VOLUMETRIC_TRAIL = 0x100000,
+		//FX_ELEM_SPAWN_IMPACT_FX_WITH_SURFACE_NAME = 0x40000,
+		FX_ELEM_RECEIVE_DYNAMIC_LIGHT = 0x100000,
+		//FX_ELEM_VOLUMETRIC_TRAIL = 0x100000,
 		FX_ELEM_USE_COLLISION = 0x200000,
 		FX_ELEM_USE_VECTORFIELDS = 0x400000,
 		FX_ELEM_NO_SURFACE_HDR_SCALAR = 0x800000,
@@ -2581,7 +2624,7 @@ namespace ZoneTool::S1
 
 	enum FxElemDefExtraFlags : std::uint32_t
 	{
-		
+
 	};
 
 	struct FxFloatRange
@@ -2651,12 +2694,12 @@ namespace ZoneTool::S1
 	struct FxElemVisualState
 	{
 		float color[4];
-		float pad1[3];
+		float colorHDRScalar[3];
 		float rotationDelta;
 		float rotationTotal;
 		float size[2];
 		float scale;
-		float pad2[2];
+		float pivot[2];
 	};
 
 	struct FxElemVisStateSample
@@ -2704,7 +2747,8 @@ namespace ZoneTool::S1
 		float invSplitDist;
 		float invSplitArcDist;
 		float invSplitTime;
-		char __pad0[8];
+		float fadeHeadDist;
+		float fadeTailDist;
 		int vertCount;
 		FxTrailVertex PTR64 verts;
 		int indCount;
@@ -2737,12 +2781,21 @@ namespace ZoneTool::S1
 		float brightness;
 		float maxLength;
 		int exponent;
-		char __pad0[24];
+		float nearClip;
+		float bulbRadius;
+		float bulbLength;
+		float fadeOffset[2];
+		char unk1;
+		char opl;
+		char unk2;
+		char unused;
 	}; assert_sizeof(FxSpotLightDef, 0x30);
 
 	struct FxOmniLightDef
 	{
-		char __pad0[16];
+		float bulbRadius;
+		float bulbLength;
+		float fadeOffset[2];
 	}; assert_sizeof(FxOmniLightDef, 0x10);
 
 	struct FxFlareDef
@@ -2813,11 +2866,15 @@ namespace ZoneTool::S1
 		FxElemExtendedDefPtr extended;
 		unsigned char sortOrder;
 		unsigned char lightingFrac;
+		unsigned char hdrLightingFrac;
 		unsigned char useItemClip;
 		unsigned char fadeInfo;
 		int randomSeed;
-		float __pad0[6];
-		//char __pad0[24];
+		float unlitHDRScalar;
+		float litHDRScalar;
+		float alphaScalar;
+		float unk4;
+		float unk5;
 	}; assert_sizeof(FxElemDef, 0x140);
 
 	struct FxEffectDef
@@ -2864,8 +2921,8 @@ namespace ZoneTool::S1
 
 	union XAnimDynamicFrames
 	{
-		unsigned char(PTR64 _1)[3];
-		unsigned short(PTR64 _2)[3];
+		unsigned char( PTR64 _1)[3];
+		unsigned short( PTR64 _2)[3];
 	};
 
 	union XAnimDynamicIndices
@@ -2897,7 +2954,7 @@ namespace ZoneTool::S1
 
 	struct XAnimDeltaPartQuatDataFrames2
 	{
-		short(PTR64 frames)[2];
+		short( PTR64 frames)[2];
 		XAnimDynamicIndices indices;
 	};
 
@@ -2915,7 +2972,7 @@ namespace ZoneTool::S1
 
 	struct XAnimDeltaPartQuatDataFrames
 	{
-		short(PTR64 frames)[4];
+		short( PTR64 frames)[4];
 		XAnimDynamicIndices indices;
 	};
 
@@ -2998,7 +3055,7 @@ namespace ZoneTool::S1
 		unsigned short blendShapeWeightCount; // 146
 		short u4; // unused? padding?
 		scr_string_t PTR64 blendShapeWeightNames; // 152
-		char(PTR64 blendShapeWeightUnknown1)[3]; // 160
+		char( PTR64 blendShapeWeightUnknown1)[3]; // 160
 		unsigned short PTR64 blendShapeWeightUnknown2; // 168
 		unsigned short PTR64 blendShapeWeightUnknown3; // 176
 		unsigned short PTR64 blendShapeWeightUnknown4; // 184
@@ -3442,42 +3499,42 @@ namespace ZoneTool::S1
 
 	enum weapType_t : std::int32_t
 	{
-		WEAPCLASS_NONE = 0x0,
-		WEAPCLASS_BULLET = 0x1,
-		WEAPCLASS_GRENADE = 0x2,
-		WEAPCLASS_PROJECTILE = 0x3,
-		WEAPCLASS_RIOTSHIELD = 0x4,
-		WEAPCLASS_ENERGY = 0x5,
-		WEAPCLASS_NUM = 0x6,
+		WEAPTYPE_NONE = 0x0,
+		WEAPTYPE_BULLET = 0x1,
+		WEAPTYPE_GRENADE = 0x2,
+		WEAPTYPE_PROJECTILE = 0x3,
+		WEAPTYPE_RIOTSHIELD = 0x4,
+		WEAPTYPE_ENERGY = 0x5,
+		WEAPTYPE_NUM = 0x6,
 	};
 
 	enum weapClass_t : std::int32_t
 	{
-		WEAPTYPE_RIFLE = 0x0,
-		WEAPTYPE_SNIPER = 0x1,
-		WEAPTYPE_MG = 0x2,
-		WEAPTYPE_SMG = 0x3,
-		WEAPTYPE_SPREAD = 0x4,
-		WEAPTYPE_PISTOL = 0x5,
-		WEAPTYPE_GRENADE = 0x6,
-		WEAPTYPE_ROCKETLAUNCHER = 0x7,
-		WEAPTYPE_TURRET = 0x8,
-		WEAPTYPE_THROWINGKNIFE = 0x9,
-		WEAPTYPE_NON_PLAYER = 0xA,
-		WEAPTYPE_ITEM = 0xB,
-		WEAPTYPE_CONE = 0xC,
-		WEAPTYPE_BEAM = 0xD,
-		WEAPTYPE_SHIELD = 0xE,
-		WEAPTYPE_HOVER = 0xF,
-		WEAPTYPE_CLOAK = 0x10,
-		WEAPTYPE_PING = 0x11,
-		WEAPTYPE_REPULSOR = 0x12,
-		WEAPTYPE_ADRENALINE = 0x13,
-		WEAPTYPE_HEALTH = 0x14,
-		WEAPTYPE_MUTE = 0x15,
-		WEAPTYPE_UNDERWATER = 0x16,
-		WEAPTYPE_BALL = 0x17,
-		WEAPTYPE_NUM = 0x18,
+		WEAPCLASS_RIFLE = 0x0,
+		WEAPCLASS_SNIPER = 0x1,
+		WEAPCLASS_MG = 0x2,
+		WEAPCLASS_SMG = 0x3,
+		WEAPCLASS_SPREAD = 0x4,
+		WEAPCLASS_PISTOL = 0x5,
+		WEAPCLASS_GRENADE = 0x6,
+		WEAPCLASS_ROCKETLAUNCHER = 0x7,
+		WEAPCLASS_TURRET = 0x8,
+		WEAPCLASS_THROWINGKNIFE = 0x9,
+		WEAPCLASS_NON_PLAYER = 0xA,
+		WEAPCLASS_ITEM = 0xB,
+		WEAPCLASS_CONE = 0xC,
+		WEAPCLASS_BEAM = 0xD,
+		WEAPCLASS_SHIELD = 0xE,
+		WEAPCLASS_HOVER = 0xF,
+		WEAPCLASS_CLOAK = 0x10,
+		WEAPCLASS_PING = 0x11,
+		WEAPCLASS_REPULSOR = 0x12,
+		WEAPCLASS_ADRENALINE = 0x13,
+		WEAPCLASS_HEALTH = 0x14,
+		WEAPCLASS_MUTE = 0x15,
+		WEAPCLASS_UNDERWATER = 0x16,
+		WEAPCLASS_BALL = 0x17,
+		WEAPCLASS_NUM = 0x18,
 	};
 
 	enum weapInventoryType_t : std::int32_t
@@ -5614,7 +5671,7 @@ namespace ZoneTool::S1
 		int aabbTreeCount;
 		CollisionAabbTree PTR64 aabbTrees;
 	}; assert_sizeof(PatchesCollisionTree, 16);
-	
+
 	struct SModelAabbNode
 	{
 		Bounds bounds;
@@ -6220,7 +6277,7 @@ namespace ZoneTool::S1
 		char __pad0[4];
 	}; assert_sizeof(grapple_data_t, 48);
 
-	struct /*alignas(128)*/ clipMap_t
+	struct /* alignas(128) */ clipMap_t
 	{
 		const char PTR64 name; // 0
 		int isInUse; // 8
@@ -6491,7 +6548,7 @@ namespace ZoneTool::S1
 		unsigned int PTR64 isInUse;
 		unsigned int PTR64 cellBits;
 		unsigned char PTR64 visData;
-		float(PTR64 linkOrg)[3];
+		float( PTR64 linkOrg)[3];
 		float PTR64 halfThickness;
 		unsigned short PTR64 lightingHandles;
 		FxGlassGeometryData PTR64 initGeoData;
@@ -6562,7 +6619,7 @@ namespace ZoneTool::S1
 		bool isAncestor;
 		unsigned char recursionDepth;
 		unsigned char hullPointCount;
-		float(PTR64 hullPoints)[2];
+		float( PTR64 hullPoints)[2];
 		GfxPortal PTR64 queuedParent;
 	};
 
@@ -6575,7 +6632,7 @@ namespace ZoneTool::S1
 	{
 		GfxPortalWritable writable;
 		DpvsPlane plane;
-		float(PTR64 vertices)[3];
+		float( PTR64 vertices)[3];
 		unsigned short cellIndex;
 		unsigned short closeDistance;
 		unsigned char vertexCount;

@@ -35,8 +35,8 @@ namespace ZoneTool::IW5
 			h1_asset->clientTrigger.triggerStringLength = asset->clientTrigger.triggerStringLength;
 			h1_asset->clientTrigger.triggerString = asset->clientTrigger.triggerString;
 			h1_asset->clientTrigger.visionSetTriggers = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
-			h1_asset->clientTrigger.blendLookup = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
 			h1_asset->clientTrigger.unk1 = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
+			h1_asset->clientTrigger.unk2 = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
 			h1_asset->clientTrigger.triggerType = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo
 			for (auto i = 0; i < asset->clientTrigger.trigger.count; i++)
 			{
@@ -45,7 +45,7 @@ namespace ZoneTool::IW5
 			h1_asset->clientTrigger.origins = reinterpret_cast<float(*__ptr64)[3]>(asset->clientTrigger.origins);
 			h1_asset->clientTrigger.scriptDelay = asset->clientTrigger.scriptDelay;
 			h1_asset->clientTrigger.audioTriggers = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
-			h1_asset->clientTrigger.unk2 = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
+			h1_asset->clientTrigger.blendLookup = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
 			h1_asset->clientTrigger.unk3 = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
 			h1_asset->clientTrigger.unk4 = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
 			h1_asset->clientTrigger.unk5 = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?

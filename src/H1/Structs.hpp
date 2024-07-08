@@ -1,5 +1,6 @@
 #pragma once
 #include <d3d11.h>
+#include <xaudio2fx.h>
 
 #define PTR64 * __ptr64
 #define PTR32 * __ptr32
@@ -74,7 +75,7 @@ namespace ZoneTool::H1
 		ASSET_TYPE_RAWFILE,
 		ASSET_TYPE_SCRIPTFILE,
 		ASSET_TYPE_STRINGTABLE,
-		ASSET_TYPE_LEADERBOARDDEF,
+		ASSET_TYPE_LEADERBOARD,
 		ASSET_TYPE_VIRTUAL_LEADERBOARD,
 		ASSET_TYPE_STRUCTUREDDATADEF,
 		ASSET_TYPE_DDL,
@@ -151,7 +152,7 @@ namespace ZoneTool::H1
 		bool perSurfaceSndAlias;
 	}; assert_sizeof(PhysPreset, 0x60);
 	assert_offsetof(PhysPreset, sndAliasPrefix, 40);
-	
+
 	typedef std::int8_t dm_int8;
 	typedef std::uint8_t dm_uint8;
 	typedef std::int16_t dm_int16;
@@ -1910,16 +1911,14 @@ namespace ZoneTool::H1
 	enum MaterialGameFlags : std::uint8_t
 	{
 		MTL_GAMEFLAG_NONE = 0x0,
-		MTL_GAMEFLAG_CASTS_SHADOW_UNK1 = 0x1,
-		MTL_GAMEFLAG_CASTS_SHADOW_UNK2 = 0x2,
-		MTL_GAMEFLAG_CASTS_SHADOW_UNK3 = 0x3,
-		MTL_GAMEFLAG_CASTS_SHADOW_UNK4 = 0x4,
-		MTL_GAMEFLAG_CASTS_SHADOW_UNK5 = 0x5,
-		MTL_GAMEFLAG_CASTS_SHADOW_SHIFT = 0x6,
-		MTL_GAMEFLAG_CASTS_SHADOW_MASK = 0x1F,
-		MTL_GAMEFLAG_NO_MARK = 0x20,
-		MTL_GAMEFLAG_NO_DELAY = 0x40,
-		MTL_GAMEFLAG_STATIC_MATERIAL = 0x80,
+		MTL_GAMEFLAG_1 = 0x1,
+		MTL_GAMEFLAG_2 = 0x2,
+		MTL_GAMEFLAG_4 = 0x4,
+		MTL_GAMEFLAG_8 = 0x8,
+		MTL_GAMEFLAG_10 = 0x10,
+		MTL_GAMEFLAG_20 = 0x20,
+		MTL_GAMEFLAG_CASTS_SHADOW = 0x40,
+		MTL_GAMEFLAG_EFFECT = 0x80,
 	};
 
 	enum MaterialSortKey : std::uint8_t
@@ -2244,7 +2243,7 @@ namespace ZoneTool::H1
 	enum IMAGE_FLAG : std::uint8_t
 	{
 		IMAGE_FLAG_USE_SRGB_READS = 0x1,
-		IMAGE_FLAG_NOPICMIP = 0x2,
+		IMAGE_FLAG_NOMIPMAPS = 0x2,
 		IMAGE_FLAG_DELAY_LOAD_PIXELS = 0x4,
 		IMAGE_FLAG_PARABOLOID = 0x8,
 		IMAGE_FLAG_HEATMAP = 0x10,
@@ -2805,13 +2804,13 @@ namespace ZoneTool::H1
 		unsigned int triggerStringLength;
 		char PTR64 triggerString;
 		short PTR64 visionSetTriggers;
-		short PTR64 blendLookup;
 		short PTR64 unk1;
+		short PTR64 unk2;
 		short PTR64 triggerType;
 		vec3_t PTR64 origins;
 		float PTR64 scriptDelay;
 		short PTR64 audioTriggers;
-		short PTR64 unk2;
+		short PTR64 blendLookup;
 		short PTR64 unk3;
 		short PTR64 unk4;
 		short PTR64 unk5;
@@ -3048,8 +3047,8 @@ namespace ZoneTool::H1
 		NETCONSTSTRINGTYPE_ANIMCLASS = 21, // acl
 		NETCONSTSTRINGTYPE_LUI = 22, // lui
 		NETCONSTSTRINGTYPE_LASER = 23, // lsr
-		NETCONSTSTRINGTYPE_COUNT = 24,
-		NETCONSTSTRINGTYPE_NONE = 24,
+		NETCONSTSTRINGTYPE_COUNT = 27,
+		NETCONSTSTRINGTYPE_NONE = 27,
 	};
 
 	enum NetConstStringSource
@@ -3141,6 +3140,14 @@ namespace ZoneTool::H1
 		GfxColorFloat PTR64 colorTable;
 	};
 
+	enum FxEffectDefFlags : std::uint32_t
+	{
+		FX_EFFECT_NEEDS_LIGHTING_AT_SPAWN = 0x1,
+		FX_EFFECT_NEEDS_LIGHTING_PER_FRAME_AT_ORIGIN = 0x2,
+		FX_EFFECT_RECEIVES_DYNAMIC_LIGHTING_PER_FRAME_AT_ORIGIN = 0x4,
+		FX_EFFECT_USE_VECTORFIELDS = 0x8,
+	};
+
 	enum FxElemType : std::uint8_t
 	{
 		FX_ELEM_TYPE_SPRITE_BILLBOARD = 0,
@@ -3199,9 +3206,9 @@ namespace ZoneTool::H1
 		FX_ELEM_USE_OCCLUSION_QUERY = 0x10000,
 		FX_ELEM_NODRAW_IN_THERMAL_VIEW = 0x20000,
 		FX_ELEM_THERMAL_MASK = 0x22000,
-		FX_ELEM_SPAWN_IMPACT_FX_WITH_SURFACE_NAME = 0x40000,
-		FX_ELEM_RECEIVE_DYNAMIC_LIGHT = 0x80000,
-		FX_ELEM_VOLUMETRIC_TRAIL = 0x100000,
+		//FX_ELEM_SPAWN_IMPACT_FX_WITH_SURFACE_NAME = 0x40000,
+		FX_ELEM_RECEIVE_DYNAMIC_LIGHT = 0x100000,
+		//FX_ELEM_VOLUMETRIC_TRAIL = 0x100000,
 		FX_ELEM_USE_COLLISION = 0x200000,
 		FX_ELEM_USE_VECTORFIELDS = 0x400000,
 		FX_ELEM_NO_SURFACE_HDR_SCALAR = 0x800000,
@@ -3220,7 +3227,7 @@ namespace ZoneTool::H1
 
 	enum FxElemDefExtraFlags : std::uint32_t
 	{
-		
+
 	};
 
 	struct FxFloatRange
@@ -3290,12 +3297,12 @@ namespace ZoneTool::H1
 	struct FxElemVisualState
 	{
 		float color[4];
-		float pad1[3];
+		float colorHDRScalar[3];
 		float rotationDelta;
 		float rotationTotal;
 		float size[2];
 		float scale;
-		float pad2[2];
+		float pivot[2];
 	};
 
 	struct FxElemVisStateSample
@@ -3343,7 +3350,8 @@ namespace ZoneTool::H1
 		float invSplitDist;
 		float invSplitArcDist;
 		float invSplitTime;
-		char __pad0[8];
+		float fadeHeadDist;
+		float fadeTailDist;
 		int vertCount;
 		FxTrailVertex PTR64 verts;
 		int indCount;
@@ -3376,22 +3384,24 @@ namespace ZoneTool::H1
 		float brightness;
 		float maxLength;
 		int exponent;
-		float unk;
+		float nearClip;
 		float bulbRadius;
-		float multiplier;
+		float bulbLength;
 		float fadeOffset[2];
 		char unk1;
 		char opl;
 		char unk2;
 		char unused;
-	}; assert_sizeof(FxSpotLightDef, 0x30);
+	};
+	assert_sizeof(FxSpotLightDef, 0x30);
 
 	struct FxOmniLightDef
 	{
 		float bulbRadius;
-		float multiplier;
+		float bulbLength;
 		float fadeOffset[2];
-	}; assert_sizeof(FxOmniLightDef, 0x10);
+	};
+	assert_sizeof(FxOmniLightDef, 0x10);
 
 	struct FxFlareDef
 	{
@@ -3461,11 +3471,15 @@ namespace ZoneTool::H1
 		FxElemExtendedDefPtr extended;
 		unsigned char sortOrder;
 		unsigned char lightingFrac;
+		unsigned char hdrLightingFrac;
 		unsigned char useItemClip;
 		unsigned char fadeInfo;
 		int randomSeed;
-		float __pad0[6];
-		//char __pad0[24];
+		float unlitHDRScalar;
+		float litHDRScalar;
+		float alphaScalar;
+		float unk4;
+		float unk5;
 	}; assert_sizeof(FxElemDef, 0x140);
 
 	struct FxEffectDef
@@ -3512,8 +3526,8 @@ namespace ZoneTool::H1
 
 	union XAnimDynamicFrames
 	{
-		unsigned char(PTR64 _1)[3];
-		unsigned short(PTR64 _2)[3];
+		unsigned char( PTR64 _1)[3];
+		unsigned short( PTR64 _2)[3];
 	};
 
 	union XAnimDynamicIndices
@@ -3545,7 +3559,7 @@ namespace ZoneTool::H1
 
 	struct XAnimDeltaPartQuatDataFrames2
 	{
-		short(PTR64 frames)[2];
+		short( PTR64 frames)[2];
 		XAnimDynamicIndices indices;
 	};
 
@@ -3563,7 +3577,7 @@ namespace ZoneTool::H1
 
 	struct XAnimDeltaPartQuatDataFrames
 	{
-		short(PTR64 frames)[4];
+		short( PTR64 frames)[4];
 		XAnimDynamicIndices indices;
 	};
 
@@ -3646,7 +3660,7 @@ namespace ZoneTool::H1
 		unsigned short blendShapeWeightCount; // 146
 		short u4; // unused? padding?
 		scr_string_t PTR64 blendShapeWeightNames; // 152
-		char(PTR64 blendShapeWeightUnknown1)[3]; // 160
+		char( PTR64 blendShapeWeightUnknown1)[3]; // 160
 		unsigned short PTR64 blendShapeWeightUnknown2; // 168
 		unsigned short PTR64 blendShapeWeightUnknown3; // 176
 		unsigned short PTR64 blendShapeWeightUnknown4; // 184
@@ -4116,42 +4130,42 @@ namespace ZoneTool::H1
 
 	enum weapType_t : std::int32_t
 	{
-		WEAPCLASS_NONE = 0x0,
-		WEAPCLASS_BULLET = 0x1,
-		WEAPCLASS_GRENADE = 0x2,
-		WEAPCLASS_PROJECTILE = 0x3,
-		WEAPCLASS_RIOTSHIELD = 0x4,
-		WEAPCLASS_ENERGY = 0x5,
-		WEAPCLASS_NUM = 0x6,
+		WEAPTYPE_NONE = 0x0,
+		WEAPTYPE_BULLET = 0x1,
+		WEAPTYPE_GRENADE = 0x2,
+		WEAPTYPE_PROJECTILE = 0x3,
+		WEAPTYPE_RIOTSHIELD = 0x4,
+		WEAPTYPE_ENERGY = 0x5,
+		WEAPTYPE_NUM = 0x6,
 	};
 
 	enum weapClass_t : std::int32_t
 	{
-		WEAPTYPE_RIFLE = 0x0,
-		WEAPTYPE_SNIPER = 0x1,
-		WEAPTYPE_MG = 0x2,
-		WEAPTYPE_SMG = 0x3,
-		WEAPTYPE_SPREAD = 0x4,
-		WEAPTYPE_PISTOL = 0x5,
-		WEAPTYPE_GRENADE = 0x6,
-		WEAPTYPE_ROCKETLAUNCHER = 0x7,
-		WEAPTYPE_TURRET = 0x8,
-		WEAPTYPE_THROWINGKNIFE = 0x9,
-		WEAPTYPE_NON_PLAYER = 0xA,
-		WEAPTYPE_ITEM = 0xB,
-		WEAPTYPE_CONE = 0xC,
-		WEAPTYPE_BEAM = 0xD,
-		WEAPTYPE_SHIELD = 0xE,
-		WEAPTYPE_HOVER = 0xF,
-		WEAPTYPE_CLOAK = 0x10,
-		WEAPTYPE_PING = 0x11,
-		WEAPTYPE_REPULSOR = 0x12,
-		WEAPTYPE_ADRENALINE = 0x13,
-		WEAPTYPE_HEALTH = 0x14,
-		WEAPTYPE_MUTE = 0x15,
-		WEAPTYPE_UNDERWATER = 0x16,
-		WEAPTYPE_BALL = 0x17,
-		WEAPTYPE_NUM = 0x18,
+		WEAPCLASS_RIFLE = 0x0,
+		WEAPCLASS_SNIPER = 0x1,
+		WEAPCLASS_MG = 0x2,
+		WEAPCLASS_SMG = 0x3,
+		WEAPCLASS_SPREAD = 0x4,
+		WEAPCLASS_PISTOL = 0x5,
+		WEAPCLASS_GRENADE = 0x6,
+		WEAPCLASS_ROCKETLAUNCHER = 0x7,
+		WEAPCLASS_TURRET = 0x8,
+		WEAPCLASS_THROWINGKNIFE = 0x9,
+		WEAPCLASS_NON_PLAYER = 0xA,
+		WEAPCLASS_ITEM = 0xB,
+		WEAPCLASS_CONE = 0xC,
+		WEAPCLASS_BEAM = 0xD,
+		WEAPCLASS_SHIELD = 0xE,
+		WEAPCLASS_HOVER = 0xF,
+		WEAPCLASS_CLOAK = 0x10,
+		WEAPCLASS_PING = 0x11,
+		WEAPCLASS_REPULSOR = 0x12,
+		WEAPCLASS_ADRENALINE = 0x13,
+		WEAPCLASS_HEALTH = 0x14,
+		WEAPCLASS_MUTE = 0x15,
+		WEAPCLASS_UNDERWATER = 0x16,
+		WEAPCLASS_BALL = 0x17,
+		WEAPCLASS_NUM = 0x18,
 	};
 
 	enum weapInventoryType_t : std::int32_t
@@ -5178,9 +5192,9 @@ namespace ZoneTool::H1
 		float hipViewKickYawMax; // 3036
 		float hipViewKickMagMin; // 3040
 		float hipViewKickCenterSpeed; // 3044
-		float hipViewScatterMin; // 3048 // PTR64
-		float hipViewScatterMax; // 3052 // PTR64
-		float xU_043; // 3056 // PTR64
+		float hipViewScatterMin; // 3048 // PTR64 
+		float hipViewScatterMax; // 3052 // PTR64 
+		float xU_043; // 3056 // PTR64 
 		int adsReloadTransTime; // 3060
 		float fightDist; // 3064
 		float maxDist; // 3068
@@ -6297,7 +6311,7 @@ namespace ZoneTool::H1
 		int aabbTreeCount;
 		CollisionAabbTree PTR64 aabbTrees;
 	}; assert_sizeof(PatchesCollisionTree, 16);
-	
+
 	struct SModelAabbNode
 	{
 		Bounds bounds;
@@ -6443,7 +6457,7 @@ namespace ZoneTool::H1
 		float origin[3];
 		unsigned short triggerIndex;
 		unsigned char sunPrimaryLightIndex;
-		unsigned int unk;
+		unsigned int entityUID;
 	}; assert_sizeof(Stage, 32);
 
 	enum DynEntityType : std::int32_t
@@ -6903,7 +6917,7 @@ namespace ZoneTool::H1
 		char __pad0[4];
 	}; assert_sizeof(grapple_data_t, 48);
 
-	struct /*alignas(128)*/ clipMap_t
+	struct /* alignas(128) */ clipMap_t
 	{
 		const char PTR64 name; // 0
 		int isInUse; // 8
@@ -7060,7 +7074,8 @@ namespace ZoneTool::H1
 		snd_alias_list_t PTR64 damagedSound;
 		snd_alias_list_t PTR64 destroyedSound;
 		snd_alias_list_t PTR64 destroyedQuietSound;
-		float unk[2];
+		float highMipRadiusInvSq;
+		float shatteredHighMipRadiusInvSq;
 		int numCrackRings;
 		bool isOpaque;
 	}; assert_sizeof(FxGlassDef, 120);
@@ -7174,7 +7189,7 @@ namespace ZoneTool::H1
 		unsigned int PTR64 isInUse;
 		unsigned int PTR64 cellBits;
 		unsigned char PTR64 visData;
-		float(PTR64 linkOrg)[3];
+		float( PTR64 linkOrg)[3];
 		float PTR64 halfThickness;
 		unsigned short PTR64 lightingHandles;
 		FxGlassGeometryData PTR64 initGeoData;
@@ -7245,7 +7260,7 @@ namespace ZoneTool::H1
 		bool isAncestor;
 		unsigned char recursionDepth;
 		unsigned char hullPointCount;
-		float(PTR64 hullPoints)[2];
+		float( PTR64 hullPoints)[2];
 		GfxPortal PTR64 queuedParent;
 	};
 
@@ -7258,7 +7273,7 @@ namespace ZoneTool::H1
 	{
 		GfxPortalWritable writable;
 		DpvsPlane plane;
-		float(PTR64 vertices)[3];
+		float( PTR64 vertices)[3];
 		unsigned short cellIndex;
 		unsigned short closeDistance;
 		unsigned char vertexCount;
@@ -8031,6 +8046,59 @@ namespace ZoneTool::H1
 		unsigned char ubBadPlaceCount[3];
 	};
 
+	enum nodeSpawnFlags : std::uint32_t
+	{
+		PNF_DONTLINK = 0x1,
+		PNF_INDOORTRANSITION = 0x2,
+		PNF_DONTSTAND = 0x4,
+		PNF_DONTCROUCH = 0x8,
+		PNF_DONTPRONE = 0x10,
+		PNF_CHOKEPOINT = 0x20,
+		PNF_ALT_BOUNDS = 0x40,
+		PNF_PRIORITY = 0x40,
+		PNF_IDLE = 0x80,
+		PSF_ZONE_ISLAND = 0x100,
+		PNF_COVER_PEEKOVER = 0x200,
+		PNF_COVER_PEEKLEFT = 0x400,
+		PNF_COVER_PEEKRIGHT = 0x800,
+		PNF_LINKSTOCHOKE = 0x1000,
+		PNF_INDOOR = 0x2000,
+		PNF_ERROR = 0x4000,
+		PNF_ANGLEVALID = 0x8000,
+		PNF_CANNOTBEUSEDBY_HUMANS = 0x10000,
+		PNF_CANNOTBEUSEDBY_DOGS = 0x20000,
+		PNF_GLASS_LINK = 0x40000,
+		PNF_NO_ENTITY_DISCONNECT = 0x80000,
+	};
+
+	enum nodeType : std::uint16_t
+	{
+		NODE_ERROR = 0,
+		NODE_PATHNODE = 1,
+		NODE_COVER_STAND = 2,
+		NODE_COVER_CROUCH = 3,
+		NODE_COVER_CROUCH_WINDOW = 4,
+		NODE_COVER_PRONE = 5,
+		NODE_COVER_RIGHT = 6,
+		NODE_COVER_LEFT = 7,
+		//NODE_COVER_UNK1 = 8,
+		//NODE_COVER_UNK2 = 9,
+		NODE_COVER_MULTI = 10,
+		NODE_AMBUSH = 11,
+		NODE_EXPOSED = 12,
+		NODE_CONCEALMENT_STAND = 13,
+		NODE_CONCEALMENT_CROUCH = 14,
+		NODE_CONCEALMENT_PRONE = 15,
+		NODE_DOOR = 16, // not confirmed
+		NODE_DOOR_INTERIOR = 17, // not confirmed
+		NODE_SCRIPTED = 18,
+		NODE_NEGOTIATION_BEGIN = 19,
+		NODE_NEGOTIATION_END = 20,
+		NODE_TURRET = 21,
+		NODE_GUARD = 22,
+		NODE_NUMTYPES = 31,
+	};
+
 	struct pathnode_constant_t
 	{
 		unsigned short type;
@@ -8049,7 +8117,7 @@ namespace ZoneTool::H1
 		short wOverlapNode[2];
 		unsigned short totalLinkCount;
 		pathlink_s PTR64 Links;
-		scr_string_t unk;
+		scr_string_t customangles;
 		char __pad1[4];
 	};
 
@@ -8749,6 +8817,517 @@ namespace ZoneTool::H1
 		SurfaceFxEntry PTR64 table; // size: 6
 	};
 
+	enum StatsGroup : std::int32_t
+	{
+		STATSGROUP_RANKED = 0x0,
+		STATSGROUP_PRIVATE = 0x1,
+		STATSGROUP_COOP = 0x2,
+		STATSGROUP_COMMON = 0x3,
+		STATSGROUP_HORDE = 0x4,
+		STATSGROUP_SP = 0x5,
+		STATSGROUP_COUNT = 0x6,
+		STATSGROUP_IGNORE = 0x7,
+	};
+
+	enum LbColType : std::int32_t
+	{
+
+	};
+
+	enum LbAggType : std::int32_t
+	{
+
+	};
+
+	struct LbColumnDef
+	{
+		const char PTR64 name;
+		int id;
+		int propertyId;
+		bool hidden;
+		StatsGroup statsGroup;
+		const char PTR64 statName;
+		LbColType type;
+		int precision;
+		LbAggType agg;
+		int uiCalColX;
+		int uiCalColY;
+	}; assert_sizeof(LbColumnDef, 56);
+
+	enum LbUpdateType : std::int32_t
+	{
+
+	};
+
+	enum LbTrackTypes : std::int32_t
+	{
+
+	};
+
+	struct LeaderboardDef
+	{
+		const char PTR64 name;
+		int id;
+		int id2;
+		int columnCount;
+		int xpColId;
+		int prestigeColId;
+		int pad;
+		LbColumnDef PTR64 columns;
+		LbUpdateType updateType;
+		LbTrackTypes trackTypes;
+	}; assert_sizeof(LeaderboardDef, 0x30);
+	assert_offsetof(LeaderboardDef, columns, 32);
+	assert_offsetof(LeaderboardDef, columnCount, 16);
+
+	struct VLbColumnDef
+	{
+		const char PTR64 name;
+		int id;
+		int unk1;
+		int unk2;
+		int unk3;
+	}; assert_sizeof(VLbColumnDef, 24);
+
+	struct VirtualLeaderboardDef
+	{
+		const char PTR64 name;
+		const char PTR64 leaderboardName;
+		int id;
+		int leaderboardId;
+		VLbColumnDef PTR64 columns;
+		int columnCount;
+		int pad;
+	}; assert_sizeof(VirtualLeaderboardDef, 0x28);
+
+	enum DDLType : std::int32_t
+	{
+		DDL_BYTE_TYPE = 0x0,
+		DDL_SHORT_TYPE = 0x1,
+		DDL_BOOL_TYPE = 0x2,
+		DDL_INT_TYPE = 0x3,
+		DDL_UINT64_TYPE = 0x4,
+		DDL_FLOAT_TYPE = 0x5,
+		DDL_FIXEDPOINT_TYPE = 0x6, // unused
+		DDL_STRING_TYPE = 0x7,
+		DDL_STRUCT_TYPE = 0x8,
+		DDL_ENUM_TYPE = 0x9,
+		DDL_PAD_TYPE = 0xA,
+	};
+
+	enum DDLFLags : std::uint8_t
+	{
+		DDL_FLAG_DIRTY = 0x0,
+		DDL_FLAG_CHECKSUM = 0x1,
+		DDL_FLAG_CODE_VERSION = 0x2,
+		DDL_FLAG_USER_FLAGS = 0x4,
+		DDL_FLAG_NO_PADDING = 0x8,
+		DDL_FLAG_RESERVE = 0x10,
+		DDL_FLAG_DDL_CHECKSUM = 0x20,
+	};
+
+	struct DDLMember
+	{
+		const char PTR64 name;
+		int index;
+		void PTR64 parent;
+		int bitSize;
+		int limitSize;
+		int offset;
+		int type;
+		int externalIndex;
+		unsigned int rangeLimit;
+		unsigned int serverDelta;
+		unsigned int clientDelta;
+		int arraySize;
+		int enumIndex;
+		int permission;
+	};
+
+	struct DDLHash
+	{
+		unsigned int hash;
+		int index;
+	};
+
+	struct DDLHashTable
+	{
+		DDLHash PTR64 list;
+		int count;
+		int max;
+	};
+
+	struct DDLStruct
+	{
+		const char PTR64 name;
+		int bitSize;
+		int memberCount;
+		DDLMember PTR64 members;
+		DDLHashTable hashTableUpper;
+		DDLHashTable hashTableLower;
+	};
+
+	struct DDLEnum
+	{
+		const char PTR64 name;
+		int memberCount;
+		const char PTR64 PTR64 members;
+		DDLHashTable hashTable;
+	};
+
+	struct DDLDef
+	{
+		char PTR64 name;
+		unsigned short version;
+		unsigned int checksum;
+		unsigned char flags;
+		int bitSize;
+		int byteSize;
+		DDLStruct PTR64 structList;
+		int structCount;
+		DDLEnum PTR64 enumList;
+		int enumCount;
+		DDLDef PTR64 next;
+		int headerBitSize;
+		int headerByteSize;
+		int reserveSize;
+		int userFlagsSize;
+		bool paddingUsed;
+	};
+
+	struct DDLRoot
+	{
+		const char PTR64 name;
+		DDLDef PTR64 ddlDef;
+	};
+
+	struct Proto;
+	struct Proto_B;
+	struct Proto_A_A_A;
+	struct Proto_A_A_B_A;
+	struct Proto_A_A_B;
+	struct Proto_A_A;
+	struct Proto_A_B_A;
+	struct Proto_A_B;
+	struct Proto_A;
+	struct Proto_C;
+
+	struct Proto_B
+	{
+		Proto_A_B_A PTR64 unk1;
+		int unk1_count;
+		int unk2;
+	}; assert_sizeof(Proto_B, 16);
+
+	struct Proto_A_A_A
+	{
+		const char PTR64 unk1;
+		Proto_A_A PTR64 unk2;
+		int unk2_count;
+		Proto_B unk3;
+	}; assert_sizeof(Proto_A_A_A, 40);
+	assert_offsetof(Proto_A_A_A, unk2, 8);
+	assert_offsetof(Proto_A_A_A, unk2_count, 16);
+
+	struct Proto_A_A_B_A
+	{
+		int __pad0[3];
+		const char PTR64 unk1;
+	}; assert_sizeof(Proto_A_A_B_A, 24);
+
+	struct Proto_A_A_B
+	{
+		const char PTR64 unk1;
+		Proto_A_A_B_A PTR64 unk2;
+		int unk2_count;
+	}; assert_sizeof(Proto_A_A_B, 24);
+	assert_offsetof(Proto_A_A_B, unk2, 8);
+	assert_offsetof(Proto_A_A_B, unk2_count, 16);
+
+	struct Proto_A_A
+	{
+		const char PTR64 unk1;
+		int __pad0[4];
+		Proto_A_A_A PTR64 unk2;
+		Proto_A_A_B PTR64 unk3;
+	}; assert_sizeof(Proto_A_A, 40);
+	assert_offsetof(Proto_A_A, unk2, 24);
+	assert_offsetof(Proto_A_A, unk3, 32);
+
+	struct Proto_A_B_A
+	{
+		int __pad0[2];
+	}; assert_sizeof(Proto_A_B_A, 8);
+
+	struct Proto_A_B
+	{
+		Proto_A_B_A PTR64 unk1;
+		int unk1_count;
+	}; assert_sizeof(Proto_A_B, 16);
+	assert_offsetof(Proto_A_B, unk1, 0);
+	assert_offsetof(Proto_A_B, unk1_count, 8);
+
+	struct Proto_A
+	{
+		const char PTR64 unk1;
+		Proto_A_A PTR64 unk2;
+		int unk2_count;
+		Proto_A_B unk3;
+	}; assert_sizeof(Proto_A, 40);
+	assert_offsetof(Proto_A, unk2, 8);
+	assert_offsetof(Proto_A, unk2_count, 16);
+	assert_offsetof(Proto_A, unk3, 24);
+
+	struct Proto_C
+	{
+		const char PTR64 unk1;
+		Proto_A_A_B_A PTR64 unk2;
+		int unk2_count;
+	}; assert_sizeof(Proto_C, 24);
+	assert_offsetof(Proto_A, unk2, 8);
+	assert_offsetof(Proto_A, unk2_count, 16);
+
+	struct Proto
+	{
+		const char PTR64 name;
+		const char PTR64 checksum;
+		Proto_A PTR64 unk2;
+		int unk2_count;
+		Proto_B unk3;
+		Proto_C PTR64 unk4;
+		int unk4_count;
+		Proto_B unk5;
+	}; assert_sizeof(Proto, 0x50);
+	assert_offsetof(Proto, unk2, 16);
+	assert_offsetof(Proto, unk2_count, 24);
+	assert_offsetof(Proto, unk3, 32);
+	assert_offsetof(Proto, unk4, 48);
+	assert_offsetof(Proto, unk4_count, 56);
+	assert_offsetof(Proto, unk5, 64);
+
+	struct SndSubmix
+	{
+		const char PTR64 name;
+		short volModIndex;
+		//short pad;
+		float volume;
+		int unk[2];
+	}; assert_sizeof(SndSubmix, 24);
+
+	struct SndSubmixList
+	{
+		const char PTR64 name;
+		SndSubmix PTR64 submixes;
+		int submixCount;
+	}; assert_sizeof(SndSubmixList, 0x18);
+
+	struct ReverbPreset
+	{
+		union
+		{
+			const char PTR64 p_name;
+			const char PTR64 name;
+		};
+		float earlyTime;
+		float lateTime;
+		float earlyGain;
+		float lateGain;
+		float lateGainProx;
+		float returnGain;
+		float earlyLpf;
+		float lateLpf;
+		float inputLpf;
+		float dampLpf;
+		float wallReflect;
+		float dryGain;
+		float earlySize;
+		float lateSize;
+		float diffusion;
+		float rearLevel;
+	}; assert_sizeof(ReverbPreset, 0x48);
+
+	struct EquipmentClothData
+	{
+		char PTR64 szName;
+	};
+
+	struct EquipmentWeaponRattleData
+	{
+		char PTR64 szName;
+		float priority;
+	};
+
+	struct EquipmentSndChance
+	{
+		float rattleChance;
+		float accentChance;
+		float silentChance;
+	};
+
+	struct EquipmentChanceMoveTypes
+	{
+		EquipmentSndChance PTR64 chances;
+	};
+
+	struct EquipmentChanceRattleTypes
+	{
+		EquipmentChanceMoveTypes PTR64 chances;
+	};
+
+	struct EquipmentSoundSet
+	{
+		snd_alias_list_t PTR64 soundPLR;
+		snd_alias_list_t PTR64 soundNPC;
+	};
+
+	struct EquipSoundSetMoveTypes
+	{
+		EquipmentSoundSet PTR64 soundSets;
+	};
+
+	struct EquipSoundSetMantleTypes
+	{
+		EquipmentSoundSet soundSets[14];
+	};
+
+	struct EquipmentSoundTable
+	{
+		union
+		{
+			const char PTR64 szName;
+			const char PTR64 name;
+		};
+		unsigned int numClothTypes;
+		unsigned int numWeaponRattleTypes;
+		unsigned int numMoveTypes;
+		EquipmentClothData PTR64 clothTypes;
+		EquipmentWeaponRattleData PTR64 weaponRattleTypes;
+		EquipmentChanceRattleTypes PTR64 chancesPLR;
+		EquipmentChanceRattleTypes PTR64 chancesNPC;
+		EquipSoundSetMoveTypes PTR64 mvmtClothSoundSets;
+		EquipSoundSetMoveTypes PTR64 mvmtRattleSoundSets;
+		EquipSoundSetMoveTypes mvmtAccentSoundSets;
+		EquipSoundSetMantleTypes PTR64 mvmtMantleSoundSets;
+	};
+
+	struct SndGlobalSettings_t
+	{
+		float globalVolumeModifier;
+		float unk[9];
+		//char __pad0[36];
+	};
+
+	struct XaReverbSettings
+	{
+		int presetOverridden;
+		XAUDIO2FX_REVERB_I3DL2_PARAMETERS reverbSettings;
+	};
+
+	struct SndDriverGlobals
+	{
+		const char PTR64 name;
+		SndGlobalSettings_t settings;
+		XaReverbSettings PTR64 reverbSettings;  // array: 26
+	}; assert_sizeof(SndDriverGlobals, 0x38);
+	assert_offsetof(SndDriverGlobals, reverbSettings, 48);
+
+	enum VectorFieldType : std::int32_t
+	{
+		VECTOR_FIELD_TYPE_NONE = 0x0,
+		VECTOR_FIELD_TYPE_FORCE = 0x1,
+		VECTOR_FIELD_TYPE_VELOCITY = 0x2,
+		VECTOR_FIELD_NUM_TYPES = 0x3,
+	};
+
+	struct VectorFieldSubField
+	{
+		vec4_t PTR64 linearData;
+		ExtentBounds worldBounds;
+		float ds[3];
+		unsigned int numEntries[3];
+		unsigned int flags;
+		VectorFieldType type;
+		unsigned int pad[4];
+	}; assert_sizeof(VectorFieldSubField, 80);
+	assert_offsetof(VectorFieldSubField, linearData, 0);
+	assert_offsetof(VectorFieldSubField, numEntries, 44);
+
+	struct VectorField
+	{
+		const char PTR64 name;
+		VectorFieldSubField PTR64 fields;
+		ExtentBounds bounds;
+		int fieldsCount;
+		int pad;
+	}; assert_sizeof(VectorField, 48);
+	assert_offsetof(VectorField, fields, 8);
+	assert_offsetof(VectorField, fieldsCount, 40);
+
+	struct AnimationAimSet
+	{
+		scr_string_t name;
+		scr_string_t rootName;
+		scr_string_t animName[8];
+		unsigned __int64 rootIndex;
+		unsigned __int64 animIndices[8];
+	};
+
+	struct AnimationEntry
+	{
+		scr_string_t alias;
+		scr_string_t animName;
+	};
+
+	struct AnimationState
+	{
+		scr_string_t name;
+		scr_string_t notify;
+		float blendTime;
+		unsigned char flags;
+		unsigned char entryCount;
+		AnimationAimSet PTR64 aimSet;
+		AnimationEntry PTR64 animEntries;
+		unsigned __int64 PTR64 animIndices;
+	};
+
+	struct AnimationStateMachine
+	{
+		scr_string_t name;
+		unsigned short stateCount;
+		unsigned short aimSetCount;
+		AnimationState PTR64 states;
+		AnimationAimSet PTR64 aimSets;
+	};
+
+	enum AnimationController : std::int32_t
+	{
+		ANIMCTRL_NONE = 0x0,
+		ANIMCTRL_PLAYER = 0x1,
+		ANIMCTRL_DOG = 0x2,
+		ANIMCTRL_NUM = 0x3,
+	};
+
+	struct AnimationClass
+	{
+		union
+		{
+			const char PTR64 className;
+			const char PTR64 name;
+		};
+		AnimationStateMachine PTR64 stateMachine;
+		AnimationController animCtrl;
+		scr_string_t animTree;
+		ScriptableDef PTR64 scriptable;
+		unsigned short soundCount;
+		unsigned short effectCount;
+		scr_string_t PTR64 soundNotes;
+		scr_string_t PTR64 soundNames;
+		scr_string_t PTR64 soundOptions;
+		scr_string_t PTR64 effectNotes;
+		FxEffectDef PTR64 PTR64 effectDefs;
+		scr_string_t PTR64 effectTags;
+	};
+
 	union XAssetHeader
 	{
 		void PTR64 data;
@@ -8770,7 +9349,7 @@ namespace ZoneTool::H1
 		MaterialTechniqueSet PTR64 techniqueSet;
 		GfxImage PTR64 image;
 		snd_alias_list_t PTR64 sound;
-		// submix
+		SndSubmixList PTR64 sndSubmix;
 		SndCurve PTR64 sndCurve;
 		SndCurve PTR64 lpfCurve;
 		SndCurve PTR64 reverbCurve;
@@ -8788,11 +9367,11 @@ namespace ZoneTool::H1
 		// ui map
 		MenuList PTR64 menuList;
 		menuDef_t PTR64 menu;
-		// anim class
+		AnimationClass PTR64 animClass;
 		LocalizeEntry PTR64 localize;
 		WeaponAttachment PTR64 attachment;
 		WeaponDef PTR64 weapon;
-		// snd driver globals
+		SndDriverGlobals PTR64 sndDriverGlobals;
 		FxEffectDef PTR64 fx;
 		FxImpactTable PTR64 impactFx;
 		SurfaceFxTable PTR64 surfaceFx;
@@ -8803,20 +9382,20 @@ namespace ZoneTool::H1
 		RawFile PTR64 rawfile;
 		ScriptFile PTR64 scriptfile;
 		StringTable PTR64 stringTable;
-		// leaderboard
-		// virtual leaderboard
+		LeaderboardDef PTR64 leaderboardDef;
+		VirtualLeaderboardDef PTR64 virtualLeaderboard;
 		StructuredDataDefSet PTR64 structuredDataDefSet;
-		// ddl
-		// proto
+		DDLRoot PTR64 ddlRoot;
+		Proto PTR64 proto;
 		TracerDef PTR64 tracerDef;
 		VehicleDef PTR64 vehDef;
 		AddonMapEnts PTR64 addonMapEnts;
 		NetConstStrings PTR64 netConstStrings;
-		// reverb preset
+		ReverbPreset PTR64 reverbPreset;
 		LuaFile PTR64 luaFile;
 		ScriptableDef PTR64 scriptable;
-		// equipment snd table
-		// vector field
+		EquipmentSoundTable PTR64 equipSndTable;
+		VectorField PTR64 vectorField;
 		DopplerPreset PTR64 doppler;
 		FxParticleSimAnimation PTR64 particleSimAnimation;
 		LaserDef PTR64 laser;
@@ -8834,7 +9413,7 @@ namespace ZoneTool::H1
 	struct XAssetEntry
 	{
 		XAsset asset;
-		char zoneIndex;
+		short zoneIndex;
 		volatile char inuseMask;
 		unsigned int nextHash;
 		unsigned int nextOverride;

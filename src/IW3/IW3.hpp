@@ -38,6 +38,84 @@ namespace bounds
 			dest[0][i] = dest[1][i] + mins[i];
 		}
 	}
+
+	static void compute(ZoneTool::IW4::Bounds* bounds, float* mins, float* maxs)
+	{
+		for (int i = 0; i < 3; ++i)
+		{
+			bounds->halfSize[i] = (maxs[i] - mins[i]) / 2;
+			bounds->midPoint[i] = bounds->halfSize[i] + mins[i];
+		}
+	}
+}
+
+namespace ZoneTool
+{
+	namespace IW4
+	{
+		static void VectorSubtract(const vec3_t& a, const vec3_t& b, vec3_t& out)
+		{
+			out[0] = a[0] - b[0];
+			out[1] = a[1] - b[1];
+			out[2] = a[2] - b[2];
+		}
+
+		inline void Bounds::compute(vec3_t mins, vec3_t maxs)
+		{
+			bounds::compute(this, mins, maxs);
+		}
+
+		inline void Bounds::min(vec3_t& out)
+		{
+			for (int i = 0; i < 3; ++i)
+			{
+				out[i] = midPoint[i] - halfSize[i];
+			}
+		}
+
+		inline bool Bounds::overlaps(const Bounds& other)
+		{
+			vec3_t points[6]{};
+
+			VectorSubtract(other.midPoint, other.halfSize, points[0]);
+			VectorSubtract(other.midPoint, { -other.halfSize[0], other.halfSize[1], other.halfSize[2] }, points[1]);
+			VectorSubtract(other.midPoint, { -other.halfSize[0], -other.halfSize[1], other.halfSize[2] }, points[2]);
+			VectorSubtract(other.midPoint, { -other.halfSize[0], -other.halfSize[1], -other.halfSize[2] }, points[3]);
+			VectorSubtract(other.midPoint, { other.halfSize[0], -other.halfSize[1], -other.halfSize[2] }, points[4]);
+			VectorSubtract(other.midPoint, { -other.halfSize[0], other.halfSize[1], -other.halfSize[2] }, points[5]);
+
+			for (size_t i = 0; i < ARRAYSIZE(points); i++)
+			{
+				if (contains(points[i]))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		inline bool Bounds::contains(const vec3_t& point)
+		{
+			vec3_t min{};
+			vec3_t max{};
+			this->min(min);
+			this->max(max);
+
+			return
+				point[0] >= min[0] && point[0] <= max[0] &&
+				point[1] >= min[1] && point[1] <= max[1] &&
+				point[2] >= min[2] && point[2] <= max[2];
+		}
+
+		inline void Bounds::max(vec3_t& out)
+		{
+			for (int i = 0; i < 3; ++i)
+			{
+				out[i] = midPoint[i] + halfSize[i];
+			}
+		}
+	}
 }
 
 #include "Assets/ClipMap.hpp"
@@ -55,8 +133,6 @@ namespace bounds
 #include "Assets/SoundCurve.hpp"
 #include "Assets/XAnimParts.hpp"
 #include "Assets/XModel.hpp"
-
-// oh nee toch niet
 
 namespace ZoneTool
 {

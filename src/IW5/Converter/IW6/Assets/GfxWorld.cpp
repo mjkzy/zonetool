@@ -45,11 +45,11 @@ namespace ZoneTool::IW5
 			iw6_asset->lastSunPrimaryLightIndex = asset->lastSunPrimaryLightIndex;
 			iw6_asset->primaryLightCount = asset->primaryLightCount;
 			iw6_asset->primaryLightEnvCount = asset->primaryLightCount + 1;
-			iw6_asset->sortKeyLitDecal = 6; //asset->sortKeyLitDecal;
-			iw6_asset->sortKeyEffectDecal = 39; //asset->sortKeyEffectDecal;
+			iw6_asset->sortKeyLitDecal = 6;
+			iw6_asset->sortKeyEffectDecal = 39;
 			iw6_asset->sortKeyTopDecal = 16;
-			iw6_asset->sortKeyEffectAuto = 48; //asset->sortKeyEffectAuto;
-			iw6_asset->sortKeyDistortion = 43; //asset->sortKeyDistortion;
+			iw6_asset->sortKeyEffectAuto = 48;
+			iw6_asset->sortKeyDistortion = 43;
 
 			iw6_asset->dpvsPlanes.cellCount = asset->dpvsPlanes.cellCount;
 			REINTERPRET_CAST_SAFE(iw6_asset->dpvsPlanes.planes, asset->dpvsPlanes.planes);
@@ -61,7 +61,7 @@ namespace ZoneTool::IW5
 				iw6_asset->dpvsPlanes.sceneEntCellBits[i] = asset->dpvsPlanes.sceneEntCellBits[i];
 			}
 
-			iw6_asset->aabbTreeCounts = mem.allocate<IW6::GfxCellTreeCount>(iw6_asset->dpvsPlanes.cellCount); //reinterpret_cast<IW6::GfxCellTreeCount*>(asset->aabbTreeCounts);
+			iw6_asset->aabbTreeCounts = mem.allocate<IW6::GfxCellTreeCount>(iw6_asset->dpvsPlanes.cellCount);
 			iw6_asset->aabbTrees = mem.allocate<IW6::GfxCellTree>(iw6_asset->dpvsPlanes.cellCount);
 			for (int i = 0; i < iw6_asset->dpvsPlanes.cellCount; i++)
 			{
@@ -77,14 +77,14 @@ namespace ZoneTool::IW5
 					iw6_asset->aabbTrees[i].aabbTree[j].smodelIndexCount = asset->aabbTrees[i].aabbTree[j].smodelIndexCount;
 					REINTERPRET_CAST_SAFE(iw6_asset->aabbTrees[i].aabbTree[j].smodelIndexes, asset->aabbTrees[i].aabbTree[j].smodelIndexes);
 
-					// has some problems
-					iw6_asset->aabbTrees[i].aabbTree[j].childCount = 0;//asset->aabbTree[i].aabbtree[j].childCount;
+					// has some problems?
+					iw6_asset->aabbTrees[i].aabbTree[j].childCount = asset->aabbTrees[i].aabbTree[j].childCount;
+
 					// re-calculate childrenOffset
 					auto offset = asset->aabbTrees[i].aabbTree[j].childrenOffset;
 					int childrenIndex = offset / sizeof(IW5::GfxAabbTree);
 					int childrenOffset = childrenIndex * sizeof(IW6::GfxAabbTree);
 					iw6_asset->aabbTrees[i].aabbTree[j].childrenOffset = childrenOffset;
-					assert(iw6_asset->aabbTrees[i].aabbTree[j].childrenOffset != asset->aabbTrees[i].aabbTree[j].childrenOffset);
 				}
 			}
 
@@ -130,7 +130,7 @@ namespace ZoneTool::IW5
 			{
 				iw6_asset->draw.reflectionProbes[i] = mem.allocate<IW6::GfxImage>();
 				iw6_asset->draw.reflectionProbes[i]->name = asset->draw.reflectionProbes[i]->name;
-				memcpy(&iw6_asset->draw.reflectionProbeOrigins[i].origin, &asset->draw.reflectionProbeReferenceOrigins[i].origin, sizeof(float[3]));
+				memcpy(&iw6_asset->draw.reflectionProbeOrigins[i].origin, &asset->draw.reflectionProbeOrigins[i].origin, sizeof(float[3]));
 				iw6_asset->draw.reflectionProbeOrigins[i].probeVolumeCount = 0;
 				iw6_asset->draw.reflectionProbeOrigins[i].probeVolumes = nullptr;
 				//memcpy(&iw6_asset->draw.reflectionProbeTextures[i], &asset->draw.reflectionProbeTextures[i].loadDef, 20);
@@ -220,7 +220,7 @@ namespace ZoneTool::IW5
 			// patch iw6 lightgrid lookup
 			// R_GetLightingAtPoint
 			// iw6 uses old lightgrid lookup if tableVersion == 0
-			/*// --experimental--
+			// --experimental--
 			{
 				// iw6 mp_character_room
 				[[maybe_unused]] const std::uint8_t skyLightGridColors_bytes[] = { 0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63,0,0,59,63,0,0,63,63,0,0,81,63 };
@@ -255,7 +255,7 @@ namespace ZoneTool::IW5
 				//memcpy(&iw6_asset->lightGrid.skyLightGridColors, skyLightGridColors_bytes, sizeof(skyLightGridColors_bytes));
 				//memcpy(&iw6_asset->lightGrid.defaultLightGridColors, defaultLightGridColors_bytes, sizeof(defaultLightGridColors_bytes));
 			}
-			// ----*/
+			// ----
 
 			iw6_asset->modelCount = asset->modelCount;
 			iw6_asset->models = mem.allocate<IW6::GfxBrushModel>(iw6_asset->modelCount);
@@ -344,7 +344,7 @@ namespace ZoneTool::IW5
 					REINTERPRET_CAST_SAFE(iw6_asset->shadowGeom[i].smodelIndex, asset->shadowGeom[i].smodelIndex);
 				}
 			}
-			iw6_asset->shadowGeomOptimized = nullptr;
+			iw6_asset->shadowGeomOptimized = iw6_asset->shadowGeom;
 
 			iw6_asset->lightRegion = mem.allocate<IW6::GfxLightRegion>(iw6_asset->primaryLightCount);
 			for (unsigned int i = 0; i < iw6_asset->primaryLightCount; i++)

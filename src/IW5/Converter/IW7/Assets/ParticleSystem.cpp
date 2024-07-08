@@ -1926,8 +1926,6 @@ namespace ZoneTool::IW5
 				int elem_index = emitter_index;
 				auto* elem = &asset->elemDefs[elem_index];
 
-				if (emission) __debugbreak();
-
 				emitter->flags = 0;
 				emitter_flags = 0;
 
@@ -2022,6 +2020,7 @@ namespace ZoneTool::IW5
 				state_flags |= (elem->flags & FX_ELEM_USE_MODEL_PHYSICS) != 0 ? IW7::PARTICLE_STATE_DEF_FLAG_USE_PHYSICS : 0;
 				state_flags |= (elem->flags & FX_ELEM_USE_COLLISION) != 0 ? IW7::PARTICLE_STATE_DEF_FLAG_REQUIRES_WORLD_COLLISION : 0;
 				state_flags |= (elem->flags & FX_ELEM_DRAW_WITH_VIEWMODEL) != 0 ? IW7::PARTICLE_STATE_DEF_FLAG_DRAW_WITH_VIEW_MODEL : 0;
+				state_flags |= (elem->flags & FX_ELEM_BLOCK_SIGHT) != 0 ? IW7::PARTICLE_STATE_DEF_FLAG_BLOCKS_SIGHT : 0;
 
 				state->moduleGroupDefs = allocator.allocate<IW7::ParticleModuleGroupDef>(IW7::PARTICLE_MODULE_GROUP_COUNT);
 

@@ -534,8 +534,14 @@ namespace ZoneTool
 
 		struct Bounds
 		{
-			vec3_t midPoint;
-			vec3_t halfSize;
+			vec3_t midPoint; // mins
+			vec3_t halfSize; // maxs
+
+			void compute(vec3_t mins, vec3_t maxs);
+			void max(vec3_t& out);
+			void min(vec3_t& out);
+			bool overlaps(const Bounds& other);
+			bool contains(const vec3_t& point);
 		};
 
 		struct XBoneInfo
@@ -2070,7 +2076,7 @@ namespace ZoneTool
 			int slabCount;
 			TriggerSlab* slabs; // sizeof 20
 		};
-#pragma pack(push, 1)
+
 		struct Stage
 		{
 			char* name;
@@ -2082,15 +2088,13 @@ namespace ZoneTool
 
 		struct MapEnts
 		{
-			const char* name; // 0
-			char* entityString; // 4
-			int numEntityChars; // 8
-			MapTriggers trigger; // 12
-			Stage* stageNames; // 36
-			char stageCount; // 40
-			char pad[3];
+			const char* name;
+			char* entityString;
+			int numEntityChars;
+			MapTriggers trigger;
+			Stage* stages;
+			char stageCount;
 		};
-#pragma pack(pop)
 
 #pragma pack(push, 1)
 		struct ComPrimaryLight
@@ -3822,15 +3826,6 @@ namespace ZoneTool
 				char fogTypesAllowed;
 			};
 		}
-		
-#pragma pack(push, 4)
-		struct cStaticModel_s
-		{
-			XModel* xmodel;
-			float origin[3];
-			float invScaledAxis[3][3];
-			Bounds absBounds;
-		};
 
 		enum CSurfaceFlags : std::uint32_t
 		{
@@ -4034,61 +4029,11 @@ namespace ZoneTool
 			float linkMaxs[2];
 		};
 
-		struct unknownInternalClipMapStruct1
-		{
-			int planeCount;
-			cplane_s* planes;
-			unsigned int numMaterials;
-			dmaterial_t* materials;
-			unsigned int numBrushSides;
-			cbrushside_t* brushsides;
-			unsigned int numBrushEdges;
-			cbrushedge_t* brushEdges;
-			unsigned int leafbrushNodesCount;
-			cLeafBrushNode_s* leafbrushNodes;
-			unsigned int numLeafBrushes;
-			unsigned __int16* leafbrushes;
-			unsigned __int16 numBrushes;
-			cbrush_t* brushes;
-			char* unknown1; //Size = ((numBrushes << 1) + numBrushes) << 3
-			unsigned int* leafsurfaces; //Count = numBrushes
-		};
-
-		struct unknownInternalClipMapStruct2
-		{
-			char* unknownString;
-			char unknown[0x10];
-		};
-
-		struct unknownInternalClipMapStruct3
-		{
-			char _pad[28];
-			unknownInternalClipMapStruct1* unkArrayPtr;
-			char _pad2[40];
-		};
-
 		struct cmodel_t
 		{
-			union
-			{
-				char _portpad0[28];
-
-				struct
-				{
-					Bounds bounds;
-					float radius;
-				};
-			};
-
-			union
-			{
-				char _portpad1[40];
-
-				struct
-				{
-					cLeaf_t leaf;
-				};
-			};
+			Bounds bounds;
+			float radius;
+			cLeaf_t leaf;
 		};
 
 		struct SModelAabbNode
@@ -4098,85 +4043,68 @@ namespace ZoneTool
 			short childCount;
 		};
 
-		struct DynEntityDef_IW5
+		struct cStaticModel_t
 		{
-			DynEntityType type;
-			GfxPlacement pose;
-			XModel* xModel;
-			unsigned __int16 brushModel;
-			unsigned __int16 physicsBrushModel;
-			void* destroyFx; // FxEffectDef
-			PhysPreset* physPreset;
-			int health;
-			void* hinge;
-			PhysMass mass;
-		};
-
-		struct cmodel_t_IW5
-		{
-			Bounds bounds;
-			float radius;
-			void* info;
-			cLeaf_t leaf;
+			XModel* xmodel;
+			float origin[3];
+			float invScaledAxis[3][3];
+			Bounds absBounds;
 		};
 
 		struct clipMap_t
 		{
-			const char* name; // 4
-			int isInUse; // 4
-			int numCPlanes; // +8
-			cplane_s* cPlanes; // sizeof 20, +12
-			int numStaticModels; // +16
-			cStaticModel_s* staticModelList; // sizeof 76, +20
-			int numMaterials; // +24
-			dmaterial_t* materials; // sizeof 12 with a string (possibly name?), +28
-			int numCBrushSides; // +32
-			cbrushside_t* cBrushSides; // sizeof 8, +36
-			int numCBrushEdges; // +40			NOT USED IN T5
-			cbrushedge_t* cBrushEdges; // +44			NOT USED IN T5
-			int numCNodes; // +48
-			cNode_t* cNodes; // sizeof 8, +52
-			int numCLeaf; // +56
-			cLeaf_t* cLeaf; // +60
-			int numCLeafBrushNodes; // +64
-			cLeafBrushNode_s* cLeafBrushNodes; // +68
-			int numLeafBrushes; // +72
-			short* leafBrushes; // +76
-			int numLeafSurfaces; // +80
-			int* leafSurfaces; // +84
-			int numVerts; // +88
-			VecInternal<3>* verts; // +92
-			int numTriIndices; // +96
-			short* triIndices; // +100
-			char* triEdgeIsWalkable; // +104
-			int numCollisionBorders; // +108
-			CollisionBorder* collisionBorders; // sizeof 28, +112
-			int numCollisionPartitions; // +116
-			CollisionPartition* collisionPartitions; // sizeof 12, +120
-			int numCollisionAABBTrees; // +124
-			CollisionAabbTree* collisionAABBTrees; // sizeof 32, +128
-			int numCModels; // +132
-			cmodel_t* cModels; // sizeof 68, +136
-			short numBrushes; // +140
-			short pad2; // +142
-			cbrush_t* brushes; // sizeof 36, +144
-			Bounds* brushBounds; // same count as cBrushes, +148
-			int* brushContents; // same count as cBrushes, +152
-			MapEnts* mapEnts; // +156
-			short smodelNodeCount; // +160
-			short pad3;
-			SModelAabbNode* smodelNodes; // +164
-			unsigned __int16 dynEntCount[2];
+			const char* name;
+			int isInUse;
+			int planeCount;
+			cplane_s* planes;
+			unsigned int numStaticModels;
+			cStaticModel_t* staticModelList;
+			unsigned int numMaterials;
+			dmaterial_t* materials;
+			unsigned int numBrushSides;
+			cbrushside_t* brushsides;
+			unsigned int numBrushEdges;
+			char* brushEdges;
+			unsigned int numNodes;
+			cNode_t* nodes;
+			unsigned int numLeafs;
+			cLeaf_t* leafs;
+			unsigned int leafbrushNodesCount;
+			cLeafBrushNode_s* leafbrushNodes;
+			unsigned int numLeafBrushes;
+			unsigned short* leafbrushes;
+			unsigned int numLeafSurfaces;
+			unsigned int* leafsurfaces;
+			unsigned int vertCount;
+			vec3_t* verts;
+			int triCount;
+			unsigned short* triIndices;
+			char* triEdgeIsWalkable;
+			int borderCount;
+			CollisionBorder* borders;
+			int partitionCount;
+			CollisionPartition* partitions;
+			int aabbTreeCount;
+			CollisionAabbTree* aabbTrees;
+			unsigned int numSubModels;
+			cmodel_t* cmodels;
+			unsigned short numBrushes;
+			cbrush_t* brushes;
+			Bounds* brushBounds;
+			int* brushContents;
+			struct MapEnts* mapEnts;
+			unsigned short smodelNodeCount;
+			SModelAabbNode* smodelNodes;
+			unsigned short dynEntCount[2];
 			DynEntityDef* dynEntDefList[2];
 			DynEntityPose* dynEntPoseList[2];
 			DynEntityClient* dynEntClientList[2];
 			DynEntityColl* dynEntCollList[2];
 			unsigned int checksum;
-			char unknown5[48];
-		}; // +256
-#pragma pack(pop)
+			char padding[48];
+		};
 
-				// StructuredDataDef
+		// StructuredDataDef
 		enum StructuredDataTypeCategory
 		{
 			DATA_INT = 0x0,

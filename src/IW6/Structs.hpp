@@ -1966,8 +1966,8 @@ namespace ZoneTool::IW6
 
 	union XAnimDynamicFrames
 	{
-		unsigned char(PTR64 _1)[3];
-		unsigned short(PTR64 _2)[3];
+		unsigned char( PTR64 _1)[3];
+		unsigned short( PTR64 _2)[3];
 	};
 
 	union XAnimDynamicIndices
@@ -1999,7 +1999,7 @@ namespace ZoneTool::IW6
 
 	struct XAnimDeltaPartQuatDataFrames2
 	{
-		short(PTR64 frames)[2];
+		short( PTR64 frames)[2];
 		XAnimDynamicIndices indices;
 	};
 
@@ -2017,7 +2017,7 @@ namespace ZoneTool::IW6
 
 	struct XAnimDeltaPartQuatDataFrames
 	{
-		short(PTR64 frames)[4];
+		short( PTR64 frames)[4];
 		XAnimDynamicIndices indices;
 	};
 
@@ -2334,7 +2334,7 @@ namespace ZoneTool::IW6
 		BlendVertsUnknown PTR64 blendVertsTable; // 80
 		ID3D11Buffer PTR64 blendVertsBuffer; // 88
 		ID3D11ShaderResourceView PTR64 blendVertsView; // 96
-		float(PTR64 lmapUnwrap)[2]; // 104
+		float( PTR64 lmapUnwrap)[2]; // 104
 		ID3D11Buffer PTR64 vblmapBuffer; // 112
 		ID3D11ShaderResourceView PTR64 vblmapView; // 120
 		XSurfaceSubdivInfo PTR64 subdiv; // 128
@@ -3028,6 +3028,17 @@ namespace ZoneTool::IW6
 		unsigned short childCount;
 	};
 
+	enum clientTriggerType_t : std::int32_t
+	{
+		CLIENT_TRIGGER_NONE = 0x0,
+		CLIENT_TRIGGER_VISIONSET = 0x1,
+		CLIENT_TRIGGER_AUDIO = 0x2,
+		CLIENT_TRIGGER_BLEND_VISION = 0x4,
+		CLIENT_TRIGGER_BLEND_AUDIO = 0x8,
+		CLIENT_TRIGGER_BLEND_ALL = 0xC,
+		CLIENT_TRIGGER_NPC = 0x10,
+	};
+
 	struct ClientTriggers
 	{
 		MapTriggers trigger;
@@ -3037,7 +3048,7 @@ namespace ZoneTool::IW6
 		char PTR64 triggerString;
 		short PTR64 visionSetTriggers;
 		char PTR64 triggerType;
-		float(PTR64 origins)[3];
+		float( PTR64 origins)[3];
 		float PTR64 scriptDelay;
 		short PTR64 audioTriggers;
 		short PTR64 blendLookup;
@@ -3243,7 +3254,7 @@ namespace ZoneTool::IW6
 		unsigned int PTR64 isInUse;
 		unsigned int PTR64 cellBits;
 		unsigned char PTR64 visData;
-		vec3_t PTR64 linkOrg; //float(PTR64 linkOrg)[3];
+		vec3_t PTR64 linkOrg; //float( PTR64 linkOrg)[3];
 		float PTR64 halfThickness;
 		unsigned short PTR64 lightingHandles;
 		FxGlassInitPieceState PTR64 initPieceStates;
@@ -3305,7 +3316,7 @@ namespace ZoneTool::IW6
 		bool isAncestor;
 		unsigned char recursionDepth;
 		unsigned char hullPointCount;
-		float(PTR64 hullPoints)[2];
+		float( PTR64 hullPoints)[2];
 		GfxPortal PTR64 queuedParent;
 	};
 
@@ -3318,7 +3329,7 @@ namespace ZoneTool::IW6
 	{
 		GfxPortalWritable writable;
 		DpvsPlane plane;
-		float(PTR64 vertices)[3];
+		float( PTR64 vertices)[3];
 		unsigned short cellIndex;
 		unsigned short closeDistance;
 		unsigned char vertexCount;
@@ -3619,7 +3630,8 @@ namespace ZoneTool::IW6
 	{
 		Bounds bounds;
 		unsigned char flags;
-		char __pad[8];
+		unsigned short mipRadius;
+		unsigned char invHighMipRadius[5];
 	};
 
 	struct GfxPackedPlacement
@@ -4392,7 +4404,7 @@ namespace ZoneTool::IW6
 		unsigned int numLeafs;
 		cLeaf_t PTR64 leafs;
 		unsigned int vertCount;
-		vec3_t PTR64 verts; //float(PTR64 verts)[3];
+		vec3_t PTR64 verts; //float( PTR64 verts)[3];
 		int triCount;
 		unsigned short PTR64 triIndices;
 		unsigned char PTR64 triEdgeIsWalkable;
@@ -5447,7 +5459,7 @@ namespace ZoneTool::IW6
 		float fightDist;
 		float maxDist;
 		const char PTR64 accuracyGraphName[2];
-		float(PTR64 originalAccuracyGraphKnots[2])[2];
+		float( PTR64 originalAccuracyGraphKnots[2])[2];
 		unsigned short originalAccuracyGraphKnotCount[2];
 		int iPositionReloadTransTime;
 		float leftArc;
@@ -6138,7 +6150,7 @@ namespace ZoneTool::IW6
 		float adsDofStart;
 		float adsDofEnd;
 		unsigned short accuracyGraphKnotCount[2];
-		float(PTR64 accuracyGraphKnots[2])[2];
+		float( PTR64 accuracyGraphKnots[2])[2];
 		bool motionTracker;
 		bool enhanced;
 		bool dpadIconShowsAmmo;

@@ -38,21 +38,49 @@ namespace ZoneTool::IW5
 				memset(&h1_asset->primaryLights[i].cucScrollVector, 0, sizeof(float[2]));
 				memset(&h1_asset->primaryLights[i].cucScaleVector, 0, sizeof(float[2]));
 				memset(&h1_asset->primaryLights[i].cucTransVector, 0, sizeof(float[2]));
-				h1_asset->primaryLights[i].defName = asset->primaryLights[i].defName;
+				h1_asset->primaryLights[i].defName = asset->primaryLights[i].defName && *asset->primaryLights[i].defName ? asset->primaryLights[i].defName : nullptr;
 
 				if (h1_asset->primaryLights[i].type == H1::GFX_LIGHT_TYPE_SPOT)
 				{
-					//h1_asset->primaryLights[i].needsDynamicShadows = 1;
+					h1_asset->primaryLights[i].needsDynamicShadows = 1;
+					h1_asset->primaryLights[i].isVolumetric = 0;
 
 					h1_asset->primaryLights[i].cucScaleVector[0] = 1.0f;
 					h1_asset->primaryLights[i].cucScaleVector[1] = 1.0f;
+
+					h1_asset->primaryLights[i].bulbRadius = 1.0f;
+					const auto bulbLength = 1.0f;
+					h1_asset->primaryLights[i].bulbLength[0] = bulbLength * h1_asset->primaryLights[i].dir[0];
+					h1_asset->primaryLights[i].bulbLength[1] = bulbLength * h1_asset->primaryLights[i].dir[1];
+					h1_asset->primaryLights[i].bulbLength[2] = bulbLength * h1_asset->primaryLights[i].dir[2];
+					h1_asset->primaryLights[i].fadeOffset[0] = 0.0f;
+					h1_asset->primaryLights[i].fadeOffset[1] = 1.0f;
+
+					if (!h1_asset->primaryLights[i].defName)
+					{
+						h1_asset->primaryLights[i].defName = mem.duplicate_string("light_dynamic");
+					}
 				}
 				else if (h1_asset->primaryLights[i].type == H1::GFX_LIGHT_TYPE_OMNI)
 				{
-					//h1_asset->primaryLights[i].needsDynamicShadows = 1;
+					h1_asset->primaryLights[i].needsDynamicShadows = 1;
+					h1_asset->primaryLights[i].isVolumetric = 0;
 
 					h1_asset->primaryLights[i].cucScaleVector[0] = 1.0f;
 					h1_asset->primaryLights[i].cucScaleVector[1] = 1.0f;
+
+					h1_asset->primaryLights[i].bulbRadius = 1.0f;
+					const auto bulbLength = 0.0f;
+					h1_asset->primaryLights[i].bulbLength[0] = bulbLength * h1_asset->primaryLights[i].dir[0];
+					h1_asset->primaryLights[i].bulbLength[1] = bulbLength * h1_asset->primaryLights[i].dir[1];
+					h1_asset->primaryLights[i].bulbLength[2] = bulbLength * h1_asset->primaryLights[i].dir[2];
+					h1_asset->primaryLights[i].fadeOffset[0] = 0.0f;
+					h1_asset->primaryLights[i].fadeOffset[1] = -1.0f;
+
+					if (!h1_asset->primaryLights[i].defName)
+					{
+						h1_asset->primaryLights[i].defName = mem.duplicate_string("light_dynamic");
+					}
 				}
 			}
 
@@ -61,14 +89,14 @@ namespace ZoneTool::IW5
 			
 			for (unsigned int i = 1; i < h1_asset->primaryLightCount; i++)
 			{
+				h1_asset->primaryLightEnvs[i].numIndices = 1;
+
 				if (h1_asset->primaryLights[i].type == H1::GFX_LIGHT_TYPE_SPOT || h1_asset->primaryLights[i].type == H1::GFX_LIGHT_TYPE_OMNI)
 				{
-					h1_asset->primaryLightEnvs[i].numIndices = 1;
-					h1_asset->primaryLightEnvs[i].primaryLightIndices[0] = 1;
+					h1_asset->primaryLightEnvs[i].primaryLightIndices[0] = 1; // always use first primary light index, since this no no work
 				}
 				else
 				{
-					h1_asset->primaryLightEnvs[i].numIndices = 1;
 					h1_asset->primaryLightEnvs[i].primaryLightIndices[0] = i;
 				}
 			}

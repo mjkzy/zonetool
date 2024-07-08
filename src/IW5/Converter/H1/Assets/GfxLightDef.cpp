@@ -11,10 +11,15 @@ namespace ZoneTool::IW5
 		{
 			auto* h1_asset = mem.allocate<H1::GfxLightDef>();
 			h1_asset->name = asset->name;
-			if (asset->attenuation.image)
+			if (asset->attenuation.image && asset->attenuation.image->name && *asset->attenuation.image->name)
 			{
 				h1_asset->attenuation.image = mem.allocate<H1::GfxImage>();
 				h1_asset->attenuation.image->name = asset->attenuation.image->name;
+			}
+			else
+			{
+				h1_asset->attenuation.image = mem.allocate<H1::GfxImage>();
+				h1_asset->attenuation.image->name = "default";
 			}
 			h1_asset->attenuation.samplerState = asset->attenuation.samplerState;
 			if (asset->cucoloris.image)

@@ -518,7 +518,7 @@ namespace ZoneTool::H1::physworld_gen
 			auto brush_bounds = asset->info.bCollisionData.brushBounds[brush_index];
 			auto contents = asset->info.bCollisionData.brushContents[brush_index];
 
-			if ((contents & 0x1) == 0)
+			if ((contents & 0x1) == 0) // no collision
 			{
 				return{};
 			}
@@ -1154,7 +1154,7 @@ namespace ZoneTool::H1::physworld_gen
 		void generate_physworld(PhysWorld* phys_world_map, clipMap_t* asset, allocator* mem)
 		{
 			phys_world_map->brushModelCount = asset->numSubModels;
-			phys_world_map->brushModels = mem->allocate<PhysBrushModel>(phys_world_map->brushModelCount);
+			phys_world_map->brushModels = mem->allocate<PhysBrushModel>(phys_world_map->brushModelCount + 1);
 
 			for (auto i = 0u; i < phys_world_map->brushModelCount; i++)
 			{

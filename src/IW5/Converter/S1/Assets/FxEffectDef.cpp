@@ -57,49 +57,6 @@ namespace ZoneTool::IW5
 
 		S1::FxElemLitType generate_elem_lit_type(IW5::FxElemType type)
 		{
-			switch (type)
-			{
-			case IW5::FX_ELEM_TYPE_SPRITE_BILLBOARD:
-				return S1::FX_ELEM_LIT_TYPE_LIGHTGRID_FRAME_SPRITE;
-				break;
-			case IW5::FX_ELEM_TYPE_SPRITE_ORIENTED:
-				return S1::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
-				break;
-			case IW5::FX_ELEM_TYPE_TAIL:
-				return S1::FX_ELEM_LIT_TYPE_LIGHTGRID_FRAME_SPRITE;
-				break;
-			case IW5::FX_ELEM_TYPE_TRAIL:
-				return S1::FX_ELEM_LIT_TYPE_LIGHTGRID_FRAME_VERTEX;
-				break;
-			case IW5::FX_ELEM_TYPE_CLOUD:
-				return S1::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
-				break;
-			case IW5::FX_ELEM_TYPE_SPARKCLOUD:
-				return S1::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
-				break;
-			case IW5::FX_ELEM_TYPE_SPARKFOUNTAIN:
-				return S1::FX_ELEM_LIT_TYPE_LIGHTGRID_FRAME_SPRITE;
-				break;
-			case IW5::FX_ELEM_TYPE_MODEL:
-				return S1::FX_ELEM_LIT_TYPE_NONE;
-				break;
-			case IW5::FX_ELEM_TYPE_OMNI_LIGHT:
-				return S1::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
-				break;
-			case IW5::FX_ELEM_TYPE_SPOT_LIGHT:
-				return S1::FX_ELEM_LIT_TYPE_NONE;
-				break;
-			case IW5::FX_ELEM_TYPE_SOUND:
-				return S1::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
-				break;
-			case IW5::FX_ELEM_TYPE_DECAL:
-				return S1::FX_ELEM_LIT_TYPE_NONE;
-				break;
-			case IW5::FX_ELEM_TYPE_RUNNER:
-				return S1::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
-				break;
-			}
-
 			return S1::FX_ELEM_LIT_TYPE_NONE;
 		}
 
@@ -173,7 +130,7 @@ namespace ZoneTool::IW5
 			memcpy(&S1_elem->reflectionFactor, &elem->reflectionFactor, sizeof(FxFloatRange));
 			memcpy(&S1_elem->atlas, &elem->atlas, sizeof(FxElemAtlas));
 			S1_elem->elemType = convert_elem_type(elem->elemType);
-			S1_elem->elemLitType = generate_elem_lit_type(elem->elemType); //S1::FX_ELEM_LIT_TYPE_NONE; // ?
+			S1_elem->elemLitType = generate_elem_lit_type(elem->elemType);
 			S1_elem->visualCount = elem->visualCount;
 			S1_elem->velIntervalCount = elem->velIntervalCount;
 			S1_elem->visStateIntervalCount = elem->visStateIntervalCount;
@@ -185,39 +142,35 @@ namespace ZoneTool::IW5
 				S1_elem->visSamples = mem.allocate<S1::FxElemVisStateSample>(elem->visStateIntervalCount + 1);
 				for (int i = 0; i < elem->visStateIntervalCount + 1; i++)
 				{
-					// check
-
 					// base
 					S1_elem->visSamples[i].base.color[0] = static_cast<int>(elem->visSamples[i].base.color[2]) / 255.0f;
 					S1_elem->visSamples[i].base.color[1] = static_cast<int>(elem->visSamples[i].base.color[1]) / 255.0f;
 					S1_elem->visSamples[i].base.color[2] = static_cast<int>(elem->visSamples[i].base.color[0]) / 255.0f;
 					S1_elem->visSamples[i].base.color[3] = static_cast<int>(elem->visSamples[i].base.color[3]) / 255.0f;
-					S1_elem->visSamples[i].base.pad1[0] = 1.0f;
-					S1_elem->visSamples[i].base.pad1[1] = 1.0f;
-					S1_elem->visSamples[i].base.pad1[2] = 1.0f;
+					S1_elem->visSamples[i].base.colorHDRScalar[0] = 1.0f;
+					S1_elem->visSamples[i].base.colorHDRScalar[1] = 1.0f;
+					S1_elem->visSamples[i].base.colorHDRScalar[2] = 1.0f;
 					S1_elem->visSamples[i].base.rotationDelta = elem->visSamples[i].base.rotationDelta;
 					S1_elem->visSamples[i].base.rotationTotal = elem->visSamples[i].base.rotationTotal;
 					memcpy(&S1_elem->visSamples[i].base.size, &elem->visSamples[i].base.size, sizeof(float[2]));
 					S1_elem->visSamples[i].base.scale = elem->visSamples[i].base.scale;
-					// pad2
-					S1_elem->visSamples[i].base.pad2[1] = 0.0f;
-					S1_elem->visSamples[i].base.pad2[1] = 0.0f;
+					S1_elem->visSamples[i].base.pivot[0] = 0.0f;
+					S1_elem->visSamples[i].base.pivot[1] = 0.0f;
 
 					// amplitude
 					S1_elem->visSamples[i].amplitude.color[0] = static_cast<int>(elem->visSamples[i].amplitude.color[2]) / 255.0f;
 					S1_elem->visSamples[i].amplitude.color[1] = static_cast<int>(elem->visSamples[i].amplitude.color[1]) / 255.0f;
 					S1_elem->visSamples[i].amplitude.color[2] = static_cast<int>(elem->visSamples[i].amplitude.color[0]) / 255.0f;
 					S1_elem->visSamples[i].amplitude.color[3] = static_cast<int>(elem->visSamples[i].amplitude.color[3]) / 255.0f;
-					S1_elem->visSamples[i].amplitude.pad1[0] = 1.0f;
-					S1_elem->visSamples[i].amplitude.pad1[1] = 1.0f;
-					S1_elem->visSamples[i].amplitude.pad1[2] = 1.0f;
+					S1_elem->visSamples[i].amplitude.colorHDRScalar[0] = 1.0f;
+					S1_elem->visSamples[i].amplitude.colorHDRScalar[1] = 1.0f;
+					S1_elem->visSamples[i].amplitude.colorHDRScalar[2] = 1.0f;
 					S1_elem->visSamples[i].amplitude.rotationDelta = elem->visSamples[i].amplitude.rotationDelta;
 					S1_elem->visSamples[i].amplitude.rotationTotal = elem->visSamples[i].amplitude.rotationTotal;
 					memcpy(&S1_elem->visSamples[i].amplitude.size, &elem->visSamples[i].amplitude.size, sizeof(float[2]));
 					S1_elem->visSamples[i].amplitude.scale = elem->visSamples[i].amplitude.scale;
-					// pad2
-					S1_elem->visSamples[i].amplitude.pad2[1] = 0.0f;
-					S1_elem->visSamples[i].amplitude.pad2[1] = 0.0f;
+					S1_elem->visSamples[i].amplitude.pivot[0] = 0.0f;
+					S1_elem->visSamples[i].amplitude.pivot[1] = 0.0f;
 				}
 			}
 
@@ -228,7 +181,7 @@ namespace ZoneTool::IW5
 				{
 					S1_elem->visuals.markArray[i].materials[0] = reinterpret_cast<S1::Material*>(elem->visuals.markArray[i].materials[0]); // mc
 					S1_elem->visuals.markArray[i].materials[1] = reinterpret_cast<S1::Material*>(elem->visuals.markArray[i].materials[1]); // wc
-					//S1_elem->visuals.markArray[i].materials[2] = reinterpret_cast<S1::Material*>(elem->visuals.markArray[i].materials[1]); // wc displacement
+					S1_elem->visuals.markArray[i].materials[2] = reinterpret_cast<S1::Material*>(elem->visuals.markArray[i].materials[1]); // wc displacement
 				}
 			}
 			else if (elem->visualCount > 1)
@@ -286,41 +239,47 @@ namespace ZoneTool::IW5
 				REINTERPRET_CAST_SAFE(S1_elem->extended.sparkFountainDef, elem->extended.sparkFountainDef);
 				break;
 			case FX_ELEM_TYPE_SPOT_LIGHT:
-				// check
 				S1_elem->extended.spotLightDef = mem.allocate<S1::FxSpotLightDef>();
 				if (elem->extended.spotLightDef)
 				{
+					// check
 					S1_elem->extended.spotLightDef->fovInnerFraction = elem->extended.spotLightDef->fovInnerFraction;
 					S1_elem->extended.spotLightDef->startRadius = elem->extended.spotLightDef->startRadius;
 					S1_elem->extended.spotLightDef->endRadius = elem->extended.spotLightDef->endRadius;
 					S1_elem->extended.spotLightDef->brightness = elem->extended.spotLightDef->brightness;
 					S1_elem->extended.spotLightDef->maxLength = elem->extended.spotLightDef->maxLength;
 					S1_elem->extended.spotLightDef->exponent = elem->extended.spotLightDef->exponent;
-					// pad
+					S1_elem->extended.spotLightDef->nearClip = 1.0f;
+					S1_elem->extended.spotLightDef->bulbRadius = 1.0f;
+					S1_elem->extended.spotLightDef->bulbLength = 1.0f;
+					S1_elem->extended.spotLightDef->fadeOffset[0] = 0.0f;
+					S1_elem->extended.spotLightDef->fadeOffset[1] = 1.0f;
 				}
 				break;
 			case FX_ELEM_TYPE_OMNI_LIGHT:
 				S1_elem->extended.omniLightDef = mem.allocate<S1::FxOmniLightDef>();
-				// todo?
+				S1_elem->extended.omniLightDef->bulbRadius = 1.0f;
+				S1_elem->extended.omniLightDef->bulbLength = 0.0f;
+				S1_elem->extended.omniLightDef->fadeOffset[0] = 0.0f;
+				S1_elem->extended.omniLightDef->fadeOffset[1] = -1.0f;
 				break;
 			default:
 				S1_elem->extended.unknownDef = elem->extended.unknownDef;
 				break;
 			}
 
-			// check:
 			S1_elem->sortOrder = elem->sortOrder;
 			S1_elem->lightingFrac = elem->lightingFrac;
+			S1_elem->hdrLightingFrac = elem->lightingFrac;
 			S1_elem->useItemClip = elem->useItemClip;
 			S1_elem->fadeInfo = elem->fadeInfo;
 			S1_elem->randomSeed = elem->randomSeed;
 
-			S1_elem->__pad0[0] = 0.0f;
-			S1_elem->__pad0[1] = 1.0f;
-			S1_elem->__pad0[2] = 0.0f;
-			S1_elem->__pad0[3] = 1.0f;
-			S1_elem->__pad0[4] = 0.0f;
-			S1_elem->__pad0[5] = -1.0f;
+			S1_elem->unlitHDRScalar = 1.0f;
+			S1_elem->litHDRScalar = 1.0f;
+			S1_elem->alphaScalar = 1.0f;
+			S1_elem->unk4 = 0.0f;
+			S1_elem->unk5 = -1.0f;
 		}
 
 		S1::FxEffectDef* GenerateS1FxEffectDef(FxEffectDef* asset, allocator& mem)

@@ -1540,7 +1540,6 @@ namespace ZoneTool
 			unsigned __int16 firstHull;
 		};
 
-		/* 2376 */
 		struct TriggerHull
 		{
 			Bounds bounds;
@@ -1549,7 +1548,6 @@ namespace ZoneTool
 			unsigned __int16 firstSlab;
 		};
 
-		/* 2377 */
 		struct TriggerSlab
 		{
 			float dir[3];
@@ -1557,7 +1555,6 @@ namespace ZoneTool
 			float halfSize;
 		};
 
-		/* 2378 */
 		struct MapTriggers
 		{
 			unsigned int count;
@@ -1572,8 +1569,8 @@ namespace ZoneTool
 		{
 			const char* name;
 			char* entityString;
-			int numEntityChars; // The structure actually ends here...
-			MapTriggers trigger; // Pretty sure that's not correct.
+			int numEntityChars;
+			//MapTriggers trigger;
 			// this goes on for a while but we don't need any of it
 		};
 
@@ -1588,6 +1585,21 @@ namespace ZoneTool
 			const char* name;
 		};
 
+		struct XModelPiece
+		{
+			XModel* model;
+			float offset[3];
+		};
+
+		struct XModelPieces
+		{
+			const char* name;
+			int numpieces;
+			XModelPiece* pieces;
+		};
+
+		struct FxEffectDef;
+
 		struct DynEntityDef
 		{
 			int type;
@@ -1595,9 +1607,8 @@ namespace ZoneTool
 			XModel* xModel;
 			unsigned __int16 brushModel;
 			unsigned __int16 physicsBrushModel;
-			FxEffectDef_Placeholder* destroyFx;
-			/*XModelPieces*/
-			void* destroyPieces;
+			FxEffectDef* destroyFx;
+			XModelPieces* destroyPieces;
 			PhysPreset* physPreset;
 			int health;
 			PhysMass mass;

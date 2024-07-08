@@ -57,49 +57,6 @@ namespace ZoneTool::IW5
 
 		IW6::FxElemLitType generate_elem_lit_type(IW5::FxElemType type)
 		{
-			switch (type)
-			{
-			case IW5::FX_ELEM_TYPE_SPRITE_BILLBOARD:
-				return IW6::FX_ELEM_LIT_TYPE_LIGHTGRID_FRAME_SPRITE;
-				break;
-			case IW5::FX_ELEM_TYPE_SPRITE_ORIENTED:
-				return IW6::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
-				break;
-			case IW5::FX_ELEM_TYPE_TAIL:
-				return IW6::FX_ELEM_LIT_TYPE_LIGHTGRID_FRAME_SPRITE;
-				break;
-			case IW5::FX_ELEM_TYPE_TRAIL:
-				return IW6::FX_ELEM_LIT_TYPE_LIGHTGRID_FRAME_VERTEX;
-				break;
-			case IW5::FX_ELEM_TYPE_CLOUD:
-				return IW6::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
-				break;
-			case IW5::FX_ELEM_TYPE_SPARKCLOUD:
-				return IW6::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
-				break;
-			case IW5::FX_ELEM_TYPE_SPARKFOUNTAIN:
-				return IW6::FX_ELEM_LIT_TYPE_LIGHTGRID_FRAME_SPRITE;
-				break;
-			case IW5::FX_ELEM_TYPE_MODEL:
-				return IW6::FX_ELEM_LIT_TYPE_NONE;
-				break;
-			case IW5::FX_ELEM_TYPE_OMNI_LIGHT:
-				return IW6::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
-				break;
-			case IW5::FX_ELEM_TYPE_SPOT_LIGHT:
-				return IW6::FX_ELEM_LIT_TYPE_NONE;
-				break;
-			case IW5::FX_ELEM_TYPE_SOUND:
-				return IW6::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
-				break;
-			case IW5::FX_ELEM_TYPE_DECAL:
-				return IW6::FX_ELEM_LIT_TYPE_NONE;
-				break;
-			case IW5::FX_ELEM_TYPE_RUNNER:
-				return IW6::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
-				break;
-			}
-
 			return IW6::FX_ELEM_LIT_TYPE_NONE;
 		}
 
@@ -173,7 +130,7 @@ namespace ZoneTool::IW5
 			memcpy(&iw6_elem->reflectionFactor, &elem->reflectionFactor, sizeof(FxFloatRange));
 			memcpy(&iw6_elem->atlas, &elem->atlas, sizeof(FxElemAtlas));
 			iw6_elem->elemType = convert_elem_type(elem->elemType);
-			iw6_elem->elemLitType = generate_elem_lit_type(elem->elemType); //IW6::FX_ELEM_LIT_TYPE_NONE; // ?
+			iw6_elem->elemLitType = generate_elem_lit_type(elem->elemType);
 			iw6_elem->visualCount = elem->visualCount;
 			iw6_elem->velIntervalCount = elem->velIntervalCount;
 			iw6_elem->visStateIntervalCount = elem->visStateIntervalCount;
@@ -244,35 +201,28 @@ namespace ZoneTool::IW5
 			{
 			case FX_ELEM_TYPE_TRAIL:
 				iw6_elem->extended.trailDef = mem.allocate<IW6::FxTrailDef>();
-
-				// check
 				iw6_elem->extended.trailDef->scrollTimeMsec = elem->extended.trailDef->scrollTimeMsec;
 				iw6_elem->extended.trailDef->repeatDist = elem->extended.trailDef->repeatDist;
 				iw6_elem->extended.trailDef->invSplitDist = elem->extended.trailDef->invSplitDist;
 				iw6_elem->extended.trailDef->invSplitArcDist = elem->extended.trailDef->invSplitArcDist;
 				iw6_elem->extended.trailDef->invSplitTime = elem->extended.trailDef->invSplitTime;
-				// pad
 
 				iw6_elem->extended.trailDef->vertCount = elem->extended.trailDef->vertCount;
 				iw6_elem->extended.trailDef->verts = mem.allocate<IW6::FxTrailVertex>(iw6_elem->extended.trailDef->vertCount);
 				for (int i = 0; i < iw6_elem->extended.trailDef->vertCount; i++)
 				{
-					// check
 					memcpy(&iw6_elem->extended.trailDef->verts[i].pos, &elem->extended.trailDef->verts[i].pos, sizeof(float[2]));
 					memcpy(&iw6_elem->extended.trailDef->verts[i].normal, &elem->extended.trailDef->verts[i].normal, sizeof(float[2]));
 					memcpy(&iw6_elem->extended.trailDef->verts[i].texCoord, &elem->extended.trailDef->verts[i].texCoord, sizeof(float[2]));
-					// pad
 				}
 
 				iw6_elem->extended.trailDef->indCount = elem->extended.trailDef->indCount;
 				REINTERPRET_CAST_SAFE(iw6_elem->extended.trailDef->inds, elem->extended.trailDef->inds);
 				break;
 			case FX_ELEM_TYPE_SPARKFOUNTAIN:
-				// check
 				REINTERPRET_CAST_SAFE(iw6_elem->extended.sparkFountainDef, elem->extended.sparkFountainDef);
 				break;
 			case FX_ELEM_TYPE_SPOT_LIGHT:
-				// check
 				iw6_elem->extended.spotLightDef = mem.allocate<IW6::FxSpotLightDef>();
 				if (elem->extended.spotLightDef)
 				{
@@ -282,12 +232,7 @@ namespace ZoneTool::IW5
 					iw6_elem->extended.spotLightDef->brightness = elem->extended.spotLightDef->brightness;
 					iw6_elem->extended.spotLightDef->maxLength = elem->extended.spotLightDef->maxLength;
 					iw6_elem->extended.spotLightDef->exponent = elem->extended.spotLightDef->exponent;
-					// pad
 				}
-				break;
-			case FX_ELEM_TYPE_OMNI_LIGHT:
-				iw6_elem->extended.unknownDef = elem->extended.unknownDef;
-				// todo?
 				break;
 			default:
 				iw6_elem->extended.unknownDef = elem->extended.unknownDef;
