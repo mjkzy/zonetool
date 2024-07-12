@@ -242,6 +242,34 @@ namespace ZoneTool
 
 			{"tools",									"tools_r0c0ct0"}, // could be wrong
 			{"tools_b0c0",								"tools_b0c0ct0"}, // could be wrong
+
+			// COD:OL techsets
+			{"wc_l_sm_r0c0q0s0",						"wc_l_sm_lmpb_r0c0q0sd0_nfwpf"}, // ehhhhh
+			{"wc_l_sm_t0c0n0s0_nocast",					"wc_l_sm_lmpb_t0c0n0sd0_nfwpf"}, // couldn't find
+			{"wc_l_sm_b0c0n0s0o0p0",					"wc_l_sm_lmpb_ndw_b0c0n0sd0_cltrans"}, // couldn't find (missing o0p0)
+			{"wc_l_sm_b0c0n0s0p0_nocast",				"wc_l_sm_ndw_ua_b0c0n0sd0p0_cltrans_nocast_frt_aat"}, // maybe (original ^)
+			{"wc_l_sm_ua_b0c0n0s0",						"wc_l_sm_ua_b0c0n0sd0sr0_cltrans_frt"}, // could be wrong (sr0, cltrans)
+			{"wc_l_sm_ua_b0c0n0s0p0",					"wc_l_sm_ndw_ua_b0c0n0sd0p0_cltrans_nocast_frt_aat"}, // couldn't find, using nocast
+			{"wc_l_r0c0s0",								"wc_l_sm_r0c0sd0_nfwpf"}, // could be wrong
+//			{"wc_sky_sg",								"2d"}, // battlecity scrolling texture sky
+			{"mc_l_sm_r0c0n0s0_fgcb",					"mc_l_sm_r0c0n0sd0_nfwpf"}, // ^
+			{"mc_l_sm_b0c0n0s0o0p0",					"mc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
+			{"mc_l_sm_b0c0p0_fgca",						"mc_l_sm_lmpb_ndw_b0c0_nfwpf_frt_im_aat"}, // couldn't find, cod:ol
+			{"mc_l_sm_b0c0n0p0",						"mc_l_sm_ndw_b0c0n0p0_nfwpf_frt_im_aat"}, // couldn't find, cod:ol
+			{"mc_l_sm_flag_t0c0",						"mc_l_sm_flag_fuv_t0c0_nfwpf"},
+			{"mc_l_t0c0_nocast",						"mc_l_t0c0_nfwpf"}, // no nocast
+			{"mc_l_t0c0n0",								"mc_l_t0c0_nfwpf"}, // couldn't find, cod:ol
+			{"mc_unlit_blend_lin_ua",					"mc_unlit_blend_lin_ct_ndw_nfwpf"}, // no ua
+			{"mc_unlit_screen_lin",						"mc_unlit_hss_screen_lin_ndw_cltrans"}, // could be wrong, cod:ol
+			{"mc_ambient_t0c0_z",						"mc_ambient_t0c0_nfwpf"}, // cod:ol
+//			{"sunlight_lensflare_mask",					""}, // cod:ol
+//			{"wc_l_sm_r0c0n0s0p0_nocast",				"wc_l_sm_lmpb_r0c0n0sd0p0_nfwpf"}, // couldn't find
+//			{"wc_l_t0c0",								"wc_l_sm_t0c0_nfwpf"}, // couldn't find
+//			{"wc_unlit_blend_lin_nofog_ua",				"wc_unlit_blend_lin_ndw_nfwpf"},
+//			{"wc_l_sm_t0c0d0n0s0p0",					"wc_l_sm_t0c0n0sd0_nfwpf"},
+//			{"mc_ambient_t0c0_nocast_z",				"mc_ambient_t0c0_nfwpf_nocast"},
+//			{"mc_l_sm_flag_t0c0n0s0_z",					"mc_l_sm_flag_fuv_t0c0n0sd0_nfwpf"},
+//			{"mc_l_sm_flag_t0c0_nocast",				"mc_l_sm_flag_fuv_t0c0_nfwpf"}, // could not find
 		};
 
 		namespace

@@ -76,7 +76,7 @@ namespace ZoneTool
 			{"wc_unlit_replace_lin_nocast",				"wc_unlit_replace_lin_nfwpf_nocast"},
 			{"wc_unlit_screen_lin",						"wc_unlit_blend_lin_ndw_cltrans"}, // couldn't find
 			{"wc_effect",								"effect_blend_ndw"}, // ?? (wc_effect_blend_ndw_ua_fl)
-			{"wc_ambient_t0c0",							"wc_ambient_t0c0_nfwpf"},
+//			{"wc_ambient_t0c0",							"wc_ambient_t0c0_nfwpf"},
 			{"wc_sky",									"wc_sky_cso_nfwpf"},
 			{"wc_shadowcaster",							"wc_shadowcaster"},
 			{"wc_water",								"2d"}, // couldn't find
