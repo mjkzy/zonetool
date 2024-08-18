@@ -150,7 +150,7 @@ namespace ZoneTool::IW5
 			H1::SoundVolMod::SND_VOLMOD_MP_WPN_NPC,	//SND_VOLMOD_WPNMP_NPC,
 			H1::SoundVolMod::SND_VOLMOD_WPN_PROJECTILE,	//SND_VOLMOD_WPN_PROJECTILE,
 			H1::SoundVolMod::SND_VOLMOD_MP_WPN_PROJECTILE,	//SND_VOLMOD_WPNMP_PROJECTILE,
-			H1::SoundVolMod::SND_VOLMOD_DEFAULT,	//SND_VOLMOD_NA,
+			H1::SoundVolMod::SND_VOLMOD_MW3_DEPRECATED_NA,	//SND_VOLMOD_NA,
 			H1::SoundVolMod::SND_VOLMOD_MW3_DEPRECATED_MAX,	//SND_VOLMOD_MAX,
 			H1::SoundVolMod::SND_VOLMOD_SCRIPTED1,	//SND_VOLMOD_SCRIPTED1,
 			H1::SoundVolMod::SND_VOLMOD_SCRIPTED2,	//SND_VOLMOD_SCRIPTED2,
@@ -163,7 +163,7 @@ namespace ZoneTool::IW5
 			H1::SoundVolMod::SND_VOLMOD_DEFAULT,	//SND_VOLMOD_DEFAULT,
 		};
 
-		void GenerateH1SoundAlias(snd_alias_t* alias, H1::snd_alias_t* h1_alias, allocator& mem, const std::function<std::string(const char* filename)>& get_streamed_sound_data)
+		void GenerateH1SoundAlias(snd_alias_t* alias, H1::snd_alias_t* h1_alias, int index, allocator& mem, const std::function<std::string(const char* filename)>& get_streamed_sound_data)
 		{
 			h1_alias->aliasName = alias->aliasName;
 			h1_alias->subtitle = alias->subtitle;
@@ -235,6 +235,9 @@ namespace ZoneTool::IW5
 #endif
 				break;
 			}
+			default:
+				__debugbreak();
+				break;
 			}
 
 			h1_alias->mixerGroup = nullptr;
@@ -271,7 +274,7 @@ namespace ZoneTool::IW5
 
 			h1_alias->sndContext = nullptr;
 
-			h1_alias->sequence = alias->sequence;
+			h1_alias->sequence = index + 1; //alias->sequence;
 			h1_alias->lfePercentage = alias->lfePercentage;
 			h1_alias->centerPercentage = alias->centerPercentage;
 			h1_alias->startDelay = alias->startDelay;
@@ -390,14 +393,39 @@ namespace ZoneTool::IW5
 			h1_asset->aliasName = asset->aliasName;
 			
 			h1_asset->count = asset->count;
+
+			if (h1_asset->count > 1)
+			{
+				// something causes sounds with multiple aliases to crash the game on disconnect...
+				h1_asset->count = 1;
+			}
+
 			h1_asset->head = mem.allocate<H1::snd_alias_t>(h1_asset->count);
 			for (unsigned char i = 0; i < h1_asset->count; i++)
 			{
-				GenerateH1SoundAlias(&asset->head[i], &h1_asset->head[i], mem, get_streamed_sound_data);
+				GenerateH1SoundAlias(&asset->head[i], &h1_asset->head[i], i, mem, get_streamed_sound_data);
 			}
 
 			h1_asset->contextList = nullptr;
 			h1_asset->contextListCount = 0;
+
+			// not sure how this is supposed to work, but i guess this is good enough
+			/*if (h1_asset->count > 1)
+			{
+				struct snd_alias_context_list
+				{
+					unsigned char prev;
+					unsigned char next;
+				};
+
+				h1_asset->contextListCount = 2;
+				h1_asset->contextList = mem.allocate<H1::snd_alias_context_list>(2);
+				auto* context_list = reinterpret_cast<snd_alias_context_list*>(h1_asset->contextList);
+				context_list[0].prev = 0;
+				context_list[0].next = 1;
+				context_list[1].prev = 1;
+				context_list[1].next = 1;
+			}*/
 
 			return h1_asset;
 		}
