@@ -69,6 +69,7 @@ namespace ZoneTool
 			{"wc_unlit_falloff_add",					"wc_unlit_falloff_add_lin_ndw_cltrans"}, // couldn't find
 			{"wc_unlit_falloff_add_lin",				"wc_unlit_falloff_add_lin_ndw_cltrans"},
 			{"wc_unlit_falloff_add_lin_ua",				"wc_unlit_falloff_add_lin_ndw_cltrans"}, // couldn't find
+			{"wc_unlit_falloff_screen_lin",				"wc_unlit_falloff_screen_lin_ndw_cltrans"},
 			{"wc_unlit_multiply",						"wc_unlit_multiply_lin_ndw_cltrans"}, // couldn't find
 			{"wc_unlit_multiply_lin",					"wc_unlit_multiply_lin_ndw_cltrans"},
 			{"wc_unlit_replace",						"wc_unlit_replace_lin_nfwpf"}, // couldn't find
@@ -80,10 +81,12 @@ namespace ZoneTool
 			{"wc_sky",									"wc_sky_cso_nfwpf"},
 			{"wc_shadowcaster",							"wc_shadowcaster"},
 			{"wc_water",								"2d"}, // couldn't find
-			{"wc_tools",								"wc_tools_r0c0ct0"}, // possibly be wrong
+			{"wc_tools",								"wc_tools_r0c0ct0"}, // possibly wrong
+			{"wc_tools_r0c0",							"wc_tools_r0c0ct0"}, // possibly wrong
 			{"wc_default",								"wc_default"},
 
 			{"m_l_sm_b0c0s0",							"m_l_sm_b0c0n0sd0_cltrans"}, // couldn't find
+			{"m_l_sm_b0c0n0s0",							"m_l_sm_b0c0n0sd0_cltrans"},
 			{"m_l_sm_b0c0n0s0p0",						"m_l_sm_b0c0n0sd0p0_cltrans"},
 			{"m_l_sm_b0c0q0n0s0",						"m_l_sm_b0c0n0sd0_cltrans"}, // couldn't find
 			{"m_l_sm_b0c0q0n0s0p0",						"m_l_sm_b0c0n0sd0_cltrans"}, // couldn't find
@@ -126,6 +129,8 @@ namespace ZoneTool
 			{"mc_l_sm_b0c0_nocast",						"mc_l_sm_lmpb_ndw_b0c0_nfwpf_frt_im_aat"}, // couldn't find
 			{"mc_l_sm_b0c0d0p0",						"mc_l_sm_ndw_b0c0d0p0_cltrans"},
 			{"mc_l_sm_b0c0s0",							"mc_l_sm_lmpb_ndw_b0c0sd0_cltrans"},
+			{"mc_l_sm_b0c0s0_nocast",					"mc_l_sm_lmpb_ndw_b0c0sd0_nfwpf_frt_aat"}, // not sure what the diff is between this and ^
+			{"mc_l_sm_b0c0s0p0",						"m_l_sm_ndw_b0c0sd0p0_cltrans"}, // -> m
 			{"mc_l_sm_b0c0n0",							"mc_l_sm_lmpb_ndw_b0c0n0_nfwpf_frt_im_aat"},
 			{"mc_l_sm_b0c0n0s0",						"mc_l_sm_lmpb_ndw_b0c0n0sd0_cltrans"},
 			{"mc_l_sm_b0c0n0s0p0",						"mc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
@@ -134,6 +139,15 @@ namespace ZoneTool
 			{"mc_l_sm_b0c0q0n0s0p0",					"mc_l_sm_ndw_b0c0q0n0sd0_nfwpf_frt_aat"}, // couldn't find
 			{"mc_l_sm_b0c0n0s0_custom_growing_ice_cracks", "mc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
 			{"mc_l_sm_b0c0n0s0_custom_growing_ice_cracks_sat", "mc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
+			{"mc_l_sm_du_dm_r0c0n0s0",					"m_l_sm_du_dm_r0c0n0sd0_nfwpf"}, // -> m
+			{"mc_l_sm_du_dm_r0c0n0s0p0",				"m_l_sm_du_dm_r0c0n0sd0_nfwpf"}, // -> m, couldn't find
+			{"mc_l_sm_du_dm_t0c0q0n0s0p0",				"mc_l_sm_t0c0n0sd0p0_nfwpf"}, // couldn't find
+			{"mc_l_sm_heat_r0c0n0s0",					"m_l_sm_heat_r0c0n0sd0_nfwpf"}, // -> m
+			{"mc_l_sm_heat_r0c0n0s0p0",					"m_l_sm_heat_r0c0n0sd0p0_nfwpf"}, // -> m
+			{"mc_l_sm_heat_b0c0n0s0",					"mc_l_sm_lmpb_ndw_b0c0n0sd0_cltrans"}, // couldn't find heat
+			{"mc_l_flag_t0c0",							"mc_l_flag_fuv_t0c0_nfwpf"},
+			{"mc_l_sm_flag_t0c0",						"mc_l_sm_lmpb_flag_fuv_t0c0_nfwpf"},
+			{"mc_l_sm_flag_t0c0s0",						"mc_l_sm_lmpb_flag_fuv_t0c0_nfwpf"}, // couldn't find
 			{"mc_l_sm_flag_t0c0n0s0",					"mc_l_sm_flag_fuv_t0c0n0sd0_nfwpf"},
 			{"mc_l_sm_flag_t0c0n0s0p0",					"mc_l_sm_flag_fuv_t0c0n0sd0_nfwpf"}, // couldn't find
 			{"mc_l_r0c0",								"mc_l_sm_r0c0_nfwpf" }, // -> sm
@@ -227,6 +241,7 @@ namespace ZoneTool
 			{"effect_zfeather_outdoor_blend",			"effect_zf_outdoor_blend_ndw"},
 			{"effect_zfeather_outdoor_blend_nofog",		"effect_zf_outdoor_blend_nofog_ndw" },
 			{"effect_zfeather_screen",					"effect_zf_screen_ndw"},
+			{"effect_zfeather_screen_nofog",			"effect_zf_screen_ndw"}, // no nofog
 			{"effect_zfeather_screen_eyeoffset",		"effect_zf_screen_ndw"}, // no eo
 
 			{"particle_cloud",							"particle_cloud_replace_ga"}, // could be wrong
@@ -235,6 +250,7 @@ namespace ZoneTool
 			{"particle_cloud_outdoor_add",				"particle_cloud_outdoor_add_ga"},
 			{"particle_cloud_sparkf_add",				"particle_cloud_sparkf_add_ga"},
 			{"particle_cloud_spark_add",				"particle_cloud_spark_add_ga"},
+			{"particle_cloud_spark_outdoor_add",		"particle_cloud_spark_add_ga"}, // couldn't find
 
 			{"grain_overlay",							"grain_overlay"},
 
@@ -480,11 +496,11 @@ namespace ZoneTool
 
 					bool result = false;
 					h1_techset = H1::get_h1_techset(iw5_techset, asset->name, &result);
-					if (!result)
+					/*if (!result)
 					{
 						ZONETOOL_ERROR("Not dumping material \"%s\"", asset->name);
 						return;
-					}
+					}*/
 					matdata["techniqueSet->name"] = h1_techset;
 				}
 

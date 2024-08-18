@@ -14,3 +14,6 @@
 	path = dep/zstd
 	url = https://github.com/facebook/zstd.git
 	branch = master
+[submodule "dep/gsc-tool"]
+	path = dep/gsc-tool
+	url = https://github.com/xensik/gsc-tool.git

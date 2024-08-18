@@ -83,6 +83,7 @@ namespace ZoneTool
 
 	void* allocator::alloc_internal(const size_t size)
 	{
+		if (!size) return nullptr;
 		const auto mem = this->instance_.allocate(size);
 		std::memset(mem, 0, size);
 		return mem;

@@ -1,5 +1,48 @@
 #include "stdafx.hpp"
 
+#include "GSC.hpp"
+namespace mapents::converter::iw5
+{
+	std::string convert_mapents_ids(const std::string& source)
+	{
+		std::string out_buffer;
+
+		const auto lines = split(source, '\n');
+
+		for (auto i = 0; i < lines.size(); i++)
+		{
+			const auto& line = lines[i];
+
+			std::regex expr(R"~((.+) "(.*)")~");
+			std::smatch match{};
+			if (!line.starts_with("0 ") && std::regex_search(line, match, expr))
+			{
+				const auto id = std::atoi(match[1].str().data());
+				const auto value = match[2].str();
+
+				std::string key = gsc::iw5::gsc_ctx->token_name(
+					static_cast<std::uint16_t>(id));
+				if (!key.starts_with("_id_"))
+				{
+					out_buffer.append(va("\"%s\" \"%s\"", key.data(), value.data()));
+					out_buffer.append("\n");
+					continue;
+				}
+				else
+				{
+					out_buffer.append("//" + line);
+					out_buffer.append("\n");
+					continue;
+				}
+			}
+			out_buffer.append(line);
+			out_buffer.append("\n");
+		}
+
+		return out_buffer;
+	}
+}
+
 namespace mapents2spawns
 {
 	SpawnPointList* generate_spawnpoint_list(char* entity_string)

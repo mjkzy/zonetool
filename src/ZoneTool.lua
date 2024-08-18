@@ -49,6 +49,7 @@ function ZoneTool:project()
         SteamApi:link()
         zstd:link()
         zlib:link()
+        gsc_tool:link()
 
         if _OPTIONS["set-version"] then
             defines {

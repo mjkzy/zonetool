@@ -187,6 +187,11 @@ static std::string to_upper_copy(const std::string& str)
 	return lowercase;
 }
 
+static bool is_numeric(const std::string& text)
+{
+	return std::to_string(atoi(text.data())) == text;
+}
+
 static std::vector<std::string> split(const std::string& rawInput, const std::vector<char>& delims)
 {
 	std::vector<std::string> strings;
@@ -251,6 +256,7 @@ static std::vector<std::string> split(const std::string& str, char delimiter)
 #include "Utils/Expressions.hpp"
 #include "Linker.hpp"
 
+#include "Compression.hpp"
 #include "EntStrings.hpp"
 
 #define REINTERPRET_CAST_SAFE(__TO__, __FROM__) \

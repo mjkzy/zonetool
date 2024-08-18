@@ -214,8 +214,8 @@ namespace ZoneTool::IW5
 					sign = 1.0f;
 				}
 
-				h1_asset->draw.vd.vertices[i].normal.packed = PackedVec::Vec3PackUnitVecWithAlpha(normal, 1.0f);
-				h1_asset->draw.vd.vertices[i].tangent.packed = PackedVec::Vec3PackUnitVecWithAlpha(tangent, sign);
+				h1_asset->draw.vd.vertices[i].normal.packed = PackedVec::Vec3PackUnitVec(normal);
+				h1_asset->draw.vd.vertices[i].tangent.packed = PackedVec::Vec3PackUnitVec(tangent);
 
 				// correct color : bgra->rgba
 				h1_asset->draw.vd.vertices[i].color.array[0] = asset->draw.vd.vertices[i].color.array[2];
@@ -277,7 +277,7 @@ namespace ZoneTool::IW5
 
 				h1_asset->lightGrid.tableVersion = 1;
 				h1_asset->lightGrid.paletteVersion = 1;
-				h1_asset->lightGrid.paletteEntryCount = asset->lightGrid.entryCount;
+				h1_asset->lightGrid.paletteEntryCount = asset->lightGrid.colorCount;
 				h1_asset->lightGrid.paletteEntryAddress = mem.allocate<int>(h1_asset->lightGrid.paletteEntryCount);
 				for (unsigned int i = 0; i < h1_asset->lightGrid.paletteEntryCount; i++)
 				{
@@ -294,9 +294,12 @@ namespace ZoneTool::IW5
 				h1_asset->lightGrid.rangeExponent12BitsEncoding = 4;
 				h1_asset->lightGrid.rangeExponent16BitsEncoding = 23;
 
-				h1_asset->lightGrid.stageCount = 1;
-				h1_asset->lightGrid.stageLightingContrastGain = mem.allocate<float>(1);
-				h1_asset->lightGrid.stageLightingContrastGain[0] = 0.3f;
+				h1_asset->lightGrid.stageCount = asset->primaryLightCount;
+				h1_asset->lightGrid.stageLightingContrastGain = mem.allocate<float>(h1_asset->lightGrid.stageCount);
+				for (auto i = 0; i < h1_asset->lightGrid.stageCount; i++)
+				{
+					h1_asset->lightGrid.stageLightingContrastGain[i] = 0.3f;
+				}
 
 				//memcpy(&h1_asset->lightGrid.skyLightGridColors, skyLightGridColors_bytes, sizeof(skyLightGridColors_bytes));
 				//memcpy(&h1_asset->lightGrid.defaultLightGridColors, defaultLightGridColors_bytes, sizeof(defaultLightGridColors_bytes));
@@ -352,39 +355,39 @@ namespace ZoneTool::IW5
 			h1_asset->outdoorImage->name = asset->outdoorImage->name;
 
 			h1_asset->cellCasterBits = mem.allocate<unsigned int>(h1_asset->dpvsPlanes.cellCount * ((h1_asset->dpvsPlanes.cellCount + 31) >> 5));
-			for (int i = 0; i < asset->dpvsPlanes.cellCount * ((asset->dpvsPlanes.cellCount + 31) >> 5); i++)
-			{
-				h1_asset->cellCasterBits[i] = asset->cellCasterBits[i];
-			}
-			h1_asset->cellHasSunLitSurfsBits = mem.allocate<unsigned int>((h1_asset->dpvsPlanes.cellCount + 31) >> 5); // todo?
+			//for (int i = 0; i < asset->dpvsPlanes.cellCount * ((asset->dpvsPlanes.cellCount + 31) >> 5); i++)
+			//{
+			//	h1_asset->cellCasterBits[i] = asset->cellCasterBits[i];
+			//}
+			h1_asset->cellHasSunLitSurfsBits = mem.allocate<unsigned int>((h1_asset->dpvsPlanes.cellCount + 31) >> 5);
 
 			h1_asset->sceneDynModel = mem.allocate<H1::GfxSceneDynModel>(asset->dpvsDyn.dynEntClientCount[0]);
-			for (unsigned int i = 0; i < asset->dpvsDyn.dynEntClientCount[0]; i++)
-			{
-				h1_asset->sceneDynModel[i].info.hasGfxEntIndex = asset->sceneDynModel[i].info.hasGfxEntIndex;
-				h1_asset->sceneDynModel[i].info.lod = asset->sceneDynModel[i].info.lod;
-				h1_asset->sceneDynModel[i].info.surfId = asset->sceneDynModel[i].info.surfId;
-				h1_asset->sceneDynModel[i].dynEntId = asset->sceneDynModel[i].dynEntId;
-			}
+			//for (unsigned int i = 0; i < asset->dpvsDyn.dynEntClientCount[0]; i++)
+			//{
+			//	h1_asset->sceneDynModel[i].info.hasGfxEntIndex = asset->sceneDynModel[i].info.hasGfxEntIndex;
+			//	h1_asset->sceneDynModel[i].info.lod = asset->sceneDynModel[i].info.lod;
+			//	h1_asset->sceneDynModel[i].info.surfId = asset->sceneDynModel[i].info.surfId;
+			//	h1_asset->sceneDynModel[i].dynEntId = asset->sceneDynModel[i].dynEntId;
+			//}
 			REINTERPRET_CAST_SAFE(h1_asset->sceneDynBrush, asset->sceneDynBrush);
 
 			//h1_asset->primaryLightEntityShadowVis = reinterpret_cast<unsigned int* __ptr64>(asset->primaryLightEntityShadowVis);
 			int count = ((h1_asset->primaryLightCount - h1_asset->lastSunPrimaryLightIndex) << 13) - 0x2000;
 			h1_asset->primaryLightEntityShadowVis = mem.allocate<unsigned int>(count);
-			for (unsigned int i = 0; i < count; i++)
-			{
-				h1_asset->primaryLightEntityShadowVis[i] = asset->primaryLightEntityShadowVis[i];
-			}
+			//for (unsigned int i = 0; i < count; i++)
+			//{
+			//	h1_asset->primaryLightEntityShadowVis[i] = asset->primaryLightEntityShadowVis[i];
+			//}
 
 			h1_asset->primaryLightDynEntShadowVis[0] = reinterpret_cast<unsigned int* __ptr64>(asset->primaryLightDynEntShadowVis[0]);
 			h1_asset->primaryLightDynEntShadowVis[1] = reinterpret_cast<unsigned int* __ptr64>(asset->primaryLightDynEntShadowVis[1]);
 
 			//h1_asset->nonSunPrimaryLightForModelDynEnt = reinterpret_cast<unsigned __int16* __ptr64>(asset->primaryLightForModelDynEnt);
 			h1_asset->nonSunPrimaryLightForModelDynEnt = mem.allocate<unsigned short>(asset->dpvsDyn.dynEntClientCount[0]);
-			for (unsigned int i = 0; i < asset->dpvsDyn.dynEntClientCount[0]; i++)
-			{
-				h1_asset->nonSunPrimaryLightForModelDynEnt[i] = asset->nonSunPrimaryLightForModelDynEnt[i];
-			}
+			//for (unsigned int i = 0; i < asset->dpvsDyn.dynEntClientCount[0]; i++)
+			//{
+			//	h1_asset->nonSunPrimaryLightForModelDynEnt[i] = asset->nonSunPrimaryLightForModelDynEnt[i];
+			//}
 
 			if (asset->shadowGeom)
 			{
@@ -402,7 +405,7 @@ namespace ZoneTool::IW5
 					REINTERPRET_CAST_SAFE(h1_asset->shadowGeom[i].smodelIndex, asset->shadowGeom[i].smodelIndex);
 				}
 			}
-			h1_asset->shadowGeomOptimized = h1_asset->shadowGeom;
+			h1_asset->shadowGeomOptimized = nullptr;
 
 			h1_asset->lightRegion = mem.allocate<H1::GfxLightRegion>(h1_asset->primaryLightCount);
 			for (unsigned int i = 0; i < h1_asset->primaryLightCount; i++)
@@ -586,7 +589,7 @@ namespace ZoneTool::IW5
 			h1_asset->dpvs.subdivVertexLighting = nullptr;
 
 			h1_asset->dpvs.surfaceMaterials = mem.allocate<H1::GfxDrawSurf>(h1_asset->surfaceCount);
-			for (unsigned int i = 0; i < h1_asset->surfaceCount; i++) // these are probably wrong
+			for (unsigned int i = 0; i < h1_asset->surfaceCount; i++) // zero data, runtime
 			{
 				h1_asset->dpvs.surfaceMaterials[i].fields.objectId = asset->dpvs.surfaceMaterials[i].fields.objectId;
 				h1_asset->dpvs.surfaceMaterials[i].fields.reflectionProbeIndex = asset->dpvs.surfaceMaterials[i].fields.reflectionProbeIndex;
@@ -604,10 +607,9 @@ namespace ZoneTool::IW5
 			}
 
 			REINTERPRET_CAST_SAFE(h1_asset->dpvs.surfaceCastsSunShadow, asset->dpvs.surfaceCastsSunShadow);
-			//h1_asset->dpvs.sunShadowOptCount = 1;
-			//h1_asset->dpvs.sunSurfVisDataCount = h1_asset->dpvs.surfaceVisDataCount * 8;
+			//h1_asset->dpvs.sunShadowOptCount = h1_asset->shadowGeomOptimized ? 1 : 0;
+			//h1_asset->dpvs.sunSurfVisDataCount = h1_asset->dpvs.sunShadowOptCount * h1_asset->dpvs.surfaceVisDataCount;
 			//h1_asset->dpvs.surfaceCastsSunShadowOpt = mem.allocate<unsigned int>(h1_asset->dpvs.sunShadowOptCount * h1_asset->dpvs.sunSurfVisDataCount);
-			//memcpy(h1_asset->dpvs.surfaceCastsSunShadowOpt, h1_asset->dpvs.surfaceCastsSunShadow, sizeof(int) * (h1_asset->dpvs.sunShadowOptCount * h1_asset->dpvs.sunSurfVisDataCount));
 			h1_asset->dpvs.surfaceDeptAndSurf = mem.allocate<H1::GfxDepthAndSurf>(h1_asset->dpvs.staticSurfaceCount); // todo?
 			h1_asset->dpvs.constantBuffersLit = mem.allocate<char* __ptr64>(h1_asset->dpvs.smodelCount); //nullptr;
 			h1_asset->dpvs.constantBuffersAmbient = mem.allocate<char* __ptr64>(h1_asset->dpvs.smodelCount); //nullptr;

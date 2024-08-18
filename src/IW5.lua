@@ -38,6 +38,8 @@ function IW5:project()
         zstd:include()
         zlib:include()
 
+        gsc_tool:include()
+
         --directxtex:link()
 
         X64:include()

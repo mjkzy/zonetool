@@ -1,5 +1,10 @@
 #pragma once
 
+namespace mapents::converter::iw5
+{
+	std::string convert_mapents_ids(const std::string& source);
+}
+
 namespace mapents2spawns
 {
 	constexpr unsigned int MAX_SPAWNS = 0x1000;

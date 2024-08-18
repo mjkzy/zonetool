@@ -241,6 +241,7 @@ namespace ZoneTool
 						DUMPCASE(material, IMaterial, Material);
 						DUMPCASE(physpreset, IPhysPreset, PhysPreset);
 						DUMPCASE(rawfile, IRawFile, RawFile);
+						DUMPCASE(scriptfile, IScriptFile, ScriptFile);
 						DUMPCASE(sound, ISound, snd_alias_list_t);
 						DUMPCASE(sndcurve, ISoundCurve, SndCurve);
 						DUMPCASE(xmodel, IXModel, XModel);

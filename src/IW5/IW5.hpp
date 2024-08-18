@@ -42,6 +42,7 @@ using ordered_json = nlohmann::ordered_json;
 #include "Assets/Material.hpp"
 #include "Assets/PhysPreset.hpp"
 #include "Assets/RawFile.hpp"
+#include "Assets/ScriptFile.hpp"
 #include "Assets/Sound.hpp"
 #include "Assets/SoundCurve.hpp"
 #include "Assets/XAnimParts.hpp"

@@ -16,6 +16,6 @@ namespace ZoneTool::IW5::IW6Dumper
 		IW6::IMapEnts::dump(iw6_asset, SL_ConvertToString);
 
 		// dump spawns
-		mapents2spawns::dump_spawns(filesystem::get_dump_path() + asset->name + ".ents.spawnList"s, asset->entityString);
+		mapents2spawns::dump_spawns(filesystem::get_dump_path() + asset->name + ".ents.spawnList"s, iw6_asset->entityString);
 	}
 }

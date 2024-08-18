@@ -14,8 +14,18 @@ namespace ZoneTool::IW5
 
 			iw6_asset->name = asset->name;
 
-			iw6_asset->entityString = asset->entityString;
-			iw6_asset->numEntityChars = asset->numEntityChars;
+			if (ZoneTool::currentlinkermode == ZoneTool::linker_mode::iw5)
+			{
+				const auto str = mapents::converter::iw5::convert_mapents_ids(
+					std::string{ asset->entityString, static_cast<size_t>(asset->numEntityChars) });
+				iw6_asset->entityString = const_cast<char*>(mem.duplicate_string(str));
+				iw6_asset->numEntityChars = static_cast<int>(str.size());
+			}
+			else
+			{
+				iw6_asset->entityString = asset->entityString;
+				iw6_asset->numEntityChars = asset->numEntityChars;
+			}
 
 			iw6_asset->trigger.count = asset->trigger.count;
 			iw6_asset->trigger.models = reinterpret_cast<IW6::TriggerModel*>(asset->trigger.models);

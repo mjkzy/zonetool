@@ -9,31 +9,33 @@ namespace ZoneTool::IW5
 {
 	namespace H1Converter
 	{
-		void GenerateH1BlendVertsShit(H1::XSurface* surf)
+		void GenerateH1BlendVertsTable(H1::XSurface* surf)
 		{
 			unsigned short a = 0;
 			unsigned short b = 0;
 			unsigned short index = 1;
 			for (short s = 0; s < (surf->blendVertCounts[0]); s++)
 			{
-				surf->blendVertsTable[a].b[0] = surf->blendVerts[b + 0] / 64;
-				surf->blendVertsTable[a].b[1] = 0;
-				surf->blendVertsTable[a].b[2] = 0;
-				surf->blendVertsTable[a].b[3] = 0;
-				surf->blendVertsTable[a].b[4] = 0;
-				surf->blendVertsTable[a].b[5] = 0;
-				surf->blendVertsTable[a].b[6] = 0;
-				surf->blendVertsTable[a].b[7] = 0;
+				auto& table = surf->blendVertsTable[a];
 
-				surf->blendVertsTable[a].b[8] = 0;
-				surf->blendVertsTable[a].b[9] = 0;
-				surf->blendVertsTable[a].b[10] = 0;
-				surf->blendVertsTable[a].b[11] = 0;
-				surf->blendVertsTable[a].b[12] = 0;
-				surf->blendVertsTable[a].b[13] = 0;
-				surf->blendVertsTable[a].b[14] = 0;
+				table.b[0] = surf->blendVerts[b + 0] / 64;
+				table.b[1] = 0;
+				table.b[2] = 0;
+				table.b[3] = 0;
+				table.b[4] = 0;
+				table.b[5] = 0;
+				table.b[6] = 0;
+				table.b[7] = 0;
 
-				surf->blendVertsTable[a].blendVertCountIndex = index;
+				table.b[8] = 0;
+				table.b[9] = 0;
+				table.b[10] = 0;
+				table.b[11] = 0;
+				table.b[12] = 0;
+				table.b[13] = 0;
+				table.b[14] = 0;
+
+				table.blendVertCountIndex = index;
 
 				a++;
 				b += 1;
@@ -42,24 +44,26 @@ namespace ZoneTool::IW5
 
 			for (short s = 0; s < (surf->blendVertCounts[1]); s++)
 			{
-				surf->blendVertsTable[a].b[0] = surf->blendVerts[b + 0] / 64;
-				surf->blendVertsTable[a].b[1] = surf->blendVerts[b + 1] / 64;
-				surf->blendVertsTable[a].b[2] = 0;
-				surf->blendVertsTable[a].b[3] = 0;
-				surf->blendVertsTable[a].b[4] = 0;
-				surf->blendVertsTable[a].b[5] = 0;
-				surf->blendVertsTable[a].b[6] = 0;
-				surf->blendVertsTable[a].b[7] = 0;
+				auto& table = surf->blendVertsTable[a];
 
-				surf->blendVertsTable[a].b[8] = surf->blendVerts[b + 2];
-				surf->blendVertsTable[a].b[9] = 0;
-				surf->blendVertsTable[a].b[10] = 0;
-				surf->blendVertsTable[a].b[11] = 0;
-				surf->blendVertsTable[a].b[12] = 0;
-				surf->blendVertsTable[a].b[13] = 0;
-				surf->blendVertsTable[a].b[14] = 0;
+				table.b[0] = surf->blendVerts[b + 0] / 64;
+				table.b[1] = surf->blendVerts[b + 1] / 64;
+				table.b[2] = 0;
+				table.b[3] = 0;
+				table.b[4] = 0;
+				table.b[5] = 0;
+				table.b[6] = 0;
+				table.b[7] = 0;
 
-				surf->blendVertsTable[a].blendVertCountIndex = index;
+				table.b[8] = surf->blendVerts[b + 2];
+				table.b[9] = 0;
+				table.b[10] = 0;
+				table.b[11] = 0;
+				table.b[12] = 0;
+				table.b[13] = 0;
+				table.b[14] = 0;
+
+				table.blendVertCountIndex = index;
 
 				a++;
 				b += 3;
@@ -68,24 +72,26 @@ namespace ZoneTool::IW5
 
 			for (short s = 0; s < (surf->blendVertCounts[2]); s++)
 			{
-				surf->blendVertsTable[a].b[0] = surf->blendVerts[b + 0] / 64;
-				surf->blendVertsTable[a].b[1] = surf->blendVerts[b + 1] / 64;
-				surf->blendVertsTable[a].b[2] = surf->blendVerts[b + 3] / 64;
-				surf->blendVertsTable[a].b[3] = 0;
-				surf->blendVertsTable[a].b[4] = 0;
-				surf->blendVertsTable[a].b[5] = 0;
-				surf->blendVertsTable[a].b[6] = 0;
-				surf->blendVertsTable[a].b[7] = 0;
+				auto& table = surf->blendVertsTable[a];
 
-				surf->blendVertsTable[a].b[8] = surf->blendVerts[b + 2];
-				surf->blendVertsTable[a].b[9] = surf->blendVerts[b + 4];
-				surf->blendVertsTable[a].b[10] = 0;
-				surf->blendVertsTable[a].b[11] = 0;
-				surf->blendVertsTable[a].b[12] = 0;
-				surf->blendVertsTable[a].b[13] = 0;
-				surf->blendVertsTable[a].b[14] = 0;
+				table.b[0] = surf->blendVerts[b + 0] / 64;
+				table.b[1] = surf->blendVerts[b + 1] / 64;
+				table.b[2] = surf->blendVerts[b + 3] / 64;
+				table.b[3] = 0;
+				table.b[4] = 0;
+				table.b[5] = 0;
+				table.b[6] = 0;
+				table.b[7] = 0;
 
-				surf->blendVertsTable[a].blendVertCountIndex = index;
+				table.b[8] = surf->blendVerts[b + 2];
+				table.b[9] = surf->blendVerts[b + 4];
+				table.b[10] = 0;
+				table.b[11] = 0;
+				table.b[12] = 0;
+				table.b[13] = 0;
+				table.b[14] = 0;
+
+				table.blendVertCountIndex = index;
 
 				a++;
 				b += 5;
@@ -94,24 +100,26 @@ namespace ZoneTool::IW5
 
 			for (short s = 0; s < (surf->blendVertCounts[3]); s++)
 			{
-				surf->blendVertsTable[a].b[0] = surf->blendVerts[b + 0] / 64;
-				surf->blendVertsTable[a].b[1] = surf->blendVerts[b + 1] / 64;
-				surf->blendVertsTable[a].b[2] = surf->blendVerts[b + 3] / 64;
-				surf->blendVertsTable[a].b[3] = surf->blendVerts[b + 5] / 64;
-				surf->blendVertsTable[a].b[4] = 0;
-				surf->blendVertsTable[a].b[5] = 0;
-				surf->blendVertsTable[a].b[6] = 0;
-				surf->blendVertsTable[a].b[7] = 0;
+				auto& table = surf->blendVertsTable[a];
 
-				surf->blendVertsTable[a].b[8] = surf->blendVerts[b + 2];
-				surf->blendVertsTable[a].b[9] = surf->blendVerts[b + 4];
-				surf->blendVertsTable[a].b[10] = surf->blendVerts[b + 6];
-				surf->blendVertsTable[a].b[11] = 0;
-				surf->blendVertsTable[a].b[12] = 0;
-				surf->blendVertsTable[a].b[13] = 0;
-				surf->blendVertsTable[a].b[14] = 0;
+				table.b[0] = surf->blendVerts[b + 0] / 64;
+				table.b[1] = surf->blendVerts[b + 1] / 64;
+				table.b[2] = surf->blendVerts[b + 3] / 64;
+				table.b[3] = surf->blendVerts[b + 5] / 64;
+				table.b[4] = 0;
+				table.b[5] = 0;
+				table.b[6] = 0;
+				table.b[7] = 0;
 
-				surf->blendVertsTable[a].blendVertCountIndex = index;
+				table.b[8] = surf->blendVerts[b + 2];
+				table.b[9] = surf->blendVerts[b + 4];
+				table.b[10] = surf->blendVerts[b + 6];
+				table.b[11] = 0;
+				table.b[12] = 0;
+				table.b[13] = 0;
+				table.b[14] = 0;
+
+				table.blendVertCountIndex = index;
 
 				a++;
 				b += 7;
@@ -136,7 +144,7 @@ namespace ZoneTool::IW5
 			h1_asset->blendVerts = reinterpret_cast<unsigned short* __ptr64>(asset->vertInfo.vertsBlend);
 
 			h1_asset->blendVertsTable = mem.allocate<H1::BlendVertsUnknown>(asset->vertCount);
-			GenerateH1BlendVertsShit(h1_asset);
+			GenerateH1BlendVertsTable(h1_asset);
 
 			// triIndices
 			h1_asset->triIndices = reinterpret_cast<H1::Face * __ptr64>(asset->triIndices); // this is draw indices?
@@ -174,8 +182,8 @@ namespace ZoneTool::IW5
 					sign = 1.0f;
 				}
 
-				h1_asset->verts0.packedVerts0[i].normal.packed = PackedVec::Vec3PackUnitVecWithAlpha(normal, 1.0f);
-				h1_asset->verts0.packedVerts0[i].tangent.packed = PackedVec::Vec3PackUnitVecWithAlpha(tangent, sign);
+				h1_asset->verts0.packedVerts0[i].normal.packed = PackedVec::Vec3PackUnitVec(normal);
+				h1_asset->verts0.packedVerts0[i].tangent.packed = PackedVec::Vec3PackUnitVec(tangent);
 				
 				// correct color : bgra->rgba
 				h1_asset->verts0.packedVerts0[i].color.array[0] = asset->verts0.packedVerts0[i].color.array[2];

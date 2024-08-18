@@ -35,4 +35,5 @@ function ZoneUtils:project()
         libtomcrypt:include()
         zstd:include()
         zlib:include()
+        gsc_tool:include()
 end
