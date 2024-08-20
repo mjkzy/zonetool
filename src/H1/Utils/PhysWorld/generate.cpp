@@ -36,7 +36,7 @@ namespace ZoneTool::H1::physworld_gen
 			float lower[3];
 			float upper[3];
 			bool is_max;
-			dmMeshNode node;
+			ZoneTool::H1::dmMeshNode node;
 		};
 
 		struct bounding_box
@@ -62,7 +62,8 @@ namespace ZoneTool::H1::physworld_gen
 			float planes[6][4];
 		};
 
-		void get_winding_for_brush_face(ClipInfo* info, const Bounds* bounds, const cbrush_t* brush, unsigned int brush_side,
+		void get_winding_for_brush_face(ZoneTool::H1::ClipInfo* info, const ZoneTool::H1::Bounds* bounds,
+			const ZoneTool::H1::cbrush_t* brush, unsigned int brush_side,
 			polygon_t* out_winding, int max_verts, const axial_planes_t* axial_planes)
 		{
 			float plane_1[4]{};
@@ -218,7 +219,7 @@ namespace ZoneTool::H1::physworld_gen
 			}
 		}
 
-		axial_planes_t get_axial_planes(const Bounds* bounds)
+		axial_planes_t get_axial_planes(const ZoneTool::H1::Bounds* bounds)
 		{
 			axial_planes_t axial_planes{};
 			axial_planes.planes[0][0] = -1.f;
@@ -229,7 +230,7 @@ namespace ZoneTool::H1::physworld_gen
 			axial_planes.planes[1][0] = 1.f;
 			axial_planes.planes[1][1] = 0.f;
 			axial_planes.planes[1][2] = 0.f;
-			axial_planes.planes[1][3] = (bounds->midPoint[0] + bounds->halfSize[0]);
+			axial_planes.planes[1][3] = bounds->midPoint[0] + bounds->halfSize[0];
 
 			axial_planes.planes[2][0] = 0.f;
 			axial_planes.planes[2][1] = -1.f;
@@ -254,7 +255,8 @@ namespace ZoneTool::H1::physworld_gen
 			return axial_planes;
 		}
 
-		void build_windings_for_brush(ClipInfo* info, const Bounds* bounds, const cbrush_t* brush, polygon_t* out_polys,
+		void build_windings_for_brush(ZoneTool::H1::ClipInfo* info, const ZoneTool::H1::Bounds* bounds,
+			const ZoneTool::H1::cbrush_t* brush, polygon_t* out_polys,
 			unsigned int max_polys, float(*out_verts)[3], unsigned int max_verts)
 		{
 			auto point_count = 0;
@@ -274,14 +276,13 @@ namespace ZoneTool::H1::physworld_gen
 		{
 			if (node_index + 1 >= max_nodes)
 			{
-				ZONETOOL_FATAL("out of nodes (%d / %d)", node_index, max_nodes);
-				return nullptr;
+				ZONETOOL_FATAL("out of nodes for physworld generation");
 			}
 
 			return &nodes[node_index++];
 		}
 
-		bounding_box compute_bounding_box(dmMeshData* mesh, const std::vector<triangle_t>& triangles)
+		bounding_box compute_bounding_box(ZoneTool::H1::dmMeshData* mesh, const std::vector<triangle_t>& triangles)
 		{
 			bounding_box box{};
 
@@ -353,7 +354,7 @@ namespace ZoneTool::H1::physworld_gen
 			out[2] = a[2] * mul;
 		}
 
-		int hash_triangle(const triangle_t& tri, const std::vector<dmFloat4>& phys_verticies)
+		int hash_triangle(const triangle_t& tri, const std::vector<ZoneTool::H1::dmFloat4>& phys_verticies)
 		{
 			float verts[3][3]{};
 			std::memcpy(&verts[0], &phys_verticies[tri.verts[0]], sizeof(float[3]));
@@ -366,59 +367,7 @@ namespace ZoneTool::H1::physworld_gen
 			return utils::cryptography::jenkins_one_at_a_time::compute(data);
 		}
 
-		int hash_vert(const dmFloat4& vert)
-		{
-			std::string data;
-			data.append(reinterpret_cast<const char*>(&vert), sizeof(float[3]));
-
-			return utils::cryptography::jenkins_one_at_a_time::compute(data);
-		}
-
-		std::unordered_set<int> triangle_hashes;
-		int triangle_index;
-
-		std::unordered_set<int> vert_hashes;
-		std::unordered_map<int, int> vert_hash_to_index;
-
-		void add_triangle(triangle_t& triangle, std::vector<triangle_t>& triangles, std::vector<dmFloat4>& vertices)
-		{
-			const auto hash = hash_triangle(triangle, vertices);
-			if (triangle_hashes.contains(hash))
-			{
-				return;
-			}
-
-			triangle_hashes.insert(hash);
-			triangle.index = triangle_index++;
-			triangles.emplace_back(triangle);
-		};
-
-		void add_vert(dmFloat4& vert, std::vector<dmFloat4>& vertices)
-		{
-			const auto hash = hash_vert(vert);
-			if (vert_hashes.contains(hash))
-			{
-				return;
-			}
-
-			vert_hashes.insert(hash);
-			vert_hash_to_index[hash] = vertices.size();
-			vertices.push_back(vert);
-		}
-
-		int get_vert(dmFloat4& vert, std::vector<dmFloat4>& vertices)
-		{
-			const auto hash = hash_vert(vert);
-			if (vert_hashes.contains(hash))
-			{
-				return vert_hash_to_index[hash];
-			}
-
-			__debugbreak();
-			return -1;
-		};
-
-		bool is_script_brushmodel_brush_r(clipMap_t* asset, cLeafBrushNode_s* node, cbrush_t* brush)
+		bool is_script_brushmodel_brush_r(ZoneTool::H1::clipMap_t* asset, ZoneTool::H1::cLeafBrushNode_s* node, ZoneTool::H1::cbrush_t* brush)
 		{
 			if (node->leafBrushCount > 0)
 			{
@@ -430,10 +379,11 @@ namespace ZoneTool::H1::physworld_gen
 						return true;
 					}
 				}
+
 				return false;
 			}
 
-			if (node->leafBrushCount == -1)
+			if (node->leafBrushCount)
 			{
 				if (is_script_brushmodel_brush_r(asset, &node[1], brush))
 				{
@@ -456,7 +406,7 @@ namespace ZoneTool::H1::physworld_gen
 			return false;
 		}
 
-		bool is_script_brushmodel_brush(clipMap_t* asset, cbrush_t* brush)
+		bool is_script_brushmodel_brush(ZoneTool::H1::clipMap_t* asset, ZoneTool::H1::cbrush_t* brush)
 		{
 			for (auto i = 0u; i < asset->numSubModels; i++)
 			{
@@ -471,7 +421,7 @@ namespace ZoneTool::H1::physworld_gen
 			return false;
 		}
 
-		bool find_partition_in_tree(clipMap_t* asset, CollisionAabbTree* tree, CollisionPartition* partition)
+		bool find_partition_in_tree(ZoneTool::H1::clipMap_t* asset, ZoneTool::H1::CollisionAabbTree* tree, ZoneTool::H1::CollisionPartition* partition)
 		{
 			if (tree->childCount != 0)
 			{
@@ -492,7 +442,7 @@ namespace ZoneTool::H1::physworld_gen
 			return false;
 		}
 
-		bool is_script_brushmodel_partition(clipMap_t* asset, CollisionPartition* partition)
+		bool is_script_brushmodel_partition(ZoneTool::H1::clipMap_t* asset, ZoneTool::H1::CollisionPartition* partition)
 		{
 			for (auto i = 0u; i < asset->numSubModels; i++)
 			{
@@ -510,18 +460,12 @@ namespace ZoneTool::H1::physworld_gen
 			return false;
 		}
 
-		std::vector<triangle_t> generate_brush_triangles(clipMap_t* asset, std::vector<dmFloat4>& vertices, int brush_index)
+		std::vector<triangle_t> generate_brush_triangles(ZoneTool::H1::clipMap_t* asset, std::vector<ZoneTool::H1::dmFloat4>& vertices, int brush_index)
 		{
 			std::vector<triangle_t> triangles;
 
 			auto brush = &asset->info.bCollisionData.brushes[brush_index];
 			auto brush_bounds = asset->info.bCollisionData.brushBounds[brush_index];
-			auto contents = asset->info.bCollisionData.brushContents[brush_index];
-
-			if ((contents & 0x1) == 0) // no collision
-			{
-				return{};
-			}
 
 			if (is_script_brushmodel_brush(asset, brush))
 			{
@@ -532,38 +476,35 @@ namespace ZoneTool::H1::physworld_gen
 			{
 				const auto base_index = static_cast<int>(vertices.size());
 
-				std::unordered_map<int, int> poly_index_to_vert_index;
-				for (auto u = 0u; u < poly->ptCount; u++)
+				for (auto i = 0u; i < poly->ptCount; i++)
 				{
-					dmFloat4 vert{};
-					vert.x = poly->pts[u][0];
-					vert.y = poly->pts[u][1];
-					vert.z = poly->pts[u][2];
-					vert.w = 0.f;
-					add_vert(vert, vertices);
-					poly_index_to_vert_index[u] = get_vert(vert, vertices);
+					ZoneTool::H1::dmFloat4 vert{};
+					vert.x = poly->pts[i][0];
+					vert.y = poly->pts[i][1];
+					vert.z = poly->pts[i][2];
+					vertices.emplace_back(vert);
 				}
 
 				if (poly->ptCount == 3)
 				{
 					triangle_t triangle{};
-					triangle.verts[0] = poly_index_to_vert_index[0];
-					triangle.verts[1] = poly_index_to_vert_index[1];
-					triangle.verts[2] = poly_index_to_vert_index[2];
+					triangle.verts[0] = base_index + 0;
+					triangle.verts[1] = base_index + 1;
+					triangle.verts[2] = base_index + 2;
 					triangles.emplace_back(triangle);
 				}
 				else if (poly->ptCount == 4)
 				{
 					triangle_t triangle_1{};
-					triangle_1.verts[0] = poly_index_to_vert_index[0];
-					triangle_1.verts[1] = poly_index_to_vert_index[1];
-					triangle_1.verts[2] = poly_index_to_vert_index[2];
+					triangle_1.verts[0] = base_index + 0;
+					triangle_1.verts[1] = base_index + 1;
+					triangle_1.verts[2] = base_index + 2;
 					triangles.emplace_back(triangle_1);
 
 					triangle_t triangle_2{};
-					triangle_2.verts[0] = poly_index_to_vert_index[2];
-					triangle_2.verts[1] = poly_index_to_vert_index[3];
-					triangle_2.verts[2] = poly_index_to_vert_index[0];
+					triangle_2.verts[0] = base_index + 2;
+					triangle_2.verts[1] = base_index + 3;
+					triangle_2.verts[2] = base_index + 0;
 					triangles.emplace_back(triangle_2);
 				}
 				else
@@ -587,9 +528,9 @@ namespace ZoneTool::H1::physworld_gen
 					for (auto i = 0u; i < indices.size(); i += 3)
 					{
 						triangle_t triangle{};
-						triangle.verts[0] = poly_index_to_vert_index[i + 2];
-						triangle.verts[1] = poly_index_to_vert_index[i + 1];
-						triangle.verts[2] = poly_index_to_vert_index[i + 0];
+						triangle.verts[0] = base_index + indices[i + 2];
+						triangle.verts[1] = base_index + indices[i + 1];
+						triangle.verts[2] = base_index + indices[i + 0];
 						triangles.emplace_back(triangle);
 					}
 				}
@@ -597,10 +538,10 @@ namespace ZoneTool::H1::physworld_gen
 
 			constexpr auto max_verts = 0x1000;
 			constexpr auto max_polys = 0x1000;
-			std::array<float[3], max_verts> verts{};
-			std::array<polygon_t, max_polys> polys{};
+			float verts[max_verts][3]{};
+			polygon_t polys[max_verts]{};
 
-			build_windings_for_brush(asset->pInfo, &brush_bounds, brush, polys.data(), max_polys, verts.data(), max_verts);
+			build_windings_for_brush(asset->pInfo, &brush_bounds, brush, polys, max_polys, verts, max_verts);
 			for (auto side_index = 0; side_index < brush->numsides + 6; side_index++)
 			{
 				const auto poly = &polys[side_index];
@@ -610,65 +551,54 @@ namespace ZoneTool::H1::physworld_gen
 			return triangles;
 		}
 
-		std::vector<triangle_t> generate_triangles(clipMap_t* asset, std::vector<dmFloat4>& vertices)
+		std::vector<triangle_t> generate_triangles(ZoneTool::H1::clipMap_t* asset, std::vector<ZoneTool::H1::dmFloat4>& vertices)
 		{
 			std::vector<triangle_t> triangles;
-			triangle_index = 0;
+			std::unordered_set<int> triangle_hashes;
 
-			// patches
+			auto triangle_index = 0;
+
+			const auto add_triangle = [&](triangle_t& triangle)
 			{
-				std::unordered_map<int, int> partition_vert_index_to_added_index;
-				for (auto i = 0u; i < asset->info.pCollisionData.vertCount; i++)
+				const auto hash = hash_triangle(triangle, vertices);
+				if (triangle_hashes.contains(hash))
 				{
-					dmFloat4 vertex{};
-					vertex.x = asset->info.pCollisionData.verts[i][0];
-					vertex.y = asset->info.pCollisionData.verts[i][1];
-					vertex.z = asset->info.pCollisionData.verts[i][2];
-					vertex.w = 0.f;
-					add_vert(vertex, vertices);
-					partition_vert_index_to_added_index[i] = get_vert(vertex, vertices);
+					return;
 				}
 
-				for (auto i = 0; i < asset->info.pCollisionData.partitionCount; i++)
+				triangle_hashes.insert(hash);
+				triangle.index = triangle_index++;
+				triangles.emplace_back(triangle);
+			};
+
+			for (auto i = 0u; i < asset->info.bCollisionData.numBrushes; i++)
+			{
+				const auto brush_tris = generate_brush_triangles(asset, vertices, i);
+				for (auto tri : brush_tris)
 				{
-					const auto partition = &asset->info.pCollisionData.partitions[i];
-					if (is_script_brushmodel_partition(asset, partition))
-					{
-						continue;
-					}
-
-					auto tri_indices = &asset->info.pCollisionData.triIndices[3 * partition->firstTri];
-					for (auto o = 0u; o < partition->triCount; o++)
-					{
-						triangle_t triangle{};
-						triangle.verts[0] = partition_vert_index_to_added_index[tri_indices[0] + 1024 * partition->firstVertSegment];
-						triangle.verts[1] = partition_vert_index_to_added_index[tri_indices[1] + 1024 * partition->firstVertSegment];
-						triangle.verts[2] = partition_vert_index_to_added_index[tri_indices[2] + 1024 * partition->firstVertSegment];
-						add_triangle(triangle, triangles, vertices);
-
-						tri_indices += 3;
-					}
+					add_triangle(tri);
 				}
 			}
 
-			// brushes
+			for (auto i = 0; i < asset->info.pCollisionData.partitionCount; i++)
 			{
-				for (auto i = 0u; i < asset->info.bCollisionData.numBrushes; i++)
+				const auto partition = &asset->info.pCollisionData.partitions[i];
+				if (is_script_brushmodel_partition(asset, partition))
 				{
-					const auto brush_tris = generate_brush_triangles(asset, vertices, i);
-					for (auto tri : brush_tris)
-					{
-						add_triangle(tri, triangles, vertices);
-					}
+					continue;
 				}
-			}
 
-			{
-				triangle_index = 0;
-				triangle_hashes.clear();
+				auto tri_indices = &asset->info.pCollisionData.triIndices[3 * partition->firstTri];
+				for (auto o = 0u; o < partition->triCount; o++)
+				{
+					triangle_t triangle{};
+					triangle.verts[0] = tri_indices[0] + 1024 * partition->firstVertSegment;
+					triangle.verts[1] = tri_indices[1] + 1024 * partition->firstVertSegment;
+					triangle.verts[2] = tri_indices[2] + 1024 * partition->firstVertSegment;
+					add_triangle(triangle);
 
-				vert_hashes.clear();
-				vert_hash_to_index.clear();
+					tri_indices += 3;
+				}
 			}
 
 			return triangles;
@@ -678,125 +608,125 @@ namespace ZoneTool::H1::physworld_gen
 
 
 #define FINDMINMAX(x0, x1, x2, min, max) \
-		min = max = x0; \
-		if (x1 < min) min = x1; \
-		if (x1 > max) max = x1; \
-		if (x2 < min) min = x2; \
-		if (x2 > max) max = x2; \
+min = max = x0; \
+if (x1 < min) min = x1; \
+if (x1 > max) max = x1; \
+if (x2 < min) min = x2; \
+if (x2 > max) max = x2; \
 
 #define AXISTEST_X01(a, b, fa, fb) \
-		p0 = a * v0[1] - b * v0[2]; \
-		p2 = a * v2[1] - b * v2[2]; \
-		if (p0 < p2) \
-		{ \
-			min = p0; \
-			max = p2; \
-		} \
-		else \
-		{ \
-			min = p2; \
-			max = p0; \
-		} \
-		rad = fa * boxhalfsize[1] + fb * boxhalfsize[2]; \
-		if (min > rad || max < -rad) \
-		{ \
-			return false; \
-		} \
+p0 = a * v0[1] - b * v0[2]; \
+p2 = a * v2[1] - b * v2[2]; \
+if (p0 < p2) \
+{ \
+	min = p0; \
+	max = p2; \
+} \
+else \
+{ \
+	min = p2; \
+	max = p0; \
+} \
+rad = fa * boxhalfsize[1] + fb * boxhalfsize[2]; \
+if (min > rad || max < -rad) \
+{ \
+	return false; \
+} \
 
 #define AXISTEST_X2(a, b, fa, fb) \
-		p0 = a * v0[1] - b * v0[2]; \
-		p1 = a * v1[1] - b * v1[2]; \
-		if (p0 < p1) \
-		{ \
-			min = p0;\
-			max = p1; \
-		} \
-		else \
-		{ \
-			min = p1; \
-			max = p0; \
-		} \
-		rad = fa * boxhalfsize[1] + fb * boxhalfsize[2]; \
-		if (min > rad || max < -rad) \
-		{ \
-			return false; \
-		} \
+p0 = a * v0[1] - b * v0[2]; \
+p1 = a * v1[1] - b * v1[2]; \
+if (p0 < p1) \
+{ \
+	min = p0;\
+	max = p1; \
+} \
+else \
+{ \
+	min = p1; \
+	max = p0; \
+} \
+rad = fa * boxhalfsize[1] + fb * boxhalfsize[2]; \
+if (min > rad || max < -rad) \
+{ \
+	return false; \
+} \
 
 #define AXISTEST_Y02(a, b, fa, fb) \
-		p0 = -a * v0[0] + b * v0[2]; \
-		p2 = -a * v2[0] + b * v2[2]; \
-		if (p0 < p2) \
-		{ \
-			min = p0; \
-			max = p2; \
-		}\
-		else \
-		{ \
-			min = p2; \
-			max = p0; \
-		} \
-		rad = fa * boxhalfsize[0] + fb * boxhalfsize[2]; \
-		if (min > rad || max < -rad) \
-		{ \
-			return false; \
-		} \
+p0 = -a * v0[0] + b * v0[2]; \
+p2 = -a * v2[0] + b * v2[2]; \
+if (p0 < p2) \
+{ \
+	min = p0; \
+	max = p2; \
+}\
+else \
+{ \
+	min = p2; \
+	max = p0; \
+} \
+rad = fa * boxhalfsize[0] + fb * boxhalfsize[2]; \
+if (min > rad || max < -rad) \
+{ \
+	return false; \
+} \
 
 #define AXISTEST_Y1(a, b, fa, fb) \
-		p0 = -a * v0[0] + b * v0[2]; \
-		p1 = -a * v1[0] + b * v1[2]; \
-		if (p0 < p1) \
-		{ \
-			min = p0; \
-			max = p1; \
-		} \
-		else \
-		{ \
-			min = p1;  \
-			max = p0; \
-		} \
-		rad = fa * boxhalfsize[0] + fb * boxhalfsize[2]; \
-		if (min > rad || max < -rad) \
-		{ \
-			return false; \
-		} \
+p0 = -a * v0[0] + b * v0[2]; \
+p1 = -a * v1[0] + b * v1[2]; \
+if (p0 < p1) \
+{ \
+	min = p0; \
+	max = p1; \
+} \
+else \
+{ \
+	min = p1;  \
+	max = p0; \
+} \
+rad = fa * boxhalfsize[0] + fb * boxhalfsize[2]; \
+if (min > rad || max < -rad) \
+{ \
+	return false; \
+} \
 
 #define AXISTEST_Z12(a, b, fa, fb) \
-		p1 = a * v1[0] - b * v1[1]; \
-		p2 = a * v2[0] - b * v2[1]; \
-		if (p2 < p1) \
-		{ \
-			min = p2; \
-			max = p1; \
-		} \
-		else \
-		{ \
-			min = p1; \
-			max = p2; \
-		} \
-		rad = fa * boxhalfsize[0] + fb * boxhalfsize[1]; \
-		if (min > rad || max < -rad) \
-		{ \
-			return false; \
-		} \
+p1 = a * v1[0] - b * v1[1]; \
+p2 = a * v2[0] - b * v2[1]; \
+if (p2 < p1) \
+{ \
+	min = p2; \
+	max = p1; \
+} \
+else \
+{ \
+	min = p1; \
+	max = p2; \
+} \
+rad = fa * boxhalfsize[0] + fb * boxhalfsize[1]; \
+if (min > rad || max < -rad) \
+{ \
+	return false; \
+} \
 
 #define AXISTEST_Z0(a, b, fa, fb) \
-		p0 = a * v0[0] - b * v0[1]; \
-		p1 = a * v1[0] - b * v1[1]; \
-		if (p0 < p1) \
-		{ \
-			min = p0; \
-			max = p1; \
-		} \
-		else \
-		{ \
-			min = p1; \
-			max = p0; \
-		} \
-		rad = fa * boxhalfsize[0] + fb * boxhalfsize[1]; \
-		if (min > rad || max < -rad) \
-		{ \
-			return false; \
-		} \
+p0 = a * v0[0] - b * v0[1]; \
+p1 = a * v1[0] - b * v1[1]; \
+if (p0 < p1) \
+{ \
+	min = p0; \
+	max = p1; \
+} \
+else \
+{ \
+	min = p1; \
+	max = p0; \
+} \
+rad = fa * boxhalfsize[0] + fb * boxhalfsize[1]; \
+if (min > rad || max < -rad) \
+{ \
+	return false; \
+} \
 
 		bool plane_box_overlap(float normal[3], float vert[3], float maxbox[3])
 		{
@@ -908,9 +838,9 @@ namespace ZoneTool::H1::physworld_gen
 			return true;
 		}
 
-		Bounds corners_to_bounds(bounding_box box)
+		ZoneTool::H1::Bounds corners_to_bounds(bounding_box box)
 		{
-			Bounds res{};
+			ZoneTool::H1::Bounds res{};
 
 			res.midPoint[0] = (box.upper[0] + box.lower[0]) * 0.5f;
 			res.midPoint[1] = (box.upper[1] + box.lower[1]) * 0.5f;
@@ -928,14 +858,14 @@ namespace ZoneTool::H1::physworld_gen
 			return tri_box_overlap(bounds.midPoint, bounds.halfSize, tri);
 		}
 
-		bool triangle_box_overlay(dmMeshData* mesh, const triangle_t& triangle, const bounding_box& box)
+		bool triangle_box_overlay(ZoneTool::H1::dmMeshData* mesh, const triangle_t& triangle, const bounding_box& box)
 		{
 			const auto verts = &mesh->m_aVertices[0];
 
-			vec3_t p1{};
-			vec3_t p3{};
-			vec3_t p2{};
-			vec3_t points[3]{};
+			ZoneTool::H1::vec3_t p1{};
+			ZoneTool::H1::vec3_t p3{};
+			ZoneTool::H1::vec3_t p2{};
+			ZoneTool::H1::vec3_t points[3]{};
 
 			p1[0] = verts[triangle.verts[0]].x;
 			p1[1] = verts[triangle.verts[0]].y;
@@ -964,7 +894,7 @@ namespace ZoneTool::H1::physworld_gen
 			return tri_intersects_box(points, box);
 		}
 
-		std::vector<triangle_t> get_triangles_in_box(dmMeshData* mesh, const std::vector<triangle_t>& triangles,
+		std::vector<triangle_t> get_triangles_in_box(ZoneTool::H1::dmMeshData* mesh, const std::vector<triangle_t>& triangles,
 			const bounding_box& root)
 		{
 			std::vector<triangle_t> res;
@@ -995,7 +925,7 @@ namespace ZoneTool::H1::physworld_gen
 			return static_cast<unsigned int>(index);
 		}
 
-		int find_best_axis(dmMeshData* mesh, const std::vector<triangle_t>& triangles,
+		int find_best_axis(ZoneTool::H1::dmMeshData* mesh, const std::vector<triangle_t>& triangles,
 			const bounding_box& box, float* value)
 		{
 			auto length = 0.f;
@@ -1031,62 +961,7 @@ namespace ZoneTool::H1::physworld_gen
 			return 2 * (a1 + a2 + a3);
 		}
 
-		int calc_aabb_tree(dmMeshData* mesh, std::vector<triangle_t>& dest_triangles,
-			const std::vector<triangle_t>& parent_triangles,
-			const bounding_box& root, mesh_node* nodes, int& node_index, int& tree_depth)
-		{
-			const auto surface_area = calculate_surface_area(root);
-			const auto triangles = get_triangles_in_box(mesh, parent_triangles, root);
-
-			if (triangles.size() > max_tris_per_leaf && tree_depth < max_tree_depth && surface_area > 1.f)
-			{
-				float value{};
-				const auto axis = find_best_axis(mesh, triangles, root, &value);
-
-				bounding_box left{};
-				bounding_box right{};
-
-				std::memcpy(&left, &root, sizeof(bounding_box));
-				std::memcpy(&right, &root, sizeof(bounding_box));
-
-				left.upper[axis] = value;
-				right.lower[axis] = value;
-
-				const auto left_tris = get_triangles_in_box(mesh, triangles, left);
-				const auto right_tris = get_triangles_in_box(mesh, triangles, right);
-
-				if (left_tris.size() == 0 || right_tris.size() == 0)
-				{
-					if (left_tris.size() > 0)
-					{
-						return calc_aabb_tree(mesh, dest_triangles, left_tris, left, nodes, node_index, tree_depth);
-					}
-					else if (right_tris.size() > 0)
-					{
-						return calc_aabb_tree(mesh, dest_triangles, right_tris, right, nodes, node_index, tree_depth);
-					}
-				}
-
-				node_index++;
-				tree_depth++;
-
-				calc_aabb_tree(mesh, dest_triangles, triangles, left, nodes, node_index, tree_depth);
-				calc_aabb_tree(mesh, dest_triangles, triangles, right, nodes, node_index, tree_depth);
-
-				tree_depth--;
-			}
-			else if (triangles.size() > 0)
-			{
-				node_index++;
-			}
-			else
-			{
-				node_index++;
-			}
-			return node_index;
-		}
-
-		void compute_aabb_tree(dmMeshData* mesh, std::vector<triangle_t>& dest_triangles,
+		void compute_aabb_tree(ZoneTool::H1::dmMeshData* mesh, std::vector<triangle_t>& dest_triangles,
 			const std::vector<triangle_t>& parent_triangles,
 			const bounding_box& root, mesh_node* nodes, int& node_index, int& tree_depth)
 		{
@@ -1150,160 +1025,165 @@ namespace ZoneTool::H1::physworld_gen
 				leaf->node.anon.fields.index = 0;
 			}
 		}
-
-		void generate_physworld(PhysWorld* phys_world_map, clipMap_t* asset, allocator* mem)
-		{
-			phys_world_map->brushModelCount = asset->numSubModels;
-			phys_world_map->brushModels = mem->allocate<PhysBrushModel>(phys_world_map->brushModelCount + 1);
-
-			for (auto i = 0u; i < phys_world_map->brushModelCount; i++)
-			{
-				auto* model = &phys_world_map->brushModels[i];
-				model->fields.polytopeIndex = -1;
-				model->fields.unk = -1;
-				model->fields.worldIndex = 0;
-				model->fields.meshIndex = i == 0 ? 0 : -1;
-			}
-
-			phys_world_map->meshDatas = mem->allocate<dmMeshData>(1);
-			phys_world_map->meshDataCount = 1;
-
-			const auto mesh = &phys_world_map->meshDatas[0];
-
-			std::vector<dmFloat4> vertices;
-
-			auto triangles = generate_triangles(asset, vertices);
-
-			mesh->m_vertexCount = static_cast<int>(vertices.size());
-			mesh->m_aVertices = mem->allocate<dmFloat4>(mesh->m_vertexCount);
-			std::memcpy(mesh->m_aVertices, vertices.data(), vertices.size() * sizeof(dmFloat4));
-
-			std::vector<triangle_t> dest_triangles;
-
-			for (auto& tri : triangles)
-			{
-				dest_triangles.emplace_back(tri);
-			}
-
-			const auto root = compute_bounding_box(mesh, triangles);
-			
-			int tree_depth = 0;
-			auto node_index = 0;
-			const auto nodes_count = calc_aabb_tree(mesh, dest_triangles, triangles, root, nullptr, node_index, tree_depth) + 1;
-			max_nodes = nodes_count;
-			tree_depth = 0;
-			node_index = 0;
-
-			const auto nodes = mem->allocate<mesh_node>(max_nodes);
-
-			compute_aabb_tree(mesh, dest_triangles, triangles, root, nodes, node_index, tree_depth);
-
-			mesh->m_triangleCount = static_cast<int>(dest_triangles.size());
-			mesh->m_aTriangles = mem->allocate<dmMeshTriangle>(mesh->m_triangleCount);
-
-			for (const auto& tri : dest_triangles)
-			{
-				mesh->m_aTriangles[tri.index].i1 = tri.verts[2];
-				mesh->m_aTriangles[tri.index].i2 = tri.verts[1];
-				mesh->m_aTriangles[tri.index].i3 = tri.verts[0];
-				mesh->m_aTriangles[tri.index].w1 = -1;
-				mesh->m_aTriangles[tri.index].w2 = -1;
-				mesh->m_aTriangles[tri.index].w3 = -1;
-				mesh->m_aTriangles[tri.index].materialIndex = 0;
-				mesh->m_aTriangles[tri.index].collisionFlags = 1;
-			}
-
-			mesh->m_nodeCount = nodes_count;
-			mesh->m_pRoot = mem->allocate<dmMeshNode>(mesh->m_nodeCount);
-
-			float maxs[3]{ std::numeric_limits<float>::min(), std::numeric_limits<float>::min(), std::numeric_limits<float>::min() };
-			float mins[3]{ std::numeric_limits<float>::max(),std::numeric_limits<float>::max(), std::numeric_limits<float>::max() };
-			float unquantize[3]{};
-
-			for (auto i = 0; i < nodes_count; i++)
-			{
-				const auto node = &nodes[i];
-
-				for (auto o = 0; o < 3; o++)
-				{
-					if (node->lower[o] > maxs[o])
-					{
-						maxs[o] = node->lower[o];
-					}
-
-					if (node->lower[o] < mins[o])
-					{
-						mins[o] = node->lower[o];
-					}
-
-					if (node->upper[o] > maxs[o])
-					{
-						maxs[o] = node->upper[o];
-					}
-
-					if (node->upper[o] < mins[o])
-					{
-						mins[o] = node->upper[o];
-					}
-				}
-			}
-
-			for (auto i = 0; i < 3; i++)
-			{
-				unquantize[i] = std::max(
-					maxs[i] / static_cast<float>(std::numeric_limits<std::int16_t>().max()),
-					mins[i] / static_cast<float>(std::numeric_limits<std::int16_t>().min())
-				);
-			}
-
-			mesh->m_unquantize.x = unquantize[0];
-			mesh->m_unquantize.y = unquantize[1];
-			mesh->m_unquantize.z = unquantize[2];
-
-			mesh->m_center.x = 0.f;
-			mesh->m_center.y = 0.f;
-			mesh->m_center.z = 0.f;
-
-			mesh->m_extents.x = std::fabs(maxs[0] - mins[0]);
-			mesh->m_extents.y = std::fabs(maxs[1] - mins[1]);
-			mesh->m_extents.z = std::fabs(maxs[2] - mins[2]);
-
-			mesh->m_height = 127;
-			mesh->contents = 1;
-
-			for (auto i = 0; i < nodes_count; i++)
-			{
-				const auto node = &nodes[i];
-
-				mesh->m_pRoot[i].lowerX = static_cast<dm_int16>(node->lower[0] / mesh->m_unquantize.x);
-				mesh->m_pRoot[i].lowerY = static_cast<dm_int16>(node->lower[1] / mesh->m_unquantize.y);
-				mesh->m_pRoot[i].lowerZ = static_cast<dm_int16>(node->lower[2] / mesh->m_unquantize.z);
-				mesh->m_pRoot[i].upperX = static_cast<dm_int16>(node->upper[0] / mesh->m_unquantize.x);
-				mesh->m_pRoot[i].upperY = static_cast<dm_int16>(node->upper[1] / mesh->m_unquantize.y);
-				mesh->m_pRoot[i].upperZ = static_cast<dm_int16>(node->upper[2] / mesh->m_unquantize.z);
-
-				mesh->m_pRoot[i].anon.fields.axis = node->node.anon.fields.axis;
-				mesh->m_pRoot[i].anon.fields.triangleCount = node->node.anon.fields.triangleCount;
-				mesh->m_pRoot[i].anon.fields.index = node->node.anon.fields.index;
-			}
-
-			//mem->free(nodes);
-		}
 	}
 
-	PhysWorld* generate_physworld(clipMap_t* asset, allocator* mem)
+	ZoneTool::H1::PhysWorld* generate_physworld(ZoneTool::H1::clipMap_t* asset, allocator* allocator)
 	{
-		auto* physworld = mem->allocate<PhysWorld>();
-		physworld->name = mem->duplicate_string(asset->name);
+		ZONETOOL_INFO("generating physworld...");
 
-		generate_physworld(physworld, asset, mem);
+		const auto new_asset = allocator->allocate<ZoneTool::H1::PhysWorld>();
 
-		physworld->waterVolumeDefs = nullptr;
-		physworld->waterVolumeDefCount = 0;
+		new_asset->name = allocator->duplicate_string(asset->name);
+		new_asset->brushModelCount = asset->numSubModels;
+		new_asset->brushModels = allocator->allocate<ZoneTool::H1::PhysBrushModel>(new_asset->brushModelCount);
 
-		physworld->polytopeDatas = nullptr;
-		physworld->polytopeCount = 0;
+		for (auto i = 0u; i < new_asset->brushModelCount; i++)
+		{
+			const auto model = &new_asset->brushModels[i];
+			model->fields.polytopeIndex = -1;
+			model->fields.unk = -1;
+			model->fields.worldIndex = 0;
+			model->fields.meshIndex = i == 0 ? 0 : -1;
+		}
 
-		return physworld;
+		new_asset->meshDatas = allocator->allocate<ZoneTool::H1::dmMeshData>(1);
+		new_asset->meshDataCount = 1;
+
+		const auto mesh = &new_asset->meshDatas[0];
+
+		std::vector<ZoneTool::H1::dmFloat4> vertices;
+
+		for (auto i = 0u; i < asset->info.pCollisionData.vertCount; i++)
+		{
+			ZoneTool::H1::dmFloat4 vertex{};
+			vertex.x = asset->info.pCollisionData.verts[i][0];
+			vertex.y = asset->info.pCollisionData.verts[i][1];
+			vertex.z = asset->info.pCollisionData.verts[i][2];
+			vertex.w = 0.f;
+			vertices.emplace_back(vertex);
+		}
+
+		auto triangles = generate_triangles(asset, vertices);
+
+		ZONETOOL_INFO("total tris: %lli, verts: %lli", triangles.size(), vertices.size());
+
+		mesh->m_vertexCount = static_cast<int>(vertices.size());
+		mesh->m_aVertices = allocator->allocate<ZoneTool::H1::dmFloat4>(mesh->m_vertexCount);
+		std::memcpy(mesh->m_aVertices, vertices.data(), vertices.size() * sizeof(ZoneTool::H1::dmFloat4));
+
+		max_nodes = static_cast<int>(triangles.size()) * max_tree_depth;
+		const auto nodes = allocator->allocate<mesh_node>(max_nodes);
+
+		auto node_index = 0;
+
+		std::vector<triangle_t> dest_triangles;
+
+		for (auto& tri : triangles)
+		{
+			dest_triangles.emplace_back(tri);
+		}
+
+		const auto root = compute_bounding_box(mesh, triangles);
+		int tree_depth = 0;
+		compute_aabb_tree(mesh, dest_triangles, triangles, root, nodes, node_index, tree_depth);
+
+		mesh->m_triangleCount = static_cast<int>(dest_triangles.size());
+		mesh->m_aTriangles = allocator->allocate<ZoneTool::H1::dmMeshTriangle>(mesh->m_triangleCount);
+
+		for (const auto& tri : dest_triangles)
+		{
+			mesh->m_aTriangles[tri.index].i1 = tri.verts[2];
+			mesh->m_aTriangles[tri.index].i2 = tri.verts[1];
+			mesh->m_aTriangles[tri.index].i3 = tri.verts[0];
+			mesh->m_aTriangles[tri.index].w1 = -1;
+			mesh->m_aTriangles[tri.index].w2 = -1;
+			mesh->m_aTriangles[tri.index].w3 = -1;
+			mesh->m_aTriangles[tri.index].materialIndex = 0;
+			mesh->m_aTriangles[tri.index].collisionFlags = 1;
+		}
+
+		mesh->m_nodeCount = node_index;
+		mesh->m_pRoot = allocator->allocate<ZoneTool::H1::dmMeshNode>(mesh->m_nodeCount);
+
+		float maxs[3]{};
+		float mins[3]{};
+		float unquantize[3]{};
+
+		for (auto i = 0; i < node_index; i++)
+		{
+			const auto node = &nodes[i];
+
+			for (auto o = 0; o < 3; o++)
+			{
+				if (node->lower[o] > maxs[o])
+				{
+					maxs[o] = node->lower[o];
+				}
+
+				if (node->lower[o] < mins[o])
+				{
+					mins[o] = node->lower[o];
+				}
+
+				if (node->upper[o] > maxs[o])
+				{
+					maxs[o] = node->upper[o];
+				}
+
+				if (node->upper[o] < mins[o])
+				{
+					mins[o] = node->upper[o];
+				}
+			}
+		}
+
+		for (auto i = 0; i < 3; i++)
+		{
+			unquantize[i] = std::max(
+				maxs[i] / static_cast<float>(std::numeric_limits<std::int16_t>().max()),
+				mins[i] / static_cast<float>(std::numeric_limits<std::int16_t>().min())
+			);
+		}
+
+		ZONETOOL_INFO("mins: %f %f %f", mins[0], mins[1], mins[2]);
+		ZONETOOL_INFO("maxs: %f %f %f", maxs[0], maxs[1], maxs[2]);
+		ZONETOOL_INFO("unquantize: %f %f %f", unquantize[0], unquantize[1], unquantize[2]);
+
+		mesh->m_unquantize.x = unquantize[0];
+		mesh->m_unquantize.y = unquantize[1];
+		mesh->m_unquantize.z = unquantize[2];
+
+		mesh->m_center.x = 0.f;
+		mesh->m_center.y = 0.f;
+		mesh->m_center.z = 0.f;
+
+		mesh->m_extents.x = std::max(maxs[0], std::fabs(mins[0]));
+		mesh->m_extents.y = std::max(maxs[1], std::fabs(mins[1]));
+		mesh->m_extents.z = std::max(maxs[2], std::fabs(mins[2]));
+
+		mesh->m_height = 127;
+		mesh->contents = 1;
+
+		for (auto i = 0; i < node_index; i++)
+		{
+			const auto node = &nodes[i];
+
+			mesh->m_pRoot[i].lowerX = static_cast<ZoneTool::H1::dm_int16>(node->lower[0] / mesh->m_unquantize.x);
+			mesh->m_pRoot[i].lowerY = static_cast<ZoneTool::H1::dm_int16>(node->lower[1] / mesh->m_unquantize.y);
+			mesh->m_pRoot[i].lowerZ = static_cast<ZoneTool::H1::dm_int16>(node->lower[2] / mesh->m_unquantize.z);
+			mesh->m_pRoot[i].upperX = static_cast<ZoneTool::H1::dm_int16>(node->upper[0] / mesh->m_unquantize.x);
+			mesh->m_pRoot[i].upperY = static_cast<ZoneTool::H1::dm_int16>(node->upper[1] / mesh->m_unquantize.y);
+			mesh->m_pRoot[i].upperZ = static_cast<ZoneTool::H1::dm_int16>(node->upper[2] / mesh->m_unquantize.z);
+
+			mesh->m_pRoot[i].anon.fields.axis = node->node.anon.fields.axis;
+			mesh->m_pRoot[i].anon.fields.triangleCount = node->node.anon.fields.triangleCount;
+			mesh->m_pRoot[i].anon.fields.index = node->node.anon.fields.index;
+		}
+
+		//allocator->free(nodes);
+
+		ZONETOOL_INFO("generation complete, total nodes: %i", node_index);
+
+		return new_asset;
 	}
 }

@@ -19,7 +19,7 @@ namespace ZoneTool::IW5::H1Dumper
 
 		// dump physmap here too i guess, since it's needed.
 		{
-			{
+			/* {
 				const auto path = filesystem::get_dump_path() + asset->name + ".physmap"s;
 				filesystem::file file(path);
 				if (file.exists())
@@ -27,7 +27,7 @@ namespace ZoneTool::IW5::H1Dumper
 					ZONETOOL_INFO("Not generating physmap since it already exists...");
 					return;
 				}
-			}
+			}*/
 
 			try
 			{
