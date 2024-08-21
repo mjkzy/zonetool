@@ -109,7 +109,7 @@ namespace ZoneTool::IW5
 			return h1_flags;
 		}
 
-		void GenerateH1FxElemDef(H1::FxElemDef* h1_elem, FxElemDef* elem, allocator& mem, bool use_lighting = true)
+		void GenerateH1FxElemDef(H1::FxElemDef* h1_elem, FxElemDef* elem, allocator& mem)
 		{
 			h1_elem->flags = static_cast<H1::FxElemDefFlags>(convert_elem_flags(elem->flags));
 			h1_elem->flags2 = 0;
@@ -270,7 +270,7 @@ namespace ZoneTool::IW5
 
 			h1_elem->sortOrder = elem->sortOrder;
 			h1_elem->lightingFrac = elem->lightingFrac;
-			h1_elem->hdrLightingFrac = elem->lightingFrac;
+			h1_elem->hdrLightingFrac = 0;
 			h1_elem->useItemClip = elem->useItemClip;
 			h1_elem->fadeInfo = elem->fadeInfo;
 			h1_elem->randomSeed = elem->randomSeed;
