@@ -32,9 +32,9 @@ namespace ZoneTool::IW5
 			H1::SoundDspBus::SND_DSPBUS_EXPLOSIONS,	//SND_CHANNEL_EXPLOSIONDIST1,
 			H1::SoundDspBus::SND_DSPBUS_EXPLOSIONS,	//SND_CHANNEL_EXPLOSIONDIST2,
 			H1::SoundDspBus::SND_DSPBUS_EXPLOSIONS,	//SND_CHANNEL_EXPLOSIVEIMPACT,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_CHANNEL_ELEMENT,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_CHANNEL_ELEMENT_INT,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_CHANNEL_ELEMENT_EXT,
+			H1::SoundDspBus::SND_DSPBUS_EMITTERS,	//SND_CHANNEL_ELEMENT,
+			H1::SoundDspBus::SND_DSPBUS_EMITTERS,	//SND_CHANNEL_ELEMENT_INT,
+			H1::SoundDspBus::SND_DSPBUS_EMITTERS,	//SND_CHANNEL_ELEMENT_EXT,
 			H1::SoundDspBus::SND_DSPBUS_WEAPONS,	//SND_CHANNEL_BULLETIMPACT,
 			H1::SoundDspBus::SND_DSPBUS_PHYSICS,	//SND_CHANNEL_BULLETFLESH1,
 			H1::SoundDspBus::SND_DSPBUS_PHYSICS,	//SND_CHANNEL_BULLETFLESH2,
@@ -170,7 +170,6 @@ namespace ZoneTool::IW5
 			h1_alias->secondaryAliasName = alias->secondaryAliasName;
 			h1_alias->chainAliasName = alias->chainAliasName;
 
-			// todo
 			h1_alias->soundFile;
 			h1_alias->soundFile = mem.allocate<H1::SoundFile>();
 
@@ -240,7 +239,7 @@ namespace ZoneTool::IW5
 				break;
 			}
 
-			h1_alias->mixerGroup = nullptr;
+			h1_alias->mixerGroup = alias->mixerGroup;
 
 			h1_alias->poly = 1;
 			h1_alias->polyGlobal = 174;
@@ -393,12 +392,6 @@ namespace ZoneTool::IW5
 			h1_asset->aliasName = asset->aliasName;
 			
 			h1_asset->count = asset->count;
-
-			if (h1_asset->count > 1)
-			{
-				// something causes sounds with multiple aliases to crash the game on disconnect...
-				h1_asset->count = 1;
-			}
 
 			h1_asset->head = mem.allocate<H1::snd_alias_t>(h1_asset->count);
 			for (unsigned char i = 0; i < h1_asset->count; i++)
