@@ -136,7 +136,7 @@ namespace ZoneTool::IW5
 			// level of detail data
 			for (auto i = 0; i < asset->numLods; i++)
 			{
-				h1_asset->lodInfo[i].dist = asset->lodInfo[i].dist;
+				h1_asset->lodInfo[i].dist = fminf(asset->lodInfo[i].dist * 8, 1000000.0f); // increase dist...
 				h1_asset->lodInfo[i].numsurfs = asset->lodInfo[i].numsurfs;
 				h1_asset->lodInfo[i].surfIndex = asset->lodInfo[i].surfIndex;
 				h1_asset->lodInfo[i].modelSurfs = mem.allocate<H1::XModelSurfs>();
