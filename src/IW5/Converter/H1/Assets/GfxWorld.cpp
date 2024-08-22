@@ -540,6 +540,11 @@ namespace ZoneTool::IW5
 				h1_draw_inst.unk0 = draw_inst.cullDist;
 				h1_draw_inst.unk1 = 0;
 
+				h1_draw_inst.flags = 0;
+
+				// g_lodDistIndexToScale
+				h1_draw_inst.flags |= H1::StaticModelFlag::STATIC_MODEL_FLAG_SCALE_9; // 1.0f
+
 				// casts no shadows
 				auto no_shadows = (draw_inst.flags & 0x10) != 0;
 				if (no_shadows)
