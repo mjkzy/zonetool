@@ -10,6 +10,11 @@ namespace ZoneTool::IW5
 {
 	namespace H1Converter
 	{
+		bool ret_true()
+		{
+			return true;
+		}
+
 		H1::GfxWorld* GenerateH1GfxWorld(GfxWorld* asset, allocator& mem)
 		{
 			// allocate H1 GfxWorld structure
@@ -519,37 +524,38 @@ namespace ZoneTool::IW5
 			h1_asset->dpvs.smodelDrawInsts = mem.allocate<H1::GfxStaticModelDrawInst>(h1_asset->dpvs.smodelCount);
 			for (unsigned int i = 0; i < h1_asset->dpvs.smodelCount; i++)
 			{
-				memcpy(&h1_asset->dpvs.smodelDrawInsts[i].placement, &asset->dpvs.smodelDrawInsts[i].placement, sizeof(IW5::GfxPackedPlacement));
-				h1_asset->dpvs.smodelDrawInsts[i].model = reinterpret_cast<H1::XModel * __ptr64>(asset->dpvs.smodelDrawInsts[i].model);
-				h1_asset->dpvs.smodelDrawInsts[i].lightingHandle = asset->dpvs.smodelDrawInsts[i].lightingHandle;
-				h1_asset->dpvs.smodelDrawInsts[i].staticModelId = 0;
-				h1_asset->dpvs.smodelDrawInsts[i].primaryLightEnvIndex = asset->dpvs.smodelDrawInsts[i].primaryLightIndex;
-				h1_asset->dpvs.smodelDrawInsts[i].reflectionProbeIndex = asset->dpvs.smodelDrawInsts[i].reflectionProbeIndex;
-				h1_asset->dpvs.smodelDrawInsts[i].firstMtlSkinIndex = asset->dpvs.smodelDrawInsts[i].firstMtlSkinIndex;
-				h1_asset->dpvs.smodelDrawInsts[i].sunShadowFlags = 1;
+				auto& draw_inst = asset->dpvs.smodelDrawInsts[i];
+				auto& h1_draw_inst = h1_asset->dpvs.smodelDrawInsts[i];
 
-				h1_asset->dpvs.smodelDrawInsts[i].cullDist = asset->dpvs.smodelDrawInsts[i].cullDist;
-				h1_asset->dpvs.smodelDrawInsts[i].unk0 = h1_asset->dpvs.smodelDrawInsts[i].cullDist;
-				h1_asset->dpvs.smodelDrawInsts[i].unk1 = 0;
+				memcpy(&h1_draw_inst.placement, &draw_inst.placement, sizeof(IW5::GfxPackedPlacement));
+				h1_draw_inst.model = reinterpret_cast<H1::XModel * __ptr64>(draw_inst.model);
+				h1_draw_inst.lightingHandle = draw_inst.lightingHandle;
+				h1_draw_inst.staticModelId = 0;
+				h1_draw_inst.primaryLightEnvIndex = draw_inst.primaryLightIndex;
+				h1_draw_inst.reflectionProbeIndex = draw_inst.reflectionProbeIndex;
+				h1_draw_inst.firstMtlSkinIndex = draw_inst.firstMtlSkinIndex;
+				h1_draw_inst.sunShadowFlags = 1;
+
+				h1_draw_inst.cullDist = draw_inst.cullDist;
+				h1_draw_inst.unk0 = draw_inst.cullDist;
+				h1_draw_inst.unk1 = 0;
 
 				// casts no shadows
-				auto no_shadows = (asset->dpvs.smodelDrawInsts[i].flags & 0x10) != 0;
+				auto no_shadows = (draw_inst.flags & 0x10) != 0;
 				if (no_shadows)
 				{
-					h1_asset->dpvs.smodelDrawInsts[i].flags |= H1::StaticModelFlag::STATIC_MODEL_FLAG_NO_CAST_SHADOW;
+					h1_draw_inst.flags |= H1::StaticModelFlag::STATIC_MODEL_FLAG_NO_CAST_SHADOW;
 				}
 
 				// ground lighting
-				auto ground_lighting = (asset->dpvs.smodelDrawInsts[i].flags & 0x20) != 0 || asset->dpvs.smodelDrawInsts[i].groundLighting.packed != 0;
+				auto ground_lighting = (draw_inst.flags & 0x20) != 0;
 				if (ground_lighting)
 				{
-					h1_asset->dpvs.smodelDrawInsts[i].flags |= H1::StaticModelFlag::STATIC_MODEL_FLAG_GROUND_LIGHTING;
+					h1_draw_inst.flags |= H1::StaticModelFlag::STATIC_MODEL_FLAG_GROUND_LIGHTING;
 				}
+
 				// regular lighting
-				else
-				{
-					h1_asset->dpvs.smodelDrawInsts[i].flags |= H1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTGRID_LIGHTING;
-				}
+				h1_draw_inst.flags |= H1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTGRID_LIGHTING;
 			}
 
 			h1_asset->dpvs.smodelLighting = mem.allocate<H1::GfxStaticModelLighting>(h1_asset->dpvs.smodelCount);
@@ -561,20 +567,109 @@ namespace ZoneTool::IW5
 					auto ground_lighting = asset->dpvs.smodelDrawInsts[i].groundLighting;
 					auto bgra = ground_lighting.array;
 
-					float rgba[4] = { bgra[2] / 255.0f, bgra[1] / 255.0f, bgra[0] / 255.0f, bgra[3] / 255.0f };
+					float unpacked[4]{};
+					Byte4::Byte4UnpackRgba(unpacked, bgra);
+
+					float rgba[4] = { unpacked[2], unpacked[1], unpacked[0], unpacked[3] };
+
+					//float rgba[4] = { bgra[2] / 255.0f, bgra[1] / 255.0f, bgra[0] / 255.0f, bgra[3] / 255.0f };
 
 					h1_asset->dpvs.smodelLighting[i].modelGroundLightingInfo.groundLighting[0] = float_to_half(rgba[0]); // r
 					h1_asset->dpvs.smodelLighting[i].modelGroundLightingInfo.groundLighting[1] = float_to_half(rgba[1]); // g
 					h1_asset->dpvs.smodelLighting[i].modelGroundLightingInfo.groundLighting[2] = float_to_half(rgba[2]); // b
 					h1_asset->dpvs.smodelLighting[i].modelGroundLightingInfo.groundLighting[3] = float_to_half(rgba[3]); // a
 				}
-				else if ((h1_asset->dpvs.smodelDrawInsts[i].flags & H1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTGRID_LIGHTING) != 0)
+				if ((h1_asset->dpvs.smodelDrawInsts[i].flags & H1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTGRID_LIGHTING) != 0)
 				{
 					//h1_asset->dpvs.smodelDrawInsts[i].flags |= H1::StaticModelFlag::STATIC_MODEL_FLAG_ALLOW_FXMARK; // R_CalcModelLighting: 0x240
-					h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.lighting[0] = float_to_half(0.5f); // r
-					h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.lighting[1] = float_to_half(0.5f); // g
-					h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.lighting[2] = float_to_half(0.5f); // b
-					h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.lighting[3] = float_to_half(0.5f); // a
+
+					auto* draw_inst = &asset->dpvs.smodelDrawInsts[i];
+
+					if (ZoneTool::get_linker_mode() == ZoneTool::linker_mode::iw5)
+					{
+						Memory mem(0x5D5A00);
+						mem.set<std::uint8_t>(0xC3);
+
+						Memory mem2(0x5D6940);
+						mem2.jump(ret_true);
+
+						/*const auto sample_pos = asset->dpvs.smodelInsts[i].lightingOrigin;
+						float cornerWeight[8]{};
+						const GfxLightGridEntry* cornerEntry[8]{};
+						unsigned int defaultGridEntry{};
+						float ref{};
+
+						typedef int (*LightingFuncType)(
+							const GfxLightGrid*,
+							const float*,
+							float*,
+							const GfxLightGridEntry**,
+							unsigned int*,
+							const float*
+							);
+
+						LightingFuncType lightingFunc = reinterpret_cast<LightingFuncType>(0x5D6A90);
+						int result = lightingFunc(&asset->lightGrid, sample_pos, cornerWeight, cornerEntry, &defaultGridEntry, &ref);*/
+
+						/*const auto sample_pos = asset->dpvs.smodelInsts[i].lightingOrigin;
+						int grid_pos[3]{};
+						grid_pos[0] = static_cast<int>((static_cast<int>(std::floor(sample_pos[0])) + 0x20000) / 32);
+						grid_pos[1] = static_cast<int>((static_cast<int>(std::floor(sample_pos[1])) + 0x20000) / 32);
+						grid_pos[2] = static_cast<int>((static_cast<int>(std::floor(sample_pos[2])) + 0x20000) / 64);
+
+						const GfxLightGridEntry* cornerEntry[8]{};
+
+						unsigned int defaultGridEntry{};
+
+						typedef void (*R_GetLightGridSampleEntry_t)(const GfxLightGrid* lightGrid, const int* pos, const GfxLightGridEntry** entries, unsigned int* defaultGridEntry);
+
+						R_GetLightGridSampleEntry_t R_GetLightGridSampleEntry = reinterpret_cast<R_GetLightGridSampleEntry_t>(0x5D6590);
+						R_GetLightGridSampleEntry(&asset->lightGrid, grid_pos, cornerEntry, &defaultGridEntry);
+
+						for (auto e = 0; e < 8; e++)
+						{
+							if (cornerEntry[e])
+							{
+								const auto colorsIndex = cornerEntry[e]->colorsIndex;
+								h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.colorsIndex = colorsIndex;
+								h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.instanced_lighting[0] = float_to_half(asset->lightGrid.colors[colorsIndex].rgb[0][0] / 255.f);
+								h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.instanced_lighting[1] = float_to_half(asset->lightGrid.colors[colorsIndex].rgb[0][1] / 255.f);
+								h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.instanced_lighting[2] = float_to_half(asset->lightGrid.colors[colorsIndex].rgb[0][2] / 255.f);
+								h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.instanced_lighting[3] = float_to_half(1.0f);
+								break;
+							}
+						}*/
+
+						Memory gfxworld_mem(0x5CB539C);
+						gfxworld_mem.set(asset);
+
+						const auto sample_pos = asset->dpvs.smodelInsts[i].lightingOrigin;
+
+						typedef void (*R_GetAverageLightingAtPoint_t)(const float* samplePos, unsigned char* outColor);
+						R_GetAverageLightingAtPoint_t R_GetAverageLightingAtPoint = reinterpret_cast<R_GetAverageLightingAtPoint_t>(0x5D7380);
+						unsigned char color_out[4];
+						R_GetAverageLightingAtPoint(sample_pos, color_out);
+
+						h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.instanced_lighting[0] = float_to_half(color_out[0] / 255.f);
+						h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.instanced_lighting[1] = float_to_half(color_out[1] / 255.f);
+						h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.instanced_lighting[2] = float_to_half(color_out[2] / 255.f);
+						h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.instanced_lighting[3] = float_to_half(color_out[3] / 255.f);
+
+						// if flags == 0x840 then get colors from colorsIndex
+
+						//h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.colorsIndex = h1_asset->lightGrid.missingGridColorIndex;
+						//h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.scale = 1.0f;
+					}
+					else
+					{
+						h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.instanced_lighting[0] = float_to_half(1.0f);
+						h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.instanced_lighting[1] = float_to_half(1.0f);
+						h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.instanced_lighting[2] = float_to_half(1.0f);
+						h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.instanced_lighting[3] = float_to_half(1.0f);
+
+						//h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.colorsIndex = h1_asset->lightGrid.missingGridColorIndex;
+						//h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.scale = 1.0f;
+					}
 				}
 				else if ((h1_asset->dpvs.smodelDrawInsts[i].flags & H1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTMAP_LIGHTING) != 0)
 				{

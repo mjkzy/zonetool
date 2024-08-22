@@ -7734,9 +7734,9 @@ namespace ZoneTool::H1
 
 	struct GfxStaticModelLightGridLightingInfo
 	{
-		unsigned short lighting[4]; // float16
+		unsigned short instanced_lighting[4]; // float16
 		int colorsIndex;
-		float unk3;
+		float scale;
 		char __pad0[8];
 	}; assert_sizeof(GfxStaticModelLightGridLightingInfo, 24);
 
