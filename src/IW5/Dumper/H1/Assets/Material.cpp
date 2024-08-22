@@ -77,7 +77,7 @@ namespace ZoneTool
 			{"wc_unlit_replace_lin_nocast",				"wc_unlit_replace_lin_nfwpf_nocast"},
 			{"wc_unlit_screen_lin",						"wc_unlit_blend_lin_ndw_cltrans"}, // couldn't find
 			{"wc_effect",								"effect_blend_ndw"}, // ??
-			{"wc_ambient_t0c0",							"wc_ambient_t0c0_nfwpf"},
+			{"wc_ambient_t0c0",							"wc_l_sm_lmpb_t0c0_nfwpf"},
 			{"wc_sky",									"wc_sky_cso_nfwpf"},
 			{"wc_shadowcaster",							"wc_shadowcaster"},
 			{"wc_water",								"2d"}, // couldn't find
@@ -123,7 +123,7 @@ namespace ZoneTool
 			{"mc_l_sm_t0c0n0s0_nocast",					"mc_l_sm_t0c0n0sd0_nfwpf_nocast"},
 			{"mc_l_sm_t0c0n0s0p0",						"mc_l_sm_t0c0n0sd0p0_nfwpf"},
 			{"mc_l_sm_t0c0p0",							"mc_l_sm_t0c0_nfwpf"}, // couldn't find
-			{"mc_l_sm_t0c0q0n0s0",						"mc_l_sm_t0c0n0sd0_nfwpf"}, // couldn't find
+			{"mc_l_sm_t0c0q0n0s0",						"m_l_sm_lmpb_t0c0q0n0sd0_nfwpf"}, // -> m
 			{"mc_l_sm_t0c0q0n0s0p0",					"mc_l_sm_t0c0n0sd0p0_nfwpf"}, // couldn't find // mc_l_sm_t0c0d0n0sd0p0ct0_nfwpf
 			{"mc_l_sm_b0c0",							"mc_l_sm_lmpb_ndw_b0c0_nfwpf_frt_im_aat"},
 			{"mc_l_sm_b0c0_nocast",						"mc_l_sm_lmpb_ndw_b0c0_nfwpf_frt_im_aat"}, // couldn't find
@@ -176,9 +176,9 @@ namespace ZoneTool
 			{"mc_unlit_replace_lin_ua",					"mc_unlit_replace_lin_nfwpf"}, // no ua
 			{"mc_unlit_replace_lin_nofog",				"mc_unlit_replace_lin_nfwpf"}, // no nofog
 			{"mc_unlit_replace_lin_nocast",				"mc_unlit_replace_lin_nfwpf_nocast"},
-			{"mc_ambient_r0c0",							"mc_l_sm_r0c0_nfwpf"}, // couldn't find
-			{"mc_ambient_t0c0",							"mc_ambient_t0c0_nfwpf"},
-			{"mc_ambient_t0c0_nocast",					"mc_ambient_t0c0_nfwpf_nocast"},
+			{"mc_ambient_r0c0",							"mc_l_sm_r0c0_nfwpf"}, // don't use ambient
+			{"mc_ambient_t0c0",							"mc_l_sm_t0c0_nfwpf"}, // don't use ambient
+			{"mc_ambient_t0c0_nocast",					"mc_l_sm_t0c0_nfwpf_nocast"}, // don't use ambient
 			{"mc_shadowcaster",							"mc_shadowcaster_atest"}, // couldn't find
 			{"mc_shadowcaster_atest",					"mc_shadowcaster_atest"},
 			{"mc_reflexsight",							"mc_reflexsight"},
