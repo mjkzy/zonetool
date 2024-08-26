@@ -81,6 +81,7 @@ namespace ZoneTool::H1
 			dumper.dump_int(clientTrigger->trigger.slabCount);
 			dumper.dump_array<TriggerSlab>(clientTrigger->trigger.slabs, clientTrigger->trigger.slabCount);
 
+			dumper.dump_int(clientTrigger->numClientTriggerNodes);
 			dumper.dump_array(clientTrigger->clientTriggerAabbTree, clientTrigger->numClientTriggerNodes);
 
 			dumper.dump_int(clientTrigger->triggerStringLength);
@@ -88,7 +89,7 @@ namespace ZoneTool::H1
 
 			dumper.dump_array(clientTrigger->visionSetTriggers, clientTrigger->trigger.count);
 			dumper.dump_array(clientTrigger->blendLookup, clientTrigger->trigger.count);
-			dumper.dump_array(clientTrigger->unk1, clientTrigger->trigger.count);
+			dumper.dump_array(clientTrigger->lightSetTriggers, clientTrigger->trigger.count);
 			dumper.dump_array(clientTrigger->triggerType, clientTrigger->trigger.count);
 			dumper.dump_array(clientTrigger->origins, clientTrigger->trigger.count);
 			dumper.dump_array(clientTrigger->scriptDelay, clientTrigger->trigger.count);

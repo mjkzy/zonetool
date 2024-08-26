@@ -2804,7 +2804,7 @@ namespace ZoneTool::H1
 		unsigned int triggerStringLength;
 		char PTR64 triggerString;
 		short PTR64 visionSetTriggers;
-		short PTR64 unk1;
+		short PTR64 lightSetTriggers;
 		short PTR64 unk2;
 		short PTR64 triggerType;
 		vec3_t PTR64 origins;

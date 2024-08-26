@@ -44,22 +44,62 @@ namespace ZoneTool::IW5
 			h1_asset->clientTrigger.clientTriggerAabbTree = reinterpret_cast<H1::ClientTriggerAabbNode*>(asset->clientTrigger.clientTriggerAabbTree);
 			h1_asset->clientTrigger.triggerStringLength = asset->clientTrigger.triggerStringLength;
 			h1_asset->clientTrigger.triggerString = asset->clientTrigger.triggerString;
-			h1_asset->clientTrigger.visionSetTriggers = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
-			h1_asset->clientTrigger.unk1 = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
-			h1_asset->clientTrigger.unk2 = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
-			h1_asset->clientTrigger.triggerType = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo
+
+			auto allocate = [&](const short default_value = -1)
+			{
+				const auto count = asset->clientTrigger.trigger.count;
+				auto memory = mem.allocate<short>(asset->clientTrigger.trigger.count);
+				std::fill(memory, memory + count, default_value);
+				return memory;
+			};
+
+			h1_asset->clientTrigger.triggerType = allocate(0);
+			h1_asset->clientTrigger.visionSetTriggers = allocate();
+			h1_asset->clientTrigger.lightSetTriggers = allocate();
+
+			bool add_default_vision = false;
 			for (auto i = 0; i < asset->clientTrigger.trigger.count; i++)
 			{
-				h1_asset->clientTrigger.triggerType[i] = asset->clientTrigger.triggerType[i]; // convert?
+				if ((asset->clientTrigger.triggerType[i] & CLIENT_TRIGGER_VISIONSET) != 0)
+				{
+					h1_asset->clientTrigger.triggerType[i] |= H1::CLIENT_TRIGGER_VISIONSET;
+
+					h1_asset->clientTrigger.visionSetTriggers[i] = asset->clientTrigger.triggerStringOffsets[i];
+					h1_asset->clientTrigger.lightSetTriggers[i] = asset->clientTrigger.triggerStringOffsets[i];
+				}
+				else if (asset->clientTrigger.triggerType[i] == 0)
+				{
+					h1_asset->clientTrigger.triggerType[i] |= H1::CLIENT_TRIGGER_VISIONSET;
+					h1_asset->clientTrigger.visionSetTriggers[i] = asset->numEntityChars;
+					h1_asset->clientTrigger.lightSetTriggers[i] = asset->numEntityChars;
+					add_default_vision = true;
+				}
 			}
+
+			if (add_default_vision)
+			{
+				auto mapname = filesystem::get_fastfile();
+				auto trigger_string_length = asset->clientTrigger.triggerStringLength + static_cast<unsigned int>(mapname.size()) + 1;
+				std::vector<std::uint8_t> trigger_string;
+				trigger_string.resize(trigger_string_length);
+				memcpy(trigger_string.data(), asset->clientTrigger.triggerString, asset->clientTrigger.triggerStringLength);
+				memcpy(trigger_string.data() + asset->clientTrigger.triggerStringLength, mapname.data(), mapname.size());
+				trigger_string.data()[trigger_string.size() - 1] == 0;
+
+				h1_asset->clientTrigger.triggerStringLength = trigger_string_length;
+				h1_asset->clientTrigger.triggerString = mem.allocate<char>(trigger_string_length);
+				memcpy(h1_asset->clientTrigger.triggerString, trigger_string.data(), trigger_string_length);
+			}
+
+			h1_asset->clientTrigger.unk2 = allocate(); // todo?
 			h1_asset->clientTrigger.origins = reinterpret_cast<float(*__ptr64)[3]>(asset->clientTrigger.origins);
 			h1_asset->clientTrigger.scriptDelay = asset->clientTrigger.scriptDelay;
-			h1_asset->clientTrigger.audioTriggers = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
-			h1_asset->clientTrigger.blendLookup = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
-			h1_asset->clientTrigger.unk3 = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
-			h1_asset->clientTrigger.unk4 = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
-			h1_asset->clientTrigger.unk5 = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
-			h1_asset->clientTrigger.unk6 = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
+			h1_asset->clientTrigger.audioTriggers = asset->clientTrigger.audioTriggers;
+			h1_asset->clientTrigger.blendLookup = allocate(); // todo?
+			h1_asset->clientTrigger.unk3 = allocate(); // todo?
+			h1_asset->clientTrigger.unk4 = allocate(); // todo?
+			h1_asset->clientTrigger.unk5 = allocate(); // todo?
+			h1_asset->clientTrigger.unk6 = allocate(); // todo?
 
 			h1_asset->clientTriggerBlend.numClientTriggerBlendNodes = 0;
 			h1_asset->clientTriggerBlend.blendNodes = nullptr;

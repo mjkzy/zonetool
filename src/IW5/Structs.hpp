@@ -1148,6 +1148,21 @@ namespace ZoneTool
 			TS_DISPLACEMENT_MAP = 0xC,
 		};
 
+		enum file_image_flags_t
+		{
+			IMG_FLAG_NOPICMIP = 0x1,
+			IMG_FLAG_NOMIPMAPS = 0x2,
+			IMG_FLAG_CUBEMAP = 0x4,
+			IMG_FLAG_VOLMAP = 0x8,
+			IMG_FLAG_STREAMING = 0x10,
+			IMG_FLAG_LEGACY_NORMALS = 0x20,
+			IMG_FLAG_CLAMP_U = 0x40,
+			IMG_FLAG_CLAMP_V = 0x80,
+			IMG_FLAG_DYNAMIC = 0x10000,
+			IMG_FLAG_RENDER_TARGET = 0x20000,
+			IMG_FLAG_SYSTEMMEM = 0x40000,
+		};
+
 		struct GfxImage
 		{
 			GfxTexture texture;
@@ -2178,6 +2193,13 @@ namespace ZoneTool
 			Bounds bounds;
 			unsigned short firstChild;
 			unsigned short childCount;
+		};
+
+		enum clientTriggerType_t : __int32
+		{
+			CLIENT_TRIGGER_NONE = 0x0,
+			CLIENT_TRIGGER_VISIONSET = 0x1,
+			CLIENT_TRIGGER_REVERB = 0x2,
 		};
 
 		struct ClientTriggers
