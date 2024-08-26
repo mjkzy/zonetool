@@ -512,6 +512,12 @@ namespace ZoneTool::IW5
 				h1_asset->dpvs.surfaces[i].laf.fields.reflectionProbeIndex = asset->dpvs.surfaces[i].laf.fields.reflectionProbeIndex;
 				h1_asset->dpvs.surfaces[i].laf.fields.primaryLightEnvIndex = asset->dpvs.surfaces[i].laf.fields.primaryLightIndex;
 				h1_asset->dpvs.surfaces[i].laf.fields.flags = asset->dpvs.surfaces[i].laf.fields.flags;
+
+				if (h1_asset->dpvs.surfaces[i].laf.fields.lightmapIndex == 0x1F)
+				{
+					// some h1 techsets use this even if it's 0x1F... doing this should be fine...
+					h1_asset->dpvs.surfaces[i].laf.fields.lightmapIndex = 0;
+				}
 			}
 
 			h1_asset->dpvs.surfacesBounds = mem.allocate<H1::GfxSurfaceBounds>(h1_asset->surfaceCount);
