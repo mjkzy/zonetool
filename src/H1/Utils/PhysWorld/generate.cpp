@@ -27,6 +27,37 @@ namespace utils::cryptography::jenkins_one_at_a_time
 	}
 }
 
+#define CONTENTS_SOLID             0x00000001
+#define CONTENTS_FOILAGE           0x00000002
+#define CONTENTS_NONCOLLIDING      0x00000004
+#define CONTENTS_LAVA              0x00000008
+#define CONTENTS_GLASS             0x00000010
+#define CONTENTS_WATER             0x00000020
+#define CONTENTS_CANSHOTCLIP       0x00000040
+#define CONTENTS_MISSILECLIP       0x00000080
+#define CONTENTS_VEHICLECLIP       0x00000200
+#define CONTENTS_ITEMCLIP          0x00000400
+#define CONTENTS_SKY               0x00000800
+#define CONTENTS_AI_NOSIGHT        0x00001000
+#define CONTENTS_CLIPSHOT          0x00002000
+#define CONTENTS_MOVER             0x00004000
+#define CONTENTS_PLAYERCLIP        0x00010000
+#define CONTENTS_MONSTERCLIP       0x00020000
+#define CONTENTS_TELEPORTER        0x00040000
+#define CONTENTS_JUMPPAD           0x00080000
+#define CONTENTS_CLUSTERPORTAL     0x00100000
+#define CONTENTS_DONOTENTER        0x00200000
+#define CONTENTS_DONOTENTER_LARGE  0x00400000
+#define CONTENTS_UNKNOWN           0x00800000 
+#define CONTENTS_MANTLE            0x01000000
+#define CONTENTS_BODY              0x02000000
+#define CONTENTS_CORPSE            0x04000000
+#define CONTENTS_DETAIL            0x08000000
+#define CONTENTS_STRUCTURAL        0x10000000
+#define CONTENTS_TRANSLUCENT       0x20000000
+#define CONTENTS_TRIGGER           0x40000000
+#define CONTENTS_NODROP            0x80000000
+
 namespace ZoneTool::H1::physworld_gen
 {
 	namespace
@@ -466,6 +497,14 @@ namespace ZoneTool::H1::physworld_gen
 
 			auto brush = &asset->info.bCollisionData.brushes[brush_index];
 			auto brush_bounds = asset->info.bCollisionData.brushBounds[brush_index];
+			auto contents = asset->info.bCollisionData.brushContents[brush_index];
+
+			if ((contents & CONTENTS_NONCOLLIDING) != 0 || 
+				(contents & CONTENTS_SOLID) == 0 || 
+				(contents & CONTENTS_GLASS) != 0) 
+			{ 
+				return {};
+			}
 
 			if (is_script_brushmodel_brush(asset, brush))
 			{
@@ -1065,7 +1104,7 @@ if (min > rad || max < -rad) \
 
 		auto triangles = generate_triangles(asset, vertices);
 
-		ZONETOOL_INFO("total tris: %lli, verts: %lli", triangles.size(), vertices.size());
+		ZONETOOL_INFO("total tris: %zu, verts: %zu", triangles.size(), vertices.size());
 
 		mesh->m_vertexCount = static_cast<int>(vertices.size());
 		mesh->m_aVertices = allocator->allocate<ZoneTool::H1::dmFloat4>(mesh->m_vertexCount);
