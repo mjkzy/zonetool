@@ -57,7 +57,6 @@ namespace ZoneTool::IW5
 			h1_asset->clientTrigger.visionSetTriggers = allocate();
 			h1_asset->clientTrigger.lightSetTriggers = allocate();
 
-			bool add_default_vision = false;
 			for (auto i = 0; i < asset->clientTrigger.trigger.count; i++)
 			{
 				if ((asset->clientTrigger.triggerType[i] & CLIENT_TRIGGER_VISIONSET) != 0)
@@ -67,28 +66,6 @@ namespace ZoneTool::IW5
 					h1_asset->clientTrigger.visionSetTriggers[i] = asset->clientTrigger.triggerStringOffsets[i];
 					h1_asset->clientTrigger.lightSetTriggers[i] = asset->clientTrigger.triggerStringOffsets[i];
 				}
-				else if (asset->clientTrigger.triggerType[i] == 0)
-				{
-					h1_asset->clientTrigger.triggerType[i] |= H1::CLIENT_TRIGGER_VISIONSET;
-					h1_asset->clientTrigger.visionSetTriggers[i] = asset->numEntityChars;
-					h1_asset->clientTrigger.lightSetTriggers[i] = asset->numEntityChars;
-					add_default_vision = true;
-				}
-			}
-
-			if (add_default_vision)
-			{
-				auto mapname = filesystem::get_fastfile();
-				auto trigger_string_length = asset->clientTrigger.triggerStringLength + static_cast<unsigned int>(mapname.size()) + 1;
-				std::vector<std::uint8_t> trigger_string;
-				trigger_string.resize(trigger_string_length);
-				memcpy(trigger_string.data(), asset->clientTrigger.triggerString, asset->clientTrigger.triggerStringLength);
-				memcpy(trigger_string.data() + asset->clientTrigger.triggerStringLength, mapname.data(), mapname.size());
-				trigger_string.data()[trigger_string.size() - 1] == 0;
-
-				h1_asset->clientTrigger.triggerStringLength = trigger_string_length;
-				h1_asset->clientTrigger.triggerString = mem.allocate<char>(trigger_string_length);
-				memcpy(h1_asset->clientTrigger.triggerString, trigger_string.data(), trigger_string_length);
 			}
 
 			h1_asset->clientTrigger.unk2 = allocate(); // todo?
