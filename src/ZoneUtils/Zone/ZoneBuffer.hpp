@@ -23,8 +23,8 @@ namespace ZoneTool
 	{		
 		auto fastfile = FileSystem::GetFastFile();
 
-		auto encryptionKey = static_cast<std::string>(fastfile + ": This fastfile is property of the Plutonium Project."
-		);
+		auto encryptionKey = std::string(fastfile) + ": This fastfile is property of the Plutonium Project.";
+		auto key_size = static_cast<int>(encryptionKey.size());
 		auto dataptr = reinterpret_cast<char*>(_data);
 
 		auto keyPos = 0;
@@ -32,7 +32,7 @@ namespace ZoneTool
 		{
 			for (auto i = 0u; i < _size; i++)
 			{
-				if (keyPos >= encryptionKey.size())
+				if (keyPos >= key_size)
 				{
 					keyPos = 0;
 				}
@@ -50,8 +50,8 @@ namespace ZoneTool
 	{
 		auto fastfile = static_cast<std::string>(*reinterpret_cast<const char**>(0x1294A00) + 4);
 
-		auto encryptionKey = static_cast<std::string>(fastfile + ": This fastfile is property of the Plutonium Project."
-		);
+		auto encryptionKey = std::string(fastfile) + ": This fastfile is property of the Plutonium Project.";
+		auto key_size = static_cast<int>(encryptionKey.size());
 		auto dataptr = reinterpret_cast<char*>(_data);
 
 		auto keyPos = 0;
@@ -59,7 +59,7 @@ namespace ZoneTool
 		{
 			for (auto i = 0u; i < _size; i++)
 			{
-				if (keyPos >= encryptionKey.size())
+				if (keyPos >= key_size)
 				{
 					keyPos = 0;
 				}

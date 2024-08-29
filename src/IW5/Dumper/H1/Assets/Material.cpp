@@ -285,6 +285,22 @@ namespace ZoneTool
 
 			{"tools",									"tools_r0c0ct0"}, // could be wrong
 			{"tools_b0c0",								"tools_b0c0ct0"}, // could be wrong
+
+			// more IW5 work
+			{"mc_l_sm_heat_r0c0p0", "m_l_sm_r0c0p0_nfwpf"},
+			{"wc_l_sm_du_dm_r0c0n0s0", "wc_l_sm_lmpb_r0c0n0sd0_nfwpf"},
+
+			{"mc_l_sm_du_dm_r0c0d0n0s0p0", "mc_l_sm_r0c0d0n0sd0p0_nfwpf"},
+			{"mc_l_sm_du_dm_r0c0q0n0s0", "mc_l_sm_lmpb_r0c0q0n0sd0_nfwpf"},
+			{"mc_l_sm_du_dm_r0c0q0n0s0p0", "mc_l_sm_r0c0q0n0sd0p0_nfwpf"},
+			{"mc_l_sm_r0c0n0s0p0_nocast", "m_l_sm_r0c0n0sd0p0_nfwpf_nocast"},
+			{"mc_l_sm_du_dm_b0c0n0s0", "mc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_aat"},
+			{"wc_l_sm_r0c0n0s0p0_nocast", "wc_l_sm_lmpb_r0c0n0sd0p0_nfwpf"},
+			{"wc_l_sm_t0c0n0s0p0_nocast", "wc_l_sm_lmpb_t0c0n0sd0_nfwpf"}, // no p
+			{"wc_l_sm_b0c0q0n0s0_nocast", "wc_l_sm_lmpb_ndw_b0c0q0n0sd0_nfwpf_frt_aat"},
+			{"wc_l_sm_b0c0q0n0s0_nocast", "wc_l_sm_ndw_ua_b0c0n0sd0p0_cltrans_nocast_frt_aat"}, // idek lmao
+			{"mc_l_sm_t0c0d0n0s0p0", "m_l_sm_lmpb_t0c0d0n0sd0_nfwpf"},
+			{"mc_l_sm_t0c0n0s0p0_nocast", "mc_l_sm_t0c0n0sd0p0_nfwpf"}
 		};
 
 		namespace
