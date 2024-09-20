@@ -135,8 +135,8 @@ namespace ZoneTool::IW5
 
 			h1_asset->portalGroup = nullptr;
 
-			h1_asset->unk_vec4_count_0 = 0;
-			h1_asset->unk_vec4_0 = nullptr;
+			h1_asset->portalDistanceAnchorCount = 0;
+			h1_asset->portalDistanceAnchorsAndCloseDistSquared = nullptr;
 
 			h1_asset->draw.reflectionProbeCount = asset->draw.reflectionProbeCount;
 			h1_asset->draw.reflectionProbes = mem.allocate<H1::GfxImage* __ptr64>(h1_asset->draw.reflectionProbeCount);
@@ -191,9 +191,11 @@ namespace ZoneTool::IW5
 				h1_asset->draw.lightmapOverrideSecondary = nullptr;
 			}
 
-			h1_asset->draw.u1[0] = 1024; h1_asset->draw.u1[1] = 1024; // u1
-			h1_asset->draw.u2[0] = 512; h1_asset->draw.u2[1] = 512; // u2
-			h1_asset->draw.u3 = 8; // u3
+			h1_asset->draw.lightmapParameters.lightmapWidthPrimary = 1024; 
+			h1_asset->draw.lightmapParameters.lightmapHeightPrimary = 1024;
+			h1_asset->draw.lightmapParameters.lightmapWidthSecondary = 512;
+			h1_asset->draw.lightmapParameters.lightmapHeightSecondary = 512;
+			h1_asset->draw.lightmapParameters.lightmapModelUnitsPerTexel = 8;
 
 			h1_asset->draw.trisType = 0; // dunno
 
@@ -331,13 +333,10 @@ namespace ZoneTool::IW5
 				h1_asset->models[i].mdaoVolumeIndex = -1;
 			}
 
+			memcpy(h1_asset->bounds.midPoint, asset->bounds.midPoint, sizeof(float[3]));
+			memcpy(h1_asset->bounds.halfSize, asset->bounds.halfSize, sizeof(float[3]));
 			memcpy(h1_asset->shadowBounds.midPoint, asset->bounds.midPoint, sizeof(float[3]));
 			memcpy(h1_asset->shadowBounds.halfSize, asset->bounds.halfSize, sizeof(float[3]));
-			memcpy(h1_asset->unkBounds.midPoint, asset->bounds.midPoint, sizeof(float[3]));
-			memcpy(h1_asset->unkBounds.halfSize, asset->bounds.halfSize, sizeof(float[3]));
-
-			// bounds1 = ?
-			// bounds2 = shadowBounds;
 
 			h1_asset->checksum = asset->checksum;
 
@@ -524,7 +523,7 @@ namespace ZoneTool::IW5
 			for (unsigned int i = 0; i < h1_asset->surfaceCount; i++)
 			{
 				memcpy(&h1_asset->dpvs.surfacesBounds[i].bounds, &asset->dpvs.surfacesBounds[i].bounds, sizeof(IW5::Bounds));
-				h1_asset->dpvs.surfacesBounds[i].__pad0; // idk
+				//h1_asset->dpvs.surfacesBounds[i].unk; // idk
 			}
 
 			h1_asset->dpvs.smodelDrawInsts = mem.allocate<H1::GfxStaticModelDrawInst>(h1_asset->dpvs.smodelCount);
@@ -543,8 +542,14 @@ namespace ZoneTool::IW5
 				h1_draw_inst.sunShadowFlags = 1;
 
 				h1_draw_inst.cullDist = draw_inst.cullDist;
-				h1_draw_inst.unk0 = draw_inst.cullDist;
-				h1_draw_inst.unk1 = 0;
+				h1_draw_inst.reactiveMotionCullDist = draw_inst.cullDist;
+				h1_draw_inst.reactiveMotionLOD = 0;
+
+				if (h1_draw_inst.firstMtlSkinIndex)
+				{
+					// idk what this does, but if we are replacing models with ones from h1, this being nonzero can lead to crashes
+					h1_draw_inst.firstMtlSkinIndex = 0;
+				}
 
 				h1_draw_inst.flags = 0;
 
@@ -569,7 +574,7 @@ namespace ZoneTool::IW5
 				h1_draw_inst.flags |= H1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTGRID_LIGHTING;
 			}
 
-			h1_asset->dpvs.smodelLighting = mem.allocate<H1::GfxStaticModelLighting>(h1_asset->dpvs.smodelCount);
+			h1_asset->dpvs.smodelLightingInsts = mem.allocate<H1::GfxStaticModelLighting>(h1_asset->dpvs.smodelCount);
 			for (unsigned int i = 0; i < h1_asset->dpvs.smodelCount; i++)
 			{
 				if ((h1_asset->dpvs.smodelDrawInsts[i].flags & H1::StaticModelFlag::STATIC_MODEL_FLAG_GROUND_LIGHTING) != 0)
@@ -585,10 +590,10 @@ namespace ZoneTool::IW5
 
 					//float rgba[4] = { bgra[2] / 255.0f, bgra[1] / 255.0f, bgra[0] / 255.0f, bgra[3] / 255.0f };
 
-					h1_asset->dpvs.smodelLighting[i].modelGroundLightingInfo.groundLighting[0] = float_to_half(rgba[0]); // r
-					h1_asset->dpvs.smodelLighting[i].modelGroundLightingInfo.groundLighting[1] = float_to_half(rgba[1]); // g
-					h1_asset->dpvs.smodelLighting[i].modelGroundLightingInfo.groundLighting[2] = float_to_half(rgba[2]); // b
-					h1_asset->dpvs.smodelLighting[i].modelGroundLightingInfo.groundLighting[3] = float_to_half(rgba[3]); // a
+					h1_asset->dpvs.smodelLightingInsts[i].ambientLightingInfo.groundLighting.array[0] = float_to_half(rgba[0]); // r
+					h1_asset->dpvs.smodelLightingInsts[i].ambientLightingInfo.groundLighting.array[1] = float_to_half(rgba[1]); // g
+					h1_asset->dpvs.smodelLightingInsts[i].ambientLightingInfo.groundLighting.array[2] = float_to_half(rgba[2]); // b
+					h1_asset->dpvs.smodelLightingInsts[i].ambientLightingInfo.groundLighting.array[3] = float_to_half(rgba[3]); // a
 				}
 				if ((h1_asset->dpvs.smodelDrawInsts[i].flags & H1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTGRID_LIGHTING) != 0)
 				{
@@ -642,11 +647,11 @@ namespace ZoneTool::IW5
 							if (cornerEntry[e])
 							{
 								const auto colorsIndex = cornerEntry[e]->colorsIndex;
-								h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.colorsIndex = colorsIndex;
-								h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.instanced_lighting[0] = float_to_half(asset->lightGrid.colors[colorsIndex].rgb[0][0] / 255.f);
-								h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.instanced_lighting[1] = float_to_half(asset->lightGrid.colors[colorsIndex].rgb[0][1] / 255.f);
-								h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.instanced_lighting[2] = float_to_half(asset->lightGrid.colors[colorsIndex].rgb[0][2] / 255.f);
-								h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.instanced_lighting[3] = float_to_half(1.0f);
+								h1_asset->dpvs.smodelLightingInsts[i].ambientLightingInfo.colorIndex = colorsIndex;
+								h1_asset->dpvs.smodelLightingInsts[i].ambientLightingInfo.groundLighting.array[0] = float_to_half(asset->lightGrid.colors[colorsIndex].rgb[0][0] / 255.f);
+								h1_asset->dpvs.smodelLightingInsts[i].ambientLightingInfo.groundLighting.array[1] = float_to_half(asset->lightGrid.colors[colorsIndex].rgb[0][1] / 255.f);
+								h1_asset->dpvs.smodelLightingInsts[i].ambientLightingInfo.groundLighting.array[2] = float_to_half(asset->lightGrid.colors[colorsIndex].rgb[0][2] / 255.f);
+								h1_asset->dpvs.smodelLightingInsts[i].ambientLightingInfo.groundLighting.array[3] = float_to_half(1.0f);
 								break;
 							}
 						}*/
@@ -661,25 +666,25 @@ namespace ZoneTool::IW5
 						unsigned char color_out[4];
 						R_GetAverageLightingAtPoint(sample_pos, color_out);
 
-						h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.instanced_lighting[0] = float_to_half(color_out[0] / 255.f);
-						h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.instanced_lighting[1] = float_to_half(color_out[1] / 255.f);
-						h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.instanced_lighting[2] = float_to_half(color_out[2] / 255.f);
-						h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.instanced_lighting[3] = float_to_half(color_out[3] / 255.f);
+						h1_asset->dpvs.smodelLightingInsts[i].ambientLightingInfo.groundLighting.array[0] = float_to_half(color_out[0] / 255.f);
+						h1_asset->dpvs.smodelLightingInsts[i].ambientLightingInfo.groundLighting.array[1] = float_to_half(color_out[1] / 255.f);
+						h1_asset->dpvs.smodelLightingInsts[i].ambientLightingInfo.groundLighting.array[2] = float_to_half(color_out[2] / 255.f);
+						h1_asset->dpvs.smodelLightingInsts[i].ambientLightingInfo.groundLighting.array[3] = float_to_half(color_out[3] / 255.f);
 
 						// if flags == 0x840 then get colors from colorsIndex
 
-						//h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.colorsIndex = h1_asset->lightGrid.missingGridColorIndex;
-						//h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.scale = 1.0f;
+						//h1_asset->dpvs.smodelLightingInsts[i].ambientLightingInfo.colorsIndex = h1_asset->lightGrid.missingGridColorIndex;
+						//h1_asset->dpvs.smodelLightingInsts[i].ambientLightingInfo.scale = 1.0f;
 					}
 					else
 					{
-						h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.instanced_lighting[0] = float_to_half(1.0f);
-						h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.instanced_lighting[1] = float_to_half(1.0f);
-						h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.instanced_lighting[2] = float_to_half(1.0f);
-						h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.instanced_lighting[3] = float_to_half(1.0f);
+						h1_asset->dpvs.smodelLightingInsts[i].ambientLightingInfo.groundLighting.array[0] = float_to_half(1.0f);
+						h1_asset->dpvs.smodelLightingInsts[i].ambientLightingInfo.groundLighting.array[1] = float_to_half(1.0f);
+						h1_asset->dpvs.smodelLightingInsts[i].ambientLightingInfo.groundLighting.array[2] = float_to_half(1.0f);
+						h1_asset->dpvs.smodelLightingInsts[i].ambientLightingInfo.groundLighting.array[3] = float_to_half(1.0f);
 
-						//h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.colorsIndex = h1_asset->lightGrid.missingGridColorIndex;
-						//h1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.scale = 1.0f;
+						//h1_asset->dpvs.smodelLightingInsts[i].ambientLightingInfo.colorsIndex = h1_asset->lightGrid.missingGridColorIndex;
+						//h1_asset->dpvs.smodelLightingInsts[i].ambientLightingInfo.scale = 1.0f;
 					}
 				}
 				else if ((h1_asset->dpvs.smodelDrawInsts[i].flags & H1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTMAP_LIGHTING) != 0)
@@ -785,10 +790,10 @@ namespace ZoneTool::IW5
 
 			// pad3 unknown data
 
-			h1_asset->buildInfo.args0 = nullptr;
-			h1_asset->buildInfo.args1 = nullptr;
-			h1_asset->buildInfo.buildStartTime = nullptr;
-			h1_asset->buildInfo.buildEndTime = nullptr;
+			h1_asset->buildInfo.bspCommandline = nullptr;
+			h1_asset->buildInfo.lightCommandline = nullptr;
+			h1_asset->buildInfo.bspTimestamp = nullptr;
+			h1_asset->buildInfo.lightTimestamp = nullptr;
 
 			return h1_asset;
 		}

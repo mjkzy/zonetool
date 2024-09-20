@@ -10,11 +10,11 @@ namespace ZoneTool::H1
 		__int64 v4; // r8
 		int v5; // edx
 
-		v1 = a1->blendShapeWeightCount;
+		v1 = a1->blendShapeCount;
 		result = 0i64;
 		if (v1)
 		{
-			v3 = a1->blendShapeWeightUnknown2;
+			v3 = a1->blendShapeKeys;
 			v4 = v1;
 			do
 			{
@@ -197,41 +197,41 @@ namespace ZoneTool::H1
 
 		if (asset->blendShapeWeightNames)
 		{
-			for (auto name = 0; name < asset->blendShapeWeightCount; name++)
+			for (auto name = 0; name < asset->blendShapeCount; name++)
 			{
 				dump.dump_string(SL_ConvertToString(asset->blendShapeWeightNames[name]));
 			}
 		}
 
-		if (asset->blendShapeWeightUnknown1)
+		if (asset->blendShapeCoefficientMagnitudes)
 		{
-			dump.dump_raw(asset->blendShapeWeightUnknown1, sizeof(*asset->blendShapeWeightUnknown1) * asset->blendShapeWeightCount);
+			dump.dump_raw(asset->blendShapeCoefficientMagnitudes, sizeof(*asset->blendShapeCoefficientMagnitudes) * asset->blendShapeCount);
 		}
 
-		if (asset->blendShapeWeightUnknown2)
+		if (asset->numberOfBlendShapeKeys)
 		{
-			dump.dump_raw(asset->blendShapeWeightUnknown2, sizeof(*asset->blendShapeWeightUnknown2) * asset->blendShapeWeightCount);
+			dump.dump_raw(asset->numberOfBlendShapeKeys, sizeof(*asset->numberOfBlendShapeKeys) * asset->blendShapeCount);
 		}
 
-		if (asset->blendShapeWeightUnknown3)
+		if (asset->blendShapeKeys)
 		{
-			dump.dump_raw(asset->blendShapeWeightUnknown3, sizeof(*asset->blendShapeWeightUnknown3) * static_cast<int>(GetTotalNumberOfBlendShapeKeys(asset)));
+			dump.dump_raw(asset->blendShapeKeys, sizeof(*asset->blendShapeKeys) * static_cast<int>(GetTotalNumberOfBlendShapeKeys(asset)));
 		}
 
-		if (asset->blendShapeWeightUnknown4)
+		if (asset->compressedBlendShapeCoefficients)
 		{
-			dump.dump_raw(asset->blendShapeWeightUnknown4,
-				sizeof(*asset->blendShapeWeightUnknown4) * (static_cast<int>(GetTotalNumberOfBlendShapeKeys(asset)) + 2 * asset->blendShapeWeightCount));
+			dump.dump_raw(asset->compressedBlendShapeCoefficients,
+				sizeof(*asset->compressedBlendShapeCoefficients) * (static_cast<int>(GetTotalNumberOfBlendShapeKeys(asset)) + 2 * asset->blendShapeCount));
 		}
 
 		if (asset->blendShapeWeights)
 		{
-			dump.dump_raw(asset->blendShapeWeights, sizeof(*asset->blendShapeWeights) * (asset->blendShapeWeightCount * (asset->numframes + 1)));
+			dump.dump_raw(asset->blendShapeWeights, sizeof(*asset->blendShapeWeights) * (asset->blendShapeCount * (asset->numframes + 1)));
 		}
 
-		if (asset->scriptedViewmodelAnimData)
+		if (asset->svAmimData)
 		{
-			dump.dump_raw(asset->scriptedViewmodelAnimData, 8);
+			dump.dump_raw(asset->svAmimData, 8);
 		}
 
 		dump.close();

@@ -209,7 +209,7 @@ namespace ZoneTool::IW5
 
 				// Step 2: Convert from DXGI_FORMAT_R8G8B8A8_UNORM to DXGI_FORMAT_R16G16B16A16_FLOAT
 				{
-					const auto original_len = asset->texture.loadDef->resourceSize;
+					const auto original_len = h1_asset->dataLen1;
 
 					// Update the format to 64bpp (16 bits per channel floating-point)
 					h1_asset->imageFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
@@ -231,9 +231,13 @@ namespace ZoneTool::IW5
 					h1_asset->pixelData = new_pixels;
 				}
 			}
+			else if (asset->texture.loadDef->format == D3DFMT_L8 && h1_asset->imageFormat == DXGI_FORMAT_R8_UNORM)
+			{
+
+			}
 			else
 			{
-				//ZONETOOL_FATAL("No known convertion for image \"%s\"", asset->name);
+				ZONETOOL_FATAL("No known convertion for image \"%s\"", asset->name);
 			}
 
 			return h1_asset;

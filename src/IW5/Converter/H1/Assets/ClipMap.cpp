@@ -329,9 +329,9 @@ namespace ZoneTool::IW5
 			h1_asset->dynEntAnchorCount = 0;
 			h1_asset->dynEntAnchorNames = nullptr;
 
-			h1_asset->scriptableMapEnts;
+			//h1_asset->scriptableMapEnts;
 
-			h1_asset->grappleData;
+			//h1_asset->grapple;
 
 			h1_asset->checksum = asset->checksum;
 

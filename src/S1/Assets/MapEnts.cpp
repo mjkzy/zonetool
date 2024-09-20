@@ -27,16 +27,16 @@ namespace ZoneTool::S1
 			dumper.dump_array(clientTrigger->triggerString, clientTrigger->triggerStringLength);
 
 			dumper.dump_array(clientTrigger->visionSetTriggers, clientTrigger->trigger.count);
-			dumper.dump_array(clientTrigger->unk1, clientTrigger->trigger.count);
-			dumper.dump_array(clientTrigger->unk2, clientTrigger->trigger.count);
+			dumper.dump_array(clientTrigger->lightSetTriggers, clientTrigger->trigger.count);
+			dumper.dump_array(clientTrigger->clutTriggers, clientTrigger->trigger.count);
 			dumper.dump_array(clientTrigger->triggerType, clientTrigger->trigger.count);
 			dumper.dump_array(clientTrigger->origins, clientTrigger->trigger.count);
 			dumper.dump_array(clientTrigger->scriptDelay, clientTrigger->trigger.count);
 			dumper.dump_array(clientTrigger->audioTriggers, clientTrigger->trigger.count);
 			dumper.dump_array(clientTrigger->blendLookup, clientTrigger->trigger.count);
-			dumper.dump_array(clientTrigger->unk3, clientTrigger->trigger.count);
-			dumper.dump_array(clientTrigger->unk4, clientTrigger->trigger.count);
-			dumper.dump_array(clientTrigger->unk5, clientTrigger->trigger.count);
+			dumper.dump_array(clientTrigger->npcTriggers, clientTrigger->trigger.count);
+			dumper.dump_array(clientTrigger->contextTriggers, clientTrigger->trigger.count);
+			dumper.dump_array(clientTrigger->waterTriggers, clientTrigger->trigger.count);
 
 			dumper.close();
 		}

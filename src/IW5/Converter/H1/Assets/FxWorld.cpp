@@ -63,8 +63,8 @@ namespace ZoneTool::IW5
 				h1_asset->glassSys.defs[i].destroyedQuietSound = mem.allocate<H1::snd_alias_list_t>();
 				h1_asset->glassSys.defs[i].destroyedQuietSound->name = mem.duplicate_string("glass_pane_breakout");
 
-				h1_asset->glassSys.defs[i].highMipRadiusInvSq = 0.0652364343f;
-				h1_asset->glassSys.defs[i].shatteredHighMipRadiusInvSq = 0.815455437f;
+				h1_asset->glassSys.defs[i].invHighMipRadius = 0.0652364343f;
+				h1_asset->glassSys.defs[i].shatteredInvHighMipRadius = 0.815455437f;
 				h1_asset->glassSys.defs[i].numCrackRings = -1;
 				h1_asset->glassSys.defs[i].isOpaque = 0;
 			}

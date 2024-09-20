@@ -56,15 +56,15 @@ namespace ZoneTool::S1
 		write.dump_array(asset->portalGroup, asset->portalGroupCount);
 		for (unsigned int i = 0; i < asset->portalGroupCount; i++)
 		{
-			if (asset->portalGroup[i].group)
+			if (asset->portalGroup[i].targetName)
 			{
-				write.dump_string(asset->portalGroup[i].group);
+				write.dump_string(asset->portalGroup[i].targetName);
 			}
 
-			write.dump_array(asset->portalGroup[i].info, asset->portalGroup[i].infoCount);
+			write.dump_array(asset->portalGroup[i].gfxPortalArray, asset->portalGroup[i].numPortals);
 		}
 
-		write.dump_array(asset->unk_vec4_0, asset->unk_vec4_count_0);
+		write.dump_array(asset->portalDistanceAnchorsAndCloseDistSquared, asset->portalDistanceAnchorCount);
 
 		write.dump_array(asset->draw.reflectionProbes, asset->draw.reflectionProbeCount);
 		for (unsigned int i = 0; i < asset->draw.reflectionProbeCount; i++)
@@ -78,7 +78,7 @@ namespace ZoneTool::S1
 			write.dump_array(asset->draw.reflectionProbeOrigins[i].probeVolumes, asset->draw.reflectionProbeOrigins[i].probeVolumeCount);
 			for (unsigned int j = 0; j < asset->draw.reflectionProbeOrigins[i].probeVolumeCount; j++)
 			{
-				write.dump_array(asset->draw.reflectionProbeOrigins[i].probeVolumes[j].data, asset->draw.reflectionProbeOrigins[i].probeVolumes[j].count);
+				write.dump_array(asset->draw.reflectionProbeOrigins[i].probeVolumes[j].probeVolumePlanes, asset->draw.reflectionProbeOrigins[i].probeVolumes[j].probeVolumePlaneCount);
 			}
 		}
 
@@ -225,13 +225,13 @@ namespace ZoneTool::S1
 		{
 			write.dump_asset(asset->dpvs.smodelDrawInsts[i].model);
 		}
-		write.dump_array(asset->dpvs.smodelLighting, asset->dpvs.smodelCount);
+		write.dump_array(asset->dpvs.smodelLightingInsts, asset->dpvs.smodelCount);
 		for (unsigned int i = 0; i < asset->dpvs.smodelCount; i++)
 		{
 			auto flags = asset->dpvs.smodelDrawInsts[i].flags;
-			if ((flags & 0x180) != 0 && (flags & 0x80) != 0 && asset->dpvs.smodelLighting[i].vertexLightingInfo.lightingValues)
+			if ((flags & 0x180) != 0 && (flags & 0x80) != 0 && asset->dpvs.smodelLightingInsts[i].vertexLightingInfo.lightingValues)
 			{
-				write.dump_array(asset->dpvs.smodelLighting[i].vertexLightingInfo.lightingValues, asset->dpvs.smodelLighting[i].vertexLightingInfo.numLightingValues);
+				write.dump_array(asset->dpvs.smodelLightingInsts[i].vertexLightingInfo.lightingValues, asset->dpvs.smodelLightingInsts[i].vertexLightingInfo.numLightingValues);
 			}
 		}
 
@@ -280,10 +280,10 @@ namespace ZoneTool::S1
 			write.dump_asset(asset->mdaoVolumes[i].volumeData);
 		}
 
-		write.dump_string(asset->buildInfo.args0);
-		write.dump_string(asset->buildInfo.args1);
-		write.dump_string(asset->buildInfo.buildStartTime);
-		write.dump_string(asset->buildInfo.buildEndTime);
+		write.dump_string(asset->buildInfo.bspCommandline);
+		write.dump_string(asset->buildInfo.lightCommandline);
+		write.dump_string(asset->buildInfo.bspTimestamp);
+		write.dump_string(asset->buildInfo.lightTimestamp);
 
 		write.close();
 	}

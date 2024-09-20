@@ -53,14 +53,14 @@ namespace ZoneTool::H1
 		dump.dump_asset(asset->physCollmap);
 
 		// weights
-		dump.dump_array(asset->weightNames, asset->numberOfWeights);
-		for (unsigned short i = 0; i < asset->numberOfWeights; i++)
+		dump.dump_array(asset->blendShapeWeightNames, asset->numberOfBlendShapeWeights);
+		for (unsigned short i = 0; i < asset->numberOfBlendShapeWeights; i++)
 		{
-			dump.dump_string(SL_ConvertToString(asset->weightNames[i]));
+			dump.dump_string(SL_ConvertToString(asset->blendShapeWeightNames[i]));
 		}
 
 		// blendshapeweights
-		dump.dump_array(asset->blendShapeWeightMap, asset->numberOfWeightMaps);
+		dump.dump_array(asset->blendShapeWeightMaps, asset->numberOfBlendShapeWeightMaps);
 
 		// mdao
 		dump.dump_array(asset->mdaoVolumes, asset->mdaoVolumeCount);

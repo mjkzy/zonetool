@@ -57,6 +57,49 @@ namespace ZoneTool::IW5
 
 		H1::FxElemLitType generate_elem_lit_type(IW5::FxElemType type)
 		{
+			/*switch (type)
+			{
+			case IW5::FX_ELEM_TYPE_SPRITE_BILLBOARD:
+				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_FRAME_SPRITE;
+				break;
+			case IW5::FX_ELEM_TYPE_SPRITE_ORIENTED:
+				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
+				break;
+			case IW5::FX_ELEM_TYPE_TAIL:
+				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_FRAME_SPRITE;
+				break;
+			case IW5::FX_ELEM_TYPE_TRAIL:
+				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_FRAME_VERTEX;
+				break;
+			case IW5::FX_ELEM_TYPE_CLOUD:
+				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
+				break;
+			case IW5::FX_ELEM_TYPE_SPARKCLOUD:
+				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
+				break;
+			case IW5::FX_ELEM_TYPE_SPARKFOUNTAIN:
+				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_FRAME_SPRITE;
+				break;
+			case IW5::FX_ELEM_TYPE_MODEL:
+				return H1::FX_ELEM_LIT_TYPE_NONE;
+				break;
+			case IW5::FX_ELEM_TYPE_OMNI_LIGHT:
+				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
+				break;
+			case IW5::FX_ELEM_TYPE_SPOT_LIGHT:
+				return H1::FX_ELEM_LIT_TYPE_NONE;
+				break;
+			case IW5::FX_ELEM_TYPE_SOUND:
+				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
+				break;
+			case IW5::FX_ELEM_TYPE_DECAL:
+				return H1::FX_ELEM_LIT_TYPE_NONE;
+				break;
+			case IW5::FX_ELEM_TYPE_RUNNER:
+				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
+				break;
+			}*/
+
 			return H1::FX_ELEM_LIT_TYPE_NONE;
 		}
 
@@ -88,7 +131,8 @@ namespace ZoneTool::IW5
 			//convert(IW5::FxElemDefFlags::FX_ELEM_EMIT_BOLT, H1::FxElemDefFlags::FX_ELEM_EMIT_BOLT);
 			convert(IW5::FxElemDefFlags::FX_ELEM_EMIT_ORIENT_BY_ELEM, H1::FxElemDefFlags::FX_ELEM_EMIT_ORIENT_BY_ELEM);
 			convert(IW5::FxElemDefFlags::FX_ELEM_USE_OCCLUSION_QUERY, H1::FxElemDefFlags::FX_ELEM_USE_OCCLUSION_QUERY);
-			//convert(IW5::FxElemDefFlags::FX_ELEM_NODRAW_IN_THERMAL_VIEW, H1::FxElemDefFlags::FX_ELEM_NODRAW_IN_THERMAL_VIEW, IW5::FxElemDefFlags::FX_ELEM_THERMAL_MASK);
+			//convert(IW5::FxElemDefFlags::FX_ELEM_USE_CAST_SHADOW, H1::FxElemDefFlags::FX_ELEM_USE_CAST_SHADOW);
+			//convert(IW5::FxElemDefFlags::FX_ELEM_NODRAW_IN_THERMAL_VIEW, H1::FxElemDefFlags::FX_ELEM_NODRAW_IN_THERMAL_VIEW);
 			//convert(IW5::FxElemDefFlags::FX_ELEM_SPAWN_IMPACT_FX_WITH_SURFACE_NAME, H1::FxElemDefFlags::FX_ELEM_SPAWN_IMPACT_FX_WITH_SURFACE_NAME);
 			//convert(IW5::FxElemDefFlags::FX_ELEM_RECEIVE_DYNAMIC_LIGHT, H1::FxElemDefFlags::FX_ELEM_RECEIVE_DYNAMIC_LIGHT);
 			//convert(IW5::FxElemDefFlags::FX_ELEM_VOLUMETRIC_TRAIL, H1::FxElemDefFlags::FX_ELEM_VOLUMETRIC_TRAIL);
@@ -147,9 +191,9 @@ namespace ZoneTool::IW5
 					h1_elem->visSamples[i].base.color[1] = static_cast<int>(elem->visSamples[i].base.color[1]) / 255.0f;
 					h1_elem->visSamples[i].base.color[2] = static_cast<int>(elem->visSamples[i].base.color[0]) / 255.0f;
 					h1_elem->visSamples[i].base.color[3] = static_cast<int>(elem->visSamples[i].base.color[3]) / 255.0f;
-					h1_elem->visSamples[i].base.colorHDRScalar[0] = 1.0f;
-					h1_elem->visSamples[i].base.colorHDRScalar[1] = 1.0f;
-					h1_elem->visSamples[i].base.colorHDRScalar[2] = 1.0f;
+					h1_elem->visSamples[i].base.emissiveScale[0] = 1.0f;
+					h1_elem->visSamples[i].base.emissiveScale[1] = 1.0f;
+					h1_elem->visSamples[i].base.emissiveScale[2] = 1.0f;
 					h1_elem->visSamples[i].base.rotationDelta = elem->visSamples[i].base.rotationDelta;
 					h1_elem->visSamples[i].base.rotationTotal = elem->visSamples[i].base.rotationTotal;
 					memcpy(&h1_elem->visSamples[i].base.size, &elem->visSamples[i].base.size, sizeof(float[2]));
@@ -162,9 +206,9 @@ namespace ZoneTool::IW5
 					h1_elem->visSamples[i].amplitude.color[1] = static_cast<int>(elem->visSamples[i].amplitude.color[1]) / 255.0f;
 					h1_elem->visSamples[i].amplitude.color[2] = static_cast<int>(elem->visSamples[i].amplitude.color[0]) / 255.0f;
 					h1_elem->visSamples[i].amplitude.color[3] = static_cast<int>(elem->visSamples[i].amplitude.color[3]) / 255.0f;
-					h1_elem->visSamples[i].amplitude.colorHDRScalar[0] = 1.0f;
-					h1_elem->visSamples[i].amplitude.colorHDRScalar[1] = 1.0f;
-					h1_elem->visSamples[i].amplitude.colorHDRScalar[2] = 1.0f;
+					h1_elem->visSamples[i].amplitude.emissiveScale[0] = 1.0f;
+					h1_elem->visSamples[i].amplitude.emissiveScale[1] = 1.0f;
+					h1_elem->visSamples[i].amplitude.emissiveScale[2] = 1.0f;
 					h1_elem->visSamples[i].amplitude.rotationDelta = elem->visSamples[i].amplitude.rotationDelta;
 					h1_elem->visSamples[i].amplitude.rotationTotal = elem->visSamples[i].amplitude.rotationTotal;
 					memcpy(&h1_elem->visSamples[i].amplitude.size, &elem->visSamples[i].amplitude.size, sizeof(float[2]));
@@ -243,25 +287,25 @@ namespace ZoneTool::IW5
 				if (elem->extended.spotLightDef)
 				{
 					// check
-					h1_elem->extended.spotLightDef->fovInnerFraction = elem->extended.spotLightDef->fovInnerFraction;
-					h1_elem->extended.spotLightDef->startRadius = elem->extended.spotLightDef->startRadius;
-					h1_elem->extended.spotLightDef->endRadius = elem->extended.spotLightDef->endRadius;
+					h1_elem->extended.spotLightDef->halfFovOuter = elem->extended.spotLightDef->fovInnerFraction; // idk
+					h1_elem->extended.spotLightDef->halfFovInner = elem->extended.spotLightDef->fovInnerFraction; // idk
+					h1_elem->extended.spotLightDef->radius = elem->extended.spotLightDef->endRadius; // idk
 					h1_elem->extended.spotLightDef->brightness = elem->extended.spotLightDef->brightness;
 					h1_elem->extended.spotLightDef->maxLength = elem->extended.spotLightDef->maxLength;
 					h1_elem->extended.spotLightDef->exponent = elem->extended.spotLightDef->exponent;
 					h1_elem->extended.spotLightDef->nearClip = 1.0f;
 					h1_elem->extended.spotLightDef->bulbRadius = 1.0f;
 					h1_elem->extended.spotLightDef->bulbLength = 1.0f;
-					h1_elem->extended.spotLightDef->fadeOffset[0] = 0.0f;
-					h1_elem->extended.spotLightDef->fadeOffset[1] = 1.0f;
+					h1_elem->extended.spotLightDef->fadeOffsetRt[0] = 0.0f;
+					h1_elem->extended.spotLightDef->fadeOffsetRt[1] = 1.0f;
 				}
 				break;
 			case FX_ELEM_TYPE_OMNI_LIGHT:
 				h1_elem->extended.omniLightDef = mem.allocate<H1::FxOmniLightDef>();
 				h1_elem->extended.omniLightDef->bulbRadius = 1.0f;
 				h1_elem->extended.omniLightDef->bulbLength = 0.0f;
-				h1_elem->extended.omniLightDef->fadeOffset[0] = 0.0f;
-				h1_elem->extended.omniLightDef->fadeOffset[1] = -1.0f;
+				h1_elem->extended.omniLightDef->fadeOffsetRt[0] = 0.0f;
+				h1_elem->extended.omniLightDef->fadeOffsetRt[1] = -1.0f;
 				break;
 			default:
 				h1_elem->extended.unknownDef = elem->extended.unknownDef;
@@ -270,16 +314,16 @@ namespace ZoneTool::IW5
 
 			h1_elem->sortOrder = elem->sortOrder;
 			h1_elem->lightingFrac = elem->lightingFrac;
-			h1_elem->hdrLightingFrac = 0;
 			h1_elem->useItemClip = elem->useItemClip;
 			h1_elem->fadeInfo = elem->fadeInfo;
+			h1_elem->fadeOutInfo = 0;
 			h1_elem->randomSeed = elem->randomSeed;
 
-			h1_elem->unlitHDRScalar = 1.0f;
-			h1_elem->litHDRScalar = 1.0f;
-			h1_elem->alphaScalar = 1.0f;
-			h1_elem->unk4 = 0.0f;
-			h1_elem->unk5 = -1.0f;
+			h1_elem->emissiveScaleScale = 1.0f;
+			h1_elem->hdrLightingFrac = 1.0f;
+			h1_elem->shadowDensityScale = 1.0f;
+			h1_elem->scatterRatio = 0.0f;
+			h1_elem->volumetricTrailFadeStart = -1.0f;
 		}
 
 		H1::FxEffectDef* GenerateH1FxEffectDef(FxEffectDef* asset, allocator& mem)

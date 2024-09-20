@@ -80,9 +80,6 @@ namespace ZoneTool::H1
 
 		dump_info(&asset->info, write, SL_ConvertToString);
 
-		//write.dump_single(asset->pInfo);
-		//dump_info(asset->pInfo, write, SL_ConvertToString);
-
 		write.dump_array(asset->nodes, asset->numNodes);
 		for (unsigned int i = 0; i < asset->numNodes; i++)
 		{
@@ -94,14 +91,6 @@ namespace ZoneTool::H1
 
 		write.dump_array(asset->leafs, asset->numLeafs);
 		write.dump_array(asset->cmodels, asset->numSubModels);
-		//for (unsigned int i = 0; i < asset->numSubModels; i++)
-		//{
-		//	if (asset->cmodels[i].info)
-		//	{
-		//		write.dump_single(asset->cmodels[i].info);
-		//		dump_info(asset->cmodels[i].info, write, SL_ConvertToString);
-		//	}
-		//}
 
 		write.dump_asset(asset->mapEnts);
 
@@ -110,9 +99,6 @@ namespace ZoneTool::H1
 		{
 			write.dump_string(asset->stages[i].name);
 		}
-		//write.dump_array(asset->stageTrigger.models, asset->stageTrigger.count);
-		//write.dump_array(asset->stageTrigger.hulls, asset->stageTrigger.hullCount);
-		//write.dump_array(asset->stageTrigger.slabs, asset->stageTrigger.slabCount);
 
 		for (int i = 0; i < 2; i++)
 		{
@@ -163,7 +149,7 @@ namespace ZoneTool::H1
 				if (asset->scriptableMapEnts.instances[i].targetData)
 				{
 					write.dump_array(asset->scriptableMapEnts.instances[i].targetData,
-						asset->scriptableMapEnts.instances[i].targetDataCount);
+						asset->scriptableMapEnts.instances[i].targetCount);
 				}
 				auto str = SL_ConvertToString(asset->scriptableMapEnts.instances[i].targetname);
 				write.dump_string(str ? str : "");
@@ -196,18 +182,18 @@ namespace ZoneTool::H1
 			}
 		}
 
-		write.dump_array(asset->grappleData.sphereTreeData.sphereTree, asset->grappleData.sphereTreeData.sphereTreeCount);
-		if (asset->grappleData.sphereTreeData.sphereTree)
+		write.dump_array(asset->grapple.magnetTree.tree, asset->grapple.magnetTree.treeCount);
+		if (asset->grapple.magnetTree.tree)
 		{
-			for (int i = 0; i < asset->grappleData.sphereTreeData.sphereTreeCount; i++)
+			for (int i = 0; i < asset->grapple.magnetTree.treeCount; i++)
 			{
-				write.dump_array(asset->grappleData.sphereTreeData.sphereTree[i].unk, asset->grappleData.sphereTreeData.sphereTree[i].unk_count);
+				write.dump_array(asset->grapple.magnetTree.tree[i].objIdx, asset->grapple.magnetTree.tree[i].numObjects);
 			}
 		}
 
-		write.dump_array(asset->grappleData.sphereTreeData.sphereTreeObj, asset->grappleData.sphereTreeData.sphereTreeObjCount);
+		write.dump_array(asset->grapple.magnetTree.objects, asset->grapple.magnetTree.numObjects);
 
-		write.dump_array(asset->grappleData.magnet, asset->grappleData.magnetCount);
+		write.dump_array(asset->grapple.magnets, asset->grapple.magnetCount);
 
 		write.close();
 	}
