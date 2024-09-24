@@ -134,7 +134,7 @@ namespace ZoneTool
 			{"mc_l_sm_r0c0q0n0s0p0",					"mc_l_sm_r0c0q0n0sd0p0_nfwpf"},
 			{"mc_l_sm_t0c0",							"mc_l_sm_lmpb_t0c0_nfwpf"},
 			{"mc_l_sm_t0c0_nocast",						"mc_l_sm_t0c0_nfwpf_nocast"},
-			{"mc_l_sm_t0c0s0",							"mc_l_sm_lmpb_t0c0sd0_nfwpf"},
+			{"mc_l_sm_t0c0s0",							"m_l_sm_lmpb_t0c0sd0_nfwpf"}, // mc one for this doesn't exist, but m does
 			{"mc_l_sm_t0c0s0p0",						"mc_l_sm_t0c0sd0p0_nfwpf"},
 			{"mc_l_sm_t0c0n0",							"mc_l_sm_lmpb_t0c0n0_nfwpf_dsl"}, // could be wrong
 			{"mc_l_sm_t0c0n0_nocast",					"mc_l_sm_lmpb_t0c0n0_nfwpf_dsl"}, // no nocast
@@ -300,7 +300,27 @@ namespace ZoneTool
 			{"wc_l_sm_b0c0q0n0s0_nocast", "wc_l_sm_lmpb_ndw_b0c0q0n0sd0_nfwpf_frt_aat"},
 			{"wc_l_sm_b0c0q0n0s0_nocast", "wc_l_sm_ndw_ua_b0c0n0sd0p0_cltrans_nocast_frt_aat"}, // idek lmao
 			{"mc_l_sm_t0c0d0n0s0p0", "m_l_sm_lmpb_t0c0d0n0sd0_nfwpf"},
-			{"mc_l_sm_t0c0n0s0p0_nocast", "mc_l_sm_t0c0n0sd0p0_nfwpf"}
+			{"mc_l_sm_t0c0n0s0p0_nocast", "mc_l_sm_t0c0n0sd0p0_nfwpf"},
+
+			{"mc_l_sm_ua_t0c0", "mc_l_sm_t0c0_nfwpf"},
+			{"mc_l_sm_ua_r0c0s0p0_nocast", "m_l_sm_r0c0sd0p0_nfwpf_nocast"},
+			{"mc_l_sm_r0c0s0p0_nocast", "m_l_sm_r0c0sd0p0_nfwpf_nocast"},
+
+			{"mc_l_sm_flag_t0c0n0s0p0_nocast", "mc_l_sm_flag_fuv_t0c0n0sd0_nfwpf"},
+			{"wc_l_sm_r0c0s0_nocast", "wc_l_sm_lmpb_r0c0sd0_nfwpf_nocast"},
+			{"wc_l_ua_b0c0n0s0p0_nocast", "wc_l_sm_lmpb_ndw_b0c0n0sd0p0_nfwpf_nocast_frt_aat"},
+			{"mc_unlit_blend_ua", "m_unlit_blend_lin_ndw_ua_nfwpf"},
+			{"effect_screen_nofog", "effect_add_nofog_ndw"},
+			{"effect_zfeather_falloff_screen_nofog", "effect_zf_falloff_screen_nofog_ndw"},
+
+			{"wc_l_sm_ua_b0c0n0s0", "wc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf"},
+			{"wc_l_sm_b0c0n0s0p0_nocast", "wc_l_sm_lmpb_ndw_b0c0n0sd0p0_nfwpf_nocast_frt_aat"},
+			{"wc_unlit_falloff_blend_lin_ua", "wc_unlit_falloff_screen_lin_ndw_cltrans"}, // uhhhhhhhhhhhhhhh
+			{"wc_l_sm_ua_b0c0n0s0", "wc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf"},
+
+			{"wc_l_sm_r0c0q0s0", "wc_l_sm_lmpb_r0c0q0sd0_nfwpf"},
+			{"mc_l_sm_flag_t0c0n0", "mc_l_sm_flag_fuv_t0c0n0_nfwpf"},
+			{"mc_l_flag_t0c0p0", "mc_l_flag_fuv_t0c0_nfwpf"},
 		};
 
 		namespace
