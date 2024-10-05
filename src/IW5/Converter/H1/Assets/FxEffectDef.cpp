@@ -57,16 +57,16 @@ namespace ZoneTool::IW5
 
 		H1::FxElemLitType generate_elem_lit_type(IW5::FxElemType type)
 		{
-			/*switch (type)
+			switch (type)
 			{
 			case IW5::FX_ELEM_TYPE_SPRITE_BILLBOARD:
-				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_FRAME_SPRITE;
+				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
 				break;
 			case IW5::FX_ELEM_TYPE_SPRITE_ORIENTED:
 				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
 				break;
 			case IW5::FX_ELEM_TYPE_TAIL:
-				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_FRAME_SPRITE;
+				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
 				break;
 			case IW5::FX_ELEM_TYPE_TRAIL:
 				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_FRAME_VERTEX;
@@ -78,7 +78,7 @@ namespace ZoneTool::IW5
 				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
 				break;
 			case IW5::FX_ELEM_TYPE_SPARKFOUNTAIN:
-				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_FRAME_SPRITE;
+				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
 				break;
 			case IW5::FX_ELEM_TYPE_MODEL:
 				return H1::FX_ELEM_LIT_TYPE_NONE;
@@ -87,10 +87,10 @@ namespace ZoneTool::IW5
 				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
 				break;
 			case IW5::FX_ELEM_TYPE_SPOT_LIGHT:
-				return H1::FX_ELEM_LIT_TYPE_NONE;
+				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
 				break;
 			case IW5::FX_ELEM_TYPE_SOUND:
-				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
+				return H1::FX_ELEM_LIT_TYPE_NONE;
 				break;
 			case IW5::FX_ELEM_TYPE_DECAL:
 				return H1::FX_ELEM_LIT_TYPE_NONE;
@@ -98,7 +98,7 @@ namespace ZoneTool::IW5
 			case IW5::FX_ELEM_TYPE_RUNNER:
 				return H1::FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE;
 				break;
-			}*/
+			}
 
 			return H1::FX_ELEM_LIT_TYPE_NONE;
 		}
@@ -153,8 +153,13 @@ namespace ZoneTool::IW5
 			return h1_flags;
 		}
 
-		void GenerateH1FxElemDef(H1::FxElemDef* h1_elem, FxElemDef* elem, allocator& mem)
+		void GenerateH1FxElemDef(H1::FxElemDef* h1_elem, FxElemDef* elem, allocator& mem, H1::FxEffectDef* h1_effect)
 		{
+			if (elem->spawnFrustumCullRadius > h1_effect->elemMaxRadius)
+			{
+				h1_effect->elemMaxRadius = elem->spawnFrustumCullRadius;
+			}
+
 			h1_elem->flags = static_cast<H1::FxElemDefFlags>(convert_elem_flags(elem->flags));
 			h1_elem->flags2 = 0;
 			memcpy(&h1_elem->spawn, &elem->spawn, sizeof(FxSpawnDef));
@@ -174,7 +179,9 @@ namespace ZoneTool::IW5
 			memcpy(&h1_elem->reflectionFactor, &elem->reflectionFactor, sizeof(FxFloatRange));
 			memcpy(&h1_elem->atlas, &elem->atlas, sizeof(FxElemAtlas));
 			h1_elem->elemType = convert_elem_type(elem->elemType);
+
 			h1_elem->elemLitType = generate_elem_lit_type(elem->elemType);
+
 			h1_elem->visualCount = elem->visualCount;
 			h1_elem->velIntervalCount = elem->velIntervalCount;
 			h1_elem->visStateIntervalCount = elem->visStateIntervalCount;
@@ -187,13 +194,12 @@ namespace ZoneTool::IW5
 				for (int i = 0; i < elem->visStateIntervalCount + 1; i++)
 				{
 					// base
-					h1_elem->visSamples[i].base.color[0] = static_cast<int>(elem->visSamples[i].base.color[2]) / 255.0f;
-					h1_elem->visSamples[i].base.color[1] = static_cast<int>(elem->visSamples[i].base.color[1]) / 255.0f;
-					h1_elem->visSamples[i].base.color[2] = static_cast<int>(elem->visSamples[i].base.color[0]) / 255.0f;
-					h1_elem->visSamples[i].base.color[3] = static_cast<int>(elem->visSamples[i].base.color[3]) / 255.0f;
-					h1_elem->visSamples[i].base.emissiveScale[0] = 1.0f;
-					h1_elem->visSamples[i].base.emissiveScale[1] = 1.0f;
-					h1_elem->visSamples[i].base.emissiveScale[2] = 1.0f;
+					Byte4::Byte4UnpackRgba(h1_elem->visSamples[i].base.color, elem->visSamples[i].base.color);
+					std::swap(h1_elem->visSamples[i].base.color[0], h1_elem->visSamples[i].base.color[2]); // bgra -> rgba
+
+					h1_elem->visSamples[i].base.emissiveScale[0] = 0.0f;
+					h1_elem->visSamples[i].base.emissiveScale[1] = 0.0f;
+					h1_elem->visSamples[i].base.emissiveScale[2] = 0.0f;
 					h1_elem->visSamples[i].base.rotationDelta = elem->visSamples[i].base.rotationDelta;
 					h1_elem->visSamples[i].base.rotationTotal = elem->visSamples[i].base.rotationTotal;
 					memcpy(&h1_elem->visSamples[i].base.size, &elem->visSamples[i].base.size, sizeof(float[2]));
@@ -202,13 +208,12 @@ namespace ZoneTool::IW5
 					h1_elem->visSamples[i].base.pivot[1] = 0.0f;
 
 					// amplitude
-					h1_elem->visSamples[i].amplitude.color[0] = static_cast<int>(elem->visSamples[i].amplitude.color[2]) / 255.0f;
-					h1_elem->visSamples[i].amplitude.color[1] = static_cast<int>(elem->visSamples[i].amplitude.color[1]) / 255.0f;
-					h1_elem->visSamples[i].amplitude.color[2] = static_cast<int>(elem->visSamples[i].amplitude.color[0]) / 255.0f;
-					h1_elem->visSamples[i].amplitude.color[3] = static_cast<int>(elem->visSamples[i].amplitude.color[3]) / 255.0f;
-					h1_elem->visSamples[i].amplitude.emissiveScale[0] = 1.0f;
-					h1_elem->visSamples[i].amplitude.emissiveScale[1] = 1.0f;
-					h1_elem->visSamples[i].amplitude.emissiveScale[2] = 1.0f;
+					Byte4::Byte4UnpackRgba(h1_elem->visSamples[i].amplitude.color, elem->visSamples[i].amplitude.color);
+					std::swap(h1_elem->visSamples[i].amplitude.color[0], h1_elem->visSamples[i].amplitude.color[2]); // bgra -> rgba
+
+					h1_elem->visSamples[i].amplitude.emissiveScale[0] = 0.0f;
+					h1_elem->visSamples[i].amplitude.emissiveScale[1] = 0.0f;
+					h1_elem->visSamples[i].amplitude.emissiveScale[2] = 0.0f;
 					h1_elem->visSamples[i].amplitude.rotationDelta = elem->visSamples[i].amplitude.rotationDelta;
 					h1_elem->visSamples[i].amplitude.rotationTotal = elem->visSamples[i].amplitude.rotationTotal;
 					memcpy(&h1_elem->visSamples[i].amplitude.size, &elem->visSamples[i].amplitude.size, sizeof(float[2]));
@@ -319,11 +324,63 @@ namespace ZoneTool::IW5
 			h1_elem->fadeOutInfo = 0;
 			h1_elem->randomSeed = elem->randomSeed;
 
-			h1_elem->emissiveScaleScale = 1.0f;
+			h1_elem->emissiveScaleScale = 0.0f;
 			h1_elem->hdrLightingFrac = 1.0f;
 			h1_elem->shadowDensityScale = 1.0f;
 			h1_elem->scatterRatio = 0.0f;
 			h1_elem->volumetricTrailFadeStart = -1.0f;
+
+			// hdr
+			if (h1_elem->elemLitType == H1::FX_ELEM_LIT_TYPE_NONE)
+			{
+				h1_elem->hdrLightingFrac = 0.0f;
+			}
+
+			// distort fix...
+			if (elem->elemType == H1::FX_ELEM_TYPE_DECAL)
+			{
+			}
+			else if (elem->visualCount > 1)
+			{
+				for (int i = 0; i < elem->visualCount; i++)
+				{
+					switch (elem->elemType)
+					{
+					case FX_ELEM_TYPE_SPRITE_BILLBOARD:
+					case FX_ELEM_TYPE_SPRITE_ORIENTED:
+					case FX_ELEM_TYPE_TAIL:
+					case FX_ELEM_TYPE_TRAIL:
+					{
+						std::string mat_name = elem->visuals.array[i].material->name;
+						if (mat_name.find("distort") != std::string::npos)
+						{
+							h1_effect->flags |= 0x10;
+							h1_elem->flags2 |= 0x8;
+						}
+					}
+						break;
+					}
+				}
+			}
+			else if (elem->visualCount)
+			{
+				switch (elem->elemType)
+				{
+				case FX_ELEM_TYPE_SPRITE_BILLBOARD:
+				case FX_ELEM_TYPE_SPRITE_ORIENTED:
+				case FX_ELEM_TYPE_TAIL:
+				case FX_ELEM_TYPE_TRAIL:
+				{
+					std::string mat_name = elem->visuals.instance.material->name;
+					if (mat_name.find("distort") != std::string::npos)
+					{
+						h1_effect->flags |= 0x10;
+						h1_elem->flags2 |= 0x8;
+					}
+				}
+				break;
+				}
+			}
 		}
 
 		H1::FxEffectDef* GenerateH1FxEffectDef(FxEffectDef* asset, allocator& mem)
@@ -347,7 +404,7 @@ namespace ZoneTool::IW5
 			h1_asset->elemDefs = mem.allocate<H1::FxElemDef>(asset->elemDefCountLooping + asset->elemDefCountOneShot + asset->elemDefCountEmission);
 			for (auto i = 0; i < asset->elemDefCountLooping + asset->elemDefCountOneShot + asset->elemDefCountEmission; i++)
 			{
-				GenerateH1FxElemDef(&h1_asset->elemDefs[i], &asset->elemDefs[i], mem);
+				GenerateH1FxElemDef(&h1_asset->elemDefs[i], &asset->elemDefs[i], mem, h1_asset);
 			}
 
 			return h1_asset;
