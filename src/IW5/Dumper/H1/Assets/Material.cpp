@@ -7,7 +7,7 @@ namespace ZoneTool
 {
 	namespace H1
 	{
-		// - always use _sm_ _lmpb_ when it's available
+		// lmpb causes speculars to be more intense than intended, would need to convert the specular image for those...
 		// _ct_ = colorTint
 		// sr0 = reflection
 		// om0 = occlusion
@@ -17,63 +17,75 @@ namespace ZoneTool
 			//	IW5,									H1
 			{"wc_l_sm_a0c0",							"wc_l_sm_a0c0_nfwpf_frt_aat"},
 			{"wc_l_sm_a0c0_nocast",						"wc_l_sm_a0c0_nfwpf_frt_aat"}, // no nocast
-			{"wc_l_sm_r0c0",							"wc_l_sm_lmpb_r0c0sd0_nfwpf"}, // -> sd0
-			{"wc_l_sm_r0c0_nocast",						"wc_l_sm_lmpb_r0c0sd0_nfwpf_nocast"}, // -> sd0
-			{"wc_l_sm_r0c0d0n0s0",						"wc_l_sm_lmpb_r0c0d0n0sd0_nfwpf"},
-			{"wc_l_sm_r0c0d0n0s0p0",					"wc_l_sm_lmpb_r0c0d0n0sd0_nfwpf"}, // couldn't find
-			{"wc_l_sm_r0c0n0",							"wc_l_sm_lmpb_r0c0n0sd0_nfwpf"}, // -> sd0
-			{"wc_l_sm_r0c0n0s0",						"wc_l_sm_lmpb_r0c0n0sd0_nfwpf"},
-			{"wc_l_sm_r0c0n0s0_nocast",					"wc_l_sm_lmpb_r0c0n0sd0_nfwpf_nocast"},
-			{"wc_l_sm_r0c0n0s0p0",						"wc_l_sm_lmpb_r0c0n0sd0p0_nfwpf"},
-			{"wc_l_sm_r0c0n0p0",						"wc_l_sm_lmpb_r0c0n0sd0_nfwpf"}, // couldn't find, -> sd0
-			{"wc_l_sm_r0c0q0n0",						"wc_l_sm_lmpb_r0c0q0n0sd0_nfwpf"}, // couldn't find
-			{"wc_l_sm_r0c0q0n0s0",						"wc_l_sm_lmpb_r0c0q0n0sd0_nfwpf"},
+			{"wc_l_sm_r0c0",							"wc_l_sm_r0c0sd0_nfwpf"}, // -> sd0
+			{"wc_l_sm_r0c0_nocast",						"wc_l_sm_r0c0sd0_nfwpf"}, // no nocast
+			{"wc_l_sm_r0c0d0n0s0",						"wc_l_sm_r0c0d0n0sd0_nfwpf"},
+			{"wc_l_sm_r0c0d0n0s0p0",					"wc_l_sm_r0c0d0n0sd0_nfwpf"}, // couldn't find
+			{"wc_l_sm_r0c0d0n0s0o0",					"wc_l_sm_lmpb_r0c0d0n0sd0om0_nfwpf"},
+			{"wc_l_sm_r0c0n0",							"wc_l_sm_r0c0n0sd0_nfwpf"}, // -> sd0
+			{"wc_l_sm_r0c0n0s0",						"wc_l_sm_r0c0n0sd0_nfwpf"},
+			{"wc_l_sm_r0c0n0s0_nocast",					"wc_l_sm_r0c0n0sd0_nfwpf"},  // no nocast
+			{"wc_l_sm_r0c0n0s0p0",						"wc_l_sm_r0c0n0sd0p0_nfwpf"},
+			{"wc_l_sm_r0c0n0s0p0_nocast",				"wc_l_sm_r0c0n0sd0p0_nfwpf"}, // no nocast
+			{"wc_l_sm_r0c0n0s0o0",						"wc_l_sm_lmpb_r0c0n0sd0om0_nfwpf"},
+			{"wc_l_sm_r0c0n0p0",						"wc_l_sm_r0c0n0sd0_nfwpf"}, // couldn't find, -> sd0
+			{"wc_l_sm_r0c0q0n0",						"wc_l_sm_r0c0q0n0sd0_nfwpf"}, // couldn't find
+			{"wc_l_sm_r0c0q0n0s0",						"wc_l_sm_r0c0q0n0sd0_nfwpf"},
 			{"wc_l_sm_r0c0q0n0s0p0",					"wc_l_sm_r0c0q0n0sd0p0_nfwpf"},
-			{"wc_l_sm_r0c0s0",							"wc_l_sm_lmpb_r0c0sd0_nfwpf"},
-			{"wc_l_sm_r0c0s0p0",						"wc_l_sm_lmpb_r0c0sd0_nfwpf"}, // couldn't find
-			{"wc_l_sm_r0c0p0",							"wc_l_sm_lmpb_r0c0sd0_nfwpf"}, // couldn't find, -> sd0
+			{"wc_l_sm_r0c0q0n0s0o0p0",					"wc_l_sm_lmpb_r0c0q0n0sd0om0_nfwpf"}, // couldn't find
+			{"wc_l_sm_r0c0s0",							"wc_l_sm_r0c0sd0_nfwpf"},
+			{"wc_l_sm_r0c0s0_nocast",					"wc_l_sm_r0c0sd0_nfwpf"},
+			{"wc_l_sm_r0c0s0p0",						"wc_l_sm_r0c0sd0_nfwpf"}, // couldn't find
+			{"wc_l_sm_r0c0p0",							"wc_l_sm_r0c0sd0_nfwpf"}, // couldn't find, -> sd0
 			{"wc_l_sm_ua_r0c0n0s0p0_nocast",			"wc_l_sm_lmpb_ua_r0c0n0sd0_nfwpf_nocast"}, // couldn't find
-			{"wc_l_sm_t0c0",							"wc_l_sm_lmpb_t0c0_nfwpf"},
-			{"wc_l_sm_t0c0_nocast",						"wc_l_sm_lmpb_t0c0_nfwpf_nocast"},
-			{"wc_l_sm_t0c0n0",							"wc_l_sm_lmpb_t0c0n0sd0_nfwpf"}, // -> sd0
-			{"wc_l_sm_t0c0n0s0",						"wc_l_sm_lmpb_t0c0n0sd0_nfwpf"},
-			{"wc_l_sm_t0c0n0s0_nocast",					"wc_l_sm_lmpb_t0c0n0sd0_nfwpf"}, // couldn't find
-			{"wc_l_sm_t0c0n0s0p0",						"wc_l_sm_lmpb_t0c0n0sd0_nfwpf"}, // couldn't find
-			{"wc_l_sm_t0c0n0s0p0_nocast",				"wc_l_sm_lmpb_t0c0n0sd0_nfwpf"}, // couldn't find
-			{"wc_l_sm_t0c0n0p0",						"wc_l_sm_lmpb_t0c0n0sd0_nfwpf"}, // couldn't find, -> sd0
-			{"wc_l_sm_t0c0q0n0p0",						"wc_l_sm_lmpb_t0c0n0sd0_nfwpf"}, // couldn't find, -> sd0
+			{"wc_l_sm_t0c0",							"wc_l_sm_t0c0_nfwpf"},
+			{"wc_l_sm_t0c0_nocast",						"wc_l_sm_t0c0_nfwpf"},
+			{"wc_l_sm_t0c0n0",							"wc_l_sm_t0c0n0_nfwpf"},
+			{"wc_l_sm_t0c0n0s0",						"wc_l_sm_t0c0n0sd0_nfwpf"},
+			{"wc_l_sm_t0c0n0s0_nocast",					"wc_l_sm_t0c0n0sd0_nfwpf"}, // couldn't find
+			{"wc_l_sm_t0c0n0s0p0",						"wc_l_sm_t0c0n0sd0_nfwpf"}, // couldn't find
+			{"wc_l_sm_t0c0n0s0p0_nocast",				"wc_l_sm_t0c0n0sd0_nfwpf"}, // couldn't find
+			{"wc_l_sm_t0c0n0p0",						"wc_l_sm_t0c0n0sd0_nfwpf"}, // couldn't find, -> sd0
+			{"wc_l_sm_t0c0q0n0p0",						"wc_l_sm_t0c0n0sd0_nfwpf"}, // couldn't find, -> sd0
 			{"wc_l_sm_t0c0q0n0s0",						"wc_l_sm_lmpb_t0c0q0n0sd0_nfwpf"},
 			{"wc_l_sm_t0c0q0n0s0p0",					"wc_l_sm_lmpb_t0c0q0n0sd0_nfwpf"}, // couldn't find
-			{"wc_l_sm_t0c0s0",							"wc_l_sm_lmpb_t0c0sd0_nfwpf"},
-			{"wc_l_sm_t0c0s0_nocast",					"wc_l_sm_lmpb_t0c0sd0_nfwpf_nocast"},
-			{"wc_l_sm_t0c0s0p0",						"wc_l_sm_lmpb_t0c0sd0_nfwpf"}, // couldn't find
-			{"wc_l_sm_t0c0p0",							"wc_l_sm_lmpb_t0c0_nfwpf"}, // couldn't find
-			{"wc_l_sm_b0c0",							"wc_l_sm_lmpb_ndw_b0c0_cltrans"},
-			{"wc_l_sm_b0c0d0n0",						"wc_l_sm_lmpb_ndw_b0c0n0sd0_cltrans"}, // couldn't find, -> sd0
-			{"wc_l_sm_b0c0d0n0s0",						"wc_l_sm_lmpb_ndw_b0c0n0sd0_cltrans"}, // couldn't find
-			{"wc_l_sm_b0c0n0",							"wc_l_sm_lmpb_ndw_b0c0n0sd0_cltrans"}, // -> sd0
-			{"wc_l_sm_b0c0n0s0",						"wc_l_sm_lmpb_ndw_b0c0n0sd0_cltrans"},
-			{"wc_l_sm_b0c0n0s0p0",						"wc_l_sm_lmpb_ndw_b0c0n0sd0_cltrans"}, // couldn't find
-			{"wc_l_sm_b0c0n0p0",						"wc_l_sm_lmpb_ndw_b0c0n0sd0_cltrans"}, // couldn't find, -> sd0
-			{"wc_l_sm_b0c0p0",							"wc_l_sm_lmpb_ndw_b0c0_cltrans"}, // couldn't find
-			{"wc_l_sm_b0c0s0",							"wc_l_sm_lmpb_ndw_b0c0sd0_cltrans"},
-			{"wc_l_sm_b0c0s0_nocast",					"wc_l_sm_lmpb_ndw_b0c0sd0_cltrans"}, // no nocast
-			{"wc_l_sm_b0c0s0p0",						"wc_l_sm_lmpb_ndw_b0c0sd0_cltrans"}, // couldn't find
-			{"wc_l_sm_b0c0q0n0",						"wc_l_sm_lmpb_ndw_b0c0_cltrans"}, // couldn't find
-			{"wc_l_sm_b0c0q0n0s0",						"wc_l_sm_lmpb_ndw_b0c0q0n0sd0_nfwpf_frt_aat"}, // cltrans
-			{"wc_l_sm_b0c0q0n0s0p0",					"wc_l_sm_lmpb_ndw_b0c0q0n0sd0_nfwpf_frt_aat"}, // couldn't find
+			{"wc_l_sm_t0c0s0",							"wc_l_sm_t0c0sd0_nfwpf"},
+			{"wc_l_sm_t0c0s0_nocast",					"wc_l_sm_t0c0sd0_nfwpf_nocast"},
+			{"wc_l_sm_t0c0s0p0",						"wc_l_sm_t0c0sd0_nfwpf"}, // couldn't find
+			{"wc_l_sm_t0c0p0",							"wc_l_sm_t0c0_nfwpf"}, // couldn't find
+			{"wc_l_sm_b0c0",							"wc_l_sm_ndw_b0c0_nfwpf_frt_aat"},
+			{"wc_l_sm_b0c0_nocast",						"wc_l_sm_ndw_b0c0_nfwpf_frt_aat"}, // could be wrong
+			{"wc_l_sm_b0c0d0n0",						"wc_l_sm_ndw_b0c0n0sd0_nfwpf_frt_aat"}, // couldn't find, -> sd0
+			{"wc_l_sm_b0c0d0n0s0",						"wc_l_sm_ndw_b0c0n0sd0_nfwpf_frt_aat"}, // couldn't find
+			{"wc_l_sm_b0c0d0n0s0o0",					"wc_l_sm_lmpb_ndw_b0c0n0sd0om0_nfwpf_frt_aat"},
+			{"wc_l_sm_b0c0n0",							"wc_l_sm_ndw_b0c0n0sd0_nfwpf_frt_aat"}, // -> sd0
+			{"wc_l_sm_b0c0n0s0",						"wc_l_sm_ndw_b0c0n0sd0_nfwpf_frt_aat"},
+			{"wc_l_sm_b0c0n0s0p0",						"wc_l_sm_ndw_b0c0n0sd0_nfwpf_frt_aat"}, // couldn't find
+			{"wc_l_sm_b0c0n0s0o0",						"wc_l_sm_lmpb_ndw_b0c0n0sd0om0_nfwpf_frt_aat"},
+			{"wc_l_sm_b0c0n0p0",						"wc_l_sm_ndw_b0c0n0sd0_nfwpf_frt_aat"}, // couldn't find, -> sd0
+			{"wc_l_sm_b0c0p0",							"wc_l_sm_ndw_b0c0_nfwpf_frt_aat"}, // couldn't find
+			{"wc_l_sm_b0c0s0",							"wc_l_sm_ndw_b0c0sd0_nfwpf_frt_aat"},
+			{"wc_l_sm_b0c0s0_nocast",					"wc_l_sm_ndw_b0c0sd0_nfwpf_frt_aat"}, // no nocast
+			{"wc_l_sm_b0c0s0p0",						"wc_l_sm_ndw_b0c0sd0_nfwpf_frt_aat"}, // couldn't find
+			{"wc_l_sm_b0c0q0n0",						"wc_l_sm_ndw_b0c0_nfwpf_frt_aat"}, // couldn't find
+			{"wc_l_sm_b0c0q0n0s0",						"wc_l_sm_ndw_b0c0sd0_nfwpf_frt_aat"}, // couldn't find
+			{"wc_l_sm_b0c0q0n0s0p0",					"wc_l_sm_ndw_b0c0sd0_nfwpf_frt_aat"}, // couldn't find
+			{"wc_l_sm_ua_b0c0n0s0",						"wc_l_sm_lmpb_ndw_ua_b0c0n0sd0_cltrans_nocast"},
 			{"wc_l_sm_ua_b0c0n0s0p0",					"wc_l_sm_ndw_ua_b0c0n0sd0p0_cltrans_nocast_frt_aat"},
 			{"wc_l_sm_ua_b0c0n0s0p0_nocast",			"wc_l_sm_ndw_ua_b0c0n0sd0p0_cltrans_nocast_frt_aat"}, // no nocast
 			{"wc_l_sm_ua_b0c0q0n0s0",					"wc_l_sm_lmpb_ua_b0c0q0n0sd0_cltrans_frt"},
 			{"wc_l_sm_ua_b0c0q0n0s0p0_nocast",			"wc_l_sm_ndw_ua_b0c0n0sd0p0_cltrans_nocast_frt_aat"}, // couldn't find
-			{"wc_l_sm_b0c0n0s0_custom_growing_ice_cracks", "wc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
+			{"wc_l_sm_b0c0n0s0_custom_growing_ice_cracks", "wc_l_sm_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
 			{"wc_l_sm_du_dm_r0c0n0s0p0",				"wc_l_sm_r0c0n0sd0_nfwpf"}, // this has issues!
-			{"wc_l_r0c0",								"wc_l_sm_lmpb_r0c0_nfwpf"}, // could be wrong
-			{"wc_l_b0c0",								"wc_l_sm_lmpb_ndw_b0c0_cltrans"}, // could be wrong
+			{"wc_l_r0c0",								"wc_l_sm_r0c0_nfwpf"}, // could be wrong
+			{"wc_l_r0c0n0s0_nocast",					"wc_l_sm_r0c0n0sd0_nfwpf"}, // could be wrong
+			{"wc_l_r0c0n0s0p0_nocast",					"wc_l_sm_r0c0n0sd0_nfwpf"}, // could be wrong
+			{"wc_l_b0c0",								"wc_l_sm_ndw_b0c0_cltrans"}, // could be wrong
+			{"wc_l_b0c0_nocast",						"wc_l_sm_ndw_b0c0_cltrans"}, // could be wrong
 			{"wc_l_ua_b0c0_nocast",						"wc_l_sm_ndw_ua_b0c0_cltrans_nocast"}, // could be wrong
 			{"wc_l_ua_b0c0n0s0p0_nocast",				"wc_l_sm_ndw_ua_b0c0n0sd0p0_cltrans_nocast_frt_aat"}, // could be wrong
-			{"wc_l_t0c0",								"wc_l_sm_lmpb_t0c0_nfwpf"}, // -> sm
-			{"wc_l_t0c0_nocast",						"wc_l_lmpb_t0c0_nfwpf_nocast"}, // -> lmpb
+			{"wc_l_t0c0",								"wc_l_sm_t0c0_nfwpf"}, // -> sm
+			{"wc_l_t0c0_nocast",						"wc_l_sm_t0c0_nfwpf"}, // -> sm
 
 			//{"wc_ocean_sm_foam_detail_flatn",			"wc_ocean_nolm_displace_depth_foam_gloss_ssr_detail_flatdn_cltrans_hdr"}, // ???
 			//{"wc_ocean_sm_displace_foam_detail_flatn",	"wc_ocean_nolm_displace_depth_foam_gloss_ssr_detail_flatdn_cltrans_hdr"}, // ???
@@ -83,6 +95,7 @@ namespace ZoneTool
 			{"wc_unlit_alphatest",						"wc_unlit_blend_lin_ndw_cltrans"}, // couldn't find
 			{"wc_unlit_add",							"wc_unlit_add_lin_ndw_cltrans"}, // coudln't find
 			{"wc_unlit_add_lin",						"wc_unlit_add_lin_ndw_cltrans"},
+			{"wc_unlit_add_lin_nofog",					"wc_unlit_add_lin_ndw_cltrans"}, // no nofog
 			{"wc_unlit_add_lin_ua",						"wc_unlit_add_lin_ndw_ua_nfwpf"},
 			{"wc_unlit_blend",							"wc_unlit_blend_lin_ndw_cltrans"}, // couldn't find
 			{"wc_unlit_blend_lin",						"wc_unlit_blend_lin_ndw_cltrans"},
@@ -93,17 +106,18 @@ namespace ZoneTool
 			{"wc_unlit_falloff",						"wc_unlit_falloff_add_lin_ndw_cltrans"},  // couldn't find
 			{"wc_unlit_falloff_add",					"wc_unlit_falloff_add_lin_ndw_cltrans"}, // couldn't find
 			{"wc_unlit_falloff_add_lin",				"wc_unlit_falloff_add_lin_ndw_cltrans"},
-			{"wc_unlit_falloff_add_lin_ua",				"wc_unlit_falloff_add_lin_ndw_cltrans"}, // couldn't find
+			{"wc_unlit_falloff_add_lin_ua",				"wc_unlit_falloff_add_lin_ndw_ua_cltrans"},
 			{"wc_unlit_falloff_screen_lin",				"wc_unlit_falloff_screen_lin_ndw_cltrans"},
 			{"wc_unlit_multiply",						"wc_unlit_multiply_lin_ndw_cltrans"}, // couldn't find
 			{"wc_unlit_multiply_lin",					"wc_unlit_multiply_lin_ndw_cltrans"},
-			{"wc_unlit_replace",						"wc_unlit_replace_lin_nfwpf"}, // couldn't find
-			{"wc_unlit_replace_lin",					"wc_unlit_replace_lin_nfwpf"}, // blend works better?
-			{"wc_unlit_replace_lin_nocast",				"wc_unlit_replace_lin_nfwpf_nocast"}, // blend works better?
+			{"wc_unlit_multiply_lin_nofog",				"wc_unlit_multiply_lin_ndw_cltrans"}, // couldn't find
+			{"wc_unlit_replace",						"wc_unlit_atest_lin_nfwpf"}, // couldn't find
+			{"wc_unlit_replace_lin",					"wc_unlit_atest_lin_nfwpf"}, // atest works better?
+			{"wc_unlit_replace_lin_nocast",				"wc_unlit_atest_lin_nfwpf"}, // atest works better?
 			{"wc_unlit_replace_lin_ua",					"wc_unlit_add_lin_ndw_ua_nfwpf"}, // couldn't find
 			{"wc_unlit_screen_lin",						"wc_unlit_add_lin_ndw_cltrans"}, // couldn't find
 			{"wc_effect",								"effect_blend_ndw"}, // ??
-			{"wc_ambient_t0c0",							"wc_l_sm_lmpb_t0c0_nfwpf"},
+			{"wc_ambient_t0c0",							"wc_l_sm_t0c0_nfwpf"},
 			{"wc_sky",									"wc_sky_cso_nfwpf"},
 			{"wc_shadowcaster",							"wc_shadowcaster"},
 			{"wc_water",								"2d"}, // couldn't find
@@ -123,82 +137,117 @@ namespace ZoneTool
 
 			{"mc_l_sm_a0c0",							"m_l_sm_a0c0_nfwpf_frt_aat"}, // could be wrong
 			{"mc_l_sm_a0c0_nocast",						"m_l_sm_a0c0_nfwpf_frt_aat"}, // no nocast
-			{"mc_l_sm_r0c0",							"mc_l_sm_lmpb_r0c0_nfwpf"},
-			{"mc_l_sm_r0c0_nocast",						"mc_l_sm_lmpb_r0c0_nfwpf"}, // no nocast
-			{"mc_l_sm_r0c0d0",							"mc_l_sm_lmpb_r0c0_nfwpf"}, // couldn't find
-			{"mc_l_sm_r0c0d0s0",						"mc_l_sm_lmpb_r0c0sd0_nfwpf"}, // couldn't find
-			{"mc_l_sm_r0c0d0n0",						"mc_l_sm_lmpb_r0c0n0_nfwpf"}, // couldn't find
+			{"mc_l_sm_r0c0",							"mc_l_sm_r0c0_nfwpf"},
+			{"mc_l_sm_r0c0_nocast",						"mc_l_sm_r0c0_nfwpf"}, // no nocast
+			{"mc_l_sm_r0c0d0",							"mc_l_sm_r0c0_nfwpf"}, // couldn't find
+			{"mc_l_sm_r0c0d0s0",						"mc_l_sm_r0c0sd0_nfwpf"}, // couldn't find
+			{"mc_l_sm_r0c0d0n0",						"mc_l_sm_r0c0n0_nfwpf"}, // couldn't find
 			{"mc_l_sm_r0c0d0n0s0",						"mc_l_sm_r0c0d0n0sd0_nfwpf"},
 			{"mc_l_sm_r0c0d0n0s0p0",					"mc_l_sm_r0c0d0n0sd0p0_nfwpf"},
-			{"mc_l_sm_r0c0s0",							"mc_l_sm_lmpb_r0c0sd0_nfwpf"},
-			{"mc_l_sm_r0c0s0_nocast",					"mc_l_sm_lmpb_r0c0sd0_nfwpf"}, // no nocast
-			{"mc_l_sm_r0c0s0p0",						"mc_l_sm_lmpb_r0c0sd0_nfwpf"}, // couldn't find
-			{"mc_l_sm_r0c0n0",							"mc_l_sm_lmpb_r0c0n0_nfwpf"},
-			{"mc_l_sm_r0c0n0p0",						"mc_l_sm_lmpb_r0c0n0_nfwpf"}, // no p0
-			{"mc_l_sm_r0c0n0s0",						"mc_l_sm_lmpb_r0c0n0sd0_nfwpf"},
-			{"mc_l_sm_r0c0n0s0_em",						"mc_l_sm_lmpb_r0c0n0sd0_nfwpf"}, // codo
-			{"mc_l_sm_r0c0n0s0_nocast",					"mc_l_sm_lmpb_r0c0n0sd0_nfwpf"}, // no nocast
+			{"mc_l_sm_r0c0d0n0s0o0",					"mc_l_sm_lmpb_r0c0d0n0sd0om0_nfwpf"},
+			{"mc_l_sm_r0c0s0",							"mc_l_sm_r0c0sd0_nfwpf"},
+			{"mc_l_sm_r0c0s0_nocast",					"mc_l_sm_r0c0sd0_nfwpf"}, // no nocast
+			{"mc_l_sm_r0c0s0p0",						"mc_l_sm_r0c0sd0_nfwpf"}, // couldn't find
+			{"mc_l_sm_r0c0n0",							"mc_l_sm_r0c0n0_nfwpf"},
+			{"mc_l_sm_r0c0n0_nocast",					"mc_l_sm_r0c0n0_nfwpf"}, // no nocast
+			{"mc_l_sm_r0c0n0p0",						"mc_l_sm_r0c0n0_nfwpf"}, // no p0
+			{"mc_l_sm_r0c0n0s0",						"mc_l_sm_r0c0n0sd0_nfwpf"},
+			{"mc_l_sm_r0c0n0s0_em",						"mc_l_sm_r0c0n0sd0_nfwpf"}, // codo
+			{"mc_l_sm_r0c0n0s0_nocast",					"mc_l_sm_r0c0n0sd0_nfwpf"}, // no nocast
 			{"mc_l_sm_r0c0n0s0o0",						"mc_l_sm_lmpb_r0c0n0sd0om0_nfwpf"}, // not sure
-			{"mc_l_sm_r0c0n0s0p0",						"mc_l_sm_r0c0n0sd0p0_nfwpf"},
+			{"mc_l_sm_r0c0n0s0o0p0",					"mc_l_sm_lmpb_r0c0n0sd0om0_nfwpf"}, // couldn't find
+			{"mc_l_sm_r0c0n0s0p0",						"m_l_sm_r0c0n0sd0p0_nfwpf"}, // -> m
+			{"mc_l_sm_r0c0n0s0p0_nocast",				"m_l_sm_r0c0n0sd0p0_nfwpf_nocast"}, // -> m
 			{"mc_l_sm_r0c0p0",							"mc_l_sm_r0c0p0_nfwpf"},
-			{"mc_l_sm_r0c0q0s0p0",						"m_l_sm_lmpb_r0c0q0sd0_nfwpf"}, // -> m, couldn't find
-			{"mc_l_sm_r0c0q0n0",						"mc_l_sm_lmpb_r0c0n0_nfwpf"}, // couldn't find
-			{"mc_l_sm_r0c0q0n0s0",						"m_l_sm_lmpb_r0c0q0n0sd0_nfwpf"}, // -> m
-			{"mc_l_sm_r0c0q0n0s0p0",					"m_l_sm_lmpb_r0c0q0n0sd0_nfwpf"}, // couldn't find
-			{"mc_l_sm_t0c0",							"mc_l_sm_lmpb_t0c0_nfwpf"},
-			{"mc_l_sm_t0c0_nocast",						"mc_l_sm_lmpb_t0c0_nfwpf"}, // no nocast
-			{"mc_l_sm_t0c0s0",							"m_l_sm_lmpb_t0c0sd0_nfwpf"}, // -> m
+			{"mc_l_sm_r0c0q0s0p0",						"mc_l_sm_r0c0sd0p0_nfwpf"}, // -> m, couldn't find
+			{"mc_l_sm_r0c0q0n0",						"mc_l_sm_r0c0n0_nfwpf"}, // couldn't find
+			{"mc_l_sm_r0c0q0n0s0",						"m_l_sm_r0c0q0n0sd0_nfwpf"}, // -> m
+			{"mc_l_sm_r0c0q0n0s0p0",					"m_l_sm_r0c0q0n0sd0_nfwpf"}, // couldn't find
+			{"mc_l_sm_r0c0q0n0s0o0",					"mc_l_sm_lmpb_r0c0q0n0sd0om0_nfwpf"},
+			{"mc_l_sm_r0c0q0n0s0o0p0",					"mc_l_sm_lmpb_r0c0q0n0sd0om0_nfwpf"}, // couldn't find
+			{"mc_l_sm_t0c0",							"mc_l_sm_t0c0_nfwpf"},
+			{"mc_l_sm_t0c0_nocast",						"mc_l_sm_t0c0_nfwpf"}, // no nocast
+			{"mc_l_sm_t0c0s0",							"m_l_sm_t0c0sd0_nfwpf"}, // -> m
 			{"mc_l_sm_t0c0s0p0",						"mc_l_sm_t0c0sd0p0_nfwpf"},
-			{"mc_l_sm_t0c0n0",							"mc_l_sm_lmpb_t0c0n0_nfwpf_dsl"}, // could be wrong
-			{"mc_l_sm_t0c0n0_nocast",					"mc_l_sm_lmpb_t0c0n0_nfwpf_dsl"}, // no nocast
-			{"mc_l_sm_t0c0n0s0",						"m_l_sm_lmpb_t0c0n0sd0_nfwpf"}, // -> m
-			{"mc_l_sm_t0c0n0s0_nocast",					"m_l_sm_lmpb_t0c0n0sd0_nfwpf_nocast"}, // -> m
+			{"mc_l_sm_t0c0n0",							"mc_l_sm_t0c0n0_nfwpf_frt_aat"}, // could be wrong
+			{"mc_l_sm_t0c0n0_nocast",					"mc_l_sm_t0c0n0_nfwpf_frt_aat"}, // no nocast
+			{"mc_l_sm_t0c0n0s0",						"m_l_sm_t0c0n0sd0_nfwpf"}, // -> m
+			{"mc_l_sm_t0c0n0s0_nocast",					"m_l_sm_t0c0n0sd0_nfwpf_nocast"}, // -> m
 			{"mc_l_sm_t0c0n0s0p0",						"mc_l_sm_t0c0n0sd0p0_nfwpf"},
-			{"mc_l_sm_t0c0p0",							"mc_l_sm_lmpb_t0c0_nfwpf"}, // couldn't find
-			{"mc_l_sm_t0c0q0n0s0",						"m_l_sm_lmpb_t0c0q0n0sd0_nfwpf"}, // -> m
+			{"mc_l_sm_t0c0n0s0p0_nocast",				"mc_l_sm_t0c0n0sd0p0_nfwpf"}, // no nocast
+			{"mc_l_sm_t0c0p0",							"mc_l_sm_t0c0_nfwpf"}, // couldn't find
+			{"mc_l_sm_t0c0q0n0s0",						"m_l_sm_t0c0q0n0sd0_nfwpf"}, // -> m
 			{"mc_l_sm_t0c0q0n0s0p0",					"mc_l_sm_t0c0n0sd0p0_nfwpf"}, // couldn't find // mc_l_sm_t0c0d0n0sd0p0ct0_nfwpf
-			{"mc_l_sm_b0c0",							"mc_l_sm_lmpb_ndw_b0c0_nfwpf_frt_im_aat"},
-			{"mc_l_sm_b0c0_nocast",						"mc_l_sm_lmpb_ndw_b0c0_nfwpf_frt_im_aat"}, // couldn't find
+			{"mc_l_sm_b0c0",							"mc_l_sm_ndw_b0c0_nfwpf_frt_im_aat"},
+			{"mc_l_sm_b0c0_nocast",						"mc_l_sm_ndw_b0c0_nfwpf_frt_im_aat"}, // couldn't find
 			{"mc_l_sm_b0c0d0p0",						"mc_l_sm_ndw_b0c0d0p0_cltrans"},
 			{"mc_l_sm_b0c0d0n0s0p0",					"mc_l_sm_ndw_b0c0n0sd0p0_cltrans"},
-			{"mc_l_sm_b0c0s0",							"mc_l_sm_lmpb_ndw_b0c0sd0_cltrans"},
-			{"mc_l_sm_b0c0s0_nocast",					"mc_l_sm_lmpb_ndw_b0c0sd0_nfwpf_frt_aat"}, // not sure what the diff is between this and ^
-			{"mc_l_sm_b0c0s0p0",						"m_l_sm_ndw_b0c0sd0p0_cltrans"}, // -> m
-			{"mc_l_sm_b0c0n0",							"m_l_sm_lmpb_ndw_b0c0n0_cltrans"}, // -> m
-			{"mc_l_sm_b0c0n0s0",						"mc_l_sm_lmpb_ndw_b0c0n0sd0_cltrans"},
-			{"mc_l_sm_b0c0n0s0p0",						"mc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
-			{"mc_l_sm_b0c0p0",							"mc_l_sm_lmpb_ndw_b0c0_nfwpf_frt_im_aat"}, // couldn't find
+			{"mc_l_sm_b0c0s0",							"m_l_sm_ndw_b0c0sd0_nfwpf_frt_aat"},
+			{"mc_l_sm_b0c0s0_nocast",					"m_l_sm_ndw_b0c0sd0_nfwpf_nocast_frt_aat"},
+			{"mc_l_sm_b0c0s0p0",						"m_l_sm_ndw_b0c0sd0p0_nfwpf_frt_aat"}, // -> m
+			{"mc_l_sm_b0c0n0",							"m_l_sm_ndw_b0c0n0_cltrans"}, // -> m
+			{"mc_l_sm_b0c0n0s0",						"mc_l_sm_ndw_b0c0n0sd0_cltrans"},
+			{"mc_l_sm_b0c0n0s0p0",						"mc_l_sm_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
+			{"mc_l_sm_b0c0p0",							"mc_l_sm_ndw_b0c0_nfwpf_frt_im_aat"}, // couldn't find
 			{"mc_l_sm_b0c0q0s0",						"m_l_sm_lmpb_ndw_b0c0q0sd0_nfwpf_frt_aat"}, // -> m
 			{"mc_l_sm_b0c0q0n0s0",						"mc_l_sm_ndw_b0c0q0n0sd0_nfwpf_frt_aat"},
 			{"mc_l_sm_b0c0q0n0s0p0",					"mc_l_sm_ndw_b0c0q0n0sd0_nfwpf_frt_aat"}, // couldn't find
-			{"mc_l_sm_b0c0n0s0_custom_growing_ice_cracks", "mc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
-			{"mc_l_sm_b0c0n0s0_custom_growing_ice_cracks_sat", "mc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
+			{"mc_l_sm_b0c0n0s0_custom_growing_ice_cracks", "mc_l_sm_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
+			{"mc_l_sm_b0c0n0s0_custom_growing_ice_cracks_sat", "mc_l_sm_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
 			{"mc_l_sm_du_dm_r0c0n0s0",					"m_l_sm_du_dm_r0c0n0sd0_nfwpf"}, // -> m
 			{"mc_l_sm_du_dm_r0c0n0s0p0",				"m_l_sm_du_dm_r0c0n0sd0_nfwpf"}, // -> m, couldn't find
 			{"mc_l_sm_du_dm_t0c0q0n0s0p0",				"mc_l_sm_t0c0n0sd0p0_nfwpf"}, // couldn't find
+			
+			{"mc_l_flag_t0c0",							"mc_l_sm_flag_fuv_t0c0_nfwpf"}, // -> sm
+			{"mc_l_flag_t0c0n0s0",						"mc_l_sm_flag_fuv_t0c0n0sd0_nfwpf"}, // -> sm
+			{"mc_l_sm_flag_t0c0",						"mc_l_sm_flag_fuv_t0c0_nfwpf"},
+			{"mc_l_sm_flag_t0c0s0",						"mc_l_sm_flag_fuv_t0c0_nfwpf"}, // couldn't find
+			{"mc_l_sm_flag_t0c0s0p0",					"mc_l_sm_flag_fuv_t0c0n0sd0_nfwpf"}, // -> n0
+			{"mc_l_sm_flag_t0c0n0",						"mc_l_sm_flag_fuv_t0c0n0sd0_nfwpf"}, // -> sd0
+			{"mc_l_sm_flag_t0c0n0s0",					"mc_l_sm_flag_fuv_t0c0n0sd0_nfwpf"},
+			{"mc_l_sm_flag_t0c0n0s0p0",					"mc_l_sm_flag_fuv_t0c0n0sd0_nfwpf"}, // couldn't find
+			{"mc_l_sm_flag_t0c0n0s0p0_nocast",			"mc_l_sm_flag_fuv_t0c0n0sd0_nfwpf"}, // couldn't find
+			{"mc_l_r0c0",								"mc_l_sm_r0c0_nfwpf"}, // -> sm
+			{"mc_l_r0c0_nocast",						"mc_l_sm_r0c0_nfwpf"}, // couldn't find
+			{"mc_l_r0c0n0",								"mc_l_sm_r0c0n0_nfwpf"}, // -> sm
+			{"mc_l_r0c0n0_nocast",						"mc_l_sm_r0c0n0_nfwpf"}, // -> sm
+			{"mc_l_r0c0n0s0",							"mc_l_sm_r0c0n0sd0_nfwpf"}, // -> sm
+			{"mc_l_r0c0n0s0_nocast",					"m_l_sm_r0c0n0sd0_nfwpf_nocast"}, // -> m, sm
+			{"mc_l_r0c0n0s0p0_nocast",					"m_l_sm_r0c0n0sd0p0_nfwpf"}, // -> m, sm
+			{"mc_l_r0c0s0",								"mc_l_sm_r0c0sd0_nfwpf"}, // -> sm
+			{"mc_l_r0c0s0_nocast",						"mc_l_sm_r0c0sd0_nfwpf"}, // -> sm, no nocast
+			{"mc_l_r0c0s0p0_nocast",					"m_l_sm_r0c0sd0p0_nfwpf_nocast"}, // -> m, sm
+			{"mc_l_t0c0",								"mc_l_sm_t0c0_nfwpf"}, // -> sm
+			{"mc_l_t0c0_nocast",						"mc_l_sm_t0c0_nfwpf_nocast"}, // -> sm
+			{"mc_l_t0c0o0",								"mc_l_sm_t0c0_nfwpf"}, // -> sm, couldn't find
+			{"mc_l_t0c0n0s0",							"mc_l_sm_t0c0n0sd0_nfwpf"}, // -> sm
+			{"mc_l_t0c0n0s0_nocast",					"mc_l_sm_t0c0n0sd0_nfwpf_nocast"}, // -> sm
+			{"mc_l_t0c0n0s0p0",							"mc_l_sm_t0c0n0sd0p0_nfwpf"},
+			{"mc_l_t0c0n0s0p0_nocast",					"mc_l_sm_t0c0n0sd0p0_nfwpf"}, // -> sm, no nocast
+			{"mc_l_t0c0s0p0",							"mc_l_sm_t0c0sd0p0_nfwpf"},// -> sm
+			{"mc_l_t0c0q0n0s0",							"m_l_sm_t0c0q0n0sd0_nfwpf"}, // -> m, sm
+			{"mc_l_t0c0q0n0s0o0",						"m_l_sm_lmpb_t0c0q0n0sd0om0_nfwpf"}, // -> m, sm
+			{"mc_l_t0c0n0s0o0",							"m_l_sm_lmpb_t0c0n0sd0om0_nfwpf"}, // -> m
+			{"mc_l_b0c0_nocast",						"mc_l_sm_ndw_b0c0_nfwpf_frt_im_aat" }, // couldn't find
+
+			{"mc_l_sm_heat_r0c0",						"m_l_sm_heat_r0c0n0sd0_nfwpf"}, // -> m, n0,sd0
+			{"mc_l_sm_heat_r0c0s0",						"m_l_sm_heat_r0c0n0sd0_nfwpf"}, // -> m, n0
+			{"mc_l_sm_heat_r0c0s0p0",					"m_l_sm_heat_r0c0sd0p0_cltrans"},
 			{"mc_l_sm_heat_r0c0n0s0",					"m_l_sm_heat_r0c0n0sd0_nfwpf"}, // -> m
 			{"mc_l_sm_heat_r0c0n0s0p0",					"m_l_sm_heat_r0c0n0sd0p0_nfwpf"}, // -> m
-			{"mc_l_sm_heat_b0c0s0",						"m_l_sm_lmpb_heat_ndw_b0c0sd0_cltrans"}, // -> m
-			{"mc_l_sm_heat_b0c0n0s0",					"mc_l_sm_lmpb_ndw_b0c0n0sd0_cltrans"}, // couldn't find heat
-			{"mc_l_flag_t0c0",							"mc_l_sm_flag_fuv_t0c0_nfwpf"}, // -> sm
-			{"mc_l_flag_t0c0n0s0",						"mc_l_sm_lmpb_flag_fuv_t0c0n0sd0_nfwpf_dsl"}, // -> sm
-			{"mc_l_sm_flag_t0c0",						"mc_l_sm_lmpb_flag_fuv_t0c0_nfwpf"},
-			{"mc_l_sm_flag_t0c0s0",						"mc_l_sm_lmpb_flag_fuv_t0c0_nfwpf"}, // couldn't find
-			{"mc_l_sm_flag_t0c0s0p0",					"mc_l_sm_lmpb_flagext_wv0_fuv_t0c0sd0_nfwpf"}, // couldn't find, maybe wrong
-			{"mc_l_sm_flag_t0c0n0",						"mc_l_sm_lmpb_flag_fuv_t0c0n0sd0_nfwpf_dsl"}, // -> sd0
-			{"mc_l_sm_flag_t0c0n0s0",					"mc_l_sm_lmpb_flag_fuv_t0c0n0sd0_nfwpf_dsl"},
-			{"mc_l_sm_flag_t0c0n0s0p0",					"mc_l_sm_lmpb_flag_fuv_t0c0n0sd0_nfwpf_dsl"}, // couldn't find
-			{"mc_l_r0c0",								"mc_l_sm_lmpb_r0c0_nfwpf" }, // -> sm
-			{"mc_l_r0c0_nocast",						"mc_l_sm_lmpb_r0c0_nfwpf" }, // couldn't find
-			{"mc_l_r0c0n0",								"mc_l_sm_r0c0n0_nfwpf" }, // -> sm
-			{"mc_l_r0c0n0s0",							"mc_l_sm_lmpb_r0c0n0sd0_nfwpf"}, // -> sm
-			{"mc_l_r0c0n0s0_nocast",					"m_l_sm_r0c0n0sd0_nfwpf_nocast"}, // -> m, sm
-			{"mc_l_r0c0s0",								"mc_l_sm_r0c0sd0_nfwpf" }, // -> sm
-			{"mc_l_t0c0n0s0",							"mc_l_sm_t0c0n0sd0_nfwpf"}, // -> sm
-			{"mc_l_t0c0s0p0",							"mc_l_sm_t0c0sd0p0_nfwpf"},// -> sm
-			{"mc_l_t0c0q0n0s0",							"m_l_sm_lmpb_t0c0q0n0sd0_nfwpf"}, // -> m, sm
+			{"mc_l_sm_heat_b0c0s0",						"m_l_sm_heat_ndw_b0c0sd0_cltrans"}, // -> m
+			{"mc_l_sm_heat_b0c0s0p0",					"m_l_sm_heat_ndw_b0c0sd0p0_cltrans"}, // -> m
+			{"mc_l_sm_heat_b0c0n0s0",					"m_l_sm_heat_ndw_b0c0n0sd0p0_cltrans"}, // -> m, couldn't find
+			{"mc_l_sm_heat_b0c0n0s0p0",					"m_l_sm_heat_ndw_b0c0n0sd0p0_cltrans"}, // -> m
+			{"mc_l_sm_heat_t0c0n0s0p0",					"m_l_sm_heat_t0c0n0sd0p0_nfwpf"}, // -> m
 
-			{"mc_l_sm_scroll_t0c0n0s0",					"mc_l_sm_scroll_t0c0n0sd0_nfwpf" },
+			{"mc_l_heat_r0c0n0s0_nocast",				"m_l_sm_heat_r0c0n0sd0_nfwpf"}, // couldn't find
+			{"mc_l_heat_b0c0s0_nocast",					"m_l_sm_heat_ndw_b0c0sd0_cltrans"}, // couldn't find
+
+			{"mc_l_sm_skin_r0c0s0",						"mc_l_sm_r0c0_nfwpf"},
+			{"mc_l_sm_skin_r0c0n0s0",					"mc_l_sm_r0c0n0sd0_nfwpf"},
+
+			{"mc_l_sm_scroll_t0c0n0s0",					"mc_l_sm_scroll_t0c0n0sd0_nfwpf"},
 
 			{"mc_unlit",								"mc_unlit_blend_lin_ndw_nfwpf"}, // couldn't find
 			{"mc_unlit_nofog",							"mc_unlit_blend_lin_ndw_nfwpf"}, // couldn't find
@@ -225,12 +274,12 @@ namespace ZoneTool
 			{"mc_shadowcaster_atest",					"mc_shadowcaster_atest"},
 			{"mc_reflexsight",							"mc_reflexsight"},
 
-			{"mc_effect",								"mc_effect_blend_nofog_ndw"}, // couldn't find
-			{"mc_effect_add_nofog",						"mc_effect_blend_nofog_ndw"}, // couldn't find
-			{"mc_effect_add_eyeoffset",					"mc_effect_blend_nofog_ndw"}, // couldn't find
-			{"mc_effect_blend_nofog",					"mc_effect_blend_nofog_ndw"},
-			{"mc_effect_falloff_add_nofog",				"mc_effect_blend_nofog_ndw"}, // couldn't find
-			{"mc_effect_falloff_add_lin_nofog",			"mc_effect_blend_nofog_ndw"}, // couldn't find
+			{"mc_effect",								"effect_add_ndw"}, // couldn't find
+			{"mc_effect_add_nofog",						"effect_add_nofog_ndw"}, // ?
+			{"mc_effect_add_eyeoffset",					"effect_add_eo"}, // ?
+			{"mc_effect_blend_nofog",					"mc_effect_blend_nofog_ndw"}, // effect_blend_nofog_ndw
+			{"mc_effect_falloff_add_nofog",				"effect_falloff_add_nofog_ndw"}, // ?
+			{"mc_effect_falloff_add_lin_nofog",			"effect_falloff_add_nofog_ndw"}, // couldn't find
 			{"mc_effect_zfeather_falloff_add_nofog",	"mc_effect_zf_add_nofog_ndw"}, // couldn't find
 			{"mc_effect_zfeather_falloff_add_nofog_eyeoffset", "mc_effect_zf_falloff_add_nofog_eo_ndw"},
 			{"mc_effect_zfeather_falloff_add_lin_nofog", "mc_effect_zf_add_nofog_ndw"}, // couldn't find
@@ -241,6 +290,7 @@ namespace ZoneTool
 
 			//{"mc_water",								"2d" }, // couldn't find
 			{"mc_tools",								"m_tools_r0c0ct0_nocast"}, // could be wrong
+			{"mc_tools_r0c0",							"m_tools_r0c0ct0_nocast"},
 			{"mc_tools_r0c0_nocast",					"m_tools_r0c0ct0_nocast"},
 
 			{"l_sm_r0c0",								"2d"}, // not needed (iw3)
@@ -253,6 +303,7 @@ namespace ZoneTool
 
 			{"effect",									"effect_blend_ndw"}, // couldn't find
 			{"effect_screen",							"effect_blend_ndw"}, // couldn't find
+			{"effect_screen_nofog",						"effect_blend_ndw"}, // couldn't find
 			{"effect_nofog",							"effect_blend_nofog_ndw"}, // couldn't find
 			{"effect_add",								"effect_add_ndw"},
 			{"effect_add_eyeoffset",					"effect_add_eo"},
@@ -273,6 +324,7 @@ namespace ZoneTool
 			{"effect_zfeather_add_lin_nofog",			"effect_zf_add_nofog_ndw"}, // couldn't find
 			{"effect_zfeather_blend",					"effect_zf_blend_ndw"},
 			{"effect_zfeather_blend_nofog",				"effect_zf_blend_nofog_ndw"},
+			{"effect_zfeather_blend_nofog_eyeoffset",	"effect_zf_blend_eo_ndw"}, // couldn't find
 			{"effect_zfeather_blend_eyeoffset",			"effect_zf_blend_eo_ndw"},
 			{"effect_zfeather_blend_spot_sm",			"effect_zf_blend_ndw"}, // couldn't find
 			{"effect_zfeather_falloff",					"effect_zf_falloff_blend_ndw"}, // couldn't find
@@ -281,9 +333,12 @@ namespace ZoneTool
 			{"effect_zfeather_falloff_add_nofog",		"effect_zf_falloff_add_nofog_ndw" },
 			{"effect_zfeather_falloff_add_eyeoffset",	"effect_zf_falloff_add_eo_ndw"},
 			{"effect_zfeather_falloff_add_nofog_eyeoffset", "effect_zf_falloff_add_nofog_eo_ndw"},
+			{"effect_zfeather_falloff_add_lin_nofog_eyeoffset", "effect_zf_falloff_add_nofog_eo_ndw"}, // couldn't find
 			{"effect_zfeather_falloff_blend",			"effect_zf_falloff_blend_ndw"},
 			{"effect_zfeather_falloff_blend_nofog",			"effect_zf_falloff_blend_nofog_ndw"},
 			{"effect_zfeather_falloff_screen",			"effect_zf_falloff_screen_nofog_ndw"}, // closest i could find
+			{"effect_zfeather_falloff_screen_nofog_eyeoffset", "effect_zf_falloff_add_nofog_eo_ndw"}, // closest i could find
+			{"effect_zfeather_falloff_screen_nofog",	"effect_zf_falloff_screen_nofog_ndw"},
 			{"effect_zfeather_outdoor",					"effect_zf_outdoor_blend_ndw" }, // couldn't find
 			{"effect_zfeather_outdoor_blend",			"effect_zf_outdoor_blend_ndw"},
 			{"effect_zfeather_outdoor_blend_nofog",		"effect_zf_outdoor_blend_nofog_ndw" },
@@ -301,6 +356,7 @@ namespace ZoneTool
 			{"particle_cloud_spark_outdoor_add",		"particle_cloud_add_ga"}, // couldn't find
 
 			{"grain_overlay",							"grain_overlay"},
+			{"grain_overlay_uvscale",					"grain_overlay_uvscale"},
 
 			{"splatter_alt",							"splatter_alt"},
 
@@ -354,8 +410,8 @@ namespace ZoneTool
 				{27, 29},	// Cloud 2
 				{28, 30},	// Cloud 3
 				{29, 31},	// Blend 1
-				//{30, 32},	// Blend 2
-				//{31, 33},	// Blend 3
+				{30, 32},	// Blend 2
+				{31, 33},	// Blend 3
 				//{32, },	// ?
 				//{33, },	// ?
 				{34, 38},	// Cloud dust?
@@ -378,6 +434,7 @@ namespace ZoneTool
 				{51, 56},	// ?
 				//{52, 57},	// ?
 				{53, 36},	// Viewmodel Effect
+				{54, 60},	// 2D
 			};
 
 			std::unordered_map<std::string, std::uint8_t> mapped_sortkeys_by_techset =
@@ -751,7 +808,12 @@ namespace ZoneTool
 
 				if (h1_techset.find("sd0") != std::string::npos)
 				{
-					IMAGE_ADD_IF_NOT_FOUND("$identitynormalmap", 8, 19, 112, 115, 887934131);
+					IMAGE_ADD_IF_NOT_FOUND("$identitynormalmap", 8, 19, 112, 115, 887934131); // ~$white-r32g32b32l
+				}
+
+				if (h1_techset.find("om0") != std::string::npos)
+				{
+					IMAGE_ADD_IF_NOT_FOUND("~$white-l", 16, 19, 112, 111, 1610742065); // ~$white-l02
 				}
 
 				if (h1_techset.find("_lmpb_") != std::string::npos || h1_techset.find("_flag_") != std::string::npos)
