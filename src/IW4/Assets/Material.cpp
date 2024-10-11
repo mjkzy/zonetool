@@ -1,24 +1,55 @@
 #include "stdafx.hpp"
+#include "IW5/Assets/Material.hpp"
 
-#include "Dumper/H1/Assets/Material.hpp"
-#include "Dumper/IW6/Assets/Material.hpp"
-#include "Dumper/S1/Assets/Material.hpp"
-
-namespace ZoneTool::IW4
+namespace ZoneTool
 {
-	void IMaterial::dump(Material* asset)
+	namespace IW4
 	{
-		if (zonetool::dumping_target == zonetool::dump_target::h1)
+		IW5::Material* convert(Material* asset, allocator& mem)
 		{
-			return H1Dumper::dump(asset);
+			auto* iw5_asset = mem.allocate<IW5::Material>();
+			iw5_asset->name = asset->name;
+
+			iw5_asset->info.gameFlags = asset->gameFlags;
+			iw5_asset->info.sortKey = asset->sortKey;
+			iw5_asset->info.textureAtlasRowCount = asset->textureAtlasRowCount;
+			iw5_asset->info.textureAtlasColumnCount = asset->textureAtlasColumnCount;
+			//iw5_asset->info.drawSurf = asset->drawSurf;
+			iw5_asset->info.surfaceTypeBits = asset->surfaceTypeBits;
+
+			std::memset(iw5_asset->stateBitsEntry, 0xFF, sizeof(iw5_asset->stateBitsEntry)); // convert...
+
+			iw5_asset->textureCount = asset->textureCount;
+			iw5_asset->constantCount = asset->constantCount;
+			iw5_asset->stateBitsCount = asset->stateBitsCount;
+			iw5_asset->stateFlags = asset->stateFlags;
+
+			iw5_asset->cameraRegion = asset->cameraRegion;
+			if (iw5_asset->cameraRegion >= 0x4)
+			{
+				iw5_asset->cameraRegion = 0x4;
+			}
+
+			iw5_asset->techniqueSet = reinterpret_cast<IW5::MaterialTechniqueSet*>(asset->techniqueSet);
+
+			static_assert(sizeof(MaterialTextureDef) == sizeof(IW5::MaterialTextureDef));
+			iw5_asset->textureTable = reinterpret_cast<IW5::MaterialTextureDef*>(asset->textureTable);
+
+			iw5_asset->constantTable = reinterpret_cast<IW5::MaterialConstantDef*>(asset->constantTable); // convert?
+			iw5_asset->stateBitsTable = reinterpret_cast<IW5::GfxStateBits*>(asset->stateBitsTable); // convert?
+
+			iw5_asset->subMaterials = nullptr;
+
+			return iw5_asset;
 		}
-		else if (zonetool::dumping_target == zonetool::dump_target::iw6)
+
+		void IMaterial::dump(Material* asset)
 		{
-			return IW6Dumper::dump(asset);
-		}
-		else if (zonetool::dumping_target == zonetool::dump_target::s1)
-		{
-			return S1Dumper::dump(asset);
+			allocator allocator;
+			auto* iw5_asset = convert(asset, allocator);
+
+			// dump asset
+			IW5::IMaterial::dump(iw5_asset);
 		}
 	}
 }

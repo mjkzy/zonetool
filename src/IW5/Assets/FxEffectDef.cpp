@@ -20,7 +20,7 @@ namespace ZoneTool::IW5
 		else if (zonetool::dumping_target == zonetool::dump_target::s1)
 		{
 			return S1Dumper::dump(asset);
-    }
+		}
 		else if (zonetool::dumping_target == zonetool::dump_target::iw7)
 		{
 			return IW7Dumper::dump(asset);

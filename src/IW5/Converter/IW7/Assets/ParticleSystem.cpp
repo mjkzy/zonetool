@@ -3,8 +3,8 @@
 
 #include "ParticleSystem.hpp"
 
-#include "IW3/Structs.hpp"
-#include "IW3/Dumper/IW7/Assets/Material.hpp"
+#include "IW5/Structs.hpp"
+#include "IW5/Dumper/IW7/Assets/Material.hpp"
 
 namespace ZoneTool::IW5
 {
@@ -477,7 +477,7 @@ namespace ZoneTool::IW5
 
 			if (get_linker_mode() == linker_mode::iw3)
 			{
-				IW3::IW7Dumper::dump(reinterpret_cast<ZoneTool::IW3::Material*>(material), true);
+				IW5::IW7Dumper::dump(reinterpret_cast<ZoneTool::IW5::Material*>(material), true);
 			}
 			else
 			{

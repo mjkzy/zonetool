@@ -302,11 +302,16 @@ namespace ZoneTool
 			float floatTime;
 		};
 
+		struct complex_s
+		{
+			float real;
+			float imag;
+		};
+
 		struct water_t
 		{
 			WaterWritable writable;
-			float* H0X;
-			float* H0Y;
+			complex_s* H0;
 			float* wTerm;
 			int M;
 			int N;
@@ -320,14 +325,20 @@ namespace ZoneTool
 			GfxImage* image;
 		};
 
-		struct MaterialImage
+		union MaterialTextureDefInfo
 		{
-			unsigned int typeHash; // asset hash of type
-			unsigned char firstCharacter; // first character of image name
-			unsigned char secondLastCharacter; // second-last character of image name (maybe only in CoD4?!)
-			unsigned char sampleState;
+			GfxImage* image;
+			water_t* water;
+		};
+
+		struct MaterialTextureDef
+		{
+			unsigned int nameHash;
+			char nameStart;
+			char nameEnd;
+			unsigned char samplerState;
 			unsigned char semantic;
-			GfxImage* image; // Image* actually
+			MaterialTextureDefInfo u;
 		};
 
 		namespace alpha
@@ -487,7 +498,7 @@ namespace ZoneTool
 				char cameraRegion;
 				char layerCount;
 				MaterialTechniqueSet* techniqueSet;
-				MaterialImage* textureTable;
+				MaterialTextureDef* textureTable;
 				MaterialConstantDef* constantTable;
 				GfxStateBits* stateBitsTable;
 				const char** subMaterials;
@@ -505,27 +516,49 @@ namespace ZoneTool
 			CAMERA_REGION_NONE = 0x5,
 		};
 
+		struct GfxDrawSurfFields
+		{
+			unsigned __int64 objectId : 16;
+			unsigned __int64 reflectionProbeIndex : 8;
+			unsigned __int64 hasGfxEntIndex : 1;
+			unsigned __int64 customIndex : 5;
+			unsigned __int64 materialSortedIndex : 12;
+			unsigned __int64 prepass : 2;
+			unsigned __int64 useHeroLighting : 1;
+			unsigned __int64 sceneLightIndex : 8;
+			unsigned __int64 surfType : 4;
+			unsigned __int64 primarySortKey : 6;
+			unsigned __int64 unused : 1;
+		};
+
+		union GfxDrawSurf
+		{
+			GfxDrawSurfFields fields;
+			unsigned __int64 packed;
+		};
+		static_assert(sizeof(GfxDrawSurf) == 8);
+
 		struct Material
 		{
-			const char* name; // 0
-			unsigned char gameFlags;
-			unsigned char sortKey;
-			unsigned char animationX; // 6 // amount of animation frames in X
-			unsigned char animationY; // 7 // amount of animation frames in Y
-			unsigned int subRendererIndex; // 0x00 //+8
-			unsigned int rendererIndex; // 12 // only for 3D models
-			int unknown;
-			unsigned int surfaceTypeBits; //+20
-			char stateBitsEntry[48]; // 32 // 0xFF
-			char numMaps;
+			const char* name;
+			char gameFlags;
+			char sortKey;
+			char textureAtlasRowCount;
+			char textureAtlasColumnCount;
+			GfxDrawSurf drawSurf;
+			int surfaceTypeBits;
+			unsigned __int16 hashIndex;
+			unsigned __int16 pad;
+			char stateBitsEntry[48];
+			char textureCount;
 			char constantCount;
 			char stateBitsCount;
-			char stateFlags; // 0x03
-			unsigned short cameraRegion; // 0x04
-			MaterialTechniqueSet* techniqueSet; // '2d' techset
-			MaterialImage* maps; // map references
+			char stateFlags;
+			char cameraRegion;
+			MaterialTechniqueSet* techniqueSet;
+			MaterialTextureDef* textureTable;
 			MaterialConstantDef* constantTable;
-			GfxStateBits* stateMap; // might be NULL, need to test
+			GfxStateBits* stateBitsTable;
 		};
 
 		//vec3_t should be from idTech3, has to do with camera angles
@@ -3570,28 +3603,6 @@ namespace ZoneTool
 				};
 			};
 		};
-
-		struct GfxDrawSurfFields
-		{
-			unsigned __int64 objectId : 16;
-			unsigned __int64 reflectionProbeIndex : 8;
-			unsigned __int64 hasGfxEntIndex : 1;
-			unsigned __int64 customIndex : 5;
-			unsigned __int64 materialSortedIndex : 12;
-			unsigned __int64 prepass : 2;
-			unsigned __int64 useHeroLighting : 1;
-			unsigned __int64 sceneLightIndex : 8;
-			unsigned __int64 surfType : 4;
-			unsigned __int64 primarySortKey : 6;
-			unsigned __int64 unused : 1;
-		};
-
-		union GfxDrawSurf
-		{
-			GfxDrawSurfFields fields;
-			unsigned __int64 packed;
-		};
-		static_assert(sizeof(GfxDrawSurf) == 8);
 
 #pragma pack(push, 4)
 		struct GfxPackedPlacement

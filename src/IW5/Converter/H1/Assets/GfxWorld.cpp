@@ -308,8 +308,23 @@ namespace ZoneTool::IW5
 					h1_asset->lightGrid.stageLightingContrastGain[i] = 0.3f;
 				}
 
-				//memcpy(&h1_asset->lightGrid.skyLightGridColors, skyLightGridColors_bytes, sizeof(skyLightGridColors_bytes));
-				//memcpy(&h1_asset->lightGrid.defaultLightGridColors, defaultLightGridColors_bytes, sizeof(defaultLightGridColors_bytes));
+				for (unsigned int j = 0; j < 56; j++)
+				{
+					auto& rgb = asset->lightGrid.colors[1].rgb[j];
+					auto& dest_rgb = h1_asset->lightGrid.skyLightGridColors.rgb[j];
+					dest_rgb[0] = float_to_half(rgb[0] / 255.f);
+					dest_rgb[1] = float_to_half(rgb[1] / 255.f);
+					dest_rgb[2] = float_to_half(rgb[2] / 255.f);
+				}
+
+				for (unsigned int j = 0; j < 56; j++)
+				{
+					auto& rgb = asset->lightGrid.colors[0].rgb[j];
+					auto& dest_rgb = h1_asset->lightGrid.defaultLightGridColors.rgb[j];
+					dest_rgb[0] = float_to_half(rgb[0] / 255.f);
+					dest_rgb[1] = float_to_half(rgb[1] / 255.f);
+					dest_rgb[2] = float_to_half(rgb[2] / 255.f);
+				}
 
 				for (auto i = 0; i < 3; i++)
 				{
@@ -431,6 +446,9 @@ namespace ZoneTool::IW5
 			h1_asset->dpvs.smodelCount = asset->dpvs.smodelCount;
 			h1_asset->dpvs.subdivVertexLightingInfoCount = 0;
 			h1_asset->dpvs.staticSurfaceCount = asset->dpvs.staticSurfaceCountNoDecal + lit_decal_count;
+
+			// since we use mapped techsets and if we replace materials this will be wrong.
+			// this will be re-calculated in x64-zt
 			h1_asset->dpvs.litOpaqueSurfsBegin = asset->dpvs.litOpaqueSurfsBegin;
 			h1_asset->dpvs.litOpaqueSurfsEnd = asset->dpvs.litOpaqueSurfsEnd;
 			h1_asset->dpvs.unkSurfsBegin = 0;

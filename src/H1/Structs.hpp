@@ -7829,7 +7829,9 @@ namespace ZoneTool::H1
 	struct GfxSurfaceBounds
 	{
 		Bounds bounds;
-		float unk[3];
+		unsigned __int16 mipRadius;
+		unsigned __int8 invHighMipRadius[5];
+		int flags;
 	}; assert_sizeof(GfxSurfaceBounds, 36);
 
 	struct GfxPackedPlacement

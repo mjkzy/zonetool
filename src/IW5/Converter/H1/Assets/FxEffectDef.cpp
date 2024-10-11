@@ -160,8 +160,50 @@ namespace ZoneTool::IW5
 				h1_effect->elemMaxRadius = elem->spawnFrustumCullRadius;
 			}
 
+			bool emissive = false;
+			const auto emissive_check = [&](const Material* mat)
+			{
+				switch (elem->elemType)
+				{
+				case FX_ELEM_TYPE_SPRITE_BILLBOARD:
+				case FX_ELEM_TYPE_SPRITE_ORIENTED:
+				case FX_ELEM_TYPE_TAIL:
+				case FX_ELEM_TYPE_TRAIL:
+				{
+					std::string mat_name = mat->name;
+					if (mat_name.find("distort") != std::string::npos)
+					{
+						emissive = true;
+					}
+				}
+				break;
+				}
+			};
+
+			if (elem->elemType == H1::FX_ELEM_TYPE_DECAL)
+			{
+			}
+			else if (elem->visualCount > 1)
+			{
+				for (int i = 0; i < elem->visualCount; i++)
+				{
+					emissive_check(elem->visuals.array[i].material);
+				}
+			}
+			else if (elem->visualCount)
+			{
+				emissive_check(elem->visuals.instance.material);
+			}
+
 			h1_elem->flags = static_cast<H1::FxElemDefFlags>(convert_elem_flags(elem->flags));
 			h1_elem->flags2 = 0;
+
+			if (emissive)
+			{
+				h1_effect->flags |= 0x10;
+				h1_elem->flags2 |= 0x8;
+			}
+
 			memcpy(&h1_elem->spawn, &elem->spawn, sizeof(FxSpawnDef));
 			memcpy(&h1_elem->spawnRange, &elem->spawnRange, sizeof(FxFloatRange));
 			memcpy(&h1_elem->fadeInRange, &elem->fadeInRange, sizeof(FxFloatRange));
@@ -220,6 +262,17 @@ namespace ZoneTool::IW5
 					h1_elem->visSamples[i].amplitude.scale = elem->visSamples[i].amplitude.scale;
 					h1_elem->visSamples[i].amplitude.pivot[0] = 0.0f;
 					h1_elem->visSamples[i].amplitude.pivot[1] = 0.0f;
+
+					if (emissive)
+					{
+						h1_elem->visSamples[i].base.emissiveScale[0] = 1.0f;
+						h1_elem->visSamples[i].base.emissiveScale[1] = 1.0f;
+						h1_elem->visSamples[i].base.emissiveScale[2] = 1.0f;
+
+						h1_elem->visSamples[i].amplitude.emissiveScale[0] = 1.0f;
+						h1_elem->visSamples[i].amplitude.emissiveScale[1] = 1.0f;
+						h1_elem->visSamples[i].amplitude.emissiveScale[2] = 1.0f;
+					}
 				}
 			}
 
@@ -336,50 +389,10 @@ namespace ZoneTool::IW5
 				h1_elem->hdrLightingFrac = 0.0f;
 			}
 
-			// distort fix...
-			if (elem->elemType == H1::FX_ELEM_TYPE_DECAL)
+			if (emissive)
 			{
-			}
-			else if (elem->visualCount > 1)
-			{
-				for (int i = 0; i < elem->visualCount; i++)
-				{
-					switch (elem->elemType)
-					{
-					case FX_ELEM_TYPE_SPRITE_BILLBOARD:
-					case FX_ELEM_TYPE_SPRITE_ORIENTED:
-					case FX_ELEM_TYPE_TAIL:
-					case FX_ELEM_TYPE_TRAIL:
-					{
-						std::string mat_name = elem->visuals.array[i].material->name;
-						if (mat_name.find("distort") != std::string::npos)
-						{
-							h1_effect->flags |= 0x10;
-							h1_elem->flags2 |= 0x8;
-						}
-					}
-						break;
-					}
-				}
-			}
-			else if (elem->visualCount)
-			{
-				switch (elem->elemType)
-				{
-				case FX_ELEM_TYPE_SPRITE_BILLBOARD:
-				case FX_ELEM_TYPE_SPRITE_ORIENTED:
-				case FX_ELEM_TYPE_TAIL:
-				case FX_ELEM_TYPE_TRAIL:
-				{
-					std::string mat_name = elem->visuals.instance.material->name;
-					if (mat_name.find("distort") != std::string::npos)
-					{
-						h1_effect->flags |= 0x10;
-						h1_elem->flags2 |= 0x8;
-					}
-				}
-				break;
-				}
+				h1_elem->hdrLightingFrac = 0.0f;
+				h1_elem->emissiveScaleScale = 1.0f;
 			}
 		}
 

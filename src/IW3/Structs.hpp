@@ -226,12 +226,12 @@ namespace ZoneTool
 
 		struct MaterialTextureDef
 		{
-			unsigned int typeHash;
-			char firstCharacter;
-			char secondLastCharacter;
-			unsigned char sampleState;
-			char semantic;
-			GfxImage* image;
+			unsigned int nameHash;
+			char nameStart;
+			char nameEnd;
+			char samplerState;
+			TextureSemantic semantic;
+			MaterialTextureDefInfo u;
 		};
 
 		struct GfxDrawSurfFields
@@ -519,15 +519,15 @@ namespace ZoneTool
 			char pad[2];
 			// MaterialInfo info;
 			char stateBitsEntry[34];
-			char numMaps;
+			char textureCount;
 			char constantCount;
 			char stateBitsCount;
 			char stateFlags;
 			char cameraRegion;
 			MaterialTechniqueSet* techniqueSet;
-			MaterialTextureDef* maps;
+			MaterialTextureDef* textureTable;
 			MaterialConstantDef* constantTable;
-			GfxStateBits* stateMap;
+			GfxStateBits* stateBitsTable;
 		};
 
 		struct cplane_s
