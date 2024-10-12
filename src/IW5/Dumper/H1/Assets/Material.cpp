@@ -179,7 +179,7 @@ namespace ZoneTool
 			{"mc_l_sm_r0c0n0s0_nocast",					"mc_l_sm_r0c0n0sd0_nfwpf"}, // no nocast
 			{"mc_l_sm_r0c0n0s0o0",						"mc_l_sm_lmpb_r0c0n0sd0om0_nfwpf"}, // not sure
 			{"mc_l_sm_r0c0n0s0o0p0",					"mc_l_sm_lmpb_r0c0n0sd0om0_nfwpf"}, // couldn't find
-			{"mc_l_sm_r0c0n0s0p0",						"m_l_sm_r0c0n0sd0p0_nfwpf"}, // -> m
+			{"mc_l_sm_r0c0n0s0p0",						"mc_l_sm_r0c0n0sd0p0_nfwpf"}, // -> m
 			{"mc_l_sm_r0c0n0s0p0_nocast",				"m_l_sm_r0c0n0sd0p0_nfwpf_nocast"}, // -> m
 			{"mc_l_sm_r0c0p0",							"mc_l_sm_r0c0p0_nfwpf"},
 			{"mc_l_sm_r0c0q0s0p0",						"mc_l_sm_r0c0sd0p0_nfwpf"}, // -> m, couldn't find
@@ -419,7 +419,6 @@ namespace ZoneTool
 		techset_map wc_l_sm_t0c0 = { "wc_l_sm_t0c0_nfwpf", "wc_l_sm_t0c0_nfwpf_frt_aat", "", "" };
 		techset_map wc_l_sm_t0c0s0 = { "wc_l_sm_t0c0sd0_nfwpf", "wc_l_sm_t0c0sd0_nfwpf_frt_aat", "", "" };
 		techset_map wc_l_sm_t0c0n0s0 = { "wc_l_sm_t0c0n0sd0_nfwpf", "wc_l_sm_t0c0n0sd0_nfwpf_frt_aat", "", "" };
-		techset_map wc_l_sm_t0c0q0n0s0 = { "wc_l_sm_lmpb_t0c0q0n0sd0_nfwpf", "", "", "" };
 
 		// mc
 
@@ -495,8 +494,8 @@ namespace ZoneTool
 			{"wc_l_sm_t0c0n0s0p0_nocast",				wc_l_sm_t0c0n0s0},
 			{"wc_l_sm_t0c0n0p0",						wc_l_sm_t0c0n0s0},
 			{"wc_l_sm_t0c0q0n0p0",						wc_l_sm_t0c0n0s0},
-			{"wc_l_sm_t0c0q0n0s0",						wc_l_sm_t0c0q0n0s0},
-			{"wc_l_sm_t0c0q0n0s0p0",					wc_l_sm_t0c0q0n0s0},
+			{"wc_l_sm_t0c0q0n0s0",						wc_l_sm_t0c0n0s0},
+			{"wc_l_sm_t0c0q0n0s0p0",					wc_l_sm_t0c0n0s0},
 			{"wc_l_sm_t0c0s0",							wc_l_sm_t0c0s0},
 			{"wc_l_sm_t0c0s0_nocast",					wc_l_sm_t0c0s0},
 			{"wc_l_sm_t0c0s0p0",						wc_l_sm_t0c0s0},
@@ -960,10 +959,20 @@ namespace ZoneTool
 					table["nameHash"] = asset->constantTable[i].nameHash;
 
 					nlohmann::json literal_entry;
+
 					literal_entry[0] = asset->constantTable[i].literal[0];
 					literal_entry[1] = asset->constantTable[i].literal[1];
 					literal_entry[2] = asset->constantTable[i].literal[2];
 					literal_entry[3] = asset->constantTable[i].literal[3];
+
+					if (constant_hash == 1033475292) // envMapParms
+					{
+						if (h1_techset.find("_lmpb_") != std::string::npos)
+						{
+							literal_entry[1] = asset->constantTable[i].literal[1] * 0.1f;
+						}
+					}
+
 					table["literal"] = literal_entry;
 
 					constant_table[constant_table.size()] = table;
