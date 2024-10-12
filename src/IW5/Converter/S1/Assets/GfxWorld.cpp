@@ -137,8 +137,8 @@ namespace ZoneTool::IW5
 
 			s1_asset->portalGroup = nullptr;
 
-			s1_asset->unk_vec4_count_0 = 0;
-			s1_asset->unk_vec4_0 = nullptr;
+			s1_asset->portalDistanceAnchorCount = 0;
+			s1_asset->portalDistanceAnchorsAndCloseDistSquared = nullptr;
 
 			s1_asset->draw.reflectionProbeCount = asset->draw.reflectionProbeCount;
 			s1_asset->draw.reflectionProbes = mem.allocate<S1::GfxImage* __ptr64>(s1_asset->draw.reflectionProbeCount);
@@ -193,9 +193,11 @@ namespace ZoneTool::IW5
 				s1_asset->draw.lightmapOverrideSecondary = nullptr;
 			}
 
-			s1_asset->draw.u1[0] = 1024; s1_asset->draw.u1[1] = 1024; // u1
-			s1_asset->draw.u2[0] = 512; s1_asset->draw.u2[1] = 512; // u2
-			s1_asset->draw.u3 = 8; // u3
+			s1_asset->draw.lightmapParameters.lightmapWidthPrimary = 1024;
+			s1_asset->draw.lightmapParameters.lightmapHeightPrimary = 1024;
+			s1_asset->draw.lightmapParameters.lightmapWidthSecondary = 512;
+			s1_asset->draw.lightmapParameters.lightmapHeightSecondary = 512;
+			s1_asset->draw.lightmapParameters.lightmapModelUnitsPerTexel = 8;
 
 			s1_asset->draw.trisType = 0; // dunno
 
@@ -327,13 +329,10 @@ namespace ZoneTool::IW5
 				s1_asset->models[i].mdaoVolumeIndex = -1;
 			}
 
+			memcpy(s1_asset->bounds.midPoint, asset->bounds.midPoint, sizeof(float[3]));
+			memcpy(s1_asset->bounds.halfSize, asset->bounds.halfSize, sizeof(float[3]));
 			memcpy(s1_asset->shadowBounds.midPoint, asset->bounds.midPoint, sizeof(float[3]));
 			memcpy(s1_asset->shadowBounds.halfSize, asset->bounds.halfSize, sizeof(float[3]));
-			memcpy(s1_asset->unkBounds.midPoint, asset->bounds.midPoint, sizeof(float[3]));
-			memcpy(s1_asset->unkBounds.halfSize, asset->bounds.halfSize, sizeof(float[3]));
-
-			// bounds1 = ?
-			// bounds2 = shadowBounds;
 
 			s1_asset->checksum = asset->checksum;
 
@@ -513,7 +512,6 @@ namespace ZoneTool::IW5
 			for (unsigned int i = 0; i < s1_asset->surfaceCount; i++)
 			{
 				memcpy(&s1_asset->dpvs.surfacesBounds[i].bounds, &asset->dpvs.surfacesBounds[i].bounds, sizeof(IW5::Bounds));
-				s1_asset->dpvs.surfacesBounds[i].__pad0; // idk
 			}
 
 			s1_asset->dpvs.smodelDrawInsts = mem.allocate<S1::GfxStaticModelDrawInst>(s1_asset->dpvs.smodelCount);
@@ -529,8 +527,8 @@ namespace ZoneTool::IW5
 				s1_asset->dpvs.smodelDrawInsts[i].sunShadowFlags = 1;
 
 				s1_asset->dpvs.smodelDrawInsts[i].cullDist = asset->dpvs.smodelDrawInsts[i].cullDist;
-				s1_asset->dpvs.smodelDrawInsts[i].unk0 = s1_asset->dpvs.smodelDrawInsts[i].cullDist;
-				s1_asset->dpvs.smodelDrawInsts[i].unk1 = 0;
+				s1_asset->dpvs.smodelDrawInsts[i].reactiveMotionCullDist = s1_asset->dpvs.smodelDrawInsts[i].cullDist;
+				s1_asset->dpvs.smodelDrawInsts[i].reactiveMotionLOD = 0;
 
 				// casts no shadows
 				auto no_shadows = (asset->dpvs.smodelDrawInsts[i].flags & 0x10) != 0;
@@ -552,7 +550,7 @@ namespace ZoneTool::IW5
 				}
 			}
 
-			s1_asset->dpvs.smodelLighting = mem.allocate<S1::GfxStaticModelLighting>(s1_asset->dpvs.smodelCount);
+			s1_asset->dpvs.smodelLightingInsts = mem.allocate<S1::GfxStaticModelLighting>(s1_asset->dpvs.smodelCount);
 			for (unsigned int i = 0; i < s1_asset->dpvs.smodelCount; i++)
 			{
 				if ((s1_asset->dpvs.smodelDrawInsts[i].flags & S1::StaticModelFlag::STATIC_MODEL_FLAG_GROUND_LIGHTING) != 0)
@@ -563,18 +561,14 @@ namespace ZoneTool::IW5
 
 					float rgba[4] = { bgra[2] / 255.0f, bgra[1] / 255.0f, bgra[0] / 255.0f, bgra[3] / 255.0f };
 
-					s1_asset->dpvs.smodelLighting[i].modelGroundLightingInfo.groundLighting[0] = float_to_half(rgba[0]); // r
-					s1_asset->dpvs.smodelLighting[i].modelGroundLightingInfo.groundLighting[1] = float_to_half(rgba[1]); // g
-					s1_asset->dpvs.smodelLighting[i].modelGroundLightingInfo.groundLighting[2] = float_to_half(rgba[2]); // b
-					s1_asset->dpvs.smodelLighting[i].modelGroundLightingInfo.groundLighting[3] = float_to_half(rgba[3]); // a
+					s1_asset->dpvs.smodelLightingInsts[i].ambientLightingInfo.groundLighting.array[0] = float_to_half(rgba[0]); // r
+					s1_asset->dpvs.smodelLightingInsts[i].ambientLightingInfo.groundLighting.array[1] = float_to_half(rgba[1]); // g
+					s1_asset->dpvs.smodelLightingInsts[i].ambientLightingInfo.groundLighting.array[2] = float_to_half(rgba[2]); // b
+					s1_asset->dpvs.smodelLightingInsts[i].ambientLightingInfo.groundLighting.array[3] = float_to_half(rgba[3]); // a
 				}
 				else if ((s1_asset->dpvs.smodelDrawInsts[i].flags & S1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTGRID_LIGHTING) != 0)
 				{
 					//s1_asset->dpvs.smodelDrawInsts[i].flags |= S1::StaticModelFlag::STATIC_MODEL_FLAG_ALLOW_FXMARK; // R_CalcModelLighting: 0x240
-					s1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.colorFloat16[0] = float_to_half(0.5f); // r
-					s1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.colorFloat16[1] = float_to_half(0.5f); // g
-					s1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.colorFloat16[2] = float_to_half(0.5f); // b
-					s1_asset->dpvs.smodelLighting[i].modelLightGridLightingInfo.colorFloat16[3] = float_to_half(0.5f); // a
 				}
 				else if ((s1_asset->dpvs.smodelDrawInsts[i].flags & S1::StaticModelFlag::STATIC_MODEL_FLAG_LIGHTMAP_LIGHTING) != 0)
 				{
@@ -680,10 +674,10 @@ namespace ZoneTool::IW5
 
 			// pad3 unknown data
 
-			s1_asset->buildInfo.args0 = nullptr;
-			s1_asset->buildInfo.args1 = nullptr;
-			s1_asset->buildInfo.buildStartTime = nullptr;
-			s1_asset->buildInfo.buildEndTime = nullptr;
+			s1_asset->buildInfo.bspCommandline = nullptr;
+			s1_asset->buildInfo.lightCommandline = nullptr;
+			s1_asset->buildInfo.bspTimestamp = nullptr;
+			s1_asset->buildInfo.lightTimestamp = nullptr;
 
 			return s1_asset;
 		}

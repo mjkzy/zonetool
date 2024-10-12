@@ -19,12 +19,78 @@ namespace ZoneTool::IW5
 {
 	namespace H1Converter
 	{
+		bool channel_is_3d[IW5::SoundChannel::SND_CHANNEL_COUNT]
+		{
+			true,	//SND_CHANNEL_PHYSICS,
+			true,	//SND_CHANNEL_AMBDIST1,
+			true,	//SND_CHANNEL_AMBDIST2,
+			true,	//SND_CHANNEL_ALARM,
+			true,	//SND_CHANNEL_AUTO,
+			true,	//SND_CHANNEL_AUTO2,
+			false,	//SND_CHANNEL_AUTO2D,
+			true,	//SND_CHANNEL_AUTODOG,
+			true,	//SND_CHANNEL_EXPLOSIONDIST1,
+			true,	//SND_CHANNEL_EXPLOSIONDIST2,
+			true,	//SND_CHANNEL_EXPLOSIVEIMPACT,
+			true,	//SND_CHANNEL_ELEMENT,
+			true,	//SND_CHANNEL_ELEMENT_INT,
+			true,	//SND_CHANNEL_ELEMENT_EXT,
+			true,	//SND_CHANNEL_BULLETIMPACT,
+			true,	//SND_CHANNEL_BULLETFLESH1,
+			true,	//SND_CHANNEL_BULLETFLESH2,
+			true,	//SND_CHANNEL_BULLETWHIZBY,
+			true,	//SND_CHANNEL_VEHICLE,
+			true,	//SND_CHANNEL_VEHICLELIMITED,
+			false,	//SND_CHANNEL_MENU,
+			true,	//SND_CHANNEL_BODY,
+			false,	//SND_CHANNEL_BODY2D,
+			true,	//SND_CHANNEL_RELOAD,
+			false,	//SND_CHANNEL_RELOAD2D,
+			true,	//SND_CHANNEL_ITEM,
+			true,	//SND_CHANNEL_EXPLOSION1,
+			true,	//SND_CHANNEL_EXPLOSION2,
+			true,	//SND_CHANNEL_EXPLOSION3,
+			true,	//SND_CHANNEL_EXPLOSION4,
+			true,	//SND_CHANNEL_EXPLOSION5,
+			true,	//SND_CHANNEL_EFFECTS1,
+			true,	//SND_CHANNEL_EFFECTS2,
+			true,	//SND_CHANNEL_EFFECTS3,
+			false,	//SND_CHANNEL_EFFECTS2D1,
+			false,	//SND_CHANNEL_EFFECTS2D2,
+			true,	//SND_CHANNEL_NORESTRICT,
+			false,	//SND_CHANNEL_NORESTRICT2D,
+			true,	//SND_CHANNEL_AIRCRAFT,
+			false,	//SND_CHANNEL_VEHICLE2D,
+			true,	//SND_CHANNEL_WEAPON_DIST,
+			true,	//SND_CHANNEL_WEAPON_MID,
+			true,	//SND_CHANNEL_WEAPON,
+			false,	//SND_CHANNEL_WEAPON2D,
+			true,	//SND_CHANNEL_NONSHOCK,
+			true,	//SND_CHANNEL_NONSHOCK2,
+			true,	//SND_CHANNEL_GRONDO3D,
+			false,	//SND_CHANNEL_GRONDO2D,
+			true,		//SND_CHANNEL_VOICE,
+			false,	//SND_CHANNEL_LOCAL,
+			false,	//SND_CHANNEL_LOCAL2,
+			false,	//SND_CHANNEL_LOCAL3,
+			false,	//SND_CHANNEL_AMBIENT,
+			false,	//SND_CHANNEL_HURT,
+			false,	//SND_CHANNEL_PLAYER1,
+			false,	//SND_CHANNEL_PLAYER2,
+			false,		//SND_CHANNEL_MUSIC,
+			false,		//SND_CHANNEL_MUSICNOPAUSE,
+			true,	//SND_CHANNEL_MISSION,
+			true,	//SND_CHANNEL_CRITICAL,
+			false,	//SND_CHANNEL_ANNOUNCER,
+			false,	//SND_CHANNEL_SHELLSHOCK,
+		};
+
 		H1::SoundDspBus channel_to_dspbus_index[IW5::SoundChannel::SND_CHANNEL_COUNT]
 		{
 			H1::SoundDspBus::SND_DSPBUS_PHYSICS,	//SND_CHANNEL_PHYSICS,
 			H1::SoundDspBus::SND_DSPBUS_AMBIENCE,	//SND_CHANNEL_AMBDIST1,
 			H1::SoundDspBus::SND_DSPBUS_AMBIENCE,	//SND_CHANNEL_AMBDIST2,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_CHANNEL_ALARM,
+			H1::SoundDspBus::SND_DSPBUS_FOLEY,	//SND_CHANNEL_ALARM,
 			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_CHANNEL_AUTO,
 			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_CHANNEL_AUTO2,
 			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_CHANNEL_AUTO2D,
@@ -42,7 +108,7 @@ namespace ZoneTool::IW5
 			H1::SoundDspBus::SND_DSPBUS_VEHICLES,	//SND_CHANNEL_VEHICLE,
 			H1::SoundDspBus::SND_DSPBUS_VEHICLES,	//SND_CHANNEL_VEHICLELIMITED,
 			H1::SoundDspBus::SND_DSPBUS_INTERFACE,	//SND_CHANNEL_MENU,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_CHANNEL_BODY,
+			H1::SoundDspBus::SND_DSPBUS_FOLEY,	//SND_CHANNEL_BODY,
 			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_CHANNEL_BODY2D,
 			H1::SoundDspBus::SND_DSPBUS_WEAPONS,	//SND_CHANNEL_RELOAD,
 			H1::SoundDspBus::SND_DSPBUS_WEAPONS,	//SND_CHANNEL_RELOAD2D,
@@ -52,9 +118,9 @@ namespace ZoneTool::IW5
 			H1::SoundDspBus::SND_DSPBUS_EXPLOSIONS,	//SND_CHANNEL_EXPLOSION3,
 			H1::SoundDspBus::SND_DSPBUS_EXPLOSIONS,	//SND_CHANNEL_EXPLOSION4,
 			H1::SoundDspBus::SND_DSPBUS_EXPLOSIONS,	//SND_CHANNEL_EXPLOSION5,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_CHANNEL_EFFECTS1,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_CHANNEL_EFFECTS2,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_CHANNEL_EFFECTS3,
+			H1::SoundDspBus::SND_DSPBUS_EMITTERS,	//SND_CHANNEL_EFFECTS1,
+			H1::SoundDspBus::SND_DSPBUS_EMITTERS,	//SND_CHANNEL_EFFECTS2,
+			H1::SoundDspBus::SND_DSPBUS_EMITTERS,	//SND_CHANNEL_EFFECTS3,
 			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_CHANNEL_EFFECTS2D1,
 			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_CHANNEL_EFFECTS2D2,
 			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_CHANNEL_NORESTRICT,
@@ -74,7 +140,7 @@ namespace ZoneTool::IW5
 			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_CHANNEL_LOCAL2,
 			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_CHANNEL_LOCAL3,
 			H1::SoundDspBus::SND_DSPBUS_AMBIENCE,	//SND_CHANNEL_AMBIENT,
-			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_CHANNEL_HURT,
+			H1::SoundDspBus::SND_DSPBUS_FOLEY,	//SND_CHANNEL_HURT,
 			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_CHANNEL_PLAYER1,
 			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_CHANNEL_PLAYER2,
 			H1::SoundDspBus::SND_DSPBUS_MUSIC,		//SND_CHANNEL_MUSIC,
@@ -83,6 +149,84 @@ namespace ZoneTool::IW5
 			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_CHANNEL_CRITICAL,
 			H1::SoundDspBus::SND_DSPBUS_BATTLECHATTER,	//SND_CHANNEL_ANNOUNCER,
 			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_CHANNEL_SHELLSHOCK,
+		};
+
+		H1::SoundDspBus volmod_to_dspbus[IW5::SoundVolMod::SND_VOLMOD_COUNT]
+		{
+			H1::SoundDspBus::SND_DSPBUS_FOLEY,	//SND_VOLMOD_FOLEY,
+			H1::SoundDspBus::SND_DSPBUS_WEAPONS,	//SND_VOLMOD_WPNAI,
+			H1::SoundDspBus::SND_DSPBUS_WEAPONS,	//SND_VOLMOD_WPNPLYR,
+			H1::SoundDspBus::SND_DSPBUS_INTERFACE,	//SND_VOLMOD_HUD,
+			H1::SoundDspBus::SND_DSPBUS_INTERFACE,	//SND_VOLMOD_INTERFACE,
+			H1::SoundDspBus::SND_DSPBUS_INTERFACE,	//SND_VOLMOD_INTERFACE_MUSIC,
+			H1::SoundDspBus::SND_DSPBUS_MUSIC,	//SND_VOLMOD_MUSIC,
+			H1::SoundDspBus::SND_DSPBUS_MUSIC,	//SND_VOLMOD_MUSIC_EMITTER,
+			H1::SoundDspBus::SND_DSPBUS_AMBIENCE,	//SND_VOLMOD_AMBIENCE,
+			H1::SoundDspBus::SND_DSPBUS_AMBIENCE,	//SND_VOLMOD_AMBIENCE_DIST,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_ELEMENT,
+			H1::SoundDspBus::SND_DSPBUS_EMITTERS,	//SND_VOLMOD_EMITTER,
+			H1::SoundDspBus::SND_DSPBUS_PHYSICS,	//SND_VOLMOD_PHYSICS,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_BODYFALL,
+			H1::SoundDspBus::SND_DSPBUS_FOLEY,	//SND_VOLMOD_FOLEY_PLR,
+			H1::SoundDspBus::SND_DSPBUS_FOLEY,	//SND_VOLMOD_FOLEYMP_PLR,
+			H1::SoundDspBus::SND_DSPBUS_FOLEY,	//SND_VOLMOD_FOLEY_NPC,
+			H1::SoundDspBus::SND_DSPBUS_FOLEY,	//SND_VOLMOD_FOLEYMP_NPC,
+			H1::SoundDspBus::SND_DSPBUS_FOLEY,	//SND_VOLMOD_FOLEY_WPN_PLR,
+			H1::SoundDspBus::SND_DSPBUS_FOLEY,	//SND_VOLMOD_FOLEY_WPN_NPC,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_FOOTSTEPS_PLR,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_FOOTSTEPS_NPC,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_FOOTSTEPMP_PLR,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_FOOTSTEPMP_NPC,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_MELEE_PLR,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_MELEE_NPC,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_CHATTERAL,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_CHATTERRAX,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_REACTIONAL,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_REACTIONALMAX,
+			H1::SoundDspBus::SND_DSPBUS_VOICES,	//SND_VOLMOD_VOICEOVER,
+			H1::SoundDspBus::SND_DSPBUS_VOICES,	//SND_VOLMOD_VOICEOVER_RADIO,
+			H1::SoundDspBus::SND_DSPBUS_VOICES,	//SND_VOLMOD_VOICEOVER_CRITICAL,
+			H1::SoundDspBus::SND_DSPBUS_VOICES,	//SND_VOLMOD_VOICEOVER_AMB,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_DESTRUCT,
+			H1::SoundDspBus::SND_DSPBUS_EXPLOSIONS,	//SND_VOLMOD_EXPLOSION,
+			H1::SoundDspBus::SND_DSPBUS_EXPLOSIONS,	//SND_VOLMOD_EXPLOSION_GRENADE,
+			H1::SoundDspBus::SND_DSPBUS_EXPLOSIONS,	//SND_VOLMOD_EXPLOSION_FLASHBANG,
+			H1::SoundDspBus::SND_DSPBUS_EXPLOSIONS,	//SND_VOLMOD_EXPLOSION_ROCKET,
+			H1::SoundDspBus::SND_DSPBUS_EXPLOSIONS,	//SND_VOLMOD_EXPLOSION_CAR,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_IMPACT,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_IMPACT_PLR,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_IMPACT_NPC,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_IMPACTMP,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_IMPACTMP_PLR,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_IMPACTMP_NPC,
+			H1::SoundDspBus::SND_DSPBUS_WHIZBYS,	//SND_VOLMOD_WHIZBY,
+			H1::SoundDspBus::SND_DSPBUS_WHIZBYS,	//SND_VOLMOD_WHIZBYMP,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_VEHICLE_PLR,
+			H1::SoundDspBus::SND_DSPBUS_VEHICLES,	//SND_VOLMOD_VEHICLE_NPC,
+			H1::SoundDspBus::SND_DSPBUS_VEHICLES,	//SND_VOLMOD_VEHICLE_WPN_PLR,
+			H1::SoundDspBus::SND_DSPBUS_VEHICLES,	//SND_VOLMOD_VEHICLE_WPN_NPC,
+			H1::SoundDspBus::SND_DSPBUS_VEHICLES,	//SND_VOLMOD_VEHICLE,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_GRENADEBOUNCE,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_GRENADEBOUNCEMP,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_SHELLCASINGS,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_SHELLCASINGSMP,
+			H1::SoundDspBus::SND_DSPBUS_WEAPONS,	//SND_VOLMOD_WPN_PLR,
+			H1::SoundDspBus::SND_DSPBUS_WEAPONS,	//SND_VOLMOD_WPNMP_PLR,
+			H1::SoundDspBus::SND_DSPBUS_WEAPONS,	//SND_VOLMOD_WPN_NPC,
+			H1::SoundDspBus::SND_DSPBUS_WEAPONS,	//SND_VOLMOD_WPNMP_NPC,
+			H1::SoundDspBus::SND_DSPBUS_WEAPONS,	//SND_VOLMOD_WPN_PROJECTILE,
+			H1::SoundDspBus::SND_DSPBUS_WEAPONS,	//SND_VOLMOD_WPNMP_PROJECTILE,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_NA,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_MAX,
+			H1::SoundDspBus::SND_DSPBUS_SCRIPTED1,	//SND_VOLMOD_SCRIPTED1,
+			H1::SoundDspBus::SND_DSPBUS_SCRIPTED2,	//SND_VOLMOD_SCRIPTED2,
+			H1::SoundDspBus::SND_DSPBUS_SCRIPTED3,	//SND_VOLMOD_SCRIPTED3,
+			H1::SoundDspBus::SND_DSPBUS_SCRIPTED4,	//SND_VOLMOD_SCRIPTED4,
+			H1::SoundDspBus::SND_DSPBUS_SCRIPTED5,	//SND_VOLMOD_SCRIPTED5,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_FULLVOLUME,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_PERKMP_QUIET,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_LEVEL_AC130,
+			H1::SoundDspBus::SND_DSPBUS_DEFAULT,	//SND_VOLMOD_DEFAULT,
 		};
 
 		H1::SoundVolMod volmod_to_volmod_index[IW5::SoundVolMod::SND_VOLMOD_COUNT]
@@ -239,17 +383,19 @@ namespace ZoneTool::IW5
 				break;
 			}
 
-			h1_alias->mixerGroup = alias->mixerGroup;
+			h1_alias->squelchName = nullptr;
 
-			h1_alias->poly = 1;
-			h1_alias->polyGlobal = 174;
+			h1_alias->polyCount = 1;
+			h1_alias->polyGlobalCount = 174;
 			h1_alias->polyEntityType = 0;
 			h1_alias->polyGlobalType = 0;
 
 			h1_alias->dspBusIndex = 0; // default;
 			h1_alias->priority = 1;
 
-			h1_alias->__pad0;
+			h1_alias->playCount = 0;
+			h1_alias->polyClass = 0;
+			h1_alias->unk = 0;
 
 			h1_alias->volMin = alias->volMin;
 			h1_alias->volMax = alias->volMax;
@@ -273,7 +419,7 @@ namespace ZoneTool::IW5
 
 			h1_alias->sndContext = nullptr;
 
-			h1_alias->sequence = index + 1; //alias->sequence;
+			h1_alias->sequence = index + 1; // alias->sequence;
 			h1_alias->lfePercentage = alias->lfePercentage;
 			h1_alias->centerPercentage = alias->centerPercentage;
 			h1_alias->startDelay = alias->startDelay;
@@ -296,7 +442,7 @@ namespace ZoneTool::IW5
 				sndcurve = default_sndcurve;
 			}
 
-			h1_alias->sndCurve = sndcurve;
+			h1_alias->volumeFalloffCurve = sndcurve;
 			h1_alias->lpfCurve = default_sndcurve;
 			h1_alias->reverbSendCurve = default_sndcurve;
 
@@ -306,7 +452,7 @@ namespace ZoneTool::IW5
 				h1_alias->speakerMap = mem.allocate<H1::SpeakerMap>();
 				h1_alias->speakerMap->isDefault = alias->speakerMap->isDefault;
 				h1_alias->speakerMap->name = alias->speakerMap->name;
-				h1_alias->speakerMap->unknown = 0;
+				h1_alias->speakerMap->orientation = 0;
 
 				for (char x = 0; x < 2; x++)
 				{
@@ -327,23 +473,23 @@ namespace ZoneTool::IW5
 			h1_alias->envelopMin = alias->envelopMin;
 			h1_alias->envelopMax = alias->envelopMax;
 
-			h1_alias->reverbWetMixOverride = 0.0f;
-			h1_alias->reverbMultiplier = 1.0f;
-			h1_alias->smartPanDistance2d = 0.0f;
-			h1_alias->smartPanDistance3d = 0.0f;
-			h1_alias->smartPanAttenuation3d = 1.0f;
+			h1_alias->wetMixOverride = 0.0f;
+			h1_alias->focusPercentage = 1.0f;
+			h1_alias->smartpanDistance2d = 0.0f;
+			h1_alias->smartpanDistance3d = 0.0f;
+			h1_alias->smartpanAttenuation3d = 1.0f;
+			h1_alias->minSmartpan2dContribution = 0.0f;
 
-			h1_alias->envelopPercentage = alias->envelopPercentage;
-
-			h1_alias->stereo3dAngle = 0;
-			h1_alias->stereo3dStart = 0.0f;
-			h1_alias->stereo3dEnd = 0.0f;
+			h1_alias->stereo3DAngle = 0;
+			h1_alias->stereo3DStart = 0.0f;
+			h1_alias->stereo3DEnd = 0.0f;
 
 			h1_alias->allowDoppler = 0;
 			h1_alias->dopplerPreset = nullptr;
 
-			h1_alias->u1 = 4; // always 4?
-			h1_alias->u2 = 0.5011872053146362f; // unk
+			h1_alias->variationType = 4;
+			h1_alias->threshold = 0.5011872053146362f;
+			h1_alias->lockedLoopTime = 0.0f;
 
 			// convert flags
 			H1::SoundAliasFlags h1_flags{ 0 };
@@ -352,38 +498,32 @@ namespace ZoneTool::IW5
 			h1_flags.intValue = 0;
 			iw5_flags.intValue = alias->flags.intValue;
 
-			const auto get_unk1 = [&](auto type, auto channel)
-			{
-				if (std::string(alias->aliasName).find("_plr") != std::string::npos || 
-					channel == IW5::SoundChannel::SND_CHANNEL_AMBIENT ||
-					channel == IW5::SoundChannel::SND_CHANNEL_AUTO2D ||
-					channel == IW5::SoundChannel::SND_CHANNEL_BODY2D ||
-					channel == IW5::SoundChannel::SND_CHANNEL_RELOAD2D ||
-					channel == IW5::SoundChannel::SND_CHANNEL_WEAPON2D)
-				{
-					return 6u; // local
-				}
-				else
-				{
-					return 4u; // world
-				}
-			};
-
-			// h1 struct may be wrong?
 			h1_flags.packed.looping = iw5_flags.looping;
 			h1_flags.packed.isMaster = iw5_flags.isMaster;
 			h1_flags.packed.isSlave = iw5_flags.isSlave;
 			h1_flags.packed.fullDryLevel = iw5_flags.fullDryLevel;
 			h1_flags.packed.noWetLevel = iw5_flags.noWetLevel;
-			h1_flags.packed.is3d = iw5_flags.unk_is3D;
-			h1_flags.packed.unk1 = get_unk1(h1_alias->soundFile->type, iw5_flags.channel);
+			h1_flags.packed.randomLooping = iw5_flags.randomLooping;
+			h1_flags.packed.spatializedRangeCheck = iw5_flags.unk_is3D;
+			h1_flags.packed.spatializedIs3D = !channel_is_3d[iw5_flags.channel]; // dont ask...
+			h1_flags.packed.unk9 = 1;
+			h1_flags.packed.inheritPitch = 0;
+			h1_flags.packed.inheritVolume = 0;
+			h1_flags.packed.useContextList = 0;
+			h1_flags.packed.useNoPanning2D = 0;
+			h1_flags.packed.useOldPanning = 0;
+			h1_flags.packed.useNoPanning3D = 0;
 			h1_flags.packed.type = h1_alias->soundFile->type; //iw5_flags.type;
-			h1_flags.packed.unk2 = 0;
+			h1_flags.packed.unused = 0;
 
 			h1_alias->flags = h1_flags.intValue;
 
 			h1_alias->volModIndex = volmod_to_volmod_index[alias->volModIndex];
 			h1_alias->dspBusIndex = channel_to_dspbus_index[iw5_flags.channel];
+			if (h1_alias->dspBusIndex == H1::SND_DSPBUS_DEFAULT)
+			{
+				h1_alias->dspBusIndex = volmod_to_dspbus[alias->volModIndex];
+			}
 		}
 
 		H1::snd_alias_list_t* GenerateH1Sound(snd_alias_list_t* asset, allocator& mem, const std::function<std::string(const char* filename)>& get_streamed_sound_data)
@@ -401,24 +541,6 @@ namespace ZoneTool::IW5
 
 			h1_asset->contextList = nullptr;
 			h1_asset->contextListCount = 0;
-
-			// not sure how this is supposed to work, but i guess this is good enough
-			/*if (h1_asset->count > 1)
-			{
-				struct snd_alias_context_list
-				{
-					unsigned char prev;
-					unsigned char next;
-				};
-
-				h1_asset->contextListCount = 2;
-				h1_asset->contextList = mem.allocate<H1::snd_alias_context_list>(2);
-				auto* context_list = reinterpret_cast<snd_alias_context_list*>(h1_asset->contextList);
-				context_list[0].prev = 0;
-				context_list[0].next = 1;
-				context_list[1].prev = 1;
-				context_list[1].next = 1;
-			}*/
 
 			return h1_asset;
 		}

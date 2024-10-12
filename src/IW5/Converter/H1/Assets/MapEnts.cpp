@@ -68,15 +68,15 @@ namespace ZoneTool::IW5
 				}
 			}
 
-			h1_asset->clientTrigger.unk2 = allocate(); // todo?
+			h1_asset->clientTrigger.clutTriggers = allocate(); // todo?
 			h1_asset->clientTrigger.origins = reinterpret_cast<float(*__ptr64)[3]>(asset->clientTrigger.origins);
 			h1_asset->clientTrigger.scriptDelay = asset->clientTrigger.scriptDelay;
 			h1_asset->clientTrigger.audioTriggers = asset->clientTrigger.audioTriggers;
 			h1_asset->clientTrigger.blendLookup = allocate(); // todo?
-			h1_asset->clientTrigger.unk3 = allocate(); // todo?
-			h1_asset->clientTrigger.unk4 = allocate(); // todo?
-			h1_asset->clientTrigger.unk5 = allocate(); // todo?
-			h1_asset->clientTrigger.unk6 = allocate(); // todo?
+			h1_asset->clientTrigger.unkTriggers = allocate(); // todo?
+			h1_asset->clientTrigger.npcTriggers = allocate(); // todo?
+			h1_asset->clientTrigger.contextTriggers = allocate(); // todo?
+			h1_asset->clientTrigger.waterTriggers = allocate(); // todo?
 
 			h1_asset->clientTriggerBlend.numClientTriggerBlendNodes = 0;
 			h1_asset->clientTriggerBlend.blendNodes = nullptr;

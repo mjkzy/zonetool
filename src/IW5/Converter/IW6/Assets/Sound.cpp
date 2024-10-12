@@ -333,7 +333,7 @@ namespace ZoneTool::IW5
 			iw6_flags.packed.noWetLevel = iw5_flags.noWetLevel;
 			iw6_flags.packed.type = iw6_alias->soundFile->type; //iw5_flags.type;
 			iw6_flags.packed.channel = channel_to_channel_index[iw5_flags.channel];
-			iw6_flags.packed.unknown1 = iw5_flags.unknown;
+			iw6_flags.packed.randomLooping = iw5_flags.randomLooping;
 			iw6_flags.packed.unknown2 = iw5_flags.unk_is3D;
 
 			iw6_alias->flags = iw6_flags.intValue;

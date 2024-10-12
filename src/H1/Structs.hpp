@@ -14,13 +14,7 @@ namespace ZoneTool::H1
 	typedef vec_t vec3_t[3];
 	typedef vec_t vec4_t[4];
 
-	struct dummy
-	{
-	};
-
-	enum scr_string_t : std::int32_t
-	{
-	};
+	typedef std::int32_t scr_string_t;
 
 	enum XAssetType
 	{
@@ -29,7 +23,7 @@ namespace ZoneTool::H1
 		ASSET_TYPE_PHYSWATERPRESET,
 		ASSET_TYPE_PHYSWORLDMAP,
 		ASSET_TYPE_PHYSCONSTRAINT,
-		ASSET_TYPE_XANIM,
+		ASSET_TYPE_XANIMPARTS,
 		ASSET_TYPE_XMODEL_SURFS,
 		ASSET_TYPE_XMODEL,
 		ASSET_TYPE_MATERIAL,
@@ -42,20 +36,20 @@ namespace ZoneTool::H1
 		ASSET_TYPE_TECHNIQUE_SET,
 		ASSET_TYPE_IMAGE,
 		ASSET_TYPE_SOUND,
-		ASSET_TYPE_SOUNDSUBMIX,
+		ASSET_TYPE_SOUND_SUBMIX,
 		ASSET_TYPE_SOUND_CURVE,
 		ASSET_TYPE_LPF_CURVE,
 		ASSET_TYPE_REVERB_CURVE,
 		ASSET_TYPE_SOUND_CONTEXT,
 		ASSET_TYPE_LOADED_SOUND,
-		ASSET_TYPE_COL_MAP_MP,
-		ASSET_TYPE_COM_MAP,
-		ASSET_TYPE_GLASS_MAP,
-		ASSET_TYPE_AIPATHS,
+		ASSET_TYPE_CLIPMAP,
+		ASSET_TYPE_COMWORLD,
+		ASSET_TYPE_GLASSWORLD,
+		ASSET_TYPE_PATHDATA,
 		ASSET_TYPE_VEHICLE_TRACK,
 		ASSET_TYPE_MAP_ENTS,
-		ASSET_TYPE_FX_MAP,
-		ASSET_TYPE_GFX_MAP,
+		ASSET_TYPE_FXWORLD,
+		ASSET_TYPE_GFXWORLD,
 		ASSET_TYPE_LIGHT_DEF,
 		ASSET_TYPE_UI_MAP,
 		ASSET_TYPE_MENULIST,
@@ -64,7 +58,7 @@ namespace ZoneTool::H1
 		ASSET_TYPE_LOCALIZE_ENTRY,
 		ASSET_TYPE_ATTACHMENT,
 		ASSET_TYPE_WEAPON,
-		ASSET_TYPE_SNDDRIVERGLOBALS,
+		ASSET_TYPE_SNDDRIVER_GLOBALS,
 		ASSET_TYPE_FX,
 		ASSET_TYPE_IMPACT_FX,
 		ASSET_TYPE_SURFACE_FX,
@@ -77,7 +71,7 @@ namespace ZoneTool::H1
 		ASSET_TYPE_STRINGTABLE,
 		ASSET_TYPE_LEADERBOARD,
 		ASSET_TYPE_VIRTUAL_LEADERBOARD,
-		ASSET_TYPE_STRUCTUREDDATADEF,
+		ASSET_TYPE_STRUCTURED_DATA_DEF,
 		ASSET_TYPE_DDL,
 		ASSET_TYPE_PROTO,
 		ASSET_TYPE_TRACER,
@@ -92,7 +86,7 @@ namespace ZoneTool::H1
 		ASSET_TYPE_DOPPLER_PRESET,
 		ASSET_TYPE_PARTICLE_SIM_ANIMATION,
 		ASSET_TYPE_LASER,
-		ASSET_TYPE_SKELETONSCRIPT,
+		ASSET_TYPE_SKELETON_SCRIPT,
 		ASSET_TYPE_CLUT,
 		ASSET_TYPE_TTF,
 		ASSET_TYPE_COUNT
@@ -119,6 +113,18 @@ namespace ZoneTool::H1
 		float array[4];
 	};
 
+	union GfxColor
+	{
+		unsigned char array[4];
+		unsigned int packed;
+	};
+
+	union GfxColorHdr
+	{
+		unsigned short array[4];
+		unsigned __int64 packed;
+	};
+
 	enum PhysPresetScaling : std::int32_t
 	{
 		PHYSPRESET_SCALING_LINEAR = 0x0,
@@ -135,7 +141,7 @@ namespace ZoneTool::H1
 		float friction;
 		float bulletForceScale;
 		float explosiveForceScale;
-		int unk1; // 0
+		float explosiveSpinScale;
 		int unk2; // 42001553
 		const char PTR64 sndAliasPrefix;
 		float piecesSpreadFraction;
@@ -237,19 +243,28 @@ namespace ZoneTool::H1
 		dm_uint8 next;
 	}; assert_sizeof(dmSubEdge, 4);
 
+	struct dmPlane
+	{
+		dmFloat3 normal;
+		dm_float32 offset;
+	};
+
 	struct dmPolytopeData
 	{
-		dmFloat4 PTR64 vec4_array0; // count: m_vertexCount, m_aVertices?
-		dmFloat4 PTR64 vec4_array1; // count: m_faceCount, m_aPlanes?
-		dm_uint16 PTR64 uint16_array0; // count: m_faceCount, m_vertexMaterials? surfaceType? // ALWAYS 0
-		dm_uint16 PTR64 uint16_array1; // count: m_vertexCount, m_vertexMaterials? // ALWAYS 0
+		dmFloat4 PTR64 m_aVertices; // count: m_vertexCount
+		dmPlane PTR64 m_aPlanes; // count: m_faceCount
+		dm_uint16 PTR64 m_surfaceTypes; // count: m_faceCount // ALWAYS 0
+		dm_uint16 PTR64 m_vertexMaterials; // count: m_vertexCount // ALWAYS 0
 		dmSubEdge PTR64 m_aSubEdges; // count: m_subEdgeCount
 		dm_uint8 PTR64 m_aFaceSubEdges; // count: m_faceCount
 		dmFloat3 m_centroid;
 		dm_int32 m_vertexCount;
 		dm_int32 m_faceCount;
 		dm_int32 m_subEdgeCount;
-		float pad1[8];
+		dm_float32 m_volume;
+		dm_float32 m_area;
+		dmFloat3 unk1;
+		dmFloat3 unk2;
 		int contents;
 		int pad2;
 	}; assert_sizeof(dmPolytopeData, 0x70);
@@ -1710,30 +1725,20 @@ namespace ZoneTool::H1
 		GFXS0_CULL_MASK = 0x18,
 		GFXS0_POLYMODE_LINE = 0x20,
 		GFXS0_GAMMAWRITE = 0x40,
-		GFXS0_STENCIL_REF_SHIFT = 0x8,
-		GFXS0_STENCIL_REF_ZERO = 0x0,
-		GFXS0_STENCIL_REF_BIT_0 = 0x100,
-		GFXS0_STENCIL_REF_BIT_1 = 0x200,
-		GFXS0_STENCIL_REF_BIT_2 = 0x400,
-		GFXS0_STENCIL_REF_BIT_3 = 0x800,
-		GFXS0_STENCIL_REF_BIT_4 = 0x1000,
-		GFXS0_STENCIL_REF_BIT_5 = 0x2000,
-		GFXS0_STENCIL_REF_BIT_6 = 0x4000,
-		GFXS0_STENCIL_REF_BIT_7 = 0x8000,
-		GFXS0_STENCIL_REF_MASK = 0xFF00,
 	};
 
 	enum GfxStateBitRawBits1 : std::uint32_t
 	{
 		GFXS1_DEPTHWRITE = 0x1,
-		GFXS1_DEPTHTEST_SHIFT = 2,
-		GFXS1_DEPTHTEST_ALWAYS = 0,
-		GFXS1_DEPTHTEST_LESS = 2,
-		GFXS1_DEPTHTEST_EQUAL = 4,
-		GFXS1_DEPTHTEST_LESSEQUAL = 6,
-		GFXS1_DEPTHTEST_MDAO = 10,
-		GFXS1_DEPTHTEST_DISABLE = 12,
-		GFXS1_DEPTHTEST_MASK = 14,
+		GFXS1_DEPTHTEST_SHIFT = 0x1,
+		GFXS1_DEPTHTEST_ALWAYS = 0x0,
+		GFXS1_DEPTHTEST_LESS = 0x2,
+		GFXS1_DEPTHTEST_EQUAL = 0x4,
+		GFXS1_DEPTHTEST_LESSEQUAL = 0x6,
+		GFXS1_DEPTHTEST_GREAT = 0x8,
+		GFXS1_DEPTHTEST_GREATEQUAL = 0xA,
+		GFXS1_DEPTHTEST_DISABLE = 0xC,
+		GFXS1_DEPTHTEST_MASK = 0xE,
 		GFXS1_POLYGON_OFFSET_SHIFT = 0x4,
 		GFXS1_POLYGON_OFFSET_0 = 0x0,
 		GFXS1_POLYGON_OFFSET_1 = 0x10,
@@ -1759,7 +1764,24 @@ namespace ZoneTool::H1
 
 	enum GfxStateBitRawBits2 : std::uint32_t
 	{
-		// unk
+		GFXS2_STENCIL_READMASK_SHIFT = 0x0,
+		GFXS2_STENCIL_READMASK_BITS = 0x8,
+		GFXS2_STENCIL_READMASK_MASK = 0xFF,
+		GFXS2_STENCIL_WRITEMASK_SHIFT = 0x8,
+		GFXS2_STENCIL_WRITEMASK_BITS = 0x8,
+		GFXS2_STENCIL_WRITEMASK_MASK = 0xFF,
+		GFXS2_STENCIL_REF_SHIFT = 0x10,
+		GFXS2_STENCIL_REF_BITS = 0x8,
+		GFXS2_STENCIL_REF_MASK = 0xFF,
+		GFXS2_STENCIL_REF_ZERO = 0x0,
+		GFXS2_STENCIL_REF_BIT_0 = 0x10000,
+		GFXS2_STENCIL_REF_BIT_1 = 0x20000,
+		GFXS2_STENCIL_REF_BIT_2 = 0x40000,
+		GFXS2_STENCIL_REF_BIT_3 = 0x80000,
+		GFXS2_STENCIL_REF_BIT_4 = 0x100000,
+		GFXS2_STENCIL_REF_BIT_5 = 0x200000,
+		GFXS2_STENCIL_REF_BIT_6 = 0x400000,
+		GFXS2_STENCIL_REF_BIT_7 = 0x800000,
 	};
 
 	enum GfxStateBitRawBits3 : std::uint32_t
@@ -2367,7 +2389,8 @@ namespace ZoneTool::H1
 	struct SndContext
 	{
 		const char PTR64 name;
-		char __pad0[8];
+		unsigned char priority;
+		char __pad0[7];
 	};
 
 	struct SndCurve
@@ -2399,7 +2422,7 @@ namespace ZoneTool::H1
 	{
 		bool isDefault;
 		const char PTR64 name;
-		int unknown;
+		unsigned char orientation;
 		ChannelMap channelMaps[2][2];
 	}; assert_sizeof(SpeakerMap, 0x148);
 
@@ -2413,6 +2436,29 @@ namespace ZoneTool::H1
 		float smoothing;
 	}; assert_sizeof(DopplerPreset, 0x20);
 
+	enum snd_alias_flag
+	{
+		SND_ALIAS_FLAG_LOOPING = 0x1, // >> 0
+		SND_ALIAS_FLAG_IS_MASTER = 0x2, // >> 1
+		SND_ALIAS_FLAG_IS_SLAVE = 0x4, // >> 2
+		SND_ALIAS_FLAG_FULLDRY = 0x8, // >> 3
+		SND_ALIAS_FLAG_NO_WET_LEVEL = 0x10, // >> 4
+		SND_ALIAS_FLAG_RANDOM_LOOPING = 0x20, // >> 5
+		SND_ALIAS_FLAG_SPATIALIZED_RANGE_CHECK = 0x40, // >> 6
+		SND_ALIAS_FLAG_SPATIALIZED_IS3D = 0x80, // >> 7
+		SND_ALIAS_FLAG_SPATIALIZED_MASK = 0xC0,
+		SND_ALIAS_FLAG_UNK100 = 0x100, // >> 8
+		SND_ALIAS_FLAG_UNK200 = 0x200, // >> 9
+		SND_ALIAS_FLAG_INHERIT_PITCH = 0x400, // >> 10
+		SND_ALIAS_FLAG_INHERIT_VOLUME = 0x800, // >> 11
+		SND_ALIAS_FLAG_USE_CONTEXT_LIST = 0x1000, // >> 12
+		SND_ALIAS_FLAG_USE_NO_PANNING_2D = 0x2000, // >> 13
+		SND_ALIAS_FLAG_USE_OLD_PANNING = 0x4000, // >> 14
+		SND_ALIAS_FLAG_USE_NO_PANNING_3D = 0x8000, // >> 15
+		SND_ALIAS_FLAG_TYPE_SHIFT = 0x10000, // >> 16
+		SND_ALIAS_FLAG_TYPE_MASK = 0x70000,
+	};
+
 	union SoundAliasFlags
 	{
 		struct packed
@@ -2422,10 +2468,18 @@ namespace ZoneTool::H1
 			unsigned int isSlave : 1;
 			unsigned int fullDryLevel : 1;
 			unsigned int noWetLevel : 1;
-			unsigned int is3d : 1;
-			unsigned int unk1 : 10;
-			unsigned int type : 2;
-			unsigned int unk2 : 14;
+			unsigned int randomLooping : 1;
+			unsigned int spatializedRangeCheck : 1;
+			unsigned int spatializedIs3D : 1;
+			unsigned int unk9 : 2; // seems to be set, but cannot find any references for use
+			unsigned int inheritPitch : 1;
+			unsigned int inheritVolume : 1;
+			unsigned int useContextList : 1;
+			unsigned int useNoPanning2D : 1;
+			unsigned int useOldPanning : 1;
+			unsigned int useNoPanning3D : 1;
+			unsigned int type : 3;
+			unsigned int unused : 13;
 		} packed;
 		unsigned int intValue;
 	};
@@ -2660,14 +2714,16 @@ namespace ZoneTool::H1
 		const char PTR64 secondaryAliasName;
 		const char PTR64 chainAliasName;
 		SoundFile PTR64 soundFile;
-		const char PTR64 mixerGroup;
-		short poly;
-		short polyGlobal;
+		const char PTR64 squelchName;
+		short polyCount;
+		short polyGlobalCount;
 		char polyEntityType;
 		char polyGlobalType;
-		char dspBusIndex;
-		char priority;
-		char __pad0[12]; // unknown
+		unsigned char dspBusIndex;
+		unsigned char priority;
+		int playCount;
+		int polyClass;
+		int unk;
 		float volMin;
 		float volMax;
 		short volModIndex;
@@ -2678,44 +2734,44 @@ namespace ZoneTool::H1
 		float distMax;
 		float velocityMin;
 		int flags;
-		char masterPriority;
+		unsigned char masterPriority;
 		float masterPercentage;
 		float slavePercentage;
-		char playbackPercentage;
+		unsigned char playbackPercentage;
 		//char __padding1[3]; // padding
 		float probability;
-		char u1; // value: 0-4
+		unsigned char variationType; // value: 0-4
 		//char __padding2[3]; // padding
 		SndContext PTR64 sndContext;
 		int sequence;
 		float lfePercentage;
 		float centerPercentage;
 		int startDelay;
-		SndCurve PTR64 sndCurve;
+		SndCurve PTR64 volumeFalloffCurve;
 		float envelopMin;
 		float envelopMax;
 		SndCurve PTR64 lpfCurve;
 		SndCurve PTR64 reverbSendCurve;
 		SpeakerMap PTR64 speakerMap;
-		float reverbWetMixOverride;
-		float reverbMultiplier;
-		float smartPanDistance2d;
-		float smartPanDistance3d;
-		float smartPanAttenuation3d;
-		float envelopPercentage;
-		short stereo3dAngle;
-		//char __padding3[3]; // padding
-		float stereo3dStart;
-		float stereo3dEnd;
+		float wetMixOverride;
+		float focusPercentage;
+		float smartpanDistance2d;
+		float smartpanDistance3d;
+		float smartpanAttenuation3d;
+		float minSmartpan2dContribution;
+		short stereo3DAngle;
+		//char __padding3[2]; // padding
+		float stereo3DStart;
+		float stereo3DEnd;
 		unsigned char allowDoppler;
 		//char __padding4[3]; // padding
 		DopplerPreset PTR64 dopplerPreset;
-		float u2;
-		//char __padding5[4]; // padding
+		float threshold;
+		int lockedLoopTime;
 	}; assert_sizeof(snd_alias_t, 0xF8);
 	assert_offsetof(snd_alias_t, soundFile, 32);
 	assert_offsetof(snd_alias_t, sndContext, 128);
-	assert_offsetof(snd_alias_t, sndCurve, 152);
+	assert_offsetof(snd_alias_t, volumeFalloffCurve, 152);
 	assert_offsetof(snd_alias_t, lpfCurve, 168);
 	assert_offsetof(snd_alias_t, reverbSendCurve, 176);
 	assert_offsetof(snd_alias_t, speakerMap, 184);
@@ -2723,7 +2779,8 @@ namespace ZoneTool::H1
 
 	struct snd_alias_context_list
 	{
-		short unk;
+		unsigned char aliasOffset;
+		unsigned char count;
 	}; assert_sizeof(snd_alias_context_list, 2);
 
 	struct snd_alias_list_t
@@ -2805,16 +2862,16 @@ namespace ZoneTool::H1
 		char PTR64 triggerString;
 		short PTR64 visionSetTriggers;
 		short PTR64 lightSetTriggers;
-		short PTR64 unk2;
+		short PTR64 clutTriggers;
 		short PTR64 triggerType;
 		vec3_t PTR64 origins;
 		float PTR64 scriptDelay;
 		short PTR64 audioTriggers;
 		short PTR64 blendLookup;
-		short PTR64 unk3;
-		short PTR64 unk4;
-		short PTR64 unk5;
-		short PTR64 unk6;
+		short PTR64 unkTriggers;
+		short PTR64 npcTriggers; // could be wrong
+		short PTR64 contextTriggers;
+		short PTR64 waterTriggers;
 	}; assert_sizeof(ClientTriggers, 0xB0);
 
 	struct ClientTriggerBlendNode
@@ -3204,14 +3261,14 @@ namespace ZoneTool::H1
 		FX_ELEM_EMIT_BOLT = 0x80000000,
 		FX_ELEM_EMIT_ORIENT_BY_ELEM = 0x8000,
 		FX_ELEM_USE_OCCLUSION_QUERY = 0x10000,
-		FX_ELEM_NODRAW_IN_THERMAL_VIEW = 0x20000,
-		FX_ELEM_THERMAL_MASK = 0x22000,
-		//FX_ELEM_SPAWN_IMPACT_FX_WITH_SURFACE_NAME = 0x40000,
+		FX_ELEM_USE_CAST_SHADOW = 0x20000,
+		FX_ELEM_NODRAW_IN_THERMAL_VIEW = 0x40000,
+		FX_ELEM_THERMAL_MASK = 0x42000,
+		FX_ELEM_SPAWN_IMPACT_FX_WITH_SURFACE_NAME = 0x80000,
 		FX_ELEM_RECEIVE_DYNAMIC_LIGHT = 0x100000,
-		//FX_ELEM_VOLUMETRIC_TRAIL = 0x100000,
-		FX_ELEM_USE_COLLISION = 0x200000,
-		FX_ELEM_USE_VECTORFIELDS = 0x400000,
-		FX_ELEM_NO_SURFACE_HDR_SCALAR = 0x800000,
+		FX_ELEM_VOLUMETRIC_TRAIL = 0x200000,
+		FX_ELEM_USE_COLLISION = 0x400000,
+		FX_ELEM_USE_VECTORFIELDS = 0x800000,
 		FX_ELEM_HAS_VELOCITY_GRAPH_LOCAL = 0x1000000,
 		FX_ELEM_HAS_VELOCITY_GRAPH_WORLD = 0x2000000,
 		FX_ELEM_HAS_GRAVITY = 0x4000000,
@@ -3297,7 +3354,7 @@ namespace ZoneTool::H1
 	struct FxElemVisualState
 	{
 		float color[4];
-		float colorHDRScalar[3];
+		float emissiveScale[3];
 		float rotationDelta;
 		float rotationTotal;
 		float size[2];
@@ -3340,7 +3397,7 @@ namespace ZoneTool::H1
 		float pos[2];
 		float normal[2];
 		float texCoord[2];
-		char __pad0[8];
+		float radialNormal[2];
 	}; assert_sizeof(FxTrailVertex, 32);
 
 	struct FxTrailDef
@@ -3350,8 +3407,8 @@ namespace ZoneTool::H1
 		float invSplitDist;
 		float invSplitArcDist;
 		float invSplitTime;
-		float fadeHeadDist;
-		float fadeTailDist;
+		float headFadingFactor;
+		float tailFadingFactor;
 		int vertCount;
 		FxTrailVertex PTR64 verts;
 		int indCount;
@@ -3378,16 +3435,16 @@ namespace ZoneTool::H1
 
 	struct FxSpotLightDef
 	{
-		float fovInnerFraction;
-		float startRadius;
-		float endRadius;
+		float halfFovOuter;
+		float halfFovInner;
+		float radius;
 		float brightness;
 		float maxLength;
 		int exponent;
 		float nearClip;
 		float bulbRadius;
 		float bulbLength;
-		float fadeOffset[2];
+		float fadeOffsetRt[2];
 		char unk1;
 		char opl;
 		char unk2;
@@ -3399,7 +3456,7 @@ namespace ZoneTool::H1
 	{
 		float bulbRadius;
 		float bulbLength;
-		float fadeOffset[2];
+		float fadeOffsetRt[2];
 	};
 	assert_sizeof(FxOmniLightDef, 0x10);
 
@@ -3471,15 +3528,15 @@ namespace ZoneTool::H1
 		FxElemExtendedDefPtr extended;
 		unsigned char sortOrder;
 		unsigned char lightingFrac;
-		unsigned char hdrLightingFrac;
 		unsigned char useItemClip;
 		unsigned char fadeInfo;
+		unsigned char fadeOutInfo;
 		int randomSeed;
-		float unlitHDRScalar;
-		float litHDRScalar;
-		float alphaScalar;
-		float unk4;
-		float unk5;
+		float emissiveScaleScale;
+		float hdrLightingFrac;
+		float shadowDensityScale;
+		float scatterRatio;
+		float volumetricTrailFadeStart;
 	}; assert_sizeof(FxElemDef, 0x140);
 
 	struct FxEffectDef
@@ -3501,33 +3558,35 @@ namespace ZoneTool::H1
 
 	struct XModelIKData
 	{
-		unsigned char charDataLen;
-		unsigned char floatDataLen;
-		unsigned char int32DataLen;
-		unsigned char stringsCount;
-		char PTR64 charData;
-		float PTR64 floatData;
-		int PTR64 int32Data;
-		scr_string_t PTR64 strings;
+		unsigned char numSolvers;
+		unsigned char numFloatParams;
+		unsigned char numIntParams;
+		unsigned char numStringParams;
+		unsigned char PTR64 solverIDs;
+		float PTR64 floatParams;
+		int PTR64 intParams;
+		scr_string_t PTR64 stringParams;
 	}; assert_sizeof(XModelIKData, 0x28);
 
-	struct SkeletonScriptCode
+	union SkeletonScriptCode
 	{
-		char __pad0[4];
+		unsigned int instruction;
+		unsigned int variableIndex;
+		float immediateValue;
 	};
 
 	struct SkeletonScript
 	{
 		const char PTR64 name;
 		XModelIKData ikData;
-		unsigned short codeLen;
+		unsigned short codeSize;
 		SkeletonScriptCode PTR64 code;
 	}; assert_sizeof(SkeletonScript, 0x40);
 
 	union XAnimDynamicFrames
 	{
-		unsigned char( PTR64 _1)[3];
-		unsigned short( PTR64 _2)[3];
+		unsigned char(PTR64 _1)[3];
+		unsigned short(PTR64 _2)[3];
 	};
 
 	union XAnimDynamicIndices
@@ -3559,7 +3618,7 @@ namespace ZoneTool::H1
 
 	struct XAnimDeltaPartQuatDataFrames2
 	{
-		short( PTR64 frames)[2];
+		short(PTR64 frames)[2];
 		XAnimDynamicIndices indices;
 	};
 
@@ -3577,7 +3636,7 @@ namespace ZoneTool::H1
 
 	struct XAnimDeltaPartQuatDataFrames
 	{
-		short( PTR64 frames)[4];
+		short(PTR64 frames)[4];
 		XAnimDynamicIndices indices;
 	};
 
@@ -3623,7 +3682,12 @@ namespace ZoneTool::H1
 	};
 
 	typedef float BlendShapeWeight;
-	typedef char XAnimScriptedViewmodelAnimData;
+
+	struct XAnimScriptedViewmodelAnimData
+	{
+		float blendIn;
+		float blendOut;
+	};
 
 	struct XAnimParts
 	{
@@ -3633,9 +3697,7 @@ namespace ZoneTool::H1
 		unsigned short dataIntCount; // 12
 		unsigned short numframes; // 14
 		unsigned char flags; // 15
-		unsigned char boneCount[10]; // 16
-		char u1; // unused?
-		char u2; // unused?
+		unsigned char boneCount[12]; // 16
 		unsigned char notifyCount; // 29
 		unsigned char assetType; // 30
 		unsigned char ikType; // 31
@@ -3656,17 +3718,18 @@ namespace ZoneTool::H1
 		XAnimNotifyInfo PTR64 notify; // 120
 		XAnimDeltaPart PTR64 deltaPart; // 128
 		const char PTR64 secondaryName; // 136
-		short u3; // unknown
-		unsigned short blendShapeWeightCount; // 146
-		short u4; // unused? padding?
+		unsigned char alternateAnimWeight;
+		unsigned char numAlternatives;
+		unsigned short blendShapeCount; // 146
+		short pad;
 		scr_string_t PTR64 blendShapeWeightNames; // 152
-		char( PTR64 blendShapeWeightUnknown1)[3]; // 160
-		unsigned short PTR64 blendShapeWeightUnknown2; // 168
-		unsigned short PTR64 blendShapeWeightUnknown3; // 176
-		unsigned short PTR64 blendShapeWeightUnknown4; // 184
+		char(PTR64 blendShapeCoefficientMagnitudes)[3]; // 160
+		unsigned short PTR64 numberOfBlendShapeKeys; // 168
+		unsigned short PTR64 blendShapeKeys; // 176
+		unsigned short PTR64 compressedBlendShapeCoefficients; // 184
 		BlendShapeWeight PTR64 blendShapeWeights; // 192
-		std::uint64_t u5; // unused?
-		XAnimScriptedViewmodelAnimData PTR64 scriptedViewmodelAnimData; // 208 // count = 8
+		XAnimParts PTR64 alternativeAnim; // unused?
+		XAnimScriptedViewmodelAnimData PTR64 svAmimData; // 208
 	}; assert_sizeof(XAnimParts, 0xD8);
 
 	union PackedUnitVec
@@ -3679,12 +3742,6 @@ namespace ZoneTool::H1
 	{
 		unsigned int packed;
 		unsigned char array[4];
-	};
-
-	union GfxColor
-	{
-		unsigned char array[4];
-		unsigned int packed;
 	};
 
 	struct GfxPackedVertex
@@ -3838,7 +3895,12 @@ namespace ZoneTool::H1
 
 	struct BlendShapeVert
 	{
-		char __pad0[32];
+		float positionOffset[3];
+		int vertIndex;
+		PackedUnitVec normalOffset;
+		PackedUnitVec tangentOffset;
+		float tensionS;
+		float tensionT;
 	};
 
 	struct BlendShape
@@ -3899,7 +3961,7 @@ namespace ZoneTool::H1
 		BlendShape PTR64 blendShapes;
 		unsigned int blendShapesCount;
 		unsigned int vertexLightingIndex;
-		char __pad0[4];
+		float quantizeScale;
 		int partBits[8];
 		char __pad1[4];
 	}; assert_sizeof(XSurface, 0x108);
@@ -3999,8 +4061,8 @@ namespace ZoneTool::H1
 	struct MdaoVolume
 	{
 		ExtentBounds bounds;
-		unsigned __int16 cellCount[3];
-		unsigned __int16 parentBoneIndex;
+		unsigned short cellCount[3];
+		unsigned short parentBoneIndex;
 		GfxImage PTR64 volumeData;
 	}; assert_sizeof(MdaoVolume, 0x28);
 
@@ -4062,10 +4124,10 @@ namespace ZoneTool::H1
 		XModelLodInfo lodInfo[6]; // 128
 		char numLods; // 512
 		char collLod; // 513
-		char numCompositeModels; // 514
-		char u1; // 515
-		short flags; // 516
-		short numCollSurfs; // 518
+		unsigned char numCompositeModels; // 514
+		unsigned char reactiveMotionLOD; // 515
+		unsigned short flags; // 516
+		unsigned short numCollSurfs; // 518
 		XModelCollSurf_s PTR64 collSurfs; // 520
 		int contents; // 528
 		XBoneInfo PTR64 boneInfo; // 536
@@ -4075,12 +4137,12 @@ namespace ZoneTool::H1
 		int memUsage; // 584
 		bool bad; // 588
 		char pad; // 589
-		unsigned short targetCount; // 590
-		unsigned short numberOfWeights; // 592
-		unsigned short numberOfWeightMaps; // 594
+		unsigned short blendShapeCount; // 590
+		unsigned short numberOfBlendShapeWeights; // 592
+		unsigned short numberOfBlendShapeWeightMaps; // 594
 		char __pad2[4]; // 596-600
-		scr_string_t PTR64 weightNames; // 600
-		BlendShapeWeightMap PTR64 blendShapeWeightMap; // 608
+		scr_string_t PTR64 blendShapeWeightNames; // 600
+		BlendShapeWeightMap PTR64 blendShapeWeightMaps; // 608
 		PhysPreset PTR64 physPreset; // 616
 		PhysCollmap PTR64 physCollmap; // 624
 		unsigned short mdaoVolumeCount; // 632
@@ -4256,6 +4318,11 @@ namespace ZoneTool::H1
 
 	};
 
+	enum weapAutoHolsterType_t : std::int32_t
+	{
+
+	};
+
 	enum weapFireBarrels_t : std::int32_t
 	{
 
@@ -4284,12 +4351,35 @@ namespace ZoneTool::H1
 
 	struct AttChargeInfo
 	{
-		char __pad0[28];
+		float minChargeTime;
+		float overChargeTime;
+		float timePerChargeShot;
+		int maxChargeShots;
+		float minChargeAngle;
+		float maxChargeAngle;
+		bool autoFireOnMaxCharge;
 	}; assert_sizeof(AttChargeInfo, 28);
 
 	struct AttHybridSettings
 	{
-		char __pad0[72];
+		float adsSpread;
+		float adsAimPitch;
+		float adsTransInTime;
+		float adsTransInFromSprintTime;
+		float adsTransOutTime;
+		int adsReloadTransTime;
+		float adsCrosshairInFrac;
+		float adsCrosshairOutFrac;
+		float adsZoomFov;
+		float adsZoomInFrac;
+		float adsZoomOutFrac;
+		float adsFovLerpInTime;
+		float adsFovLerpOutTime;
+		float adsBobFactor;
+		float adsViewBobMult;
+		float adsViewErrorMin;
+		float adsViewErrorMax;
+		float adsFireAnimFrac;
 	}; assert_sizeof(AttHybridSettings, 72);
 
 	union WAFieldParm
@@ -4333,7 +4423,7 @@ namespace ZoneTool::H1
 	struct WAField
 	{
 		unsigned char index;
-		unsigned char fieldType; //WAFieldType fieldType;
+		unsigned char type; //WAFieldType type;
 		unsigned char code; // WAFieldCode code;
 		WAFieldParm parm;
 	}; assert_sizeof(WAField, 16);
@@ -4357,47 +4447,55 @@ namespace ZoneTool::H1
 		snd_alias_list_t PTR64 PTR64 rollingSounds; // 64 (53 sounds)
 		AttChargeInfo PTR64 chargeInfo; // 72
 		AttHybridSettings PTR64 hybridSettings; // 80
-		scr_string_t PTR64 stringArray1; // 88 (4 strings) (hideTags?)
-		scr_string_t PTR64 stringArray2; // 96 (4 strings) (showTags?)
-		unsigned short PTR64 waFieldOffsets; // 104
-		WAField PTR64 waFields; // 112
-		unsigned int waFieldsCount; // 120 (MAX_ATTACH_FIELDS_PER_WEAPON = 256)
-		char __pad0[12];
+		scr_string_t PTR64 hideTags; // 88 (4 strings)
+		scr_string_t PTR64 showTags; // 96 (4 strings)
+		unsigned short PTR64 fieldOffsets; // 104
+		WAField PTR64 fields; // 112
+		unsigned int numFields; // 120 (MAX_ATTACH_FIELDS_PER_WEAPON = 256)
+		int loadIndex;
+		int unused1;
+		bool isAlternateAmmo;
+		bool hideIronSightsWithThisAttachment;
+		bool showMasterRail;
+		bool showSideRail;
 		bool shareAmmoWithAlt; // 136
-		char __pad1[1];
+		bool knifeAlwaysAttached;
 		bool riotShield; // 138
-		char __pad2[5];
+		bool automaticAttachment;
+		int unused2;
 		// size: 144
 	}; assert_sizeof(WeaponAttachment, 0x90);
+	assert_offsetof(WeaponAttachment, shareAmmoWithAlt, 136);
 	assert_offsetof(WeaponAttachment, riotShield, 138);
 
 	struct AnimOverrideEntry
 	{
-		unsigned short attachment1;
-		unsigned short attachment2;
+		unsigned char animHand;
+		unsigned char attachment1;
+		unsigned char attachment2;
+		unsigned char animTreeType;
 		XAnimParts PTR64 overrideAnim;
 		XAnimParts PTR64 altmodeAnim;
-		//unsigned int animTreeType;
 		int animTime;
 		int altTime;
 	}; assert_sizeof(AnimOverrideEntry, 32);
 
 	struct SoundOverrideEntry
 	{
-		unsigned short attachment1;
-		unsigned short attachment2;
+		unsigned char attachment1;
+		unsigned char attachment2;
+		unsigned char soundType;
 		snd_alias_list_t PTR64 overrideSound;
 		snd_alias_list_t PTR64 altmodeSound;
-		//unsigned int soundType;
 	}; assert_sizeof(SoundOverrideEntry, 24);
 
 	struct FXOverrideEntry
 	{
-		unsigned short attachment1;
-		unsigned short attachment2;
+		unsigned char attachment1;
+		unsigned char attachment2;
+		unsigned char fxType;
 		FxEffectDef PTR64 overrideFX;
 		FxEffectDef PTR64 altmodeFX;
-		//unsigned int fxType;
 	}; assert_sizeof(FXOverrideEntry, 24);
 
 	struct ReloadStateTimerEntry
@@ -4419,7 +4517,7 @@ namespace ZoneTool::H1
 	{
 		const char PTR64 name;
 		Material PTR64 material;
-		FxEffectDef PTR64 effect;
+		FxEffectDef PTR64 effectDef;
 		unsigned int drawInterval;
 		float speed;
 		float beamLength;
@@ -4434,12 +4532,28 @@ namespace ZoneTool::H1
 		const char PTR64 name;
 		Material PTR64 laserMaterial;
 		Material PTR64 laserLightMaterial;
-		FxEffectDef PTR64 effect;
-		LaserDef PTR64 altLaser;
-		scr_string_t value;
-		float float_values[25];
-		unsigned char char_values[4];
-		int int_value;
+		FxEffectDef PTR64 laserEndEffect;
+		LaserDef PTR64 friendlyTeamLaser;
+		scr_string_t laserTag;
+		float color[4];
+		float hdrColorScale[4];
+		float laserLightColor[4];
+		float laserLightHdrColorScale[4];
+		float range;
+		float radius;
+		float endOffset;
+		float flarePct;
+		float texCoordOffset;
+		float laserLightRadius;
+		float laserLightBeginOffset;
+		float laserLightEndOffset;
+		float laserLightBodyTweak;
+		bool ownerOnly;
+		bool nightvisionOnly;
+		bool useHalfCylinderGeometry;
+		bool laserLight;
+		bool laserLightNvgOnly;
+		bool laserSightLaser;
 	}; assert_sizeof(LaserDef, 0x98);
 
 	struct TurretHydraulicSettings
@@ -4734,8 +4848,8 @@ namespace ZoneTool::H1
 		int reloadAddTimeDualWield; // 1728  PTR64 x
 		int reloadEmptyDualMag; // 1732  PTR64 x
 		int reloadEmptyAddTimeDualMag; // 1736  PTR64 x
-		int u25; // 1740  PTR64 x // (unused)
-		int u26; // 1744  PTR64 x // (unused)
+		int speedReloadTime; // 1740  PTR64 x // (unused)
+		int speedReloadAddTime; // 1744  PTR64 x // (unused)
 		int dropTime; // 1748  PTR64 x
 		int raiseTime; // 1752  PTR64 x
 		int altDropTime; // 1756  PTR64 x
@@ -4767,24 +4881,36 @@ namespace ZoneTool::H1
 		int blastRightTime; // 1860  PTR64 x
 		int blastBackTime; // 1864  PTR64 x
 		int blastLeftTime; // 1868  PTR64 x
-		int u58; // 1872  PTR64 x (unused)
-		int u59; // 1876  PTR64 x (unused)
-		int u60; // 1880  PTR64 x (unused)
-		int u61; // 1884  PTR64 x (unused)
-		int u62; // 1888  PTR64 x (unused)
-		int u63; // 1892  PTR64 x (unused)
-		int u64; // 1896  PTR64 x (unused)
-		int u65; // 1900  PTR64 x (unused)
-		int u66; // 1904  PTR64 x (unused)
-		int u67; // 1908  PTR64 x (unused)
-		int u68; // 1912  PTR64 x (unused)
+		int slideInTime; // 1872  PTR64 x (unused)
+		int slideLoopTime; // 1876  PTR64 x (unused)
+		int slideOutTime; // 1880  PTR64 x (unused)
+		int highJumpInTime; // 1884  PTR64 x (unused)
+		int highJumpDropInTime; // 1888  PTR64 x (unused)
+		int highJumpDropLoopTime; // 1892  PTR64 x (unused)
+		int highJumpDropLandTime; // 1896  PTR64 x (unused)
+		int dodgeTime; // 1900  PTR64 x (unused)
+		int landDipTime; // 1904  PTR64 x (unused)
+		int hybridSightInTime; // 1908  PTR64 x (unused)
+		int hybridSightOutTime; // 1912  PTR64 x (unused)
 		int offhandSwitchTime; // 1916  PTR64 x
-		int u70; // 1920  PTR64 x (unknown)
-		int u71; // 1924  PTR64 x (unknown)
-		int u72; // 1928  PTR64 x (unknown)
-		int u73; // 1932  PTR64 x (unknown)
-		int u74; // 1936  PTR64 x (unknown)
+		int heatCooldownInTime; // 1920  PTR64 x
+		int heatCooldownOutTime; // 1924  PTR64 x
+		int heatCooldownOutReadyTime; // 1928  PTR64 x
+		int overheatOutTime; // 1932  PTR64 x
+		int overheatOutReadyTime; // 1936  PTR64 x
 	}; assert_sizeof(StateTimers, 300);
+
+	struct clipindex_t
+	{
+		int clipIndex;
+		bool isAlternate;
+	};
+
+	struct ammoindex_t
+	{
+		int ammoIndex;
+		bool isAlternate;
+	};
 
 	struct WeaponDef
 	{
@@ -4794,12 +4920,12 @@ namespace ZoneTool::H1
 			const char PTR64 name;
 		};
 		const char PTR64 szDisplayName; // 8
-		const char PTR64 szOverlayName; // 16
+		const char PTR64 szAltWeaponName; // 16
 		XModel PTR64 PTR64 gunModel; // 24 (2 xmodels)
 		XModel PTR64 handModel; // 32
-		XModel PTR64 unknownModel; // 40
+		XModel PTR64 persistentArmXModel; // 40
 		XModel PTR64 PTR64 reticleViewModels; // 48 (64 xmodels)
-		const char PTR64 szModeName; // 56
+		const char PTR64 lobWorldModelName; // 56
 		XAnimParts PTR64 PTR64 szXAnimsRightHanded; // 64 (190 xanims)
 		XAnimParts PTR64 PTR64 szXAnimsLeftHanded; // 72 (190 xanims)
 		scr_string_t PTR64 hideTags; // 80 (32 xstrings)
@@ -4820,19 +4946,19 @@ namespace ZoneTool::H1
 		scr_string_t PTR64 notetrackUnknownKeys; // 200 (16 xstrings)
 		char PTR64 notetrackUnknown; // 208 (16 chars)
 		scr_string_t PTR64 notetrackUnknownValues; // 216 (16 xstrings)
-		const char PTR64 szAltWeaponName; // 224
+		const char PTR64 szAdsrBaseSetting; // 224
 		FxEffectDef PTR64 viewFlashEffect; // 232
 		FxEffectDef PTR64 viewBodyFlashEffect; // 240
 		FxEffectDef PTR64 worldFlashEffect; // 248
 		FxEffectDef PTR64 viewFlashADSEffect; // 256
 		FxEffectDef PTR64 viewBodyFlashADSEffect; // 264
-		FxEffectDef PTR64 effect06; // 272
-		FxEffectDef PTR64 effect07; // 280
-		FxEffectDef PTR64 effect08; // 288
-		FxEffectDef PTR64 effect09; // 296
-		FxEffectDef PTR64 effect10; // 304
-		FxEffectDef PTR64 effect11; // 312
-		FxEffectDef PTR64 effect12; // 320
+		FxEffectDef PTR64 signatureViewFlashEffect; // 272
+		FxEffectDef PTR64 signatureViewBodyFlashEffect; // 280
+		FxEffectDef PTR64 signatureWorldFlashEffect; // 288
+		FxEffectDef PTR64 signatureViewFlashADSEffect; // 296
+		FxEffectDef PTR64 signatureViewBodyFlashADSEffect; // 304
+		FxEffectDef PTR64 meleeHitEffect; // 312
+		FxEffectDef PTR64 meleeMissEffect; // 320
 		snd_alias_list_t PTR64 pickupSound; // 328 (74 sounds)
 		snd_alias_list_t PTR64 pickupSoundPlayer; // 336
 		snd_alias_list_t PTR64 ammoPickupSound; // 344
@@ -4845,33 +4971,33 @@ namespace ZoneTool::H1
 		snd_alias_list_t PTR64 fireSound; // 400
 		snd_alias_list_t PTR64 fireSoundPlayer; // 408
 		snd_alias_list_t PTR64 fireSoundPlayerAkimbo; // 416
-		snd_alias_list_t PTR64 sound13; // 424
-		snd_alias_list_t PTR64 sound14; // 432
-		snd_alias_list_t PTR64 sound15; // 440
-		snd_alias_list_t PTR64 sound16; // 448
+		snd_alias_list_t PTR64 fireMedSound; // 424
+		snd_alias_list_t PTR64 fireMedSoundPlayer; // 432
+		snd_alias_list_t PTR64 fireHighSound; // 440
+		snd_alias_list_t PTR64 fireHighSoundPlayer; // 448
 		snd_alias_list_t PTR64 fireLoopSound; // 456
 		snd_alias_list_t PTR64 fireLoopSoundPlayer; // 464
-		snd_alias_list_t PTR64 sound19; // 472
-		snd_alias_list_t PTR64 sound20; // 480
-		snd_alias_list_t PTR64 sound21; // 488
-		snd_alias_list_t PTR64 sound22; // 496
+		snd_alias_list_t PTR64 fireMedLoopSound; // 472
+		snd_alias_list_t PTR64 fireMedLoopSoundPlayer; // 480
+		snd_alias_list_t PTR64 fireHighLoopSound; // 488
+		snd_alias_list_t PTR64 fireHighLoopSoundPlayer; // 496
 		snd_alias_list_t PTR64 fireLoopEndPointSound; // 504
 		snd_alias_list_t PTR64 fireLoopEndPointSoundPlayer; // 512
 		snd_alias_list_t PTR64 fireStopSound; // 520
 		snd_alias_list_t PTR64 fireStopSoundPlayer; // 528
-		snd_alias_list_t PTR64 sound27; // 536
-		snd_alias_list_t PTR64 sound28; // 544
-		snd_alias_list_t PTR64 sound29; // 552
-		snd_alias_list_t PTR64 sound30; // 560
-		snd_alias_list_t PTR64 fireLastShotSound; // 568
-		snd_alias_list_t PTR64 fireLastShotSoundPlayer; // 576
+		snd_alias_list_t PTR64 fireMedStopSound; // 536
+		snd_alias_list_t PTR64 fireMedStopSoundPlayer; // 544
+		snd_alias_list_t PTR64 fireHighStopSound; // 552
+		snd_alias_list_t PTR64 fireHighStopSoundPlayer; // 560
+		snd_alias_list_t PTR64 fireLastSound; // 568
+		snd_alias_list_t PTR64 fireLastSoundPlayer; // 576
 		snd_alias_list_t PTR64 fireFirstSound; // 584
 		snd_alias_list_t PTR64 fireFirstSoundPlayer; // 592
-		snd_alias_list_t PTR64 fireLastSound; // 600
-		snd_alias_list_t PTR64 fireLastSoundPlayer; // 608
+		snd_alias_list_t PTR64 fireCustomSound; // 600
+		snd_alias_list_t PTR64 fireCustomSoundPlayer; // 608
 		snd_alias_list_t PTR64 emptyFireSound; // 616
 		snd_alias_list_t PTR64 emptyFireSoundPlayer; // 624
-		snd_alias_list_t PTR64 sound39; // 632
+		snd_alias_list_t PTR64 adsRequiredFireSoundPlayer; // 632
 		snd_alias_list_t PTR64 meleeSwipeSound; // 640
 		snd_alias_list_t PTR64 meleeSwipeSoundPlayer; // 648
 		snd_alias_list_t PTR64 meleeHitSound; // 656
@@ -4894,18 +5020,18 @@ namespace ZoneTool::H1
 		snd_alias_list_t PTR64 nightVisionWearSoundPlayer; // 792
 		snd_alias_list_t PTR64 nightVisionRemoveSound; // 800
 		snd_alias_list_t PTR64 nightVisionRemoveSoundPlayer; // 808
-		snd_alias_list_t PTR64 raiseSound; // 816
-		snd_alias_list_t PTR64 raiseSoundPlayer; // 824
-		snd_alias_list_t PTR64 sound64; // 832
-		snd_alias_list_t PTR64 sound65; // 840
-		snd_alias_list_t PTR64 sound66; // 848
-		snd_alias_list_t PTR64 sound67; // 856
+		snd_alias_list_t PTR64 firstRaiseSound; // 816
+		snd_alias_list_t PTR64 firstRaiseSoundPlayer; // 824
+		snd_alias_list_t PTR64 raiseSound; // 832
+		snd_alias_list_t PTR64 raiseSoundPlayer; // 840
+		snd_alias_list_t PTR64 altSwitchSound; // 848
+		snd_alias_list_t PTR64 altSwitchSoundPlayer; // 856
 		snd_alias_list_t PTR64 putawaySound; // 864
 		snd_alias_list_t PTR64 putawaySoundPlayer; // 872
-		snd_alias_list_t PTR64 sound70; // 880
-		snd_alias_list_t PTR64 sound71; // 888
-		snd_alias_list_t PTR64 adsEnterSoundPlayer; // 896
-		snd_alias_list_t PTR64 adsLeaveSoundPlayer; // 904
+		snd_alias_list_t PTR64 scanSound; // 880
+		snd_alias_list_t PTR64 changeVariableZoomSound; // 888
+		snd_alias_list_t PTR64 adsUpSound; // 896
+		snd_alias_list_t PTR64 adsDownSound; // 904
 		snd_alias_list_t PTR64 adsCrosshairEnemySound; // 912
 		snd_alias_list_t PTR64 PTR64 bounceSound; // 920 (53 sounds)
 		snd_alias_list_t PTR64 PTR64 rollingSound; // 928 (53 sounds)
@@ -4923,9 +5049,9 @@ namespace ZoneTool::H1
 		XModel PTR64 worldKnifeModel; // 1024
 		Material PTR64 hudIcon; // 1032
 		Material PTR64 pickupIcon; // 1040
-		Material PTR64 unknownIcon2; // 1048
-		Material PTR64 unknownIcon3; // 1056
-		Material PTR64 unknownIcon4; // 1064
+		Material PTR64 minimapIconFriendly; // 1048
+		Material PTR64 minimapIconEnemy; // 1056
+		Material PTR64 minimapIconNeutral; // 1064
 		Material PTR64 ammoCounterIcon; // 1072
 		const char PTR64 szAmmoName; // 1080
 		const char PTR64 szClipName; // 1088
@@ -4939,9 +5065,9 @@ namespace ZoneTool::H1
 		const char PTR64 fireMedRumble; // 1152
 		const char PTR64 fireHighRumble; // 1160
 		const char PTR64 meleeImpactRumble; // 1168
-		TracerDef PTR64 tracer1; // 1176
-		TracerDef PTR64 tracer2; // 1184
-		LaserDef PTR64 laser; // 1192
+		TracerDef PTR64 tracerType; // 1176
+		TracerDef PTR64 signatureTracerType; // 1184
+		LaserDef PTR64 laserType; // 1192
 		snd_alias_list_t PTR64 turretOverheatSound; // 1200
 		FxEffectDef PTR64 turretOverheatEffect; // 1208
 		const char PTR64 turretBarrelSpinRumble; // 1216
@@ -4953,7 +5079,7 @@ namespace ZoneTool::H1
 		XModel PTR64 stowOffsetModel; // 1312
 		TurretHydraulicSettings PTR64 turretHydraulicSettings; // 1320
 		int altWeapon; // 1328
-		unsigned char numWeaponAttachments; // 1332
+		unsigned char numAttachments; // 1332
 		unsigned char numAnimOverrides; // 1333
 		unsigned char numSoundOverrides; // 1334
 		unsigned char numFXOverrides; // 1335
@@ -4973,7 +5099,7 @@ namespace ZoneTool::H1
 		float burstFireCooldown; // 1376
 		weapGreebleType_t greebleType; // 1380
 		weapAutoReloadType_t autoReloadType; // 1384
-		WeaponSlotRestriction slotRestriction; // 1388
+		weapAutoHolsterType_t autoHolsterType; // 1388
 		OffhandClass offhandClass; // 1392
 		weapStance_t stance; // 1396
 		int reticleCenterSize; // 1400
@@ -5002,12 +5128,8 @@ namespace ZoneTool::H1
 		weaponIconRatioType_t ammoCounterIconRatio; // 1572
 		int ammoCounterClip; // 1576
 		int startAmmo; // 1580
-		int ammoIndex; // 1584 (runtime variable)
-		char ammoIndexUnknown; // 1588 (runtime variable)
-		char __pad002[3]; // padding?
-		int clipIndex; // 1592 (runtime variable)
-		char clipIndexUnknown; // 1596 (runtime variable)
-		char __pad003[3]; // padding?
+		ammoindex_t iAmmoIndex; // 1584 (runtime variable)
+		clipindex_t iClipIndex; // 1592 (runtime variable)
 		int maxAmmo; // 1600
 		int minAmmoReq; // 1604
 		int clipSize; // 1608
@@ -5031,9 +5153,9 @@ namespace ZoneTool::H1
 		float adsZoomFov; // 2272
 		float adsZoomInFrac; // 2276
 		float adsZoomOutFrac; // 2280
-		float adsSceneBlur; // 2284 (1401FC630) : float
-		float fU_007; // 2288 (1400CF870) : float (related to scene blur)
-		float xU_008; // 2292 X
+		float adsSceneBlurStrength; // 2284 (1401FC630)
+		float adsSceneBlurPhysicalScale; // 2288 (1400CF870)
+		float pad3; // 2292 X
 		ADSOverlay overlay; // 2296
 		WeapOverlayInteface_t overlayInterface; // 2352
 		float adsBobFactor; // 2356
@@ -5042,8 +5164,8 @@ namespace ZoneTool::H1
 		float hipSpreadDuckedMin; // 2368
 		float hipSpreadProneMin; // 2372
 		float hipSpreadStandMax; // 2376
-		float xU_009; // 2380 X
-		float xU_010; // 2384 X
+		float hipSpreadSprintMax; // 2380 X
+		float hipSpreadSlideMax; // 2384 X
 		float hipSpreadDuckedMax; // 2388
 		float hipSpreadProneMax; // 2392
 		float hipSpreadDecayRate; // 2396
@@ -5064,9 +5186,9 @@ namespace ZoneTool::H1
 		float adsIdleLerpStartTime; // 2456
 		float adsIdleLerpTime; // 2460
 		int adsTransInTime; // 2464
-		int xU_011; // 2468 X
+		int adsTransInFromSprintTime; // 2468 X
 		int adsTransOutTime; // 2472
-		float xU_012; // 2476 X
+		float swayMaxAngleSteadyAim; // 2476 X
 		float swayMaxAngle; // 2480
 		float swayLerpSpeed; // 2484
 		float swayPitchScale; // 2488
@@ -5100,7 +5222,7 @@ namespace ZoneTool::H1
 		float stationaryZoomLerpOutTime; // 2600
 		float adsDofStart; // 2604
 		float adsDofEnd; // 2608
-		float xU_020; // 2612 X
+		float pad1; // 2612 X
 		Material PTR64 killIcon; // 2616
 		Material PTR64 dpadIcon; // 2624
 		Material PTR64 hudProximityWarningIcon; // 2632
@@ -5129,7 +5251,7 @@ namespace ZoneTool::H1
 		float projLifetime; // 2728
 		float timeToAccelerate; // 2732
 		float projectileCurvature; // 2736
-		float xU_021; // 2740 X
+		float pad2; // 2740 X
 		const char PTR64 projectileName; // 2744
 		XModel PTR64 projectileModel; // 2752
 		FxEffectDef PTR64 projExplosionEffect; // 2760
@@ -5192,17 +5314,16 @@ namespace ZoneTool::H1
 		float hipViewKickYawMax; // 3036
 		float hipViewKickMagMin; // 3040
 		float hipViewKickCenterSpeed; // 3044
-		float hipViewScatterMin; // 3048 // PTR64 
-		float hipViewScatterMax; // 3052 // PTR64 
-		float xU_043; // 3056 // PTR64 
-		int adsReloadTransTime; // 3060
+		float hipViewScatterMin; // 3048 //*
+		float hipViewScatterMax; // 3052 //*
+		float viewKickScale; // 3056 //*
+		int positionReloadTransTime; // 3060
 		float fightDist; // 3064
 		float maxDist; // 3068
 		const char PTR64 accuracyGraphName[2]; // 3072
 		vec2_t PTR64 accuracyGraphKnots[2]; // 3088
 		vec2_t PTR64 originalAccuracyGraphKnots[2]; // 3104
 		short accuracyGraphKnotCount[2]; // 3120
-		int positionReloadTransTime; // 3124 X
 		float leftArc; // 3128
 		float rightArc; // 3132
 		float topArc; // 3136
@@ -5232,12 +5353,12 @@ namespace ZoneTool::H1
 		int midPlayerDamage; // 3244
 		float maxDamageRange; // 3248
 		float minDamageRange; // 3252
-		int iU_045; // 3256 X
-		int iU_046; // 3260 X
-		int iU_047; // 3264 X
-		int iU_048; // 3268 X
-		float fU_049; // 3272 X
-		float fU_050; // 3276 X
+		int signatureAmmoInClip; // 3256 X
+		int signatureDamage; // 3260 X
+		int signatureMidDamage; // 3264 X
+		int signatureMinDamage; // 3268 X
+		float signatureMaxDamageRange; // 3272 X
+		float signatureMinDamageRange; // 3276 X
 		float destabilizationRateTime; // 3280
 		float destabilizationCurvatureMax; // 3284
 		int destabilizeDistance; // 3288
@@ -5247,10 +5368,10 @@ namespace ZoneTool::H1
 		float turretScopeZoomRate; // 3304 X
 		float turretScopeZoomMin; // 3308 X
 		float turretScopeZoomMax; // 3312 X
-		float xU_056; // 3316 X
-		float xU_057; // 3320 X
-		float xU_058; // 3324 X
-		float xU_059; // 3328 X
+		float overheatUpRate; // 3316 X
+		float overheatDownRate; // 3320 X
+		float overheatCooldownRate; // 3324 X
+		float overheatPenalty; // 3328 X
 		float turretBarrelSpinSpeed; // 3332
 		float turretBarrelSpinUpTime; // 3336
 		float turretBarrelSpinDownTime; // 3340 X
@@ -5274,26 +5395,26 @@ namespace ZoneTool::H1
 		float player_meleeHeight; // 3412
 		float player_meleeRange; // 3416
 		float player_meleeWidth; // 3420
-		float signatureFireTime; // 3424
-		int signatureNumBullets; // 3428
+		float changedFireTime; // 3424
+		int changedFireTimeNumBullets; // 3428
 		weapFireTimeInterpolation_t fireTimeInterpolationType; // 3432
-		int xU_075; // 3436 X
-		int ammoUsedPerShot; // 3440
-		int xU_076; // 3444 X
-		int xU_077; // 3448 X
-		int xU_078; // 3452 X
+		int generateAmmo; // 3436 X
+		int ammoPerShot; // 3440
+		int explodeCount; // 3444 X
+		int batteryDischargeRate; // 3448 X
+		int extendedBattery; // 3452 X
 		int iU_079; // 3456 // int numBulletTags (BG_ShowHideTagsBasedOnAltMode)
 		int iU_080; // 3460 // int tagForAmmo (1400C77D0)
 		scr_string_t stowTag; // 3464
-		bool bU_081; // 3468 X
-		bool unknownReticleBooleanValue1; // 3469 (CG_DrawCrosshair)
-		bool unknownReticleBooleanValue2; // 3470 (CG_DrawCrosshair)
+		unsigned char rattleSoundType; // 3468 X
+		bool adsShouldShowCrosshair; // 3469 (CG_DrawCrosshair)
+		bool adsCrosshairShouldScale; // 3470 (CG_DrawCrosshair)
 		bool turretADSEnabled; // 3471 X
 		bool knifeAttachTagLeft; // 3472
 		bool knifeAlwaysAttached; // 3473
 		bool meleeOverrideValues; // 3474
-		bool bU_083; // 3475 X
-		bool bU_084; // 3476 X
+		bool riotShieldEnableDamage; // 3475 X
+		bool allowPrimaryWeaponPickup; // 3476 X
 		bool sharedAmmo; // 3477
 		bool lockonSupported; // 3478
 		bool requireLockonToFire; // 3479
@@ -5315,14 +5436,14 @@ namespace ZoneTool::H1
 		bool rechamberWhileAds; // 3495
 		bool bulletExplosiveDamage; // 3496
 		bool cookOffHold; // 3497
-		bool reticleSpin45; // 3498 X
-		bool reticleSideEnabled; // 3499
+		bool useBattery; // 3498 X
+		bool reticleSpin45; // 3499
 		bool clipOnly; // 3500
 		bool noAmmoPickup; // 3501
 		bool disableSwitchToWhenEmpty; // 3502
-		bool bU_088; // 3503 (14017E520) bool hiddenAmmo;?
-		bool hasMotionTracker; // 3504
-		bool bU_089; // 3505 X
+		bool suppressAmmoReserveDisplay; // 3503 (14017E520)
+		bool motionTracker; // 3504
+		bool markableViewmodel; // 3505 X
 		bool noDualWield; // 3506
 		bool flipKillIcon; // 3507
 		bool actionSlotShowAmmo; // 3508
@@ -5345,8 +5466,8 @@ namespace ZoneTool::H1
 		bool hasDetonatorDoubleTap; // 3525
 		bool disableFiring; // 3526
 		bool timedDetonation; // 3527
-		bool bU_090; // 3528 (G_FireGrenade)(CheckCrumpleMissile) bool usesGrenadeTimer?
-		bool bU_091; // 3529 (G_FireRocket) bool usesRocketTimer?
+		bool noCrumpleMissile; // 3528 (G_FireGrenade)(CheckCrumpleMissile)
+		bool fuseLitAfterImpact; // 3529 (G_FireRocket)
 		bool rotate; // 3530
 		bool holdButtonToThrow; // 3531 X
 		bool freezeMovementWhenFiring; // 3532
@@ -5363,38 +5484,41 @@ namespace ZoneTool::H1
 		bool useFastReloadAnims; // 3543 (140202800)
 		bool dualMagReloadSupported; // 3544
 		bool reloadStopsAlt; // 3545 X
-		bool bU_092; // 3546 X
+		bool useScopeDrift; // 3546 X
 		bool alwaysShatterGlassOnImpact; // 3547
 		bool oldWeapon; // 3548
-		bool bU_093; // 3549 bool isC4;? (BulletRicochet)(PM_Weapon_OffHandPrepare)
-		bool bU_094; // 3550 (BG_WeaponFireRecoil)(Missile_Impact)
-		bool xU_095; // 3551 X
-		bool hasCounterSilencer; // 3552 (BG_HasCounterSilencer)
-		bool xU_097; // 3553 X
-		bool xU_098; // 3554 X
-		bool disableVariableAutosimRate; // 3555
-		bool bU_100; // 3556 (CG_Missile)
-		bool bU_101; // 3557 (CG_Missile)
-		bool bU_102; // 3558 (CG_Missile)
-		bool bU_103; // 3559 (CG_Missile)
-		bool bU_104; // 3560 X
-		bool cloakedWeapon; // 3561 (BG_IsWeaponCloaked)
+		bool raiseToHold; // 3549 (BulletRicochet)(PM_Weapon_OffHandPrepare)
+		bool notifyOnPlayerImpact; // 3550 (BG_WeaponFireRecoil)(Missile_Impact)
+		bool decreasingKick; // 3551 X
+		bool counterSilencer; // 3552 (BG_HasCounterSilencer)
+		bool projSuppressedByEMP; // 3553 X
+		bool projDisabledByEMP; // 3554 X
+		bool autosimDisableVariableRate; // 3555
+		bool projPlayTrailEffectForOwnerOnly; // 3556 (CG_Missile)
+		bool projPlayBeaconEffectForOwnerOnly; // 3557 (CG_Missile)
+		bool projKillTrailEffectOnDeath; // 3558 (CG_Missile)
+		bool projKillBeaconEffectOnDeath; // 3559 (CG_Missile)
+		bool reticleDetonateHide; // 3560 X
+		bool cloaked; // 3561 (BG_IsWeaponCloaked)
 		bool adsHideWeapon; // 3562 (0x1401fa7aa)
 		bool adsHideHands; // 3563 (0x1401fa78a)
 		bool bU_108; // 3564 X
-		bool adsBlurSceneEnabled; // 3565 (BG_GetADSSceneBlur)
+		bool adsSceneBlur; // 3565 (BG_GetADSSceneBlur)
 		bool usesSniperScope; // 3566 (BG_UsingSniperScope)
-		bool bU_111; // 3567 (140499130) (14049CE70) (14049B890) (14049B680)
+		bool hasTransientModels; // 3567 (140499130) (14049CE70) (14049B890) (14049B680)
 		bool bU_112; // 3568 X
 		bool bU_113; // 3569 X
 		bool bU_114; // 3570 (BG_ShowHideTagsBasedOnAltMode)
 		bool bU_115; // 3571 (BG_ShowHideTagsBasedOnAltMode)
-		float adsDofPhysicalFStop; // 3572 (BG_ADSDOFPhysicalFStop)
+		float adsDofPhysicalFstop; // 3572 (BG_ADSDOFPhysicalFStop)
 		float adsDofPhysicalFocusDistance; // 3576 (BG_ADSDOFPhysicalFocusDistance)
-		float autosimSpeedScalar; // 3580 (BG_GetAutosimSpeedScalar)
-		float explosionReactiveMotionParts[5]; // 3584 (BG_GetExplosionReactiveMotionParams)
-		char __pad_unknown[12]; // 3604
-		//1400C7650
+		float autosimSpeedScale; // 3580 (BG_GetAutosimSpeedScalar)
+		float reactiveMotionRadiusScale; // 3584 (BG_GetExplosionReactiveMotionParams)
+		float reactiveMotionFrequencyScale;
+		float reactiveMotionAmplitudeScale;
+		float reactiveMotionFalloff;
+		float reactiveMotionLifetime;
+		float fU_3604[3]; // 3604
 		// size: 3616
 	}; assert_sizeof(WeaponDef, 0xE20);
 
@@ -6667,15 +6791,14 @@ namespace ZoneTool::H1
 		unsigned char color[4];
 		unsigned char transStateStreamIndex;
 		unsigned char flags;
-		unsigned short intensityScaleMin;
-		unsigned short intensityScaleMax;
+		float intensityScaleMin;
+		float intensityScaleMax;
 		unsigned short pitchMin;
 		unsigned short pitchMax;
 		unsigned short headingMin;
 		unsigned short headingMax;
 		unsigned short transitionTimeMin;
 		unsigned short transitionTimeMax;
-		char __pad0[6];
 	}; assert_sizeof(ScriptableEventSunlightSettingsDef, 28);
 
 	struct ScriptableEventShakeDef
@@ -6698,14 +6821,34 @@ namespace ZoneTool::H1
 
 	struct ScriptableEventTranslateDef
 	{
-		char __pad0[24];
-		const char PTR64 str;
+		short translationMinX;
+		short translationMinY;
+		short translationMinZ;
+		short translationMaxX;
+		short translationMaxY;
+		short translationMaxZ;
+		unsigned short transitionTimeMin;
+		unsigned short transitionTimeMax;
+		unsigned char constIndex;
+		unsigned char transStateStreamIndex;
+		unsigned char flags;
+		const char PTR64 noteworthy;
 	}; assert_sizeof(ScriptableEventTranslateDef, 32);
 
 	struct ScriptableEventRotateDef
 	{
-		char __pad0[24];
-		const char PTR64 str;
+		short rotationMinPitch;
+		short rotationMinYaw;
+		short rotationMinRoll;
+		short rotationMaxPitch;
+		short rotationMaxYaw;
+		short rotationMaxRoll;
+		unsigned short transitionTimeMin;
+		unsigned short transitionTimeMax;
+		unsigned char constIndex;
+		unsigned char transStateStreamIndex;
+		unsigned char flags;
+		const char PTR64 noteworthy;
 	}; assert_sizeof(ScriptableEventTranslateDef, 32);
 
 	struct ScriptableEventStateChangeDef
@@ -6823,7 +6966,10 @@ namespace ZoneTool::H1
 
 	struct ScriptableInstanceTargetData
 	{
-		char __pad0[68];
+		unsigned int lightIndex;
+		float lightAxis[4][3];
+		float lightColorStorage[3];
+		float lightRadiusStorage;
 	}; assert_sizeof(ScriptableInstanceTargetData, 68);
 
 	struct ScriptableInstancePartState
@@ -6840,13 +6986,13 @@ namespace ZoneTool::H1
 		ScriptableInstanceTargetData PTR64 targetData;
 		float origin[3];
 		float angles[3];
-		char __pad0[24];
+		float startOrigin[3];
+		float startAngles[3];
 		scr_string_t targetname;
 		unsigned short preBrushModel;
 		unsigned short postBrushModel;
 		unsigned char flags;
-		unsigned char targetDataCount;
-		char __pad1[6];
+		unsigned char targetCount;
 		XModel PTR64 currentModel;
 		ScriptableInstancePartState PTR64 partStates;
 		unsigned char PTR64 eventStreamBuf;
@@ -6882,42 +7028,48 @@ namespace ZoneTool::H1
 
 	struct sphere_tree_t
 	{
-		char __pad0[8];
-		int unk_count;
-		char __pad1[4];
-		unsigned int PTR64 unk;
-		char __pad2[8];
+		int axis;
+		float dist;
+		int numObjects;
+		unsigned int PTR64 objIdx;
+		unsigned int child[2];
 	}; assert_sizeof(sphere_tree_t, 32);
-	assert_offsetof(sphere_tree_t, unk_count, 8);
-	assert_offsetof(sphere_tree_t, unk, 16);
+	assert_offsetof(sphere_tree_t, numObjects, 8);
+	assert_offsetof(sphere_tree_t, objIdx, 16);
 
 	struct sphere_tree_obj_t
 	{
-		char __pad0[20];
+		float origin[3];
+		float radius;
+		unsigned int object;
 	}; assert_sizeof(sphere_tree_obj_t, 20);
 
 	struct sphere_tree_data_t
 	{
-		int sphereTreeCount;
-		sphere_tree_t PTR64 sphereTree;
-		int sphereTreeObjCount;
-		sphere_tree_obj_t PTR64 sphereTreeObj;
+		int treeCount;
+		sphere_tree_t PTR64 tree;
+		int numObjects;
+		sphere_tree_obj_t PTR64 objects;
 	}; assert_sizeof(sphere_tree_data_t, 32);
 
 	struct grapple_magnet_t
 	{
-		char __pad0[40];
+		unsigned int flags;
+		float origin[3];
+		float normal[3];
+		float length;
+		int next;
+		int prev;
 	}; assert_sizeof(grapple_magnet_t, 40);
 
 	struct grapple_data_t
 	{
-		sphere_tree_data_t sphereTreeData;
-		grapple_magnet_t PTR64 magnet;
+		sphere_tree_data_t magnetTree;
+		grapple_magnet_t PTR64 magnets;
 		unsigned int magnetCount;
-		char __pad0[4];
 	}; assert_sizeof(grapple_data_t, 48);
 
-	struct /* alignas(128) */ clipMap_t
+	struct /*alignas(128)*/ clipMap_t
 	{
 		const char PTR64 name; // 0
 		int isInUse; // 8
@@ -6941,7 +7093,7 @@ namespace ZoneTool::H1
 		unsigned int dynEntAnchorCount; // 464
 		scr_string_t PTR64 dynEntAnchorNames; // 472
 		ScriptableMapEnts scriptableMapEnts; // 480
-		grapple_data_t grappleData; // 528
+		grapple_data_t grapple; // 528
 		unsigned int checksum;
 		char __pad0[60]; // alignment padding
 	}; assert_sizeof(clipMap_t, 0x280);
@@ -6952,7 +7104,7 @@ namespace ZoneTool::H1
 	assert_offsetof(clipMap_t, cmodels, 312);
 	assert_offsetof(clipMap_t, stageTrigger, 344);
 	assert_offsetof(clipMap_t, scriptableMapEnts, 480);
-	assert_offsetof(clipMap_t, grappleData, 528);
+	assert_offsetof(clipMap_t, grapple, 528);
 
 	enum GfxLightType : std::uint8_t
 	{
@@ -6973,9 +7125,9 @@ namespace ZoneTool::H1
 	{
 		GfxLightType type; // 0
 		unsigned char canUseShadowMap; // 1
-		unsigned char needsDynamicShadows; // 2
+		unsigned char physicallyBased; // 2
 		unsigned char exponent; // 3
-		unsigned char isVolumetric; // 4
+		unsigned char lightingState; // 4
 		char __pad0[3];
 		float color[3]; // 8 12 16
 		float dir[3]; // 20 24 28
@@ -7074,8 +7226,8 @@ namespace ZoneTool::H1
 		snd_alias_list_t PTR64 damagedSound;
 		snd_alias_list_t PTR64 destroyedSound;
 		snd_alias_list_t PTR64 destroyedQuietSound;
-		float highMipRadiusInvSq;
-		float shatteredHighMipRadiusInvSq;
+		float invHighMipRadius;
+		float shatteredInvHighMipRadius;
 		int numCrackRings;
 		bool isOpaque;
 	}; assert_sizeof(FxGlassDef, 120);
@@ -7175,12 +7327,11 @@ namespace ZoneTool::H1
 		unsigned int pieceLimit;
 		unsigned int pieceWordCount;
 		unsigned int cellCount;
-		unsigned int activePieceCount; //
-		unsigned int firstFreePiece; //
+		unsigned int activePieceCount;
+		unsigned int firstFreePiece;
 		unsigned int geoDataLimit;
 		unsigned int geoDataCount;
 		unsigned int initGeoDataCount;
-		//
 		FxGlassDef PTR64 defs;
 		FxGlassPiecePlace PTR64 piecePlaces;
 		FxGlassPieceState PTR64 pieceStates;
@@ -7189,14 +7340,14 @@ namespace ZoneTool::H1
 		unsigned int PTR64 isInUse;
 		unsigned int PTR64 cellBits;
 		unsigned char PTR64 visData;
-		float( PTR64 linkOrg)[3];
+		float(PTR64 linkOrg)[3];
 		float PTR64 halfThickness;
 		unsigned short PTR64 lightingHandles;
 		FxGlassGeometryData PTR64 initGeoData;
-		bool needToCompactData; //
-		unsigned char initCount; //
-		float effectChanceAccum; //
-		int lastPieceDeletionTime; //
+		bool needToCompactData;
+		unsigned char initCount;
+		float effectChanceAccum;
+		int lastPieceDeletionTime;
 		unsigned int initPieceCount;
 		FxGlassInitPieceState PTR64 initPieceStates;
 	}; assert_sizeof(FxGlassSystem, 168);
@@ -7260,7 +7411,7 @@ namespace ZoneTool::H1
 		bool isAncestor;
 		unsigned char recursionDepth;
 		unsigned char hullPointCount;
-		float( PTR64 hullPoints)[2];
+		float(PTR64 hullPoints)[2];
 		GfxPortal PTR64 queuedParent;
 	};
 
@@ -7273,7 +7424,7 @@ namespace ZoneTool::H1
 	{
 		GfxPortalWritable writable;
 		DpvsPlane plane;
-		float( PTR64 vertices)[3];
+		float(PTR64 vertices)[3];
 		unsigned short cellIndex;
 		unsigned short closeDistance;
 		unsigned char vertexCount;
@@ -7285,7 +7436,7 @@ namespace ZoneTool::H1
 	struct GfxCell
 	{
 		Bounds bounds;
-		short portalCount;
+		unsigned short portalCount;
 		unsigned char reflectionProbeCount;
 		unsigned char reflectionProbeReferenceCount;
 		GfxPortal PTR64 portals;
@@ -7301,22 +7452,23 @@ namespace ZoneTool::H1
 
 	struct GfxPortalGroupInfo
 	{
-		char __pad0[4];
+		unsigned short cellIndex;
+		unsigned short portalIndex;
 	};
 
 	struct GfxPortalGroup
 	{
-		const char PTR64 group;
-		GfxPortalGroupInfo PTR64 info;
-		char __pad0[4];
-		int infoCount;
+		const char PTR64 targetName;
+		GfxPortalGroupInfo PTR64 gfxPortalArray;
+		scr_string_t targetNameIndex;
+		unsigned short numPortals;
 	}; assert_sizeof(GfxPortalGroup, 24);
-	assert_offsetof(GfxPortalGroup, infoCount, 20);
+	assert_offsetof(GfxPortalGroup, numPortals, 20);
 
 	struct GfxReflectionProbeVolume
 	{
-		unsigned short PTR64 data;
-		unsigned int count;
+		unsigned short PTR64 probeVolumePlanes;
+		unsigned int probeVolumePlaneCount;
 	}; assert_sizeof(GfxReflectionProbeVolume, 16);
 
 	struct GfxReflectionProbe
@@ -7324,6 +7476,7 @@ namespace ZoneTool::H1
 		float origin[3];
 		GfxReflectionProbeVolume PTR64 probeVolumes;
 		unsigned int probeVolumeCount;
+		unsigned int lightingState;
 	}; assert_sizeof(GfxReflectionProbe, 32);
 	assert_offsetof(GfxReflectionProbe, probeVolumeCount, 24);
 
@@ -7383,6 +7536,15 @@ namespace ZoneTool::H1
 		char __pad0[16];
 	}; assert_sizeof(GfxDisplacementParms, 16);
 
+	struct GfxLightmapParameters
+	{
+		int lightmapWidthPrimary;
+		int lightmapHeightPrimary;
+		int lightmapWidthSecondary;
+		int lightmapHeightSecondary;
+		int lightmapModelUnitsPerTexel;
+	};
+
 	struct GfxWorldDraw
 	{
 		unsigned int reflectionProbeCount;
@@ -7398,9 +7560,7 @@ namespace ZoneTool::H1
 		GfxRawTexture PTR64 lightmapSecondaryTextures;
 		GfxImage PTR64 lightmapOverridePrimary;
 		GfxImage PTR64 lightmapOverrideSecondary;
-		int u1[2];
-		int u2[2];
-		int u3;
+		GfxLightmapParameters lightmapParameters;
 		unsigned int trisType;
 		unsigned int vertexCount;
 		GfxWorldVertexData vd;
@@ -7444,9 +7604,22 @@ namespace ZoneTool::H1
 		unsigned short rgb[56][3];
 	}; assert_sizeof(GfxLightGridColorsHDR, 336);
 
+	enum $25ED8C8BD8ECF2D54402B1200AEDD83D : std::int32_t
+	{
+		LIGHTINGSTATE_NONE = 0x0,
+		LIGHTINGSTATE_A = 0x1,
+		LIGHTINGSTATE_B = 0x2,
+		LIGHTINGSTATE_COUNT = 0x3,
+		LIGHTINGSTATE_MAX = 0x2,
+	};
+
 	struct GfxLightGridTree
 	{
-		unsigned char index;
+		union
+		{
+			unsigned char lightingState;
+			unsigned char index;
+		};
 		unsigned char maxDepth;
 		char unused[2];
 		int nodeCount;
@@ -7477,7 +7650,8 @@ namespace ZoneTool::H1
 		GfxLightGridEntry PTR64 entries;
 		unsigned int colorCount;
 		GfxLightGridColors PTR64 colors;
-		char __pad0[20];
+		GfxLightGridEntry cachedSkyLightGridEntry;
+		float cachedSkyLightEntryAverageColor[3];
 		unsigned int missingGridColorIndex;
 		int tableVersion;
 		int paletteVersion;
@@ -7655,12 +7829,8 @@ namespace ZoneTool::H1
 	struct GfxSurfaceBounds
 	{
 		Bounds bounds;
-		unsigned __int16 mipRadius;
-		unsigned __int8 invHighMipRadius[5];
-		char __pad0[4];
-		char flags;
+		float unk[3];
 	}; assert_sizeof(GfxSurfaceBounds, 36);
-	assert_offsetof(GfxSurfaceBounds, flags, 35);
 
 	struct GfxPackedPlacement
 	{
@@ -7724,8 +7894,8 @@ namespace ZoneTool::H1
 		unsigned short lightingHandle;
 		unsigned short staticModelId;
 		unsigned short primaryLightEnvIndex;
-		unsigned short unk0;
-		char unk1;
+		unsigned short reactiveMotionCullDist;
+		unsigned char reactiveMotionLOD;
 		unsigned char reflectionProbeIndex;
 		unsigned char firstMtlSkinIndex;
 		unsigned char sunShadowFlags;
@@ -7735,7 +7905,7 @@ namespace ZoneTool::H1
 	assert_offsetof(GfxStaticModelDrawInst, flags, 66);
 	assert_offsetof(GfxStaticModelDrawInst, lightingHandle, 68);
 	assert_offsetof(GfxStaticModelDrawInst, primaryLightEnvIndex, 72);
-	assert_offsetof(GfxStaticModelDrawInst, reflectionProbeIndex, 77); // maybe wrong
+	assert_offsetof(GfxStaticModelDrawInst, reflectionProbeIndex, 77);
 	assert_offsetof(GfxStaticModelDrawInst, firstMtlSkinIndex, 78);
 
 	struct GfxStaticModelVertexLighting
@@ -7757,29 +7927,20 @@ namespace ZoneTool::H1
 		float offset[2];
 		float scale[2];
 		unsigned int lightmapIndex;
-		char __pad0[4];
-	}; assert_sizeof(GfxStaticModelLightmapInfo, 24);
+	};
 
-	struct GfxStaticModelGroundLightingInfo
+	struct GfxStaticModelAmbientLightingInfo
 	{
-		unsigned short groundLighting[4]; // float16
-		char __pad0[16];
-	}; assert_sizeof(GfxStaticModelGroundLightingInfo, 24);
-
-	struct GfxStaticModelLightGridLightingInfo
-	{
-		unsigned short instanced_lighting[4]; // float16
-		int colorsIndex;
-		float scale;
-		char __pad0[8];
-	}; assert_sizeof(GfxStaticModelLightGridLightingInfo, 24);
+		GfxColorHdr groundLighting;
+		unsigned int colorIndex;
+		float primaryLightWeight;
+	};
 
 	union GfxStaticModelLighting
 	{
+		GfxStaticModelAmbientLightingInfo ambientLightingInfo;
 		GfxStaticModelVertexLightingInfo vertexLightingInfo;
 		GfxStaticModelLightmapInfo modelLightmapInfo;
-		GfxStaticModelGroundLightingInfo modelGroundLightingInfo;
-		GfxStaticModelLightGridLightingInfo modelLightGridLightingInfo;
 		char pad[24];
 	}; assert_sizeof(GfxStaticModelLighting, 24);
 
@@ -7833,7 +7994,7 @@ namespace ZoneTool::H1
 		GfxStaticModelDrawInst PTR64 smodelDrawInsts; // 680
 		unsigned int PTR64 unknownSModelVisData1; // 688
 		unsigned int PTR64 unknownSModelVisData2; // 696
-		GfxStaticModelLighting PTR64 smodelLighting; // 704 (array)
+		GfxStaticModelLighting PTR64 smodelLightingInsts; // 704 (array)
 		GfxSubdivVertexLightingInfo PTR64 subdivVertexLighting; // 712 (array)
 		GfxDrawSurf PTR64 surfaceMaterials; // 720
 		unsigned int PTR64 surfaceCastsSunShadow; // 728
@@ -7850,7 +8011,7 @@ namespace ZoneTool::H1
 	assert_offsetof(GfxWorldDpvsStatic, smodelUmbraVisData[0], 568);
 	assert_offsetof(GfxWorldDpvsStatic, tessellationCutoffVisData, 640);
 	assert_offsetof(GfxWorldDpvsStatic, smodelDrawInsts, 680);
-	assert_offsetof(GfxWorldDpvsStatic, smodelLighting, 704);
+	assert_offsetof(GfxWorldDpvsStatic, smodelLightingInsts, 704);
 	assert_offsetof(GfxWorldDpvsStatic, sunSurfVisDataCount, 740);
 	assert_offsetof(GfxWorldDpvsStatic, constantBuffersAmbient, 768);
 
@@ -7881,10 +8042,10 @@ namespace ZoneTool::H1
 
 	struct GfxBuildInfo
 	{
-		const char PTR64 args0;
-		const char PTR64 args1;
-		const char PTR64 buildStartTime;
-		const char PTR64 buildEndTime;
+		const char PTR64 bspCommandline;
+		const char PTR64 lightCommandline;
+		const char PTR64 bspTimestamp;
+		const char PTR64 lightTimestamp;
 	}; assert_sizeof(GfxBuildInfo, 32);
 
 	enum FogTypes : std::int8_t
@@ -7920,14 +8081,14 @@ namespace ZoneTool::H1
 		GfxCellTree PTR64 aabbTrees; // 136
 		GfxCell PTR64 cells; // 144
 		GfxPortalGroup PTR64 portalGroup; // 152
-		int unk_vec4_count_0; // 160
+		unsigned int portalDistanceAnchorCount; // 160
 		char __pad1[4];
-		vec4_t PTR64 unk_vec4_0; // 168
+		vec4_t PTR64 portalDistanceAnchorsAndCloseDistSquared; // 168
 		GfxWorldDraw draw; // 176
 		GfxLightGrid lightGrid; // 432
 		int modelCount; // 1512
 		GfxBrushModel PTR64 models; // 1520
-		Bounds unkBounds;
+		Bounds bounds;
 		Bounds shadowBounds;
 		unsigned int checksum;
 		int materialMemoryCount; // 1580
@@ -7956,9 +8117,10 @@ namespace ZoneTool::H1
 		umbraTomePtr_t umbraTomePtr; // 2776
 		unsigned int mdaoVolumesCount; // 2784
 		MdaoVolume PTR64 mdaoVolumes; // 2792
-		int unk1;
-		float unk2[6];
-		int unk3;
+		bool useLightGridDefaultModelLightingLookup;
+		bool useLightGridDefaultFXLightingLookup;
+		float lightGridDefaultModelLightingLookup[3];
+		float lightGridDefaultFXLightingLookup[3];
 		GfxBuildInfo buildInfo; // 2832
 	}; assert_sizeof(GfxWorld, 0xB30);
 	assert_offsetof(GfxWorld, skyCount, 32);
@@ -7967,8 +8129,8 @@ namespace ZoneTool::H1
 	assert_offsetof(GfxWorld, aabbTreeCounts, 128);
 	assert_offsetof(GfxWorld, cells, 144);
 	assert_offsetof(GfxWorld, portalGroup, 152);
-	assert_offsetof(GfxWorld, unk_vec4_count_0, 160);
-	assert_offsetof(GfxWorld, unk_vec4_0, 168);
+	assert_offsetof(GfxWorld, portalDistanceAnchorCount, 160);
+	assert_offsetof(GfxWorld, portalDistanceAnchorsAndCloseDistSquared, 168);
 	assert_offsetof(GfxWorld, draw, 176);
 	assert_offsetof(GfxWorld, lightGrid, 432);
 	assert_offsetof(GfxWorld, modelCount, 1512);
@@ -8024,11 +8186,10 @@ namespace ZoneTool::H1
 
 	struct Clut
 	{
-		int count0;
-		int count1;
-		int count2;
-		int pad;
-		char PTR64 unk;
+		unsigned int width;
+		unsigned int height;
+		unsigned int depth;
+		unsigned char PTR64 pixels;
 		const char PTR64 name;
 	}; assert_sizeof(Clut, 0x20);
 
@@ -8147,8 +8308,8 @@ namespace ZoneTool::H1
 		$3936EE84564F75EDA6DCBAC77A545FC8 ___u9;
 		PathNodeParentUnion parent;
 		$5F11B9753862CE791E23553F99FA1738 ___u11;
-		char __pad0[4];
 		short wOverlapNode[2];
+		char __pad0[4];
 		unsigned short totalLinkCount;
 		pathlink_s PTR64 Links;
 		scr_string_t customangles;
@@ -8262,20 +8423,20 @@ namespace ZoneTool::H1
 
 	enum VehicleType : std::int32_t
 	{
-		VEH_WHEELS_4 = 0x0,
-		VEH_TANK = 0x1,
-		VEH_PLANE = 0x2,
-		VEH_BOAT = 0x3,
-		VEH_ARTILLERY = 0x4,
-		VEH_HELICOPTER = 0x5,
-		VEH_SNOWMOBILE = 0x6,
-		VEH_SUBMARINE = 0x7,
-		VEH_UGV = 0x8,
-		VEH_UNK9 = 0x9,
-		VEH_UNK10 = 10,
-		VEH_MOBILECOVER = 11,
+		VEH_WHEELS_4 = 0,
+		VEH_TANK = 1,
+		VEH_PLANE = 2,
+		VEH_BOAT = 3,
+		VEH_ARTILLERY = 4,
+		VEH_HELICOPTER = 5,
+		VEH_SNOWMOBILE = 6,
+		VEH_SUBMARINE = 7,
+		VEH_UGV = 8,
+		VEH_WALKER = 9,
+		VEH_BALL_WHEELS = 10,
+		VEH_MOBILE_COVER = 11,
 		VEH_JETBIKE = 12,
-		VEH_UNK13 = 13,
+		VEH_RECON_UGV = 13,
 		VEH_HOVERTANK = 14,
 		VEH_DIVEBOAT = 15,
 		VEH_TYPE_COUNT = 16,
@@ -8297,16 +8458,16 @@ namespace ZoneTool::H1
 		const char PTR64 physMassName;
 		PhysMass PTR64 physMass;
 		const char PTR64 accelGraphName;
-		int unk_48;
-		int unk_52;
-		int unk_56;
+		VehicleAxleType steeringAxle;
+		VehicleAxleType powerAxle;
+		VehicleAxleType brakingAxle;
 		float topSpeed;
-		float unk_64;
+		float topSpeedTurbo;
 		float reverseSpeed;
 		float maxVelocity;
 		float maxPitch;
 		float maxRoll;
-		float unk_84;
+		float wheelRadius;
 		float suspensionTravelFront;
 		float suspensionTravelRear;
 		float suspensionStrengthFront;
@@ -8318,14 +8479,14 @@ namespace ZoneTool::H1
 		float frictionTopSpeed;
 		float frictionSide;
 		float frictionSideRear;
-		float unk_132;
-		float unk_136;
-		float unk_140;
-		float unk_144;
-		float unk_148;
-		float unk_152;
-		float unk_156;
-		float unk_160;
+		float handBrakeLongitudinalSteerableFrictionScale;
+		float handBrakeLateralSteerableFrictionScale;
+		float handBrakeLongitudinalNonsteerableFrictionScale;
+		float handBrakeLateralNonsteerableFrictionScale;
+		float handBrakingStrength;
+		float handBrakeExtraYawTorque;
+		float speedAtMaxHandBrakeExtraYawTorque;
+		float driveForceFalloffFraction;
 		float velocityDependentSlip;
 		float rollStability;
 		float rollResistance;
@@ -8348,9 +8509,8 @@ namespace ZoneTool::H1
 		float slipFricRateFront;
 		float slipFricRateRear;
 		float slipYawTorque;
-		float unk_252;
-		float unk_256;
-		float unk_260;
+		float cruiseControlProportionalGain;
+		float cruiseControlIntegralGain;
 	}; assert_sizeof(VehiclePhysDef, 0x108);
 	assert_offsetof(VehiclePhysDef, accelGraphName, 40);
 	assert_offsetof(VehiclePhysDef, rollStability, 168);
@@ -8383,9 +8543,9 @@ namespace ZoneTool::H1
 		const char PTR64 useHintString;
 		int health;
 		int quadBarrel;
-		int unk_32;
-		int unk_36; // ScrCmd_SetOtherEnt
-		int unk_40;
+		int hitClientScriptables;
+		int multipleLinkedGroundEntities;
+		int hideVehicleForDriver;
 		float texScrollScale;
 		float topSpeed;
 		float accel;
@@ -8393,7 +8553,7 @@ namespace ZoneTool::H1
 		float rotAccel;
 		float maxBodyPitch;
 		float maxBodyRoll;
-		float unk_72;
+		int legIK;
 		float fakeBodyAccelPitch;
 		float fakeBodyAccelRoll;
 		float fakeBodyVelPitch;
@@ -8422,37 +8582,37 @@ namespace ZoneTool::H1
 		int projectileDamage;
 		int projectileSplashDamage;
 		int heavyExplosiveDamage;
-		int unk_196;
+		int pad1;
 		VehiclePhysDef vehPhysDef;
 		float boostDuration;
 		float boostRechargeTime;
 		float boostAcceleration;
-		float unk_476;
+		float boostTopSpeed;
 		float suspensionTravel;
 		float maxSteeringAngle;
 		float steeringLerp;
-		float steeringLerpUnk; // Vehicle_LerpSteering
+		float steeringLerpCentering;
 		float minSteeringScale;
 		float minSteeringSpeed;
-		float unk_504;
-		float unk_508;
-		FxEffectDef PTR64 effect01;
-		FxEffectDef PTR64 effect02;
-		FxEffectDef PTR64 effect03;
-		FxEffectDef PTR64 effect04;
-		FxEffectDef PTR64 effect05;
-		float unk_552;
-		float unk_556;
-		float unk_560;
-		float unk_564;
+		float disableWheelsTurning;
+		float pad2;
+		FxEffectDef PTR64 treadDefaultFx;
+		FxEffectDef PTR64 handBrakeDefaultFx;
+		FxEffectDef PTR64 handBrakeLeftFx;
+		FxEffectDef PTR64 handBrakeRightFx;
+		FxEffectDef PTR64 boostFx;
+		float treadFxSlowestRepeatRate;
+		float treadFxFastestRepeatRate;
+		float treadFxMinSpeed;
+		float treadFxMaxSpeed;
 		int vehHelicopterIsASplinePlane;
-		int unk_572;
-		int unk_576;
+		int vehHelicopterOrbitsAroundPoint;
+		int vehHelicopterLockAltitude;
 		int vehHelicopterOffsetFromMesh;
-		float unk_584;
-		float unk_588;
-		float unk_592;
-		float unk_596;
+		float vehHelicopterAltitudeOffset;
+		float vehHelicopterPitchOffset;
+		float vehHelicopterBoundsRadius;
+		float vehHelicopterBoundsOffsetZ;
 		float vehHelicopterMaxSpeed;
 		float vehHelicopterMaxSpeedVertical;
 		float vehHelicopterMaxAccel;
@@ -8474,12 +8634,12 @@ namespace ZoneTool::H1
 		float vehHelicopterMaxRoll;
 		float vehHelicopterHoverSpeedThreshold;
 		float vehHelicopterJitterJerkyness;
-		int unk_684;
-		float unk_688;
-		float unk_692;
-		float unk_696;
-		float unk_700;
-		float unk_704;
+		int vehHelicopterUseHoverWobble;
+		float vehHelicopterHoverWobblePhase;
+		float vehHelicopterHoverWobbleAmplitude;
+		int vehHelicopterUseBob;
+		float vehHelicopterBobPhase;
+		float vehHelicopterBobAmplitude;
 		float vehHelicopterLookaheadTime;
 		int vehHelicopterSoftCollisions;
 		int vehHelicopterUseGroundFX;
@@ -8517,77 +8677,77 @@ namespace ZoneTool::H1
 		float vehSplinePlaneMaxTiltPitch;
 		float vehSplinePlaneTiltRollRate;
 		float vehSplinePlaneTiltPitchRate;
-		float unk_864;
-		float unk_868;
-		float unk_872;
-		float unk_876;
-		float unk_880;
-		float unk_884;
-		float unk_888;
-		float unk_892;
-		float unk_896;
-		float unk_900;
-		float unk_904;
-		float unk_908;
-		float unk_912;
-		float unk_916;
-		float unk_920;
-		float unk_924;
-		float unk_928;
-		float unk_932;
-		float unk_936;
-		float unk_940;
-		float unk_944;
-		float unk_948;
-		float unk_952;
-		float unk_956;
-		float unk_960;
-		float unk_964;
-		float unk_968;
-		float unk_972;
-		float unk_976;
-		float unk_980;
-		float unk_984;
-		float unk_988;
-		float unk_992;
-		float unk_996;
-		float unk_1000;
-		float unk_1004;
-		float unk_1008;
-		float unk_1012;
-		float unk_1016;
-		float unk_1020;
-		float unk_1024;
-		float unk_1028;
-		float unk_1032;
-		float unk_1036;
-		float unk_1040;
-		float unk_1044;
-		const char PTR64 steeringGraphName;
-		int numSteeringGraphs; // set in Vehicle_LoadServerDefAssets
-		float unk_1060;
-		float unk_1064;
-		float unk_1068;
-		float unk_1072;
-		float unk_1076;
-		float unk_1080;
-		float unk_1084;
-		float unk_1088;
-		float unk_1092;
-		float unk_1096;
-		float unk_1100;
-		float unk_1104;
-		float unk_1108;
-		float unk_1112;
-		float unk_1116;
-		float unk_1120;
-		float unk_1124;
-		float unk_1128;
-		float unk_1132;
-		float unk_1136;
-		float unk_1140;
-		float unk_1144;
-		float unk_1148;
+		float vehJetbikeThrottleForce;
+		float vehJetbikeStrafeForce;
+		float vehJetbikeYawTorque;
+		float vehJetbikePitchTorque;
+		float vehJetbikeYawDamping;
+		float vehJetbikePitchDamping;
+		float vehJetbikeRollDamping;
+		float vehJetbikeRepulsorMaxForceFraction;
+		float vehJetbikeRepulsorMinForceFraction;
+		float vehJetbikeRepulsorCompressionDampingConstant;
+		float vehJetbikeRepulsorReboundDampingConstant;
+		float vehJetbikeRepulsorTorqueScale;
+		float vehJetbikeRepulsorCrossCoupling;
+		float vehJetbikeAntislipConstant;
+		float vehJetbikeAntislipMaxForce;
+		float vehJetbikeControlForceLocalOffsetX;
+		float vehJetbikeControlForceLocalOffsetZ;
+		float vehJetbikeControlTorqueLocalOffsetX;
+		float vehJetbikeControlTorqueLocalOffsetZ;
+		float vehJetbikeMaxControlForce;
+		float vehJetbikeMinContactForFullControl;
+		float vehJetbikeThrustScaleWithNoContact;
+		float vehJetbikeTorqueScaleWithNoContact;
+		float vehJetbikeUprightingTorque;
+		float vehJetbikeUprightingTorqueWithNoContact;
+		float vehJetbikeWeathervaneTorque;
+		float vehJetbikeWeathervaneTorqueWithNoContact;
+		float vehJetbikeAiSteeringConstant;
+		float vehJetbikeAiStationarySteeringScale;
+		float vehJetbikeAiThrottleConstant;
+		float vehHovertankAutoYawForce;
+		float vehHovertankAutoBrakeForce;
+		float vehHovertankRandomHoverForceMagMin;
+		float vehHovertankRandomHoverForceMagMax;
+		float vehHovertankRandomHoverForceStartTimerMin;
+		float vehHovertankRandomHoverForceStartTimerMax;
+		float vehHovertankRandomHoverForceDurationMin;
+		float vehHovertankRandomHoverForceDurationMax;
+		float vehDiveboatInitialDiveForceFactor;
+		float vehDiveboatContinuingDiveForceFactor;
+		float vehDiveboatMaxDiveTime;
+		float vehDiveboatDiveResetTime;
+		float vehDiveboatSubmergedDragFactor;
+		float vehDiveboatRollFactor;
+		float vehDiveboatBuoyancyOffset;
+		float pad3;
+		const char PTR64 vehDiveboatSteeringGraphName;
+		int steeringGraphIndex;
+		float vehOrbiterMinYaw;
+		float vehOrbiterMaxYaw;
+		float vehOrbiterMinZ;
+		float vehOrbiterMaxZ;
+		float vehOrbiterAngularAcceleration;
+		float vehOrbiterAngularMaxVelocity;
+		float vehOrbiterAngularDeceleration;
+		float vehOrbiterAngularADSDeceleration;
+		float vehOrbiterAngularBraking;
+		float vehOrbiterAngularADSBraking;
+		float vehOrbiterAngularLookAheadTime;
+		float vehOrbiterVerticalAcceleration;
+		float vehOrbiterVerticalMaxVelocity;
+		float vehOrbiterVerticalDeceleration;
+		float vehOrbiterVerticalADSDeceleration;
+		float vehOrbiterVerticalBraking;
+		float vehOrbiterVerticalADSBraking;
+		float vehOrbiterVerticalLookAheadTime;
+		float vehOrbiterADSVelocityMult;
+		float vehOrbiterTiltRollMax;
+		float vehOrbiterTiltRollRate;
+		float vehOrbiterTiltPitchMax;
+		float vehOrbiterTiltPitchRate;
 		int camLookEnabled;
 		int camRelativeControl;
 		int camRemoteDrive;
@@ -8605,19 +8765,19 @@ namespace ZoneTool::H1
 		float camVehicleAnglePitchRate;
 		float camVehicleAngleYawRate;
 		float camVehicleAngleRollRate;
-		float unk_1220;
-		float unk_1224;
-		float unk_1228;
-		float unk_1232;
-		float unk_1236;
-		float unk_1240;
-		float unk_1244;
-		float unk_1248;
-		float unk_1252;
-		float unk_1256;
-		float unk_1260;
-		float unk_1264;
-		int unk_1268;
+		float camShakeMinSpeed;
+		float camShakeMaxSpeed;
+		float camShakeMinFreq;
+		float camShakeMaxFreq;
+		float camShakeMaxAmplitudePitch;
+		float camShakeMaxAmplitudeYaw;
+		float camShakeMaxAmplitudeRoll;
+		float camShakeMaxAmplitudeX;
+		float camShakeMaxAmplitudeY;
+		float camShakeMaxAmplitudeZ;
+		float camShakeMinAmplitudeScale;
+		int camShakeTurretInherit;
+		int vehCam_UseGDT;
 		float vehCam_anglesPitch;
 		float vehCam_anglesYaw;
 		float vehCam_anglesRoll;
@@ -8642,10 +8802,10 @@ namespace ZoneTool::H1
 		float vehCam_pitchTurnRate3P;
 		float vehCam_pitchClamp3P;
 		float vehCam_yawTurnRate3P;
-		float unk_1368;
+		float vehCam_yawTurnRate3PHandbrakeInc;
 		float vehCam_yawClamp3P;
 		VehCamZOffsetMode vehCam_zOffsetMode3P;
-		float unk_1380;
+		float pad4;
 		const char PTR64 turretWeaponName;
 		WeaponDef PTR64 turretWeapon;
 		float turretHorizSpanLeft;
@@ -8678,7 +8838,7 @@ namespace ZoneTool::H1
 		snd_alias_list_t PTR64 idleHighSnd;
 		snd_alias_list_t PTR64 engineLowSnd;
 		snd_alias_list_t PTR64 engineHighSnd;
-		snd_alias_list_t PTR64 sound_1584; // rename
+		snd_alias_list_t PTR64 boostSnd;
 		float engineSndSpeed;
 		scr_string_t audioOriginTag;
 		snd_alias_list_t PTR64 idleLowSndAlt;
@@ -8719,114 +8879,7 @@ namespace ZoneTool::H1
 		bool soundTriggerOverrideOcclusion;
 		bool soundTriggerOverrideAmbient;
 		bool soundTriggerOverrideAmbientEvents;
-		bool soundTriggerOverrideADSR;
 	}; assert_sizeof(VehicleDef, 0x8D0);
-	assert_offsetof(VehicleDef, vehPhysDef, 200);
-	assert_offsetof(VehicleDef, effect01, 512);
-	assert_offsetof(VehicleDef, effect05, 544);
-	assert_offsetof(VehicleDef, vehHelicopterGroundFx, 720);
-	assert_offsetof(VehicleDef, vehHelicopterGroundWaterFx, 728);
-	assert_offsetof(VehicleDef, steeringGraphName, 1048);
-	assert_offsetof(VehicleDef, turretWeaponName, 1384);
-	assert_offsetof(VehicleDef, turretWeapon, 1392);
-	assert_offsetof(VehicleDef, turretSpinSnd, 1440);
-	assert_offsetof(VehicleDef, turretStopSnd, 1448);
-	assert_offsetof(VehicleDef, trophyTags, 1476);
-	assert_offsetof(VehicleDef, trophyExplodeFx, 1496);
-	assert_offsetof(VehicleDef, trophyFlashFx, 1504);
-	assert_offsetof(VehicleDef, compassFriendlyIcon, 1512);
-	assert_offsetof(VehicleDef, compassEnemyIcon, 1520);
-	assert_offsetof(VehicleDef, compassFriendlyAltIcon, 1528);
-	assert_offsetof(VehicleDef, compassEnemyAltIcon, 1536);
-	assert_offsetof(VehicleDef, idleLowSnd, 1552);
-	assert_offsetof(VehicleDef, idleHighSnd, 1560);
-	assert_offsetof(VehicleDef, engineLowSnd, 1568);
-	assert_offsetof(VehicleDef, engineHighSnd, 1576);
-	assert_offsetof(VehicleDef, sound_1584, 1584);
-	assert_offsetof(VehicleDef, audioOriginTag, 1596);
-
-	assert_offsetof(VehicleDef, health, 24);
-	assert_offsetof(VehicleDef, quadBarrel, 28);
-	assert_offsetof(VehicleDef, unk_36, 36);
-
-	assert_offsetof(VehicleDef, accel, 52);
-	assert_offsetof(VehicleDef, rotRate, 56);
-	assert_offsetof(VehicleDef, rotAccel, 60);
-	assert_offsetof(VehicleDef, maxBodyPitch, 64);
-	assert_offsetof(VehicleDef, maxBodyRoll, 68);
-	assert_offsetof(VehicleDef, fakeBodyAccelPitch, 76);
-	assert_offsetof(VehicleDef, fakeBodyAccelRoll, 80);
-	assert_offsetof(VehicleDef, fakeBodyVelPitch, 84);
-	assert_offsetof(VehicleDef, fakeBodyVelRoll, 88);
-	assert_offsetof(VehicleDef, fakeBodySideVelPitch, 92);
-	assert_offsetof(VehicleDef, fakeBodyPitchStrength, 96);
-	assert_offsetof(VehicleDef, fakeBodyRollStrength, 100);
-	assert_offsetof(VehicleDef, fakeBodyPitchDampening, 104);
-	assert_offsetof(VehicleDef, fakeBodyRollDampening, 108);
-	assert_offsetof(VehicleDef, fakeBodyBoatRockingAmplitude, 112);
-	assert_offsetof(VehicleDef, fakeBodyBoatRockingPeriod, 116);
-	assert_offsetof(VehicleDef, fakeBodyBoatRockingRotationPeriod, 120);
-	assert_offsetof(VehicleDef, fakeBodyBoatRockingFadeoutSpeed, 124);
-	assert_offsetof(VehicleDef, boatBouncingMinForce, 128);
-	assert_offsetof(VehicleDef, boatBouncingMaxForce, 132);
-	assert_offsetof(VehicleDef, boatBouncingRate, 136);
-	assert_offsetof(VehicleDef, boatBouncingFadeinSpeed, 140);
-	assert_offsetof(VehicleDef, boatBouncingFadeoutSteeringAngle, 144);
-	assert_offsetof(VehicleDef, collisionDamage, 148);
-	assert_offsetof(VehicleDef, collisionSpeed, 152);
-
-	assert_offsetof(VehicleDef, playerProtected, 168);
-	assert_offsetof(VehicleDef, bulletDamage, 172);
-	assert_offsetof(VehicleDef, armorPiercingDamage, 176);
-	assert_offsetof(VehicleDef, grenadeDamage, 180);
-	assert_offsetof(VehicleDef, projectileDamage, 184);
-	assert_offsetof(VehicleDef, projectileSplashDamage, 188);
-	assert_offsetof(VehicleDef, heavyExplosiveDamage, 192);
-
-	assert_offsetof(VehicleDef, vehPhysDef.minimumMomentumForCollision, 404);
-
-	assert_offsetof(VehicleDef, boostDuration, 464);
-	assert_offsetof(VehicleDef, boostRechargeTime, 468);
-	assert_offsetof(VehicleDef, boostAcceleration, 472);
-
-	assert_offsetof(VehicleDef, suspensionTravel, 480);
-	assert_offsetof(VehicleDef, maxSteeringAngle, 484);
-	assert_offsetof(VehicleDef, steeringLerp, 488);
-	assert_offsetof(VehicleDef, steeringLerpUnk, 492);
-	assert_offsetof(VehicleDef, minSteeringScale, 496);
-	assert_offsetof(VehicleDef, minSteeringSpeed, 500);
-
-	assert_offsetof(VehicleDef, vehHelicopterIsASplinePlane, 568);
-
-	assert_offsetof(VehicleDef, camRelativeControl, 1156);
-	assert_offsetof(VehicleDef, camRemoteDrive, 1160);
-
-	assert_offsetof(VehicleDef, camRollInfluence, 1184);
-	assert_offsetof(VehicleDef, camFovIncrease, 1188);
-	assert_offsetof(VehicleDef, camFovOffset, 1192);
-
-	assert_offsetof(VehicleDef, vehCam_anglesPitch, 1272);
-	assert_offsetof(VehicleDef, vehCam_anglesYaw, 1276);
-	assert_offsetof(VehicleDef, vehCam_anglesRoll, 1280);
-
-	assert_offsetof(VehicleDef, vehCam_offsetX, 1284);
-	assert_offsetof(VehicleDef, vehCam_offsetY, 1288);
-	assert_offsetof(VehicleDef, vehCam_offsetZ, 1292);
-
-	assert_offsetof(VehicleDef, vehCam_pitchClamp, 1308);
-	assert_offsetof(VehicleDef, vehCam_yawClamp, 1316);
-
-	assert_offsetof(VehicleDef, vehCam_zOffsetMode, 1320);
-
-	assert_offsetof(VehicleDef, vehCam_offsetX3P, 1336);
-	assert_offsetof(VehicleDef, vehCam_offsetY3P, 1340);
-	assert_offsetof(VehicleDef, vehCam_offsetZ3P, 1344);
-	assert_offsetof(VehicleDef, vehCam_radius3P, 1348);
-
-	assert_offsetof(VehicleDef, vehCam_pitchTurnRate3P, 1356);
-	assert_offsetof(VehicleDef, vehCam_pitchClamp3P, 1360);
-
-	assert_offsetof(VehicleDef, vehCam_zOffsetMode3P, 1376);
 
 	struct FxImpactEntry
 	{
@@ -9143,16 +9196,20 @@ namespace ZoneTool::H1
 	{
 		const char PTR64 name;
 		short volModIndex;
-		//short pad;
-		float volume;
-		int unk[2];
+		float value;
+		int fadeInTime;
+		int fadeOutTime;
 	}; assert_sizeof(SndSubmix, 24);
 
 	struct SndSubmixList
 	{
-		const char PTR64 name;
-		SndSubmix PTR64 submixes;
-		int submixCount;
+		union
+		{
+			const char PTR64 submixName;
+			const char PTR64 name;
+		};
+		SndSubmix PTR64 head;
+		int count;
 	}; assert_sizeof(SndSubmixList, 0x18);
 
 	struct ReverbPreset

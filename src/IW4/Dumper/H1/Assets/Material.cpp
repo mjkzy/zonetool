@@ -226,36 +226,37 @@ namespace ZoneTool
 
 				MATERIAL_DUMP_STRING(name);
 
-				std::string iw4_techset;
+				std::string techset;
 				std::string h1_techset;
 				if (asset->techniqueSet)
 				{
-					iw4_techset = asset->techniqueSet->name;
-					if (iw4_techset.starts_with("iw3/"))
+					techset = asset->techniqueSet->name;
+					if (techset.starts_with("iw3/"))
 					{
-						iw4_techset.erase(0, 4);
+						techset.erase(0, 4);
 					}
 
-					if (iw4_techset.ends_with("_sat"))
+					if (techset.ends_with("_sat"))
 					{
-						auto idx = iw4_techset.find("_sat");
-						iw4_techset.erase(idx, 4);
+						auto idx = techset.find("_sat");
+						techset.erase(idx, 4);
 					}
 
-					if (iw4_techset.ends_with(".3x")) // iw3xport
+					if (techset.ends_with(".3x")) // iw3xport
 					{
-						auto idx = iw4_techset.find(".3x");
-						iw4_techset.erase(idx, 3);
+						auto idx = techset.find(".3x");
+						techset.erase(idx, 3);
 					}
 
 					bool result = false;
-					h1_techset = H1::get_h1_techset(iw4_techset, asset->name, &result);
-					if (!result)
+					h1_techset = H1::get_h1_techset(techset, asset->name, &result);
+					/*if (!result)
 					{
 						ZONETOOL_ERROR("Not dumping material \"%s\"", asset->name);
 						return;
-					}
+					}*/
 					matdata["techniqueSet->name"] = h1_techset;
+					matdata["techniqueSet->og_name"] = techset;
 				}
 
 				matdata["gameFlags"] = asset->gameFlags; // convert
@@ -275,24 +276,45 @@ namespace ZoneTool
 				matdata["materialType"] = H1::get_material_type_from_name(asset->name);
 				matdata["assetFlags"] = H1::MTL_ASSETFLAG_NONE;
 
-				ordered_json constant_table;
-				for (int i = 0; i < asset->constantCount && iw4_techset != "2d"; i++)
+				ordered_json constant_table = json::array();
+				for (int i = 0; i < asset->constantCount && techset != "2d"; i++)
 				{
 					ordered_json table;
 					std::string constant_name = asset->constantTable[i].name;
+					const auto constant_hash = asset->constantTable[i].nameHash;
 
 					if (constant_name.size() > 12)
 					{
 						constant_name.resize(12);
 					}
 
-					if (constant_name == "colorTint" &&
-						asset->constantTable[i].literal[0] == 1.0f &&
-						asset->constantTable[i].literal[1] == 1.0f &&
-						asset->constantTable[i].literal[2] == 1.0f &&
-						asset->constantTable[i].literal[3] == 1.0f)
+					if (h1_techset.find("_ct_") == std::string::npos || h1_techset.find("ct0") == std::string::npos)
 					{
-						continue;
+						if (constant_name == "colorTint" &&
+							asset->constantTable[i].literal[0] == 1.0f &&
+							asset->constantTable[i].literal[1] == 1.0f &&
+							asset->constantTable[i].literal[2] == 1.0f &&
+							asset->constantTable[i].literal[3] == 1.0f)
+						{
+							continue;
+						}
+					}
+
+					if (constant_hash == 148072969) // detailScale
+					{
+						const auto s1 = h1_techset.find("d0");
+						if (s1 != std::string::npos)
+						{
+							const auto s2 = h1_techset.find("sd0");
+							if (s2 - 1 == s1)
+							{
+								continue;
+							}
+						}
+						else
+						{
+							continue;
+						}
 					}
 
 					table["name"] = constant_name.data();
@@ -309,15 +331,22 @@ namespace ZoneTool
 				}
 
 #define CONSTANT_TABLE_ADD_IF_NOT_FOUND(CONST_NAME, CONST_HASH, LITERAL_1, LITERAL_2, LITERAL_3, LITERAL_4) \
-				bool has_table = false; \
+				bool has_const = false; \
+				std::size_t insert_position = constant_table.size(); \
 				for (std::size_t i = 0; i < constant_table.size(); i++) \
 				{ \
-					if (constant_table[i]["name"].get<std::string>() == CONST_NAME) \
+					if (constant_table[i]["nameHash"].get<std::size_t>() == CONST_HASH) \
 					{ \
-						has_table = true; \
+						has_const = true; \
+						break; \
+					} \
+					if (constant_table[i]["nameHash"].get<std::size_t>() > CONST_HASH) \
+					{ \
+						insert_position = i; \
+						break; \
 					} \
 				} \
-				if (!has_table) \
+				if (!has_const) \
 				{ \
 					ordered_json table; \
 					table["name"] = CONST_NAME; \
@@ -328,8 +357,13 @@ namespace ZoneTool
 					literal_entry[2] = LITERAL_3; \
 					literal_entry[3] = LITERAL_4; \
 					table["literal"] = literal_entry; \
-					constant_table[constant_table.size()] = table; \
-				} \
+					constant_table.insert(constant_table.begin() + insert_position, table); \
+				}
+
+				if (h1_techset.find("sd0") != std::string::npos)
+				{
+					CONSTANT_TABLE_ADD_IF_NOT_FOUND("envMapParms", 1033475292, 0.0f, 0.0f, 0.0f, 0.0f);
+				}
 
 				if (h1_techset.find("_flag_") != std::string::npos)
 				{
@@ -348,16 +382,9 @@ namespace ZoneTool
 
 				matdata["constantTable"] = constant_table;
 
-				int i_3447584578 = -1;
-
-				ordered_json material_images;
+				ordered_json material_images = json::array();
 				for (auto i = 0; i < asset->numMaps; i++)
 				{
-					if (asset->maps[i].typeHash > 3447584578 && i_3447584578 == -1)
-					{
-						i_3447584578 = i;
-					}
-
 					ordered_json image;
 					if (asset->maps[i].semantic == 11)
 					{
@@ -380,7 +407,8 @@ namespace ZoneTool
 						}
 						else
 						{
-							image["image"] = "";
+							ZONETOOL_WARNING("material %s has an empty image, assigning default...", asset->name);
+							image["image"] = "default";
 						}
 					}
 
@@ -394,22 +422,47 @@ namespace ZoneTool
 					material_images.push_back(image);
 				}
 
-				// fix for certain techniques
+#define IMAGE_ADD_IF_NOT_FOUND(IMAGE, SEMANTIC, SAMPLER_STATE, LAST_CHARACTER, FIRST_CHARACTER, HASH) \
+				bool has_image = false; \
+				std::size_t insert_position = material_images.size(); \
+				for (std::size_t i = 0; i < material_images.size(); i++) \
+				{ \
+					if (material_images[i]["typeHash"].get<std::size_t>() == HASH) \
+					{ \
+						has_image = true; \
+						break; \
+					} \
+					if (material_images[i]["typeHash"].get<std::size_t>() > HASH) \
+					{ \
+						insert_position = i; \
+						break; \
+					} \
+				} \
+				if (!has_image) \
+				{ \
+					ordered_json image; \
+					image["image"] = IMAGE; \
+					image["semantic"] = SEMANTIC; \
+					image["samplerState"] = SAMPLER_STATE; \
+					image["lastCharacter"] = LAST_CHARACTER; \
+					image["firstCharacter"] = FIRST_CHARACTER; \
+					image["typeHash"] = HASH; \
+					material_images.insert(material_images.begin() + insert_position, image); \
+				}
+
+				if (h1_techset.find("n0") != std::string::npos)
+				{
+					IMAGE_ADD_IF_NOT_FOUND("$identitynormalmap", 5, 1, 112, 110, 1507003663);
+				}
+
+				if (h1_techset.find("sd0") != std::string::npos)
+				{
+					IMAGE_ADD_IF_NOT_FOUND("$identitynormalmap", 8, 19, 112, 115, 887934131);
+				}
+
 				if (h1_techset.find("_lmpb_") != std::string::npos || h1_techset.find("_flag_") != std::string::npos)
 				{
-					if (i_3447584578 == -1)
-					{
-						i_3447584578 = asset->numMaps;
-					}
-
-					ordered_json image;
-					image["image"] = "~envbrdflut_ggx_16-rg";
-					image["semantic"] = 15;
-					image["samplerState"] = 226;
-					image["lastCharacter"] = 116;
-					image["firstCharacter"] = 101;
-					image["typeHash"] = 3447584578;
-					material_images.insert(material_images.begin() + i_3447584578, image);
+					IMAGE_ADD_IF_NOT_FOUND("~envbrdflut_ggx_16-rg", 15, 226, 116, 101, 3447584578);
 				}
 
 				matdata["textureTable"] = material_images;

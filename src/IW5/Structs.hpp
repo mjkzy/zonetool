@@ -2075,7 +2075,7 @@ namespace ZoneTool
 				unsigned int isSlave : 1;		// & 4	/ 0x4			/ 0000 0000 0000 0100
 				unsigned int fullDryLevel : 1;	//	& 8	/ 0x8			/ 0000 0000 0000 1000
 				unsigned int noWetLevel : 1;	// & 16	/ 0x10			/ 0000 0000 0001 0000
-				unsigned int unknown : 1;		// & 32	/ 0x20			/ 0000 0000 0010 0000
+				unsigned int randomLooping : 1;		// & 32	/ 0x20			/ 0000 0000 0010 0000
 				unsigned int unk_is3D : 1;		// & 64	/ 0x40			/ 0000 0000 0100 0000		// CONFIRMED IW4 IW5
 				unsigned int type : 2;			// & 384	/ 0x180		/ 0000 0001 1000 0000		// CONFIRMED IW4 IW5
 				unsigned int channel : 6;		// & 32256	/ 0x7E00	/ 0111 1110 0000 0000		// CONFIRMED IW4 IW5

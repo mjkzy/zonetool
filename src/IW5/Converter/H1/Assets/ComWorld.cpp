@@ -43,8 +43,8 @@ namespace ZoneTool::IW5
 				if (h1_asset->primaryLights[i].type == H1::GFX_LIGHT_TYPE_SPOT)
 				{
 					h1_asset->primaryLights[i].canUseShadowMap = 1;
-					h1_asset->primaryLights[i].needsDynamicShadows = 1;
-					h1_asset->primaryLights[i].isVolumetric = 0;
+					h1_asset->primaryLights[i].physicallyBased = 1;
+					h1_asset->primaryLights[i].lightingState = 0;
 
 					h1_asset->primaryLights[i].cucScaleVector[0] = 1.0f;
 					h1_asset->primaryLights[i].cucScaleVector[1] = 1.0f;
@@ -70,8 +70,8 @@ namespace ZoneTool::IW5
 				else if (h1_asset->primaryLights[i].type == H1::GFX_LIGHT_TYPE_OMNI)
 				{
 					h1_asset->primaryLights[i].canUseShadowMap = 1;
-					h1_asset->primaryLights[i].needsDynamicShadows = 1;
-					h1_asset->primaryLights[i].isVolumetric = 0;
+					h1_asset->primaryLights[i].physicallyBased = 1;
+					h1_asset->primaryLights[i].lightingState = 0;
 
 					h1_asset->primaryLights[i].cucScaleVector[0] = 1.0f;
 					h1_asset->primaryLights[i].cucScaleVector[1] = 1.0f;

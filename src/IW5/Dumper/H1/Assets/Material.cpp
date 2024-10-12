@@ -9,57 +9,69 @@ namespace ZoneTool
 	{
 		// - always use _sm_ _lmpb_ when it's available
 		// _ct_ = colorTint
+		// sr0 = reflection
+		// om0 = occlusion
 
 		std::unordered_map<std::string, std::string> mapped_techsets =
 		{
 			//	IW5,									H1
 			{"wc_l_sm_a0c0",							"wc_l_sm_a0c0_nfwpf_frt_aat"},
-			{"wc_l_sm_r0c0",							"wc_l_sm_lmpb_r0c0_nfwpf"},
-			{"wc_l_sm_r0c0_nocast",						"wc_l_sm_lmpb_r0c0_nfwpf"}, // couldn't find
+			{"wc_l_sm_a0c0_nocast",						"wc_l_sm_a0c0_nfwpf_frt_aat"}, // no nocast
+			{"wc_l_sm_r0c0",							"wc_l_sm_lmpb_r0c0sd0_nfwpf"}, // -> sd0
+			{"wc_l_sm_r0c0_nocast",						"wc_l_sm_lmpb_r0c0sd0_nfwpf_nocast"}, // -> sd0
 			{"wc_l_sm_r0c0d0n0s0",						"wc_l_sm_lmpb_r0c0d0n0sd0_nfwpf"},
 			{"wc_l_sm_r0c0d0n0s0p0",					"wc_l_sm_lmpb_r0c0d0n0sd0_nfwpf"}, // couldn't find
-			{"wc_l_sm_r0c0n0",							"wc_l_sm_lmpb_r0c0n0_nfwpf"},
+			{"wc_l_sm_r0c0n0",							"wc_l_sm_lmpb_r0c0n0sd0_nfwpf"}, // -> sd0
 			{"wc_l_sm_r0c0n0s0",						"wc_l_sm_lmpb_r0c0n0sd0_nfwpf"},
 			{"wc_l_sm_r0c0n0s0_nocast",					"wc_l_sm_lmpb_r0c0n0sd0_nfwpf_nocast"},
 			{"wc_l_sm_r0c0n0s0p0",						"wc_l_sm_lmpb_r0c0n0sd0p0_nfwpf"},
-			{"wc_l_sm_r0c0n0p0",						"wc_l_sm_lmpb_r0c0n0_nfwpf"}, // couldn't find
+			{"wc_l_sm_r0c0n0p0",						"wc_l_sm_lmpb_r0c0n0sd0_nfwpf"}, // couldn't find, -> sd0
+			{"wc_l_sm_r0c0q0n0",						"wc_l_sm_lmpb_r0c0q0n0sd0_nfwpf"}, // couldn't find
 			{"wc_l_sm_r0c0q0n0s0",						"wc_l_sm_lmpb_r0c0q0n0sd0_nfwpf"},
 			{"wc_l_sm_r0c0q0n0s0p0",					"wc_l_sm_r0c0q0n0sd0p0_nfwpf"},
 			{"wc_l_sm_r0c0s0",							"wc_l_sm_lmpb_r0c0sd0_nfwpf"},
-			{"wc_l_sm_r0c0s0p0",						"wc_l_sm_r0c0sd0p0_nfwpf"},
-			{"wc_l_sm_r0c0p0",							"wc_l_sm_lmpb_r0c0_nfwpf"}, // couldn't find
+			{"wc_l_sm_r0c0s0p0",						"wc_l_sm_lmpb_r0c0sd0_nfwpf"}, // couldn't find
+			{"wc_l_sm_r0c0p0",							"wc_l_sm_lmpb_r0c0sd0_nfwpf"}, // couldn't find, -> sd0
 			{"wc_l_sm_ua_r0c0n0s0p0_nocast",			"wc_l_sm_lmpb_ua_r0c0n0sd0_nfwpf_nocast"}, // couldn't find
 			{"wc_l_sm_t0c0",							"wc_l_sm_lmpb_t0c0_nfwpf"},
 			{"wc_l_sm_t0c0_nocast",						"wc_l_sm_lmpb_t0c0_nfwpf_nocast"},
-			{"wc_l_sm_t0c0n0",							"wc_l_sm_lmpb_t0c0n0_nfwpf"},
+			{"wc_l_sm_t0c0n0",							"wc_l_sm_lmpb_t0c0n0sd0_nfwpf"}, // -> sd0
 			{"wc_l_sm_t0c0n0s0",						"wc_l_sm_lmpb_t0c0n0sd0_nfwpf"},
+			{"wc_l_sm_t0c0n0s0_nocast",					"wc_l_sm_lmpb_t0c0n0sd0_nfwpf"}, // couldn't find
 			{"wc_l_sm_t0c0n0s0p0",						"wc_l_sm_lmpb_t0c0n0sd0_nfwpf"}, // couldn't find
+			{"wc_l_sm_t0c0n0s0p0_nocast",				"wc_l_sm_lmpb_t0c0n0sd0_nfwpf"}, // couldn't find
+			{"wc_l_sm_t0c0n0p0",						"wc_l_sm_lmpb_t0c0n0sd0_nfwpf"}, // couldn't find, -> sd0
+			{"wc_l_sm_t0c0q0n0p0",						"wc_l_sm_lmpb_t0c0n0sd0_nfwpf"}, // couldn't find, -> sd0
 			{"wc_l_sm_t0c0q0n0s0",						"wc_l_sm_lmpb_t0c0q0n0sd0_nfwpf"},
 			{"wc_l_sm_t0c0q0n0s0p0",					"wc_l_sm_lmpb_t0c0q0n0sd0_nfwpf"}, // couldn't find
 			{"wc_l_sm_t0c0s0",							"wc_l_sm_lmpb_t0c0sd0_nfwpf"},
+			{"wc_l_sm_t0c0s0_nocast",					"wc_l_sm_lmpb_t0c0sd0_nfwpf_nocast"},
 			{"wc_l_sm_t0c0s0p0",						"wc_l_sm_lmpb_t0c0sd0_nfwpf"}, // couldn't find
 			{"wc_l_sm_t0c0p0",							"wc_l_sm_lmpb_t0c0_nfwpf"}, // couldn't find
 			{"wc_l_sm_b0c0",							"wc_l_sm_lmpb_ndw_b0c0_cltrans"},
-			{"wc_l_sm_b0c0d0n0",						"wc_l_sm_lmpb_ndw_b0c0n0_nfwpf_frt_im_aat"}, // couldn't find
-			{"wc_l_sm_b0c0d0n0s0",						"wc_l_sm_lmpb_ndw_b0c0n0_nfwpf_frt_im_aat"}, // couldn't find
-			{"wc_l_sm_b0c0n0",							"wc_l_sm_lmpb_ndw_b0c0n0_nfwpf_frt_im_aat"},
+			{"wc_l_sm_b0c0d0n0",						"wc_l_sm_lmpb_ndw_b0c0n0sd0_cltrans"}, // couldn't find, -> sd0
+			{"wc_l_sm_b0c0d0n0s0",						"wc_l_sm_lmpb_ndw_b0c0n0sd0_cltrans"}, // couldn't find
+			{"wc_l_sm_b0c0n0",							"wc_l_sm_lmpb_ndw_b0c0n0sd0_cltrans"}, // -> sd0
 			{"wc_l_sm_b0c0n0s0",						"wc_l_sm_lmpb_ndw_b0c0n0sd0_cltrans"},
 			{"wc_l_sm_b0c0n0s0p0",						"wc_l_sm_lmpb_ndw_b0c0n0sd0_cltrans"}, // couldn't find
-			{"wc_l_sm_b0c0n0p0",						"wc_l_sm_lmpb_ndw_b0c0n0_nfwpf_frt_im_aat"}, // couldn't find
+			{"wc_l_sm_b0c0n0p0",						"wc_l_sm_lmpb_ndw_b0c0n0sd0_cltrans"}, // couldn't find, -> sd0
 			{"wc_l_sm_b0c0p0",							"wc_l_sm_lmpb_ndw_b0c0_cltrans"}, // couldn't find
 			{"wc_l_sm_b0c0s0",							"wc_l_sm_lmpb_ndw_b0c0sd0_cltrans"},
 			{"wc_l_sm_b0c0s0_nocast",					"wc_l_sm_lmpb_ndw_b0c0sd0_cltrans"}, // no nocast
 			{"wc_l_sm_b0c0s0p0",						"wc_l_sm_lmpb_ndw_b0c0sd0_cltrans"}, // couldn't find
+			{"wc_l_sm_b0c0q0n0",						"wc_l_sm_lmpb_ndw_b0c0_cltrans"}, // couldn't find
 			{"wc_l_sm_b0c0q0n0s0",						"wc_l_sm_lmpb_ndw_b0c0q0n0sd0_nfwpf_frt_aat"}, // cltrans
 			{"wc_l_sm_b0c0q0n0s0p0",					"wc_l_sm_lmpb_ndw_b0c0q0n0sd0_nfwpf_frt_aat"}, // couldn't find
 			{"wc_l_sm_ua_b0c0n0s0p0",					"wc_l_sm_ndw_ua_b0c0n0sd0p0_cltrans_nocast_frt_aat"},
 			{"wc_l_sm_ua_b0c0n0s0p0_nocast",			"wc_l_sm_ndw_ua_b0c0n0sd0p0_cltrans_nocast_frt_aat"}, // no nocast
+			{"wc_l_sm_ua_b0c0q0n0s0",					"wc_l_sm_lmpb_ua_b0c0q0n0sd0_cltrans_frt"},
 			{"wc_l_sm_ua_b0c0q0n0s0p0_nocast",			"wc_l_sm_ndw_ua_b0c0n0sd0p0_cltrans_nocast_frt_aat"}, // couldn't find
 			{"wc_l_sm_b0c0n0s0_custom_growing_ice_cracks", "wc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
 			{"wc_l_sm_du_dm_r0c0n0s0p0",				"wc_l_sm_r0c0n0sd0_nfwpf"}, // this has issues!
 			{"wc_l_r0c0",								"wc_l_sm_lmpb_r0c0_nfwpf"}, // could be wrong
 			{"wc_l_b0c0",								"wc_l_sm_lmpb_ndw_b0c0_cltrans"}, // could be wrong
 			{"wc_l_ua_b0c0_nocast",						"wc_l_sm_ndw_ua_b0c0_cltrans_nocast"}, // could be wrong
+			{"wc_l_ua_b0c0n0s0p0_nocast",				"wc_l_sm_ndw_ua_b0c0n0sd0p0_cltrans_nocast_frt_aat"}, // could be wrong
 			{"wc_l_t0c0",								"wc_l_sm_lmpb_t0c0_nfwpf"}, // -> sm
 			{"wc_l_t0c0_nocast",						"wc_l_lmpb_t0c0_nfwpf_nocast"}, // -> lmpb
 
@@ -81,7 +93,7 @@ namespace ZoneTool
 			{"wc_unlit_falloff",						"wc_unlit_falloff_add_lin_ndw_cltrans"},  // couldn't find
 			{"wc_unlit_falloff_add",					"wc_unlit_falloff_add_lin_ndw_cltrans"}, // couldn't find
 			{"wc_unlit_falloff_add_lin",				"wc_unlit_falloff_add_lin_ndw_cltrans"},
-			{"wc_unlit_falloff_add_lin_ua",				"wc_unlit_falloff_add_lin_ndw_cltrans"}, // couldn't find
+			{"wc_unlit_falloff_add_lin_ua",				"wc_unlit_falloff_add_lin_ndw_ua_cltrans"},
 			{"wc_unlit_falloff_screen_lin",				"wc_unlit_falloff_screen_lin_ndw_cltrans"},
 			{"wc_unlit_multiply",						"wc_unlit_multiply_lin_ndw_cltrans"}, // couldn't find
 			{"wc_unlit_multiply_lin",					"wc_unlit_multiply_lin_ndw_cltrans"},
@@ -89,7 +101,7 @@ namespace ZoneTool
 			{"wc_unlit_replace_lin",					"wc_unlit_replace_lin_nfwpf"}, // blend works better?
 			{"wc_unlit_replace_lin_nocast",				"wc_unlit_replace_lin_nfwpf_nocast"}, // blend works better?
 			{"wc_unlit_replace_lin_ua",					"wc_unlit_add_lin_ndw_ua_nfwpf"}, // couldn't find
-			{"wc_unlit_screen_lin",						"wc_unlit_blend_lin_ndw_cltrans"}, // couldn't find
+			{"wc_unlit_screen_lin",						"wc_unlit_add_lin_ndw_cltrans"}, // couldn't find
 			{"wc_effect",								"effect_blend_ndw"}, // ??
 			{"wc_ambient_t0c0",							"wc_l_sm_lmpb_t0c0_nfwpf"},
 			{"wc_sky",									"wc_sky_cso_nfwpf"},
@@ -109,39 +121,40 @@ namespace ZoneTool
 			{"m_l_sm_b0c0q0n0s0",						"m_l_sm_b0c0n0sd0_cltrans"}, // couldn't find
 			{"m_l_sm_b0c0q0n0s0p0",						"m_l_sm_b0c0n0sd0_cltrans"}, // couldn't find
 
-			{"mc_l_sm_a0c0",							"wc_l_sm_a0c0_nfwpf_frt_aat"},
-			{"mc_l_sm_a0c0_nocast",						"wc_l_sm_a0c0_nfwpf_frt_aat"}, // no nocast
-			{"mc_l_sm_r0c0",							"mc_l_sm_r0c0_nfwpf"},
-			{"mc_l_sm_r0c0_nocast",						"mc_l_sm_r0c0_nfwpf"}, // no nocast
-			{"mc_l_sm_r0c0d0",							"mc_l_sm_r0c0_nfwpf"}, // couldn't find
-			{"mc_l_sm_r0c0d0s0",						"mc_l_sm_r0c0sd0_nfwpf"}, // couldn't find
-			{"mc_l_sm_r0c0d0n0",						"mc_l_sm_r0c0n0_nfwpf"}, // couldn't find
+			{"mc_l_sm_a0c0",							"m_l_sm_a0c0_nfwpf_frt_aat"}, // could be wrong
+			{"mc_l_sm_a0c0_nocast",						"m_l_sm_a0c0_nfwpf_frt_aat"}, // no nocast
+			{"mc_l_sm_r0c0",							"mc_l_sm_lmpb_r0c0_nfwpf"},
+			{"mc_l_sm_r0c0_nocast",						"mc_l_sm_lmpb_r0c0_nfwpf"}, // no nocast
+			{"mc_l_sm_r0c0d0",							"mc_l_sm_lmpb_r0c0_nfwpf"}, // couldn't find
+			{"mc_l_sm_r0c0d0s0",						"mc_l_sm_lmpb_r0c0sd0_nfwpf"}, // couldn't find
+			{"mc_l_sm_r0c0d0n0",						"mc_l_sm_lmpb_r0c0n0_nfwpf"}, // couldn't find
 			{"mc_l_sm_r0c0d0n0s0",						"mc_l_sm_r0c0d0n0sd0_nfwpf"},
 			{"mc_l_sm_r0c0d0n0s0p0",					"mc_l_sm_r0c0d0n0sd0p0_nfwpf"},
-			{"mc_l_sm_r0c0s0",							"mc_l_sm_r0c0sd0_nfwpf"},
-			{"mc_l_sm_r0c0s0_nocast",					"mc_l_sm_r0c0sd0_nfwpf"}, // no nocast
-			{"mc_l_sm_r0c0s0p0",						"mc_l_sm_r0c0sd0p0_nfwpf"},
-			{"mc_l_sm_r0c0n0",							"mc_l_sm_r0c0n0_nfwpf"},
-			{"mc_l_sm_r0c0n0p0",						"mc_l_sm_r0c0n0_nfwpf"}, // no p0
+			{"mc_l_sm_r0c0s0",							"mc_l_sm_lmpb_r0c0sd0_nfwpf"},
+			{"mc_l_sm_r0c0s0_nocast",					"mc_l_sm_lmpb_r0c0sd0_nfwpf"}, // no nocast
+			{"mc_l_sm_r0c0s0p0",						"mc_l_sm_lmpb_r0c0sd0_nfwpf"}, // couldn't find
+			{"mc_l_sm_r0c0n0",							"mc_l_sm_lmpb_r0c0n0_nfwpf"},
+			{"mc_l_sm_r0c0n0p0",						"mc_l_sm_lmpb_r0c0n0_nfwpf"}, // no p0
 			{"mc_l_sm_r0c0n0s0",						"mc_l_sm_lmpb_r0c0n0sd0_nfwpf"},
 			{"mc_l_sm_r0c0n0s0_em",						"mc_l_sm_lmpb_r0c0n0sd0_nfwpf"}, // codo
 			{"mc_l_sm_r0c0n0s0_nocast",					"mc_l_sm_lmpb_r0c0n0sd0_nfwpf"}, // no nocast
-			{"mc_l_sm_r0c0n0s0o0",						"mc_l_sm_lmpb_r0c0n0sd0_nfwpf"}, // not sure
+			{"mc_l_sm_r0c0n0s0o0",						"mc_l_sm_lmpb_r0c0n0sd0om0_nfwpf"}, // not sure
 			{"mc_l_sm_r0c0n0s0p0",						"mc_l_sm_r0c0n0sd0p0_nfwpf"},
 			{"mc_l_sm_r0c0p0",							"mc_l_sm_r0c0p0_nfwpf"},
-			{"mc_l_sm_r0c0q0n0",						"mc_l_sm_r0c0n0_nfwpf"}, // couldn't find
-			{"mc_l_sm_r0c0q0n0s0",						"mc_l_sm_r0c0n0_nfwpf"}, // couldn't find
-			{"mc_l_sm_r0c0q0n0s0p0",					"mc_l_sm_r0c0q0n0sd0p0_nfwpf"},
+			{"mc_l_sm_r0c0q0s0p0",						"m_l_sm_lmpb_r0c0q0sd0_nfwpf"}, // -> m, couldn't find
+			{"mc_l_sm_r0c0q0n0",						"mc_l_sm_lmpb_r0c0n0_nfwpf"}, // couldn't find
+			{"mc_l_sm_r0c0q0n0s0",						"m_l_sm_lmpb_r0c0q0n0sd0_nfwpf"}, // -> m
+			{"mc_l_sm_r0c0q0n0s0p0",					"m_l_sm_lmpb_r0c0q0n0sd0_nfwpf"}, // couldn't find
 			{"mc_l_sm_t0c0",							"mc_l_sm_lmpb_t0c0_nfwpf"},
-			{"mc_l_sm_t0c0_nocast",						"mc_l_sm_t0c0_nfwpf_nocast"},
-			{"mc_l_sm_t0c0s0",							"m_l_sm_lmpb_t0c0sd0_nfwpf"}, // mc one for this doesn't exist, but m does
+			{"mc_l_sm_t0c0_nocast",						"mc_l_sm_lmpb_t0c0_nfwpf"}, // no nocast
+			{"mc_l_sm_t0c0s0",							"m_l_sm_lmpb_t0c0sd0_nfwpf"}, // -> m
 			{"mc_l_sm_t0c0s0p0",						"mc_l_sm_t0c0sd0p0_nfwpf"},
 			{"mc_l_sm_t0c0n0",							"mc_l_sm_lmpb_t0c0n0_nfwpf_dsl"}, // could be wrong
 			{"mc_l_sm_t0c0n0_nocast",					"mc_l_sm_lmpb_t0c0n0_nfwpf_dsl"}, // no nocast
-			{"mc_l_sm_t0c0n0s0",						"mc_l_sm_t0c0n0sd0_nfwpf"},
-			{"mc_l_sm_t0c0n0s0_nocast",					"mc_l_sm_t0c0n0sd0_nfwpf_nocast"},
+			{"mc_l_sm_t0c0n0s0",						"m_l_sm_lmpb_t0c0n0sd0_nfwpf"}, // -> m
+			{"mc_l_sm_t0c0n0s0_nocast",					"m_l_sm_lmpb_t0c0n0sd0_nfwpf_nocast"}, // -> m
 			{"mc_l_sm_t0c0n0s0p0",						"mc_l_sm_t0c0n0sd0p0_nfwpf"},
-			{"mc_l_sm_t0c0p0",							"mc_l_sm_t0c0_nfwpf"}, // couldn't find
+			{"mc_l_sm_t0c0p0",							"mc_l_sm_lmpb_t0c0_nfwpf"}, // couldn't find
 			{"mc_l_sm_t0c0q0n0s0",						"m_l_sm_lmpb_t0c0q0n0sd0_nfwpf"}, // -> m
 			{"mc_l_sm_t0c0q0n0s0p0",					"mc_l_sm_t0c0n0sd0p0_nfwpf"}, // couldn't find // mc_l_sm_t0c0d0n0sd0p0ct0_nfwpf
 			{"mc_l_sm_b0c0",							"mc_l_sm_lmpb_ndw_b0c0_nfwpf_frt_im_aat"},
@@ -151,7 +164,7 @@ namespace ZoneTool
 			{"mc_l_sm_b0c0s0",							"mc_l_sm_lmpb_ndw_b0c0sd0_cltrans"},
 			{"mc_l_sm_b0c0s0_nocast",					"mc_l_sm_lmpb_ndw_b0c0sd0_nfwpf_frt_aat"}, // not sure what the diff is between this and ^
 			{"mc_l_sm_b0c0s0p0",						"m_l_sm_ndw_b0c0sd0p0_cltrans"}, // -> m
-			{"mc_l_sm_b0c0n0",							"mc_l_sm_lmpb_ndw_b0c0n0_nfwpf_frt_im_aat"},
+			{"mc_l_sm_b0c0n0",							"m_l_sm_lmpb_ndw_b0c0n0_cltrans"}, // -> m
 			{"mc_l_sm_b0c0n0s0",						"mc_l_sm_lmpb_ndw_b0c0n0sd0_cltrans"},
 			{"mc_l_sm_b0c0n0s0p0",						"mc_l_sm_lmpb_ndw_b0c0n0sd0_nfwpf_frt_im_aat"}, // couldn't find
 			{"mc_l_sm_b0c0p0",							"mc_l_sm_lmpb_ndw_b0c0_nfwpf_frt_im_aat"}, // couldn't find
@@ -172,9 +185,11 @@ namespace ZoneTool
 			{"mc_l_sm_flag_t0c0",						"mc_l_sm_lmpb_flag_fuv_t0c0_nfwpf"},
 			{"mc_l_sm_flag_t0c0s0",						"mc_l_sm_lmpb_flag_fuv_t0c0_nfwpf"}, // couldn't find
 			{"mc_l_sm_flag_t0c0s0p0",					"mc_l_sm_lmpb_flagext_wv0_fuv_t0c0sd0_nfwpf"}, // couldn't find, maybe wrong
+			{"mc_l_sm_flag_t0c0n0",						"mc_l_sm_lmpb_flag_fuv_t0c0n0sd0_nfwpf_dsl"}, // -> sd0
 			{"mc_l_sm_flag_t0c0n0s0",					"mc_l_sm_lmpb_flag_fuv_t0c0n0sd0_nfwpf_dsl"},
 			{"mc_l_sm_flag_t0c0n0s0p0",					"mc_l_sm_lmpb_flag_fuv_t0c0n0sd0_nfwpf_dsl"}, // couldn't find
-			{"mc_l_r0c0",								"mc_l_sm_r0c0_nfwpf" }, // -> sm
+			{"mc_l_r0c0",								"mc_l_sm_lmpb_r0c0_nfwpf" }, // -> sm
+			{"mc_l_r0c0_nocast",						"mc_l_sm_lmpb_r0c0_nfwpf" }, // couldn't find
 			{"mc_l_r0c0n0",								"mc_l_sm_r0c0n0_nfwpf" }, // -> sm
 			{"mc_l_r0c0n0s0",							"mc_l_sm_lmpb_r0c0n0sd0_nfwpf"}, // -> sm
 			{"mc_l_r0c0n0s0_nocast",					"m_l_sm_r0c0n0sd0_nfwpf_nocast"}, // -> m, sm
@@ -190,12 +205,14 @@ namespace ZoneTool
 			{"mc_unlit_alphatest",						"mc_unlit_blend_lin_ndw_nfwpf"}, // couldn't find
 			{"mc_unlit_add",							"mc_unlit_add_lin_ndw_cltrans"}, // couldn't find
 			{"mc_unlit_add_lin",						"mc_unlit_add_lin_ndw_cltrans"},
-			{"mc_unlit_add_lin_ua",						"mc_unlit_add_lin_ndw_cltrans"}, // no ua
+			{"mc_unlit_add_lin_ua",						"m_unlit_add_lin_ndw_ua_nfwpf"}, // -> m
 			{"mc_unlit_blend_lin",						"mc_unlit_blend_lin_ndw_nfwpf"},
 			{"mc_unlit_multiply",						"mc_unlit_multiply_lin_ndw_nfwpf"}, // couldn't find
 			{"mc_unlit_multiply_lin",					"mc_unlit_multiply_lin_ndw_nfwpf"},
-			{"mc_unlit_falloff_add",					"mc_unlit_blend_lin_ndw_nfwpf" }, // couldn't find
-			{"mc_unlit_screen_lin_ua",					"mc_unlit_screen_lin_ndw_ua_cltrans" },
+			{"mc_unlit_falloff_add",					"mc_unlit_blend_lin_ndw_nfwpf"}, // couldn't find
+			{"mc_unlit_falloff_screen_lin",				"mc_unlit_blend_lin_ndw_nfwpf"}, // couldn't find
+			{"mc_unlit_screen_lin",						"m_unlit_screen_lin_ndw_cltrans"}, // -> m
+			{"mc_unlit_screen_lin_ua",					"mc_unlit_screen_lin_ndw_ua_cltrans"},
 			{"mc_unlit_replace",						"mc_unlit_replace_lin_nfwpf"}, // couldn't find
 			{"mc_unlit_replace_lin",					"mc_unlit_replace_lin_nfwpf"},
 			{"mc_unlit_replace_lin_ua",					"mc_unlit_replace_lin_nfwpf"}, // no ua
@@ -223,7 +240,8 @@ namespace ZoneTool
 			{"mc_threed_cinematic",						"m_threed_cinematic"}, // -> m
 
 			//{"mc_water",								"2d" }, // couldn't find
-			//{"mc_tools",								"2d"}, // couldn't find
+			{"mc_tools",								"m_tools_r0c0ct0_nocast"}, // could be wrong
+			{"mc_tools_r0c0_nocast",					"m_tools_r0c0ct0_nocast"},
 
 			{"l_sm_r0c0",								"2d"}, // not needed (iw3)
 			{"ambient_r0c0",							"2d" }, // not needed (iw3)
@@ -252,8 +270,10 @@ namespace ZoneTool
 			{"effect_zfeather_add_nofog",				"effect_zf_add_nofog_ndw"},
 			{"effect_zfeather_add_nofog_eyeoffset",		"effect_zf_add_nofog_eo_ndw"},
 			{"effect_zfeather_add_eyeoffset",			"effect_zf_add_eo_ndw"},
+			{"effect_zfeather_add_lin_nofog",			"effect_zf_add_nofog_ndw"}, // couldn't find
 			{"effect_zfeather_blend",					"effect_zf_blend_ndw"},
 			{"effect_zfeather_blend_nofog",				"effect_zf_blend_nofog_ndw"},
+			{"effect_zfeather_blend_eyeoffset",			"effect_zf_blend_eo_ndw"},
 			{"effect_zfeather_blend_spot_sm",			"effect_zf_blend_ndw"}, // couldn't find
 			{"effect_zfeather_falloff",					"effect_zf_falloff_blend_ndw"}, // couldn't find
 			{"effect_zfeather_falloff_nofog",			"effect_zf_falloff_blend_nofog_ndw"}, // couldn't find
@@ -276,8 +296,9 @@ namespace ZoneTool
 			{"particle_cloud_outdoor",					"particle_cloud_outdoor_replace_ga"}, // could be wrong
 			{"particle_cloud_outdoor_add",				"particle_cloud_outdoor_add_ga"},
 			{"particle_cloud_sparkf_add",				"particle_cloud_sparkf_add_ga"},
-			{"particle_cloud_spark_add",				"particle_cloud_spark_add_ga"},
-			{"particle_cloud_spark_outdoor_add",		"particle_cloud_spark_add_ga"}, // couldn't find
+			{"particle_cloud_spark",					"particle_cloud_add_ga"}, // couldn't find
+			{"particle_cloud_spark_add",				"particle_cloud_add_ga"},
+			{"particle_cloud_spark_outdoor_add",		"particle_cloud_add_ga"}, // couldn't find
 
 			{"grain_overlay",							"grain_overlay"},
 
@@ -321,6 +342,15 @@ namespace ZoneTool
 			{"wc_l_sm_r0c0q0s0", "wc_l_sm_lmpb_r0c0q0sd0_nfwpf"},
 			{"mc_l_sm_flag_t0c0n0", "mc_l_sm_flag_fuv_t0c0n0_nfwpf"},
 			{"mc_l_flag_t0c0p0", "mc_l_flag_fuv_t0c0_nfwpf"},
+
+			// 9-25-2024
+			{"mc_unlit_blend_lin_ua", "m_unlit_blend_lin_ndw_ua_nfwpf"},
+			{"wc_l_sm_r0c0s0p0_nocast", "wc_l_sm_r0c0sd0p0_nfwpf"}, // no nocast
+			{"wc_unlit_replace_lin_nofog", "wc_unlit_replace_lin_nfwpf"},
+			{"wc_unlit_blend_lin_nofog_ua", "wc_unlit_blend_lin_ndw_ua_cltrans"},
+			{"mc_ambient_t0c0_z", "mc_l_sm_t0c0_nfwpf"},
+			{"effect_zfeather_outdoor_add", "effect_zf_outdoor_add_ndw"},
+			{"mc_unlit_blend_nofog_ua", "m_unlit_blend_lin_ndw_ua_nfwpf"},
 		};
 
 		namespace
@@ -374,7 +404,7 @@ namespace ZoneTool
 				//{32, },	// ?
 				//{33, },	// ?
 				{34, 38},	// Cloud dust?
-				//{35, 35},	// Opaque
+				//{35, 35},	// Opaque (caulk_shadow is 35 on IW5, 38 on H1)
 				//{36, },	// ?
 				//{37, },	// ?
 				//{38, },	// ?
@@ -535,36 +565,37 @@ namespace ZoneTool
 
 				MATERIAL_DUMP_STRING(name);
 
-				std::string iw5_techset;
+				std::string techset;
 				std::string h1_techset;
 				if (asset->techniqueSet)
 				{
-					iw5_techset = asset->techniqueSet->name;
-					if (iw5_techset.starts_with("iw3/"))
+					techset = asset->techniqueSet->name;
+					if (techset.starts_with("iw3/"))
 					{
-						iw5_techset.erase(0, 4);
+						techset.erase(0, 4);
 					}
 
-					if (iw5_techset.ends_with("_sat"))
+					if (techset.ends_with("_sat"))
 					{
-						auto idx = iw5_techset.find("_sat");
-						iw5_techset.erase(idx, 4);
+						auto idx = techset.find("_sat");
+						techset.erase(idx, 4);
 					}
 
-					if (iw5_techset.ends_with(".3x")) // iw3xport
+					if (techset.ends_with(".3x")) // iw3xport
 					{
-						auto idx = iw5_techset.find(".3x");
-						iw5_techset.erase(idx, 3);
+						auto idx = techset.find(".3x");
+						techset.erase(idx, 3);
 					}
 
 					bool result = false;
-					h1_techset = H1::get_h1_techset(iw5_techset, asset->name, &result);
+					h1_techset = H1::get_h1_techset(techset, asset->name, &result);
 					/*if (!result)
 					{
 						ZONETOOL_ERROR("Not dumping material \"%s\"", asset->name);
 						return;
 					}*/
 					matdata["techniqueSet->name"] = h1_techset;
+					matdata["techniqueSet->og_name"] = techset;
 				}
 
 				matdata["gameFlags"] = asset->info.gameFlags; // convert
@@ -584,24 +615,45 @@ namespace ZoneTool
 				matdata["materialType"] = H1::get_material_type_from_name(asset->name);
 				matdata["assetFlags"] = H1::MTL_ASSETFLAG_NONE;
 
-				ordered_json constant_table;
-				for (int i = 0; i < asset->constantCount && iw5_techset != "2d"; i++)
+				ordered_json constant_table = json::array();
+				for (int i = 0; i < asset->constantCount && techset != "2d"; i++)
 				{
 					ordered_json table;
 					std::string constant_name = asset->constantTable[i].name;
+					const auto constant_hash = asset->constantTable[i].nameHash;
 
 					if (constant_name.size() > 12)
 					{
 						constant_name.resize(12);
 					}
 
-					if (constant_name == "colorTint" &&
-						asset->constantTable[i].literal[0] == 1.0f &&
-						asset->constantTable[i].literal[1] == 1.0f &&
-						asset->constantTable[i].literal[2] == 1.0f &&
-						asset->constantTable[i].literal[3] == 1.0f)
+					if (h1_techset.find("_ct_") == std::string::npos || h1_techset.find("ct0") == std::string::npos)
 					{
-						continue;
+						if (constant_name == "colorTint" &&
+							asset->constantTable[i].literal[0] == 1.0f &&
+							asset->constantTable[i].literal[1] == 1.0f &&
+							asset->constantTable[i].literal[2] == 1.0f &&
+							asset->constantTable[i].literal[3] == 1.0f)
+						{
+							continue;
+						}
+					}
+
+					if (constant_hash == 148072969) // detailScale
+					{
+						const auto s1 = h1_techset.find("d0");
+						if (s1 != std::string::npos)
+						{
+							const auto s2 = h1_techset.find("sd0");
+							if (s2 - 1 == s1)
+							{
+								continue;
+							}
+						}
+						else
+						{
+							continue;
+						}
 					}
 
 					table["name"] = constant_name.data();
@@ -618,15 +670,22 @@ namespace ZoneTool
 				}
 
 #define CONSTANT_TABLE_ADD_IF_NOT_FOUND(CONST_NAME, CONST_HASH, LITERAL_1, LITERAL_2, LITERAL_3, LITERAL_4) \
-				bool has_table = false; \
+				bool has_const = false; \
+				std::size_t insert_position = constant_table.size(); \
 				for (std::size_t i = 0; i < constant_table.size(); i++) \
 				{ \
-					if (constant_table[i]["name"].get<std::string>() == CONST_NAME) \
+					if (constant_table[i]["nameHash"].get<std::size_t>() == CONST_HASH) \
 					{ \
-						has_table = true; \
+						has_const = true; \
+						break; \
+					} \
+					if (constant_table[i]["nameHash"].get<std::size_t>() > CONST_HASH) \
+					{ \
+						insert_position = i; \
+						break; \
 					} \
 				} \
-				if (!has_table) \
+				if (!has_const) \
 				{ \
 					ordered_json table; \
 					table["name"] = CONST_NAME; \
@@ -637,8 +696,13 @@ namespace ZoneTool
 					literal_entry[2] = LITERAL_3; \
 					literal_entry[3] = LITERAL_4; \
 					table["literal"] = literal_entry; \
-					constant_table[constant_table.size()] = table; \
-				} \
+					constant_table.insert(constant_table.begin() + insert_position, table); \
+				}
+
+				if (h1_techset.find("sd0") != std::string::npos)
+				{
+					CONSTANT_TABLE_ADD_IF_NOT_FOUND("envMapParms", 1033475292, 0.0f, 0.0f, 0.0f, 0.0f);
+				}
 
 				if (h1_techset.find("_flag_") != std::string::npos)
 				{
@@ -657,16 +721,9 @@ namespace ZoneTool
 
 				matdata["constantTable"] = constant_table;
 
-				int i_3447584578 = -1;
-
-				ordered_json material_images;
+				ordered_json material_images = json::array();
 				for (auto i = 0; i < asset->textureCount; i++)
 				{
-					if (asset->textureTable[i].nameHash > 3447584578 && i_3447584578 == -1)
-					{
-						i_3447584578 = i;
-					}
-
 					ordered_json image;
 					if (asset->textureTable[i].semantic == 11)
 					{
@@ -689,7 +746,8 @@ namespace ZoneTool
 						}
 						else
 						{
-							image["image"] = "";
+							ZONETOOL_WARNING("material %s has an empty image, assigning default...", asset->name);
+							image["image"] = "default";
 						}
 					}
 
@@ -703,22 +761,47 @@ namespace ZoneTool
 					material_images.push_back(image);
 				}
 
-				// fix for certain techniques
+#define IMAGE_ADD_IF_NOT_FOUND(IMAGE, SEMANTIC, SAMPLER_STATE, LAST_CHARACTER, FIRST_CHARACTER, HASH) \
+				bool has_image = false; \
+				std::size_t insert_position = material_images.size(); \
+				for (std::size_t i = 0; i < material_images.size(); i++) \
+				{ \
+					if (material_images[i]["typeHash"].get<std::size_t>() == HASH) \
+					{ \
+						has_image = true; \
+						break; \
+					} \
+					if (material_images[i]["typeHash"].get<std::size_t>() > HASH) \
+					{ \
+						insert_position = i; \
+						break; \
+					} \
+				} \
+				if (!has_image) \
+				{ \
+					ordered_json image; \
+					image["image"] = IMAGE; \
+					image["semantic"] = SEMANTIC; \
+					image["samplerState"] = SAMPLER_STATE; \
+					image["lastCharacter"] = LAST_CHARACTER; \
+					image["firstCharacter"] = FIRST_CHARACTER; \
+					image["typeHash"] = HASH; \
+					material_images.insert(material_images.begin() + insert_position, image); \
+				}
+
+				if (h1_techset.find("n0") != std::string::npos)
+				{
+					IMAGE_ADD_IF_NOT_FOUND("$identitynormalmap", 5, 1, 112, 110, 1507003663);
+				}
+
+				if (h1_techset.find("sd0") != std::string::npos)
+				{
+					IMAGE_ADD_IF_NOT_FOUND("$identitynormalmap", 8, 19, 112, 115, 887934131);
+				}
+
 				if (h1_techset.find("_lmpb_") != std::string::npos || h1_techset.find("_flag_") != std::string::npos)
 				{
-					if (i_3447584578 == -1)
-					{
-						i_3447584578 = asset->textureCount;
-					}
-
-					ordered_json image;
-					image["image"] = "~envbrdflut_ggx_16-rg";
-					image["semantic"] = 15;
-					image["samplerState"] = 226;
-					image["lastCharacter"] = 116;
-					image["firstCharacter"] = 101;
-					image["typeHash"] = 3447584578;
-					material_images.insert(material_images.begin() + i_3447584578, image);
+					IMAGE_ADD_IF_NOT_FOUND("~envbrdflut_ggx_16-rg", 15, 226, 116, 101, 3447584578);
 				}
 
 				matdata["textureTable"] = material_images;

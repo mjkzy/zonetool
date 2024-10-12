@@ -19,10 +19,10 @@ namespace ZoneTool::H1
 		write.dump_array(asset->polytopeDatas, asset->polytopeCount);
 		for (unsigned int i = 0; i < asset->polytopeCount; i++)
 		{
-			write.dump_array(asset->polytopeDatas[i].vec4_array0, asset->polytopeDatas[i].m_vertexCount);
-			write.dump_array(asset->polytopeDatas[i].vec4_array1, asset->polytopeDatas[i].m_faceCount);
-			write.dump_array(asset->polytopeDatas[i].uint16_array0, asset->polytopeDatas[i].m_faceCount);
-			write.dump_array(asset->polytopeDatas[i].uint16_array1, asset->polytopeDatas[i].m_vertexCount);
+			write.dump_array(asset->polytopeDatas[i].m_aVertices, asset->polytopeDatas[i].m_vertexCount);
+			write.dump_array(asset->polytopeDatas[i].m_aPlanes, asset->polytopeDatas[i].m_faceCount);
+			write.dump_array(asset->polytopeDatas[i].m_surfaceTypes, asset->polytopeDatas[i].m_faceCount);
+			write.dump_array(asset->polytopeDatas[i].m_vertexMaterials, asset->polytopeDatas[i].m_vertexCount);
 			write.dump_array(asset->polytopeDatas[i].m_aSubEdges, asset->polytopeDatas[i].m_subEdgeCount);
 			write.dump_array(asset->polytopeDatas[i].m_aFaceSubEdges, asset->polytopeDatas[i].m_faceCount);
 		}

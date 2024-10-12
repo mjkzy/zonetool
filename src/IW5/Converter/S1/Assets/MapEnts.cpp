@@ -44,21 +44,38 @@ namespace ZoneTool::IW5
 			s1_asset->clientTrigger.clientTriggerAabbTree = reinterpret_cast<S1::ClientTriggerAabbNode*>(asset->clientTrigger.clientTriggerAabbTree);
 			s1_asset->clientTrigger.triggerStringLength = asset->clientTrigger.triggerStringLength;
 			s1_asset->clientTrigger.triggerString = asset->clientTrigger.triggerString;
-			s1_asset->clientTrigger.visionSetTriggers = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
-			s1_asset->clientTrigger.blendLookup = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
-			s1_asset->clientTrigger.unk1 = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
-			s1_asset->clientTrigger.triggerType = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo
+
+			auto allocate = [&](const short default_value = -1)
+			{
+				const auto count = asset->clientTrigger.trigger.count;
+				auto memory = mem.allocate<short>(asset->clientTrigger.trigger.count);
+				std::fill(memory, memory + count, default_value);
+				return memory;
+			};
+
+			s1_asset->clientTrigger.triggerType = allocate(0);
+			s1_asset->clientTrigger.visionSetTriggers = allocate();
+			s1_asset->clientTrigger.lightSetTriggers = allocate();
+
 			for (auto i = 0; i < asset->clientTrigger.trigger.count; i++)
 			{
-				s1_asset->clientTrigger.triggerType[i] = asset->clientTrigger.triggerType[i]; // convert?
+				if ((asset->clientTrigger.triggerType[i] & CLIENT_TRIGGER_VISIONSET) != 0)
+				{
+					s1_asset->clientTrigger.triggerType[i] |= H1::CLIENT_TRIGGER_VISIONSET;
+
+					s1_asset->clientTrigger.visionSetTriggers[i] = asset->clientTrigger.triggerStringOffsets[i];
+					s1_asset->clientTrigger.lightSetTriggers[i] = asset->clientTrigger.triggerStringOffsets[i];
+				}
 			}
+
+			s1_asset->clientTrigger.clutTriggers = allocate(); // todo?
 			s1_asset->clientTrigger.origins = reinterpret_cast<float(*__ptr64)[3]>(asset->clientTrigger.origins);
 			s1_asset->clientTrigger.scriptDelay = asset->clientTrigger.scriptDelay;
-			s1_asset->clientTrigger.audioTriggers = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
-			s1_asset->clientTrigger.blendLookup = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
-			s1_asset->clientTrigger.unk3 = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
-			s1_asset->clientTrigger.unk4 = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
-			s1_asset->clientTrigger.unk5 = mem.allocate<short>(asset->clientTrigger.trigger.count); // todo?
+			s1_asset->clientTrigger.audioTriggers = asset->clientTrigger.audioTriggers;
+			s1_asset->clientTrigger.blendLookup = allocate(); // todo?
+			s1_asset->clientTrigger.npcTriggers = allocate(); // todo?
+			s1_asset->clientTrigger.contextTriggers = allocate(); // todo?
+			s1_asset->clientTrigger.waterTriggers = allocate(); // todo?
 
 			s1_asset->clientTriggerBlend.numClientTriggerBlendNodes = 0;
 			s1_asset->clientTriggerBlend.blendNodes = nullptr;
