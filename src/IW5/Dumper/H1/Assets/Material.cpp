@@ -564,7 +564,7 @@ namespace ZoneTool
 						index = 1;
 					}
 				}
-				else if (h1_sortkey >= 26 && h1_sortkey <= 33)
+				else if (h1_sortkey >= 18 && h1_sortkey <= 33)
 				{
 					index = 3;
 				}
