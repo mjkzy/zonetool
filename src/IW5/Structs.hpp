@@ -213,12 +213,12 @@ namespace ZoneTool
 		struct pathnode_constant_t
 		{
 			nodeType type;
-			scr_string_t spawnflags;
-			scr_string_t targetname;
-			scr_string_t script_linkName;
-			scr_string_t script_noteworthy;
-			scr_string_t target;
-			scr_string_t animscript;
+			unsigned __int16 spawnflags;
+			unsigned __int16 targetname;
+			unsigned __int16 script_linkName;
+			unsigned __int16 script_noteworthy;
+			unsigned __int16 target;
+			unsigned __int16 animscript;
 			int animscriptfunc;
 			float vOrigin[3];
 			float fAngle;
@@ -275,6 +275,27 @@ namespace ZoneTool
 		{
 			float vOrigin[3];
 			unsigned int type;
+		};
+
+		struct pathnode_tree_nodes_t
+		{
+			int nodeCount;
+			unsigned short* nodes;
+		};
+
+		struct pathnode_tree_t;
+
+		union pathnode_tree_info_t
+		{
+			pathnode_tree_t* child[2];
+			pathnode_tree_nodes_t s;
+		};
+
+		struct pathnode_tree_t
+		{
+			int axis;
+			float dist;
+			pathnode_tree_info_t u;
 		};
 
 		struct PathData

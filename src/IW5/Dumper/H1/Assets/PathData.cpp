@@ -8,11 +8,11 @@ namespace ZoneTool::IW5::H1Dumper
 {
 	void dump(PathData* asset)
 	{
-		// generate h1 clipmap
+		// generate h1 pathdata
 		allocator allocator;
 		auto* h1_asset = H1Converter::convert(asset, allocator);
 
-		// dump h1 clipmap
+		// dump h1 pathdata
 		H1::IPathData::dump(h1_asset, SL_ConvertToString);
 	}
 }
